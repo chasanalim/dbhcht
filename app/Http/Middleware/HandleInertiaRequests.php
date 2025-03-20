@@ -27,7 +27,7 @@ class HandleInertiaRequests extends Middleware
 
     private function _navigations(Request $request): array
     {
-        // $permissions = $request->user() ? $request->user()->gpetPermissionsViaRoles()->pluck('name')->toArray() : [];
+        $permissions = $request->user() ? $request->user()->getPermissionsViaRoles()->pluck('name')->toArray() : [];
 
         return [
             [
@@ -36,12 +36,12 @@ class HandleInertiaRequests extends Middleware
                 'icon' => 'bi bi-house',
                 'show' => true,
             ],
-            // [
-            //     'label' => 'Dashboard',
-            //     'route' => 'dashboard',
-            //     'icon' => 'fa-podcast',
-            //     'show' => in_array('read dashboard', $permissions),
-            // ],
+            [
+                'label' => 'Dashboard',
+                'route' => 'dashboard',
+                'icon' => 'fa-podcast',
+                'show' => in_array('read dashboard', $permissions),
+            ],
             // [
             //     'label' => 'Laporan Warga',
             //     'route' => 'lapor.index',
@@ -62,8 +62,8 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user() ? User::findOrFail(Auth::id()) : null,
-                // 'roles' => $request->user() ? $request->user()->roles->pluck('name') : [],
-                // 'permissions' => $request->user() ? $request->user()->getPermissionsViaRoles()->pluck('name') : [],
+                'roles' => $request->user() ? $request->user()->roles->pluck('name') : [],
+                'permissions' => $request->user() ? $request->user()->getPermissionsViaRoles()->pluck('name') : [],
             ],
             'navigations' => $this->_navigations($request),
             'ziggy' => fn () => [
