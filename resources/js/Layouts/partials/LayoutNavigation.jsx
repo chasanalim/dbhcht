@@ -1,7 +1,14 @@
-import { Link, usePage } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import classNames from "classnames";
 import React, { useState, useEffect } from "react";
-import { Container, Image, Nav, Navbar, NavDropdown } from "react-bootstrap";
+import {
+    Button,
+    Container,
+    Image,
+    Nav,
+    Navbar,
+    NavDropdown,
+} from "react-bootstrap";
 
 export default function LayoutNavigation() {
     const { pengaturan, navigations, auth } = usePage().props;
@@ -18,6 +25,11 @@ export default function LayoutNavigation() {
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
+
+    const logoutHandler = () => {
+        console.log('jembut');
+        return router.post(route("logout"));
+    };
 
     return (
         <Navbar
@@ -71,6 +83,9 @@ export default function LayoutNavigation() {
                             return;
                         })}
                     </Nav>
+                    <Button onClick={() => logoutHandler()}>
+                        <span>Logout</span>
+                    </Button>
                 </Navbar.Collapse>
             </Container>
         </Navbar>

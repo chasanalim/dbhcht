@@ -1,100 +1,101 @@
-import Checkbox from '@/Components/Checkbox';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from "@inertiajs/react";
+import React, { useState } from "react";
+
+import { Form, Button, Alert } from "react-bootstrap";
 
 export default function Login({ status, canResetPassword }) {
     const { data, setData, post, processing, errors, reset } = useForm({
-        email: '',
-        password: '',
+        email: "",
+        password: "",
         remember: false,
     });
 
-    const submit = (e) => {
-        e.preventDefault();
+    const [show, setShow] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-        post(route('login'), {
-            onFinish: () => reset('password'),
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        setLoading(true);
+        post(route("login"), {
+            onFinish: () => reset("password"),
         });
+        setLoading(false);
     };
 
+    const handlePassword = () => {};
+
+
     return (
-        <GuestLayout>
-            <Head title="Log in" />
-
-            {status && (
-                <div className="mb-4 text-sm font-medium text-green-600">
-                    {status}
-                </div>
-            )}
-
-            <form onSubmit={submit}>
-                <div>
-                    <InputLabel htmlFor="email" value="Email" />
-
-                    <TextInput
-                        id="email"
-                        type="email"
-                        name="email"
+        <div
+            className="sign-in__wrapper"
+            // style={{ backgroundImage: `url(${BackgroundImage})` }}
+        >
+            {/* Overlay */}
+            <div className="sign-in__backdrop"></div>
+            {/* Form */}
+            <Form
+                className="shadow p-4 bg-white rounded"
+                onSubmit={handleSubmit}
+            >
+                {/* Header */}
+                {/* <img
+                    className="img-thumbnail mx-auto d-block mb-2"
+                    src={Logo}
+                    alt="logo"
+                /> */}
+                <div className="h4 mb-2 text-center">Sign In</div>
+                <Form.Group className="mb-2" controlId="username">
+                    <Form.Label>Username</Form.Label>
+                    <Form.Control
+                        type="text"
                         value={data.email}
-                        className="mt-1 block w-full"
-                        autoComplete="username"
-                        isFocused={true}
-                        onChange={(e) => setData('email', e.target.value)}
+                        placeholder="Username"
+                        onChange={(e) => setData("email", e.target.value)}
+                        required
                     />
-
-                    <InputError message={errors.email} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
-
-                    <TextInput
-                        id="password"
+                </Form.Group>
+                <Form.Group className="mb-2" controlId="password">
+                    <Form.Label>Password</Form.Label>
+                    <Form.Control
                         type="password"
-                        name="password"
                         value={data.password}
-                        className="mt-1 block w-full"
-                        autoComplete="current-password"
-                        onChange={(e) => setData('password', e.target.value)}
+                        placeholder="Password"
+                        onChange={(e) => setData("password", e.target.value)}
+                        required
                     />
-
-                    <InputError message={errors.password} className="mt-2" />
+                </Form.Group>
+                <Form.Group className="mb-2" controlId="checkbox">
+                    <Form.Check
+                        type="checkbox"
+                        label="Remember me"
+                        checked={data.remember}
+                        onChange={(e) => setData("remember", e.target.checked)}
+                    />
+                </Form.Group>
+                {!loading ? (
+                    <Button className="w-100" variant="primary" type="submit">
+                        Log In
+                    </Button>
+                ) : (
+                    <Button
+                        className="w-100"
+                        variant="primary"
+                        type="submit"
+                        disabled
+                    >
+                        Logging In...
+                    </Button>
+                )}
+                <div className="d-grid justify-content-end">
+                    <Button
+                        className="text-muted px-0"
+                        variant="link"
+                        onClick={handlePassword}
+                    >
+                        Forgot password?
+                    </Button>
                 </div>
-
-                <div className="mt-4 block">
-                    <label className="flex items-center">
-                        <Checkbox
-                            name="remember"
-                            checked={data.remember}
-                            onChange={(e) =>
-                                setData('remember', e.target.checked)
-                            }
-                        />
-                        <span className="ms-2 text-sm text-gray-600">
-                            Remember me
-                        </span>
-                    </label>
-                </div>
-
-                <div className="mt-4 flex items-center justify-end">
-                    {canResetPassword && (
-                        <Link
-                            href={route('password.request')}
-                            className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                        >
-                            Forgot your password?
-                        </Link>
-                    )}
-
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Log in
-                    </PrimaryButton>
-                </div>
-            </form>
-        </GuestLayout>
+            </Form>
+        </div>
     );
 }
