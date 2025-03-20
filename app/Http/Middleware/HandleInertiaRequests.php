@@ -49,22 +49,6 @@ class HandleInertiaRequests extends Middleware
                 'show' => true,
                 // 'show' => in_array('read dashboard', $permissions),
             ],
-            // [
-            //     'label' => 'Pendaftaran Pelatihan',
-            //     'route' => 'home',
-            //     'icon' => 'bi bi-file-earmark-arrow-up',
-            //     'show' => true,
-                'label' => 'Dashboard',
-                'route' => 'dashboard',
-                'icon' => 'fa-podcast',
-                'show' => in_array('read dashboard', $permissions),
-            ],
-            // [
-            //     'label' => 'Laporan Warga',
-            //     'route' => 'lapor.index',
-            //     'icon' => 'fa-bullhorn',
-            //     'show' => $request->user() ? in_array('read lapor', $permissions) : false,
-            // ],
         ];
     }
 
