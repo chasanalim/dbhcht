@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -29,4 +30,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::prefix('users')->as('users.')->group(function () {
+    Route::get('/', [UserController::class, 'index'])->middleware(['auth', 'verified'])->name('index');
+    // Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
+    // Route::post('/', [UserController::class, 'store'])->middleware(['auth', 'verified'])->name('store');
+    // Route::put('/{id}', [UserController::class, 'update'])->middleware(['auth', 'verified'])->name('update');
+    // Route::put('/{id}/restore', [UserController::class, 'restore'])->middleware(['auth', 'verified'])->name('restore');
+    // Route::delete('/{id}/archive', [UserController::class, 'archive'])->middleware(['auth', 'verified'])->name('archive');
+});
 require __DIR__ . '/auth.php';
