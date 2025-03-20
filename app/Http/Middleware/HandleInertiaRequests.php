@@ -51,8 +51,14 @@ class HandleInertiaRequests extends Middleware
             ],
             [
                 'label' => 'Daftar Banmod',
-                'route' => 'home',
-                'icon' => 'bi bi-house',
+                'route' => 'banmod',
+                'icon' => 'bi bi-shop-window',
+                'show' => true,
+            ],
+            [
+                'label' => 'Daftar Pelatihan',
+                'route' => 'pelatihan',
+                'icon' => 'bi bi-person-arms-up',
                 'show' => true,
             ],
         ];

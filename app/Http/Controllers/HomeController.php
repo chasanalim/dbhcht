@@ -100,4 +100,22 @@ class HomeController extends Controller
 
         return redirect()->back()->with('error', 'File tidak ditemukan');
     }
+
+    public function banmod()
+    {
+        return Inertia::render('Home/Index', [
+            'meta' => [
+                'title' => 'Home Page',
+            ],
+        ]);
+    }
+
+    public function pelatihan()
+    {
+        return Inertia::render('Home/Index', [
+            'meta' => [
+                'title' => 'Home Page',
+            ],
+        ]);
+    }
 }
