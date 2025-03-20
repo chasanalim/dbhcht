@@ -49,6 +49,12 @@ class HandleInertiaRequests extends Middleware
                 'show' => true,
                 // 'show' => in_array('read dashboard', $permissions),
             ],
+            [
+                'label' => 'Daftar Banmod',
+                'route' => 'home',
+                'icon' => 'bi bi-house',
+                'show' => true,
+            ],
         ];
     }
 

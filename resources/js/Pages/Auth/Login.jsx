@@ -45,11 +45,11 @@ export default function Login({ status, canResetPassword }) {
                 /> */}
                 <div className="h4 mb-2 text-center">Sign In</div>
                 <Form.Group className="mb-2" controlId="username">
-                    <Form.Label>Username</Form.Label>
+                    <Form.Label>Email</Form.Label>
                     <Form.Control
                         type="text"
                         value={data.email}
-                        placeholder="Username"
+                        placeholder="Email"
                         onChange={(e) => setData("email", e.target.value)}
                         required
                     />

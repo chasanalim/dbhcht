@@ -77,7 +77,6 @@ export default function LayoutNavigation() {
                             }
                             return;
                         })}
-                    </Nav>
                     {isAuth && (
                         <Nav className="me-auto">
                         <NavDropdown title={<><i className="bi bi-person me-2"></i>{`Hi, ${auth.user?.name}`}</>} id="basic-nav-dropdown">
@@ -100,6 +99,7 @@ export default function LayoutNavigation() {
                         </NavDropdown>
                       </Nav>
                     )}
+                    </Nav>
                 </Navbar.Collapse>
             </Container>
         </Navbar>
