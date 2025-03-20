@@ -8,6 +8,16 @@ use Inertia\Inertia;
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/download', [HomeController::class, 'file'])->name('download');
+Route::get('/download/{file}', [HomeController::class, 'download'])->name('download.file');
+// Route::get('/', function () {
+//     return Inertia::render('Welcome', [
+//         'canLogin' => Route::has('login'),
+//         'canRegister' => Route::has('register'),
+//         'laravelVersion' => Application::VERSION,
+//         'phpVersion' => PHP_VERSION,
+//     ]);
+// });
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');

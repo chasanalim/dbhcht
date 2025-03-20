@@ -7,7 +7,7 @@ export default function LayoutFooter() {
         <footer className="py-0">
             <div className="position-relative text-white text-align-center bg-secondary">
                 <Container>
-                    <Row className="text-white">
+                    <Row className="text-white py-5">
                         <Col md={4}>
                             <h5 className="fw-bold">Hubungi Kami</h5>
                             <div className="underline2 d-none d-md-block"></div>
