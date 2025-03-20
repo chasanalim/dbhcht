@@ -1,49 +1,49 @@
 .navbar {
-    .nav-link {
-        color: white !important;
+  .nav-link {
+    color: white !important;
 
-        // Default icon color
-        i {
-            color: white !important;
-        }
-
-        &.active {
-            background-color: #f5a721;
-            border-radius: 20px;
-            padding: 8px 16px;
-            color: black !important;
-
-            // Active icon color
-            i {
-                color: black !important;
-            }
-        }
+    // Default icon color
+    i {
+      color: white !important;
     }
+
+    &.active {
+      background-color: #f5a721;
+      border-radius: 20px;
+      padding: 8px 16px;
+      color: black !important;
+
+      // Active icon color
+      i {
+        color: black !important;
+      }
+    }
+  }
 }
 
 .navbar-background {
-    background-color: $secondary;
-    transition: border-radius 0.3s ease;
+  background-color: $secondary;
+  transition: border-radius 0.3s ease;
 }
 
 .custom-navbar {
-    min-height: 85px;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    transition: border-radius 0.3s ease;
+  min-height: 85px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  transition: border-radius 0.3s ease;
 
-    &.scrolled {
-        border-bottom-left-radius: 25px;
-        border-bottom-right-radius: 25px;
-    }
+  &.scrolled {
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+  }
 }
 
 .navbar-style {
-    .dropdown-item {
-        color: black !important;
-    }
+  .dropdown-item {
+    color: black !important;
+  }
 
-    .fa {
-        color: white !important;
-    }
+  .fa {
+    color: white !important;
+  }
 }

@@ -1,0 +1,9 @@
+.form-label.required {
+  position: relative;
+
+  &::after {
+    position: absolute;
+    content: "*";
+    color: $danger;
+  }
+}

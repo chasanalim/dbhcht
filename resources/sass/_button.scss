@@ -1,0 +1,38 @@
+.card-footer .reset-btn {
+    background-color: #dc3545;
+    color: white;
+    border-color: #dc3545;
+  
+    &:hover {
+      background-color: #f55c6b;
+      border-color: #f04758;
+      color: white;
+    }
+  
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.5);
+    }
+}
+
+.card-footer .submit-btn {
+    background-color: #4b8ef1;
+    color: white;
+    border-color: #4b8ef1;
+  
+    &:hover {
+      background-color: #81aef3;
+      border-color: #609efa;
+      color: white;
+    }
+  
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.5);
+    }
+}
+
+.btn.bg-danger:hover {
+  background-color: #dc3545; 
+  color: white; 
+}

@@ -1,0 +1,17 @@
+.landing{
+    background-image: url('../../public/assets/bg-hero.png');
+    background-repeat: no-repeat;
+    background-size: 1200px;
+    min-height: 100vh;
+}
+@media (min-width: 1600px) {
+    .landing {
+        background-size: 1600px;
+    }
+}
+
+@include media-breakpoint-down(md) {
+    .landing{
+        min-height: auto;
+    }
+}

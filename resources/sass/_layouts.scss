@@ -1,0 +1,33 @@
+.section-heading {
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+.section-heading .line-dec {
+    margin: 0 auto;
+}
+
+.table-section-bg {
+    background: url('../../public/assets/services-left-dec.png') no-repeat left top,
+        url('../../public/assets/services-right-dec.png') no-repeat right bottom;
+    background-size: auto;
+    padding: 40px;
+    color: transparent;
+    /* Ensure text remains readable */
+}
+
+@include media-breakpoint-down(sm) {
+    .table-section-bg {
+        padding: 0px;
+    }
+}
+
+.form-section-bg {
+    background:
+        url('../../public/assets/services-left-dec.png') no-repeat left top,
+        url('../../public/assets/services-left-dec.png') no-repeat left 60%,
+        url('../../public/assets/services-right-dec.png') no-repeat right 20%,
+        url('../../public/assets/services-right-dec.png') no-repeat right bottom;
+    background-size: auto;
+    padding: 40px;
+}

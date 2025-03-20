@@ -1,0 +1,22 @@
+.statistik{
+    background-color: $warning;
+    .online{
+        animation: blink 2s infinite;
+    }
+    @keyframes blink {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0;
+        }
+    }
+}
+
+/*Shrinking for mobile*/
+@media (max-width: 768px) {
+    .waves {
+        height: 40px;
+        min-height: 40px;
+    }
+}
