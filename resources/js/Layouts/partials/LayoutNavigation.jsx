@@ -79,25 +79,44 @@ export default function LayoutNavigation() {
                         })}
                     {isAuth && (
                         <Nav className="me-auto">
-                        <NavDropdown title={<><i className="bi bi-person me-2"></i>{`Hi, ${auth.user?.name}`}</>} id="basic-nav-dropdown">
-                          <NavDropdown.Item
-                            as={Link}
-                            href={route("profile.edit")}
-                            className={classNames({ active: route().current() === "profile.edit" })}
-                          >
-                            <span>My Profile</span>
-                          </NavDropdown.Item>
-                          {auth.permissions?.includes('read users') && (
-                            <NavDropdown.Item as={Link} href={route('users.index')}>
-                              <span>Manage Users</span>
-                            </NavDropdown.Item>
-                          )}
-                          <NavDropdown.Divider />
-                          <NavDropdown.Item as={Link} method="post" href={route("logout")}>
-                            <span>Logout</span>
-                          </NavDropdown.Item>
-                        </NavDropdown>
-                      </Nav>
+                            <NavDropdown
+                                title={
+                                    <>
+                                        <i className="bi bi-person me-2"></i>
+                                        {`Hi, ${auth.user?.name}`}
+                                    </>
+                                }
+                                id="basic-nav-dropdown"
+                            >
+                                <NavDropdown.Item
+                                    as={Link}
+                                    href={route("profile.edit")}
+                                    className={classNames({
+                                        active:
+                                            route().current() ===
+                                            "profile.edit",
+                                    })}
+                                >
+                                    <span>My Profile</span>
+                                </NavDropdown.Item>
+                                {auth.permissions?.includes("read users") && (
+                                    <NavDropdown.Item
+                                        as={Link}
+                                        href={route("users.index")}
+                                    >
+                                        <span>Manage Users</span>
+                                    </NavDropdown.Item>
+                                )}
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item
+                                    as={Link}
+                                    method="post"
+                                    href={route("logout")}
+                                >
+                                    <span>Logout</span>
+                                </NavDropdown.Item>
+                            </NavDropdown>
+                        </Nav>
                     )}
                     </Nav>
                 </Navbar.Collapse>

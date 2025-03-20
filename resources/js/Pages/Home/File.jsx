@@ -11,9 +11,10 @@ export default function File({ meta, banmod, pelatihan }) {
                 <div className="container">
                     <div className="card shadow-sm">
                         <div className="card-body">
-                            <h2 className="fs-2 fw-bold mb-4">
+                            <h2 className="fs-3 fw-bold mb-3">
                                 Daftar File Banmod 2025
                             </h2>
+                            <hr className="py-0" />
                             <div className="row g-4">
                                 {banmod.map((file) => (
                                     <div
@@ -33,9 +34,10 @@ export default function File({ meta, banmod, pelatihan }) {
                 <div className="container">
                     <div className="card shadow-sm">
                         <div className="card-body">
-                            <h2 className="fs-2 fw-bold mb-4">
+                            <h2 className="fs-3 fw-bold mb-3">
                                 Daftar File Pelatihan Kerja DBHCHT 2025
                             </h2>
+                            <hr className="py-0"/>
                             <div className="row g-4">
                                 {pelatihan.map((file) => (
                                     <div

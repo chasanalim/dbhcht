@@ -20,8 +20,8 @@ export default function FileCard({ file  }) {
                 `}
             </style>
             <div className="card h-100 shadow-sm border-0 transition-all hover-shadow">
-                <div className="card-body">
-                    <div className="d-flex align-items-start mb-3">
+                <div className="card-body my-2">
+                    <div className="d-flex align-items-start mb-2">
                         <div className="text-danger fs-1 me-3">
                             <i className="bi bi-file-earmark-pdf-fill"></i>
                         </div>
@@ -35,15 +35,11 @@ export default function FileCard({ file  }) {
                         </div>
                     </div>
 
-                    <div className="d-flex justify-content-between align-items-center mt-4">
-                        <div className="small text-muted">
-                            <p className="mb-1">Ukuran: {file.size}</p>
-                            <p className="mb-0">Diupload: {file.uploaded_at}</p>
-                        </div>
+                    <div className="d-flex justify-content-center align-items-center">
 
                         <button
                             onClick={downloadFile}
-                            className="btn btn-primary btn-sm d-flex align-items-center"
+                            className="btn btn-primary btn-sm"
                         >
                             <i className="bi bi-download me-2"></i>
                             Download
