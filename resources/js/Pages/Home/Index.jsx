@@ -36,7 +36,7 @@ export default function HomePage({ meta }) {
                                     dari DBHCHT
                                 </h1>
                                 <h5 className="fst-italic-theme text-muted">
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates dicta consectetur.
+                                    Program Pelatihan Kerja & Bantuan Modal diperuntukkan bagi masyarakat yang ingin meningkatkan keterampilan serta mendukung pengembangan usaha.
                                 </h5>
 
                                 <div className="my-4 d-flex align-items-center gap-1">
