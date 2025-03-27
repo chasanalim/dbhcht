@@ -14,14 +14,19 @@ Route::get('/download/{file}', [HomeController::class, 'download'])->name('downl
 Route::get('/banmod', [HomeController::class, 'banmod'])->name('banmod');
 Route::get('/pelatihan', [HomeController::class, 'pelatihan'])->name('pelatihan');
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth'])->name('dashboard');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/dashboard', function () {
+        return Inertia::render('Admin/Dashboard');
+    })->name('dashboard');
+    Route::get('/download', function () {
+        return Inertia::render('Admin/File/Index');
+    })->name('admin.download');
 });
 
 Route::prefix('users')->as('users.')->group(function () {
