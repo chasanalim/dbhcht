@@ -9,7 +9,7 @@ export default function HomePage({ meta }) {
             <Head title={meta.title} />
             <div className="d-flex flex-column align-items-center justify-content-center landing">
                 <Container>
-                    <div className="py-5">
+                    <div className="py-4">
                         <Row className="align-items-center">
                             <Col md={6}>
                                 <div className="mb-5 d-flex align-items-center gap-3">
