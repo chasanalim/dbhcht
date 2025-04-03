@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\BanmodController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\KategoriBanmodController;
+use App\Http\Controllers\KlasterUsahaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
@@ -40,6 +42,16 @@ Route::prefix('users')->as('users.')->group(function () {
 
 Route::prefix('banmod')->group(function () {
     Route::get('/', [BanmodController::class, 'index'])->name('banmod');
-    Route::get('/store', [BanmodController::class, 'store'])->name('banmod.store');
+    Route::post('/store', [BanmodController::class, 'store'])->name('banmod.store');
+});
+
+Route::prefix('refer')->as('refer.')->group(function () {
+    Route::prefix('kategoribanmod')->as('kategoribanmod.')->group(function () {
+        Route::get('/', [KategoriBanmodController::class, 'index'])->name('index');
+    });
+    
+    Route::prefix('klasterusaha')->as('klasterusaha.')->group(function () {
+        Route::get('/', [KlasterUsahaController::class, 'index'])->name('index');
+    });
 });
 require __DIR__ . '/auth.php';

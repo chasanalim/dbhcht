@@ -1,12 +1,15 @@
+import SelectDisabilitas from "@/Components/Select/SelectDisabilitas";
+import SelectKategoriUsaha from "@/Components/Select/SelectKategoriUsaha";
 import SelectKecamatan from "@/Components/Select/SelectKecamatan";
 import SelectKelurahan from "@/Components/Select/SelectKelurahan";
+import SelectKlasterUsaha from "@/Components/Select/SelectKlasterUsaha";
 import SelectListrik from "@/Components/Select/SelectListrik";
 import SelectRt from "@/Components/Select/SelectRt";
 import SelectRw from "@/Components/Select/SelectRw";
 import Layout from "@/Layouts/Layout";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import React, { useState } from "react";
-import { Form } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 
 export default function BanmodPage({ meta }) {
     // const { auth } = usePage().props;
@@ -34,9 +37,10 @@ export default function BanmodPage({ meta }) {
         alamat_usaha: "",
         phone_number: "",
         daya_listrik: "",
-        isDisabilitas: "",
+        isDisabilitas: false,
         disabilitas: "",
         kategori: "",
+        jenis_kluster: "",
         klaster_usaha: "",
         lama_usaha: "",
         jumlah_tenaga: "",
@@ -359,11 +363,10 @@ export default function BanmodPage({ meta }) {
                                         onChange={(item) =>
                                             setData((prevState) => ({
                                                 ...prevState,
-                                                kode_kecamatan: item.id,
-                                                nama_kecamatan: item.text,
+                                                daya_listrik: item.value,
                                             }))
                                         }
-                                        errors={errors.nama_kecamatan}
+                                        errors={errors.daya_listrik}
                                     />
                                 </div>
                             </div>
@@ -384,26 +387,70 @@ export default function BanmodPage({ meta }) {
                             </div>
                             {data.isDisabilitas && (
                                 <div className="col-md-12 col-12 mb-3">
-                                    <Form.Control
-                                        onChange={(e) =>
-                                            setData(
-                                                "disabilitas",
-                                                e.target.value
-                                            )
+                                    <SelectDisabilitas
+                                        onChange={(item) =>
+                                            setData((prevState) => ({
+                                                ...prevState,
+                                                disabilitas: item,
+                                            }))
                                         }
-                                        as="textarea"
-                                        rows="3"
-                                        value={data.disabilitas}
-                                        isInvalid={errors.disabilitas}
-                                        autoComplete="disabilitas"
-                                        placeholder="Alamat Usaha"
+                                        errors={errors.disabilitas}
                                     />
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.disabilitas}
-                                    </Form.Control.Feedback>
                                 </div>
                             )}
                         </Form.Group>
+                        <div className="big-text text-muted mb-4">
+                            Profil Usaha
+                            <div className="underline"></div>
+                        </div>
+                        <Form.Group className="row mb-1">
+                            <div className="col-md-12 col-12 mb-3">
+                                <div className="col-md-12 col-12 mb-3">
+                                    <Form.Label className="required">
+                                        Kategori Usaha
+                                    </Form.Label>
+                                    <SelectKategoriUsaha
+                                        onChange={(item) =>
+                                            setData((prevState) => ({
+                                                ...prevState,
+                                                kategori: item.id,
+                                                jenis_kluster: item.jenis
+                                            }))
+                                        }
+                                        errors={errors.kategori}
+                                    />
+                                </div>
+                            </div>
+                        </Form.Group>
+                        <Form.Group className="row mb-1">
+                            <div className="col-md-12 col-12 mb-3">
+                                <div className="col-md-12 col-12 mb-3">
+                                    <Form.Label className="required">
+                                        Klaster Usaha
+                                    </Form.Label>
+                                    <SelectKlasterUsaha
+                                        kodeJenis={data.jenis_kluster}
+                                        onChange={(item) =>
+                                            setData((prevState) => ({
+                                                ...prevState,
+                                                klaster_usaha: item.value,
+                                            }))
+                                        }
+                                        errors={errors.klaster_usaha}
+                                    />
+                                </div>
+                            </div>
+                        </Form.Group>
+                        <hr />
+                        <div className="card-footer d-flex justify-content-center mt-4 gap-2">
+                            <Button type="submit">
+                                Kirim{" "}
+                                <i
+                                    className="fa fa-paper-plane ms-1"
+                                    aria-hidden="true"
+                                ></i>
+                            </Button>
+                        </div>
                     </Form>
                 </div>
             </div>

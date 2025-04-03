@@ -2,19 +2,18 @@ import React, { Fragment, useState } from "react";
 import { Form } from "react-bootstrap";
 import Select from "react-select";
 const options = [
-    { value: "1", label: "450 VA" },
-    { value: "2", label: "900 VA" },
-    { value: "3", label: "1300 VA" },
-    { value: "4", label: "2200 VA" },
-    { value: "5", label: "3500-5500 VA" },
-    { value: "6", label: "6600 VA/LEBIH" },
+    { value: "1", label: "DAKSA" },
+    { value: "2", label: "NETRA" },
+    { value: "3", label: "RUNGU" },
+    { value: "4", label: "WICARA" },
 ];
 
-export default function SelectListrik({ onChange = (item) => {}, errors }) {
+export default function SelectDisabilitas({ onChange = (item) => {}, errors }) {
     const [loading, setLoading] = useState(false);
     return (
         <Fragment>
             <Select
+                isMulti
                 options={options}
                 onChange={(item) => onChange(item)}
                 isLoading={loading}

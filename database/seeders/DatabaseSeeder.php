@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\JumlahTenagaKerja;
+use App\Models\LamaUsaha;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -23,6 +25,16 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserRoleSeeder::class,
             UserSeeder::class,
+            KategoriBanmodSeeder::class,
+            KlasterUsahaSeeder::class,
+            LamaUsahaSeeder::class,
+            JumlahTenagaKerjaSeeder::class,
+            BrutoSeeder::class,
+            TanggunganKeluargaSeeder::class,
+            StatusTempatTinggalSeeder::class,
+            JumlahLegalitasSeeder::class,
+            JumlahTeknologiDigitalSeeder::class,
+            PenyerapanTenagaMiskinSeeder::class
         ]);
     }
 }
