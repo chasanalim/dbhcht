@@ -24,9 +24,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         return Inertia::render('Admin/Dashboard');
     })->name('dashboard');
-    Route::get('/download', function () {
+    Route::get('/downloads', function () {
         return Inertia::render('Admin/File/Index');
-    })->name('admin.download');
+    })->name('admin.downloads');
 });
 
 Route::prefix('users')->as('users.')->group(function () {
