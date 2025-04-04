@@ -1,21 +1,31 @@
+import SelectBruto from "@/Components/Select/SelectBruto";
 import SelectDisabilitas from "@/Components/Select/SelectDisabilitas";
 import SelectKategoriUsaha from "@/Components/Select/SelectKategoriUsaha";
 import SelectKecamatan from "@/Components/Select/SelectKecamatan";
 import SelectKelurahan from "@/Components/Select/SelectKelurahan";
 import SelectKlasterUsaha from "@/Components/Select/SelectKlasterUsaha";
+import SelectLamaUsaha from "@/Components/Select/SelectLamaUsaha";
+import SelectLegalitas from "@/Components/Select/SelectLegalitas";
 import SelectListrik from "@/Components/Select/SelectListrik";
+import SelectPenyerapanNaker from "@/Components/Select/SelectPenyerapanNaker";
 import SelectRt from "@/Components/Select/SelectRt";
 import SelectRw from "@/Components/Select/SelectRw";
+import SelectTanggunganKeluarga from "@/Components/Select/SelectTanggunganKeluarga";
+import SelectTeknologi from "@/Components/Select/SelectTeknologi";
+import SelectTempatTinggal from "@/Components/Select/SelectTempatTinggal";
+import SelectTenagaKerja from "@/Components/Select/SelectTenagaKerja";
 import Layout from "@/Layouts/Layout";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import React, { useState } from "react";
 import { Button, Form } from "react-bootstrap";
+import CurrencyInput from "react-currency-input-field";
 
 export default function BanmodPage({ meta }) {
     // const { auth } = usePage().props;
 
     // const [showDomisili, setShowDomisili, showUsaha, setShowUsaha] =
     //     useState(false);
+
     const { data, setData, errors, post, reset } = useForm({
         nik: "",
         kk: "",
@@ -40,11 +50,13 @@ export default function BanmodPage({ meta }) {
         isDisabilitas: false,
         disabilitas: "",
         kategori: "",
-        jenis_kluster: "",
+        jenis_kategori: "",
         klaster_usaha: "",
+        tanggungan_keluarga: "",
         lama_usaha: "",
         jumlah_tenaga: "",
         bruto: "",
+        status_tempat_tinggal: "",
         aset: "",
         hutang: "",
         jumlah_legalitas: "",
@@ -405,46 +417,273 @@ export default function BanmodPage({ meta }) {
                         </div>
                         <Form.Group className="row mb-1">
                             <div className="col-md-12 col-12 mb-3">
-                                <div className="col-md-12 col-12 mb-3">
-                                    <Form.Label className="required">
-                                        Kategori Usaha
-                                    </Form.Label>
-                                    <SelectKategoriUsaha
-                                        onChange={(item) =>
-                                            setData((prevState) => ({
-                                                ...prevState,
-                                                kategori: item.id,
-                                                jenis_kluster: item.jenis
-                                            }))
-                                        }
-                                        errors={errors.kategori}
-                                    />
-                                </div>
+                                <Form.Label className="required">
+                                    Kategori Usaha
+                                </Form.Label>
+                                <SelectKategoriUsaha
+                                    onChange={(item) =>
+                                        setData((prevState) => ({
+                                            ...prevState,
+                                            kategori: item.id,
+                                            jenis_kategori: item.jenis,
+                                        }))
+                                    }
+                                    errors={errors.kategori}
+                                />
                             </div>
                         </Form.Group>
                         <Form.Group className="row mb-1">
                             <div className="col-md-12 col-12 mb-3">
+                                <Form.Label className="required">
+                                    Klaster Usaha
+                                </Form.Label>
+                                <SelectKlasterUsaha
+                                    kodeJenis={data.jenis_kategori}
+                                    onChange={(item) =>
+                                        setData((prevState) => ({
+                                            ...prevState,
+                                            klaster_usaha: item.value,
+                                        }))
+                                    }
+                                    errors={errors.klaster_usaha}
+                                />
+                            </div>
+                        </Form.Group>
+                        {data.kategori == 5 && (
+                            <Form.Group className="row mb-1">
                                 <div className="col-md-12 col-12 mb-3">
                                     <Form.Label className="required">
-                                        Klaster Usaha
+                                        Jumlah Keluarga yang Ditanggung Dalam 1
+                                        KK
                                     </Form.Label>
-                                    <SelectKlasterUsaha
-                                        kodeJenis={data.jenis_kluster}
+                                    <SelectTanggunganKeluarga
+                                        kodeJenis={data.jenis_kategori}
                                         onChange={(item) =>
                                             setData((prevState) => ({
                                                 ...prevState,
-                                                klaster_usaha: item.value,
+                                                tanggungan_keluarga: item.value,
                                             }))
                                         }
-                                        errors={errors.klaster_usaha}
+                                        errors={errors.tanggungan_keluarga}
                                     />
                                 </div>
+                            </Form.Group>
+                        )}
+                        <Form.Group className="row mb-1">
+                            <div className="col-md-12 col-12 mb-3">
+                                <Form.Label className="required">
+                                    Lama Usaha
+                                </Form.Label>
+                                <SelectLamaUsaha
+                                    kodeJenis={data.jenis_kategori}
+                                    onChange={(item) =>
+                                        setData((prevState) => ({
+                                            ...prevState,
+                                            lama_usaha: item.value,
+                                        }))
+                                    }
+                                    errors={errors.lama_usaha}
+                                />
                             </div>
                         </Form.Group>
+                        {data.kategori != 5 && (
+                            <Form.Group className="row mb-1">
+                                <div className="col-md-12 col-12 mb-3">
+                                    <Form.Label className="required">
+                                        Jumlah Tenaga Kerja
+                                    </Form.Label>
+                                    <SelectTenagaKerja
+                                        kodeJenis={data.jenis_kategori}
+                                        onChange={(item) =>
+                                            setData((prevState) => ({
+                                                ...prevState,
+                                                jumlah_tenaga: item.value,
+                                            }))
+                                        }
+                                        errors={errors.jumlah_tenaga}
+                                    />
+                                </div>
+                            </Form.Group>
+                        )}
+                        {data.kategori != 5 && (
+                            <Form.Group className="row mb-1">
+                                <div className="col-md-12 col-12 mb-3">
+                                    <Form.Label className="required">
+                                        Pendapatan Kotor per Bulan
+                                    </Form.Label>
+                                    <SelectBruto
+                                        kodeJenis={data.jenis_kategori}
+                                        onChange={(item) =>
+                                            setData((prevState) => ({
+                                                ...prevState,
+                                                bruto: item.value,
+                                            }))
+                                        }
+                                        errors={errors.bruto}
+                                    />
+                                </div>
+                            </Form.Group>
+                        )}
+                        {data.kategori == 5 && (
+                            <Form.Group className="row mb-1">
+                                <div className="col-md-12 col-12 mb-3">
+                                    <Form.Label className="required">
+                                        Status Tempat Tinggal
+                                    </Form.Label>
+                                    <SelectTempatTinggal
+                                        kodeJenis={data.jenis_kategori}
+                                        onChange={(item) =>
+                                            setData((prevState) => ({
+                                                ...prevState,
+                                                status_tempat_tinggal:
+                                                    item.value,
+                                            }))
+                                        }
+                                        errors={errors.status_tempat_tinggal}
+                                    />
+                                </div>
+                            </Form.Group>
+                        )}
+                        <Form.Group className="row mb-1">
+                            <div className="col-md-12 col-12 mb-3">
+                                <Form.Label className="required">
+                                    Aset (Selain Tanah & Bangunan)
+                                </Form.Label>
+                                <div className="col-12 mb-3">
+                                    <CurrencyInput
+                                        placeholder="Rp."
+                                        prefix={"Rp. "}
+                                        groupSeparator="."
+                                        decimalSeparator=","
+                                        allowDecimals={false}
+                                        className={`form-control`}
+                                        onValueChange={(value, name, values) =>
+                                            setData((prevState) => ({
+                                                ...prevState,
+                                                aset: value,
+                                            }))
+                                        }
+                                    />
+                                </div>
+                                <div className="invalid-feedback">
+                                    {errors.aset}
+                                </div>
+                                {/* <Form.Control
+                                    value={data.aset}
+                                    onChange={(e) =>
+                                        setData((prevState) => ({
+                                            ...prevState,
+                                            aset: e.target.value,
+                                        }))
+                                    }
+                                    isInvalid={errors.aset}
+                                    placeholder="Rp."
+                                ></Form.Control>
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.aset}
+                                </Form.Control.Feedback> */}
+                            </div>
+                        </Form.Group>
+                        <Form.Group className="row mb-1">
+                            <div className="col-md-12 col-12 mb-3">
+                                <Form.Label className="required">
+                                    Hutang
+                                </Form.Label>
+                                <div className="col-12 mb-3">
+                                    <CurrencyInput
+                                        placeholder="Rp."
+                                        prefix={"Rp. "}
+                                        groupSeparator="."
+                                        decimalSeparator=","
+                                        allowDecimals={false}
+                                        className={`form-control`}
+                                        onValueChange={(value, name, values) =>
+                                            setData((prevState) => ({
+                                                ...prevState,
+                                                hutang: value,
+                                            }))
+                                        }
+                                    />
+                                </div>
+                                <div className="invalid-feedback">
+                                    {errors.hutang}
+                                </div>
+                                {/* <Form.Control
+                                    value={data.hutang}
+                                    onChange={(e) =>
+                                        setData((prevState) => ({
+                                            ...prevState,
+                                            hutang: e.target.value,
+                                        }))
+                                    }
+                                    isInvalid={errors.hutang}
+                                    placeholder="Rp."
+                                ></Form.Control>
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.hutang}
+                                </Form.Control.Feedback> */}
+                            </div>
+                        </Form.Group>
+                        {data.kategori == 4 && (
+                            <Form.Group className="row mb-1">
+                                <div className="col-md-12 col-12 mb-3">
+                                    <Form.Label className="required">
+                                        Jumlah Legalitas dan Standarisasi
+                                    </Form.Label>
+                                    <SelectLegalitas
+                                        kodeJenis={data.jenis_kategori}
+                                        onChange={(item) =>
+                                            setData((prevState) => ({
+                                                ...prevState,
+                                                jumlah_legalitas: item.value,
+                                            }))
+                                        }
+                                        errors={errors.jumlah_legalitas}
+                                    />
+                                </div>
+                                <div className="col-md-12 col-12 mb-3">
+                                    <Form.Label className="required">
+                                        Jumlah Teknologi Dalam Pemasaran
+                                    </Form.Label>
+                                    <SelectTeknologi
+                                        kodeJenis={data.jenis_kategori}
+                                        onChange={(item) =>
+                                            setData((prevState) => ({
+                                                ...prevState,
+                                                jumlah_teknologi: item.value,
+                                            }))
+                                        }
+                                        errors={errors.jumlah_teknologi}
+                                    />
+                                </div>
+                                <div className="col-md-12 col-12 mb-3">
+                                    <Form.Label className="required">
+                                        Jumlah Rencana Penyerapan Tenaga Kerja
+                                        Miskin
+                                    </Form.Label>
+                                    <SelectPenyerapanNaker
+                                        kodeJenis={data.jenis_kategori}
+                                        onChange={(item) =>
+                                            setData((prevState) => ({
+                                                ...prevState,
+                                                jumlah_penyerapan_naker:
+                                                    item.value,
+                                            }))
+                                        }
+                                        errors={errors.jumlah_penyerapan_naker}
+                                    />
+                                </div>
+                            </Form.Group>
+                        )}
+                        <div className="big-text text-muted mb-4">
+                            Upload Berkas
+                            <div className="underline"></div>
+                        </div>
+                        
                         <hr />
                         <div className="card-footer d-flex justify-content-center mt-4 gap-2">
                             <Button type="submit">
-                                Kirim{" "}
+                                Simpan{" "}
                                 <i
                                     className="fa fa-paper-plane ms-1"
                                     aria-hidden="true"

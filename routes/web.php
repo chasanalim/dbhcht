@@ -1,10 +1,18 @@
 <?php
 
 use App\Http\Controllers\BanmodController;
+use App\Http\Controllers\BrutoController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\JumlahLegalitasController;
+use App\Http\Controllers\JumlahTeknologiDigitalController;
+use App\Http\Controllers\JumlahTenagaKerjaController;
 use App\Http\Controllers\KategoriBanmodController;
 use App\Http\Controllers\KlasterUsahaController;
+use App\Http\Controllers\LamaUsahaController;
+use App\Http\Controllers\PenyerapanTenagaMiskinController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StatusTempatTinggalController;
+use App\Http\Controllers\TanggunganKeluargaController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -49,9 +57,32 @@ Route::prefix('refer')->as('refer.')->group(function () {
     Route::prefix('kategoribanmod')->as('kategoribanmod.')->group(function () {
         Route::get('/', [KategoriBanmodController::class, 'index'])->name('index');
     });
-    
     Route::prefix('klasterusaha')->as('klasterusaha.')->group(function () {
         Route::get('/', [KlasterUsahaController::class, 'index'])->name('index');
+    });
+    Route::prefix('lamausaha')->as('lamausaha.')->group(function () {
+        Route::get('/', [LamaUsahaController::class, 'index'])->name('index');
+    });
+    Route::prefix('tanggungankeluarga')->as('tanggungankeluarga.')->group(function () {
+        Route::get('/', [TanggunganKeluargaController::class, 'index'])->name('index');
+    });
+    Route::prefix('tenagakerja')->as('tenagakerja.')->group(function () {
+        Route::get('/', [JumlahTenagaKerjaController::class, 'index'])->name('index');
+    });
+    Route::prefix('bruto')->as('bruto.')->group(function () {
+        Route::get('/', [BrutoController::class, 'index'])->name('index');
+    });
+    Route::prefix('tempattinggal')->as('tempattinggal.')->group(function () {
+        Route::get('/', [StatusTempatTinggalController::class, 'index'])->name('index');
+    });
+    Route::prefix('legalitas')->as('legalitas.')->group(function () {
+        Route::get('/', [JumlahLegalitasController::class, 'index'])->name('index');
+    });
+    Route::prefix('teknologi')->as('teknologi.')->group(function () {
+        Route::get('/', [JumlahTeknologiDigitalController::class, 'index'])->name('index');
+    });
+    Route::prefix('penyerapannaker')->as('penyerapannaker.')->group(function () {
+        Route::get('/', [PenyerapanTenagaMiskinController::class, 'index'])->name('index');
     });
 });
 require __DIR__ . '/auth.php';

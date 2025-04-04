@@ -3,7 +3,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 import Select from "react-select";
 
-export default function SelectLamaUsaha({
+export default function SelectTempatTinggal({
     kodeJenis,
     onChange = (item) => {},
     errors,
@@ -14,7 +14,7 @@ export default function SelectLamaUsaha({
     const fetchData = async () => {
         setLoading(true);
         try {
-            const url = route("refer.lamausaha.index");
+            const url = route("refer.tempattinggal.index");
             const { data } = await axios.get(url, {
                 params: {
                     kode_jenis: kodeJenis,
