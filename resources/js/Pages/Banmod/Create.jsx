@@ -16,7 +16,7 @@ import SelectTempatTinggal from "@/Components/Select/SelectTempatTinggal";
 import SelectTenagaKerja from "@/Components/Select/SelectTenagaKerja";
 import Layout from "@/Layouts/Layout";
 import { Head, useForm, usePage } from "@inertiajs/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import CurrencyInput from "react-currency-input-field";
 
@@ -62,8 +62,8 @@ export default function BanmodPage({ meta }) {
         jumlah_legalitas: "",
         jumlah_teknologi: "",
         jumlah_penyerapan_naker: "",
-        file_foto: "",
-        file_ktp: "",
+        file_foto: [],
+        file_ktp: [],
         file_kk: "",
         file_nib: "",
         file_sku: "",
@@ -74,7 +74,25 @@ export default function BanmodPage({ meta }) {
         file_sinas: "",
         file_bp: "",
         file_sertifikat_pelatihan: "",
+        imagePreviewPasFoto: "",
+        imagePreviewPasKTP: "",
     });
+
+    const handleUploadFile = (e, field_name, preview_name) => {
+        const choosenFiles = Array.prototype.slice.call(e.target.files);
+        let reader = new FileReader();
+        let file = e.target.files[0];
+
+        reader.onloadend = () => {
+            setData((prevState) => ({
+                ...prevState,
+                [field_name]: choosenFiles,
+                [preview_name]: reader.result,
+            }));
+        };
+
+        reader.readAsDataURL(file);
+    };
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -556,7 +574,9 @@ export default function BanmodPage({ meta }) {
                                         groupSeparator="."
                                         decimalSeparator=","
                                         allowDecimals={false}
-                                        className={`form-control`}
+                                        className={`form-control ${
+                                            errors.aset ? `is-invalid` : ``
+                                        }`}
                                         onValueChange={(value, name, values) =>
                                             setData((prevState) => ({
                                                 ...prevState,
@@ -564,24 +584,10 @@ export default function BanmodPage({ meta }) {
                                             }))
                                         }
                                     />
+                                    <div className="invalid-feedback">
+                                        {errors.aset}
+                                    </div>
                                 </div>
-                                <div className="invalid-feedback">
-                                    {errors.aset}
-                                </div>
-                                {/* <Form.Control
-                                    value={data.aset}
-                                    onChange={(e) =>
-                                        setData((prevState) => ({
-                                            ...prevState,
-                                            aset: e.target.value,
-                                        }))
-                                    }
-                                    isInvalid={errors.aset}
-                                    placeholder="Rp."
-                                ></Form.Control>
-                                <Form.Control.Feedback type="invalid">
-                                    {errors.aset}
-                                </Form.Control.Feedback> */}
                             </div>
                         </Form.Group>
                         <Form.Group className="row mb-1">
@@ -596,7 +602,9 @@ export default function BanmodPage({ meta }) {
                                         groupSeparator="."
                                         decimalSeparator=","
                                         allowDecimals={false}
-                                        className={`form-control`}
+                                        className={`form-control ${
+                                            errors.hutang ? `is-invalid` : ``
+                                        }`}
                                         onValueChange={(value, name, values) =>
                                             setData((prevState) => ({
                                                 ...prevState,
@@ -604,24 +612,10 @@ export default function BanmodPage({ meta }) {
                                             }))
                                         }
                                     />
+                                    <div className="invalid-feedback">
+                                        {errors.hutang}
+                                    </div>
                                 </div>
-                                <div className="invalid-feedback">
-                                    {errors.hutang}
-                                </div>
-                                {/* <Form.Control
-                                    value={data.hutang}
-                                    onChange={(e) =>
-                                        setData((prevState) => ({
-                                            ...prevState,
-                                            hutang: e.target.value,
-                                        }))
-                                    }
-                                    isInvalid={errors.hutang}
-                                    placeholder="Rp."
-                                ></Form.Control>
-                                <Form.Control.Feedback type="invalid">
-                                    {errors.hutang}
-                                </Form.Control.Feedback> */}
                             </div>
                         </Form.Group>
                         {data.kategori == 4 && (
@@ -679,7 +673,60 @@ export default function BanmodPage({ meta }) {
                             Upload Berkas
                             <div className="underline"></div>
                         </div>
-                        
+                        <Form.Group className="mb-3">
+                            <Form.Label>Pas Foto Berwarna</Form.Label>
+                            <Form.Control
+                                type="file"
+                                onChange={(e) =>
+                                    handleUploadFile(
+                                        e,
+                                        "file_foto",
+                                        "imagePreviewPasFoto"
+                                    )
+                                }
+                                isInvalid={errors.file_foto}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.file_foto}
+                            </Form.Control.Feedback>
+                            {data.imagePreviewPasFoto && (
+                                <div className="mt-3">
+                                    <img
+                                        className="object-fit-cover"
+                                        width={200}
+                                        height={200}
+                                        src={data.imagePreviewPasFoto}
+                                    />
+                                </div>
+                            )}
+                        </Form.Group>
+                        <Form.Group className="mb-1">
+                            <Form.Label>Foto KTP</Form.Label>
+                            <Form.Control
+                                type="file"
+                                onChange={(e) =>
+                                    handleUploadFile(
+                                        e,
+                                        "file_ktp",
+                                        "imagePreviewPasKTP"
+                                    )
+                                }
+                                isInvalid={errors.file_ktp}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.file_ktp}
+                            </Form.Control.Feedback>
+                            {data.imagePreviewPasKTP && (
+                                <div className="mt-3">
+                                    <img
+                                        className="object-fit-cover"
+                                        width={200}
+                                        height={200}
+                                        src={data.imagePreviewPasKTP}
+                                    />
+                                </div>
+                            )}
+                        </Form.Group>
                         <hr />
                         <div className="card-footer d-flex justify-content-center mt-4 gap-2">
                             <Button type="submit">
