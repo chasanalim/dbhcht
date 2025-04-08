@@ -38,7 +38,7 @@ class HandleInertiaRequests extends Middleware
             ],
             [
                 'label' => 'Dashboard',
-                'route' => 'dashboard',
+                'route' => 'admin.dashboard',
                 'icon' => 'fa-podcast',
                 'show' => in_array('read dashboard', $permissions),
             ],

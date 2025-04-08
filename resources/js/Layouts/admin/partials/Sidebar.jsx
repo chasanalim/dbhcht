@@ -32,8 +32,8 @@ export default function Sidebar() {
                     <ul className="list-unstyled text-white mt-3">
                         <li>
                             <NavLink
-                                href={route("dashboard")}
-                                active={route().current("dashboard")}
+                                href={route("admin.dashboard")}
+                                active={route().current("admin.dashboard")}
                                 className="rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white"
                             >
                                 <i class="bi bi-clipboard-data fs-5"></i>
@@ -42,8 +42,8 @@ export default function Sidebar() {
                         </li>
                         <li>
                             <NavLink
-                                href={route("admin.download")}
-                                active={route().current("admin.download")}
+                                href={route("admin.downloads")}
+                                active={route().current("admin.downloads")}
                                 className="rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white"
                             >
                                 <i class="bi bi-cloud-arrow-down fs-5"></i>

@@ -102,7 +102,7 @@ export default function LayoutNavigation() {
                                 {auth.permissions?.includes("read users") && (
                                     <NavDropdown.Item
                                         as={Link}
-                                        href={route("dashboard")}
+                                        href={route("admin.dashboard")}
                                     >
                                         <span>Dashbaord Admin</span>
                                     </NavDropdown.Item>
