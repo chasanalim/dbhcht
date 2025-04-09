@@ -24,15 +24,16 @@ export default function Login({ status, canResetPassword }) {
 
     const handlePassword = () => {};
 
-
     return (
         <div
             className="sign-in__wrapper"
             // style={{ backgroundImage: `url(${BackgroundImage})` }}
         >
+            <Head title="Login" />
             {/* Overlay */}
             <div className="sign-in__backdrop"></div>
             {/* Form */}
+
             <Form
                 className="shadow p-4 bg-white rounded"
                 onSubmit={handleSubmit}
@@ -53,6 +54,7 @@ export default function Login({ status, canResetPassword }) {
                         onChange={(e) => setData("email", e.target.value)}
                         required
                     />
+                    {errors.email && <div className="ms-2 mt-1 fs-6 fw-light text-danger">{errors.email}</div>}
                 </Form.Group>
                 <Form.Group className="mb-2" controlId="password">
                     <Form.Label>Password</Form.Label>
@@ -63,6 +65,7 @@ export default function Login({ status, canResetPassword }) {
                         onChange={(e) => setData("password", e.target.value)}
                         required
                     />
+                    {errors.password && <div className="ms-2 mt-1 fs-6 fw-light text-danger">{errors.password}</div>}
                 </Form.Group>
                 <Form.Group className="mb-2" controlId="checkbox">
                     <Form.Check
@@ -86,7 +89,7 @@ export default function Login({ status, canResetPassword }) {
                         Logging In...
                     </Button>
                 )}
-                <div className="d-grid justify-content-end">
+                {/* <div className="d-grid justify-content-end">
                     <Button
                         className="text-muted px-0"
                         variant="link"
@@ -94,7 +97,7 @@ export default function Login({ status, canResetPassword }) {
                     >
                         Forgot password?
                     </Button>
-                </div>
+                </div> */}
             </Form>
         </div>
     );
