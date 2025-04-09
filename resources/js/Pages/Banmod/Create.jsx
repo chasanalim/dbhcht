@@ -28,14 +28,26 @@ export default function BanmodPage({ meta }) {
 
     let fileIndex = 1;
 
-    const renderFileUpload = (label, fieldName, accept = ".pdf", multiple = false, imagePreviewKey = null) => {
+    const renderFileUpload = (
+        label,
+        fieldName,
+        accept = ".pdf",
+        multiple = false,
+        imagePreviewKey = null
+    ) => {
         const indexLabel = `${fileIndex++}.`;
 
         return (
             <Form.Group className="mb-4" key={fieldName}>
-                <h5 className="mb-2">{indexLabel} {label}</h5>
-                <Form.Label className="text-muted" style={{ fontSize: "12px" }}>
-                    Format: {accept === ".pdf" ? "*.pdf" : "*.png, *.jpg, *.jpeg"}
+                <div className="mb-2">
+                    {indexLabel} {label}
+                </div>
+                <Form.Label
+                    className="text-primary"
+                    style={{ fontSize: "11px" }}
+                >
+                    Format:{" "}
+                    {accept === ".pdf" ? "*.pdf" : "*.png, *.jpg, *.jpeg"}
                 </Form.Label>
                 <Form.Control
                     type="file"
@@ -68,7 +80,9 @@ export default function BanmodPage({ meta }) {
                 {!imagePreviewKey && data[fieldName]?.length > 0 && (
                     <ListGroup className="mt-3">
                         {data[fieldName].map((file, idx) => (
-                            <ListGroup.Item key={idx}>📄 {file.name}</ListGroup.Item>
+                            <ListGroup.Item key={idx}>
+                                📄 {file.name}
+                            </ListGroup.Item>
                         ))}
                     </ListGroup>
                 )}
@@ -121,7 +135,7 @@ export default function BanmodPage({ meta }) {
         file_produk: [],
         file_pernyataan: [],
         file_perizinan: [],
-        file_sinas: [],
+        file_siinas: [],
         file_bp: [],
         file_sertifikat_pelatihan: [],
         imagePreviewPasFoto: "",
@@ -830,44 +844,89 @@ export default function BanmodPage({ meta }) {
                                 ))}
                             </ListGroup>
                         )} */}
-
                         <div className="big-text text-muted mb-4">
                             Upload Berkas
                             <div className="underline"></div>
                         </div>
-
                         {data.kategori && (
                             <>
-                                {renderFileUpload("Pas Foto Berwarna", "file_foto", ".png,.jpg,.jpeg", false, "imagePreviewPasFoto")}
-                                {renderFileUpload("Foto KTP", "file_ktp", ".png,.jpg,.jpeg", false, "imagePreviewPasKTP")}
-                                {renderFileUpload("Kartu Keluarga (KK)", "file_kk")}
-                                {renderFileUpload("Surat Keterangan Domisili (jika berbeda KTP)", "file_skd")}
-                                {renderFileUpload("Foto Usaha / Produk", "file_usaha")}
-                                {renderFileUpload("Surat Pernyataan Komitmen", "file_komitmen")}
-
-                                {(data.kategori === 1 || data.kategori === 2 || data.kategori === 3) && (
-                                    renderFileUpload("NIB / SKU", "file_nib")
+                                {renderFileUpload(
+                                    "Pas Foto Berwarna",
+                                    "file_foto",
+                                    ".png,.jpg,.jpeg",
+                                    false,
+                                    "imagePreviewPasFoto"
                                 )}
+                                {renderFileUpload(
+                                    "Foto KTP",
+                                    "file_ktp",
+                                    ".png,.jpg,.jpeg",
+                                    false,
+                                    "imagePreviewPasKTP"
+                                )}
+                                {renderFileUpload(
+                                    "Kartu Keluarga (KK)",
+                                    "file_kk"
+                                )}
+                                {renderFileUpload(
+                                    "Surat Keterangan Domisili (jika berbeda KTP)",
+                                    "file_skd"
+                                )}
+                                {renderFileUpload(
+                                    "Foto Usaha / Produk",
+                                    "file_usaha",
+                                    ".png,.jpg,.jpeg"
+                                )}
+                                {renderFileUpload(
+                                    "Surat Pernyataan Komitmen",
+                                    "file_komitmen"
+                                )}
+
+                                {(data.kategori === 1 ||
+                                    data.kategori === 2 ||
+                                    data.kategori === 3) &&
+                                    renderFileUpload(
+                                        "NIB / SKU",
+                                        "file_nib",
+                                        ".pdf",
+                                        true
+                                    )}
 
                                 {data.kategori === 4 && (
                                     <>
-                                        {renderFileUpload("NIB RBA", "file_nib")}
+                                        {renderFileUpload(
+                                            "NIB RBA",
+                                            "file_nib"
+                                        )}
                                         {renderFileUpload("SKU", "file_sku")}
-                                        {renderFileUpload("Perizinan Teknis dan Standardisasi Lainnya", "file_perijinan")}
-                                        {renderFileUpload("Bukti Kepemilikan Akun SIINas", "file_siinas")}
-                                        {renderFileUpload("Business Plan", "file_bisnis")}
+                                        {renderFileUpload(
+                                            "Perizinan Teknis dan Standardisasi Lainnya",
+                                            "file_perijinan",
+                                            ".pdf",
+                                            true
+                                        )}
+                                        {renderFileUpload(
+                                            "Bukti Kepemilikan Akun SIINas",
+                                            "file_siinas"
+                                        )}
+                                        {renderFileUpload(
+                                            "Business Plan",
+                                            "file_bisnis"
+                                        )}
                                     </>
                                 )}
 
                                 {data.kategori === 5 && (
                                     <>
                                         {renderFileUpload("SKU", "file_sku")}
-                                        {renderFileUpload("Sertifikat Pelatihan Sesuai Usaha yang Diajukan", "file_sertifikat")}
+                                        {renderFileUpload(
+                                            "Sertifikat Pelatihan Sesuai Usaha yang Diajukan",
+                                            "file_sertifikat"
+                                        )}
                                     </>
                                 )}
                             </>
                         )}
-
                         <hr />
                         <div className="card-footer d-flex justify-content-center mt-4 gap-2">
                             <Button type="submit">
