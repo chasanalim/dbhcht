@@ -17,7 +17,7 @@ import SelectTenagaKerja from "@/Components/Select/SelectTenagaKerja";
 import Layout from "@/Layouts/Layout";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import React, { useEffect, useState } from "react";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, ListGroup } from "react-bootstrap";
 import CurrencyInput from "react-currency-input-field";
 
 export default function BanmodPage({ meta }) {
@@ -64,21 +64,21 @@ export default function BanmodPage({ meta }) {
         jumlah_penyerapan_naker: "",
         file_foto: [],
         file_ktp: [],
-        file_kk: "",
-        file_nib: "",
-        file_sku: "",
-        file_skd: "",
-        file_produk: "",
-        file_pernyataan: "",
-        file_perizinan: "",
-        file_sinas: "",
-        file_bp: "",
-        file_sertifikat_pelatihan: "",
+        file_kk: [],
+        file_nib: [],
+        file_sku: [],
+        file_skd: [],
+        file_produk: [],
+        file_pernyataan: [],
+        file_perizinan: [],
+        file_sinas: [],
+        file_bp: [],
+        file_sertifikat_pelatihan: [],
         imagePreviewPasFoto: "",
         imagePreviewPasKTP: "",
     });
 
-    const handleUploadFile = (e, field_name, preview_name) => {
+    const handleUploadFoto = (e, field_name, preview_name) => {
         const choosenFiles = Array.prototype.slice.call(e.target.files);
         let reader = new FileReader();
         let file = e.target.files[0];
@@ -92,6 +92,15 @@ export default function BanmodPage({ meta }) {
         };
 
         reader.readAsDataURL(file);
+    };
+
+    const handleUploadFile = (e, field_name) => {
+        const choosenFiles = Array.prototype.slice.call(e.target.files);
+
+        setData((prevState) => ({
+            ...prevState,
+            [field_name]: choosenFiles,
+        }));
     };
 
     const handleSubmit = (event) => {
@@ -674,11 +683,20 @@ export default function BanmodPage({ meta }) {
                             <div className="underline"></div>
                         </div>
                         <Form.Group className="mb-3">
-                            <Form.Label>Pas Foto Berwarna</Form.Label>
+                            <Form.Label className="required">
+                                Pas Foto Berwarna
+                            </Form.Label>
+                            <span
+                                className="ms-3"
+                                style={{ color: "blue", fontSize: "11px" }}
+                            >
+                                jenis file (*.png, *.jpg, *.jpeg)
+                            </span>
                             <Form.Control
                                 type="file"
+                                accept=".png,.jpg,.jpeg"
                                 onChange={(e) =>
-                                    handleUploadFile(
+                                    handleUploadFoto(
                                         e,
                                         "file_foto",
                                         "imagePreviewPasFoto"
@@ -701,11 +719,20 @@ export default function BanmodPage({ meta }) {
                             )}
                         </Form.Group>
                         <Form.Group className="mb-1">
-                            <Form.Label>Foto KTP</Form.Label>
+                            <Form.Label className="required">
+                                Foto KTP
+                            </Form.Label>
+                            <span
+                                className="ms-3"
+                                style={{ color: "blue", fontSize: "11px" }}
+                            >
+                                jenis file (*.png, *.jpg, *.jpeg)
+                            </span>
                             <Form.Control
                                 type="file"
+                                accept=".png,.jpg,.jpeg"
                                 onChange={(e) =>
-                                    handleUploadFile(
+                                    handleUploadFoto(
                                         e,
                                         "file_ktp",
                                         "imagePreviewPasKTP"
@@ -727,6 +754,32 @@ export default function BanmodPage({ meta }) {
                                 </div>
                             )}
                         </Form.Group>
+                        <Form.Group className="mb-1">
+                            <Form.Label className="required">
+                                NIB/SKU
+                            </Form.Label>
+                            <Form.Control
+                                type="file"
+                                accept=".pdf"
+                                multiple
+                                onChange={(e) =>
+                                    handleUploadFile(e, "file_nib")
+                                }
+                                isInvalid={errors.file_nib}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.file_nib}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+                        {data.file_nib.length > 0 && (
+                            <ListGroup className="mb-3">
+                                {data.file_nib.map((file, idx) => (
+                                    <ListGroup.Item key={idx}>
+                                        📄 {file.name}
+                                    </ListGroup.Item>
+                                ))}
+                            </ListGroup>
+                        )}
                         <hr />
                         <div className="card-footer d-flex justify-content-center mt-4 gap-2">
                             <Button type="submit">
