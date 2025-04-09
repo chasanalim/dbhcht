@@ -26,6 +26,56 @@ export default function BanmodPage({ meta }) {
     // const [showDomisili, setShowDomisili, showUsaha, setShowUsaha] =
     //     useState(false);
 
+    let fileIndex = 1;
+
+    const renderFileUpload = (label, fieldName, accept = ".pdf", multiple = false, imagePreviewKey = null) => {
+        const indexLabel = `${fileIndex++}.`;
+
+        return (
+            <Form.Group className="mb-4" key={fieldName}>
+                <h5 className="mb-2">{indexLabel} {label}</h5>
+                <Form.Label className="text-muted" style={{ fontSize: "12px" }}>
+                    Format: {accept === ".pdf" ? "*.pdf" : "*.png, *.jpg, *.jpeg"}
+                </Form.Label>
+                <Form.Control
+                    type="file"
+                    accept={accept}
+                    multiple={multiple}
+                    onChange={(e) =>
+                        imagePreviewKey
+                            ? handleUploadFoto(e, fieldName, imagePreviewKey)
+                            : handleUploadFile(e, fieldName)
+                    }
+                    isInvalid={errors[fieldName]}
+                />
+                <Form.Control.Feedback type="invalid">
+                    {errors[fieldName]}
+                </Form.Control.Feedback>
+
+                {/* Image Preview */}
+                {imagePreviewKey && data[imagePreviewKey] && (
+                    <div className="mt-3">
+                        <img
+                            className="object-fit-cover rounded border"
+                            width={200}
+                            height={200}
+                            src={data[imagePreviewKey]}
+                        />
+                    </div>
+                )}
+
+                {/* File List */}
+                {!imagePreviewKey && data[fieldName]?.length > 0 && (
+                    <ListGroup className="mt-3">
+                        {data[fieldName].map((file, idx) => (
+                            <ListGroup.Item key={idx}>📄 {file.name}</ListGroup.Item>
+                        ))}
+                    </ListGroup>
+                )}
+            </Form.Group>
+        );
+    };
+
     const { data, setData, errors, post, reset } = useForm({
         nik: "",
         kk: "",
@@ -678,7 +728,7 @@ export default function BanmodPage({ meta }) {
                                 </div>
                             </Form.Group>
                         )}
-                        <div className="big-text text-muted mb-4">
+                        {/* <div className="big-text text-muted mb-4">
                             Upload Berkas
                             <div className="underline"></div>
                         </div>
@@ -779,7 +829,45 @@ export default function BanmodPage({ meta }) {
                                     </ListGroup.Item>
                                 ))}
                             </ListGroup>
+                        )} */}
+
+                        <div className="big-text text-muted mb-4">
+                            Upload Berkas
+                            <div className="underline"></div>
+                        </div>
+
+                        {data.kategori && (
+                            <>
+                                {renderFileUpload("Pas Foto Berwarna", "file_foto", ".png,.jpg,.jpeg", false, "imagePreviewPasFoto")}
+                                {renderFileUpload("Foto KTP", "file_ktp", ".png,.jpg,.jpeg", false, "imagePreviewPasKTP")}
+                                {renderFileUpload("Kartu Keluarga (KK)", "file_kk")}
+                                {renderFileUpload("Surat Keterangan Domisili (jika berbeda KTP)", "file_skd")}
+                                {renderFileUpload("Foto Usaha / Produk", "file_usaha")}
+                                {renderFileUpload("Surat Pernyataan Komitmen", "file_komitmen")}
+
+                                {(data.kategori === 1 || data.kategori === 2 || data.kategori === 3) && (
+                                    renderFileUpload("NIB / SKU", "file_nib")
+                                )}
+
+                                {data.kategori === 4 && (
+                                    <>
+                                        {renderFileUpload("NIB RBA", "file_nib")}
+                                        {renderFileUpload("SKU", "file_sku")}
+                                        {renderFileUpload("Perizinan Teknis dan Standardisasi Lainnya", "file_perijinan")}
+                                        {renderFileUpload("Bukti Kepemilikan Akun SIINas", "file_siinas")}
+                                        {renderFileUpload("Business Plan", "file_bisnis")}
+                                    </>
+                                )}
+
+                                {data.kategori === 5 && (
+                                    <>
+                                        {renderFileUpload("SKU", "file_sku")}
+                                        {renderFileUpload("Sertifikat Pelatihan Sesuai Usaha yang Diajukan", "file_sertifikat")}
+                                    </>
+                                )}
+                            </>
                         )}
+
                         <hr />
                         <div className="card-footer d-flex justify-content-center mt-4 gap-2">
                             <Button type="submit">
