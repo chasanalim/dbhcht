@@ -41,13 +41,30 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        // Cek apakah email ada di database
+        $user = Auth::getProvider()->retrieveByCredentials(['email' => $this->input('email')]);
+
+        if (!$user) {
+            // Jika email tidak ditemukan
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'email' => 'Email Anda salah',
             ]);
         }
+
+        // Jika email ditemukan, cek password
+        if (!Auth::validate($this->only('email', 'password'))) {
+            // Jika password salah
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'password' => 'Password Anda salah',
+            ]);
+        }
+
+        // Jika email dan password benar, lakukan login
+        Auth::attempt($this->only('email', 'password'), $this->boolean('remember'));
 
         RateLimiter::clear($this->throttleKey());
     }
@@ -80,6 +97,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->string('email')) . '|' . $this->ip());
     }
 }
