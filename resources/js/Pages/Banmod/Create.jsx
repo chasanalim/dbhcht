@@ -56,7 +56,7 @@ export default function BanmodPage({ meta }) {
                     onChange={(e) =>
                         imagePreviewKey
                             ? handleUploadFoto(e, fieldName, imagePreviewKey)
-                            : handleUploadFile(e, fieldName)
+                            : handleUploadFile(e, fieldName, multiple)
                     }
                     isInvalid={errors[fieldName]}
                 />
@@ -126,7 +126,7 @@ export default function BanmodPage({ meta }) {
         jumlah_legalitas: "",
         jumlah_teknologi: "",
         jumlah_penyerapan_naker: "",
-        file_foto: [],
+        file_foto: "",
         file_ktp: [],
         file_kk: [],
         file_nib: [],
@@ -139,18 +139,19 @@ export default function BanmodPage({ meta }) {
         file_bp: [],
         file_sertifikat_pelatihan: [],
         imagePreviewPasFoto: "",
-        imagePreviewPasKTP: "",
+        imagePreviewKTP: "",
+        imagePreviewUsaha: "",
     });
 
     const handleUploadFoto = (e, field_name, preview_name) => {
-        const choosenFiles = Array.prototype.slice.call(e.target.files);
+        // const choosenFiles = Array.prototype.slice.call(e.target.files);
         let reader = new FileReader();
         let file = e.target.files[0];
 
         reader.onloadend = () => {
             setData((prevState) => ({
                 ...prevState,
-                [field_name]: choosenFiles,
+                [field_name]: file,
                 [preview_name]: reader.result,
             }));
         };
@@ -158,12 +159,12 @@ export default function BanmodPage({ meta }) {
         reader.readAsDataURL(file);
     };
 
-    const handleUploadFile = (e, field_name) => {
+    const handleUploadFile = (e, field_name, multiple) => {
         const choosenFiles = Array.prototype.slice.call(e.target.files);
 
         setData((prevState) => ({
             ...prevState,
-            [field_name]: choosenFiles,
+            [field_name]: multiple ? choosenFiles : e.target.files,
         }));
     };
 
@@ -533,7 +534,7 @@ export default function BanmodPage({ meta }) {
                                     onChange={(item) =>
                                         setData((prevState) => ({
                                             ...prevState,
-                                            klaster_usaha: item.value,
+                                            klaster_usaha: item.id,
                                         }))
                                     }
                                     errors={errors.klaster_usaha}
@@ -570,7 +571,7 @@ export default function BanmodPage({ meta }) {
                                     onChange={(item) =>
                                         setData((prevState) => ({
                                             ...prevState,
-                                            lama_usaha: item.value,
+                                            lama_usaha: item.id,
                                         }))
                                     }
                                     errors={errors.lama_usaha}
@@ -588,7 +589,7 @@ export default function BanmodPage({ meta }) {
                                         onChange={(item) =>
                                             setData((prevState) => ({
                                                 ...prevState,
-                                                jumlah_tenaga: item.value,
+                                                jumlah_tenaga: item.id,
                                             }))
                                         }
                                         errors={errors.jumlah_tenaga}
@@ -607,7 +608,7 @@ export default function BanmodPage({ meta }) {
                                         onChange={(item) =>
                                             setData((prevState) => ({
                                                 ...prevState,
-                                                bruto: item.value,
+                                                bruto: item.id,
                                             }))
                                         }
                                         errors={errors.bruto}
@@ -626,8 +627,7 @@ export default function BanmodPage({ meta }) {
                                         onChange={(item) =>
                                             setData((prevState) => ({
                                                 ...prevState,
-                                                status_tempat_tinggal:
-                                                    item.value,
+                                                status_tempat_tinggal: item.id,
                                             }))
                                         }
                                         errors={errors.status_tempat_tinggal}
@@ -702,7 +702,7 @@ export default function BanmodPage({ meta }) {
                                         onChange={(item) =>
                                             setData((prevState) => ({
                                                 ...prevState,
-                                                jumlah_legalitas: item.value,
+                                                jumlah_legalitas: item.id,
                                             }))
                                         }
                                         errors={errors.jumlah_legalitas}
@@ -717,7 +717,7 @@ export default function BanmodPage({ meta }) {
                                         onChange={(item) =>
                                             setData((prevState) => ({
                                                 ...prevState,
-                                                jumlah_teknologi: item.value,
+                                                jumlah_teknologi: item.id,
                                             }))
                                         }
                                         errors={errors.jumlah_teknologi}
@@ -734,7 +734,7 @@ export default function BanmodPage({ meta }) {
                                             setData((prevState) => ({
                                                 ...prevState,
                                                 jumlah_penyerapan_naker:
-                                                    item.value,
+                                                    item.id,
                                             }))
                                         }
                                         errors={errors.jumlah_penyerapan_naker}
@@ -742,108 +742,6 @@ export default function BanmodPage({ meta }) {
                                 </div>
                             </Form.Group>
                         )}
-                        {/* <div className="big-text text-muted mb-4">
-                            Upload Berkas
-                            <div className="underline"></div>
-                        </div>
-                        <Form.Group className="mb-3">
-                            <Form.Label className="required">
-                                Pas Foto Berwarna
-                            </Form.Label>
-                            <span
-                                className="ms-3"
-                                style={{ color: "blue", fontSize: "11px" }}
-                            >
-                                jenis file (*.png, *.jpg, *.jpeg)
-                            </span>
-                            <Form.Control
-                                type="file"
-                                accept=".png,.jpg,.jpeg"
-                                onChange={(e) =>
-                                    handleUploadFoto(
-                                        e,
-                                        "file_foto",
-                                        "imagePreviewPasFoto"
-                                    )
-                                }
-                                isInvalid={errors.file_foto}
-                            />
-                            <Form.Control.Feedback type="invalid">
-                                {errors.file_foto}
-                            </Form.Control.Feedback>
-                            {data.imagePreviewPasFoto && (
-                                <div className="mt-3">
-                                    <img
-                                        className="object-fit-cover"
-                                        width={200}
-                                        height={200}
-                                        src={data.imagePreviewPasFoto}
-                                    />
-                                </div>
-                            )}
-                        </Form.Group>
-                        <Form.Group className="mb-1">
-                            <Form.Label className="required">
-                                Foto KTP
-                            </Form.Label>
-                            <span
-                                className="ms-3"
-                                style={{ color: "blue", fontSize: "11px" }}
-                            >
-                                jenis file (*.png, *.jpg, *.jpeg)
-                            </span>
-                            <Form.Control
-                                type="file"
-                                accept=".png,.jpg,.jpeg"
-                                onChange={(e) =>
-                                    handleUploadFoto(
-                                        e,
-                                        "file_ktp",
-                                        "imagePreviewPasKTP"
-                                    )
-                                }
-                                isInvalid={errors.file_ktp}
-                            />
-                            <Form.Control.Feedback type="invalid">
-                                {errors.file_ktp}
-                            </Form.Control.Feedback>
-                            {data.imagePreviewPasKTP && (
-                                <div className="mt-3">
-                                    <img
-                                        className="object-fit-cover"
-                                        width={200}
-                                        height={200}
-                                        src={data.imagePreviewPasKTP}
-                                    />
-                                </div>
-                            )}
-                        </Form.Group>
-                        <Form.Group className="mb-1">
-                            <Form.Label className="required">
-                                NIB/SKU
-                            </Form.Label>
-                            <Form.Control
-                                type="file"
-                                accept=".pdf"
-                                multiple
-                                onChange={(e) =>
-                                    handleUploadFile(e, "file_nib")
-                                }
-                                isInvalid={errors.file_nib}
-                            />
-                            <Form.Control.Feedback type="invalid">
-                                {errors.file_nib}
-                            </Form.Control.Feedback>
-                        </Form.Group>
-                        {data.file_nib.length > 0 && (
-                            <ListGroup className="mb-3">
-                                {data.file_nib.map((file, idx) => (
-                                    <ListGroup.Item key={idx}>
-                                        📄 {file.name}
-                                    </ListGroup.Item>
-                                ))}
-                            </ListGroup>
-                        )} */}
                         <div className="big-text text-muted mb-4">
                             Upload Berkas
                             <div className="underline"></div>
@@ -862,7 +760,7 @@ export default function BanmodPage({ meta }) {
                                     "file_ktp",
                                     ".png,.jpg,.jpeg",
                                     false,
-                                    "imagePreviewPasKTP"
+                                    "imagePreviewKTP"
                                 )}
                                 {renderFileUpload(
                                     "Kartu Keluarga (KK)",
@@ -875,30 +773,27 @@ export default function BanmodPage({ meta }) {
                                 {renderFileUpload(
                                     "Foto Usaha / Produk",
                                     "file_usaha",
-                                    ".png,.jpg,.jpeg"
+                                    ".png,.jpg,.jpeg",
+                                    false,
+                                    "imagePreviewUsaha"
                                 )}
                                 {renderFileUpload(
                                     "Surat Pernyataan Komitmen",
                                     "file_komitmen"
                                 )}
 
-                                {(data.kategori === 1 ||
-                                    data.kategori === 2 ||
-                                    data.kategori === 3) &&
-                                    renderFileUpload(
-                                        "NIB / SKU",
-                                        "file_nib",
-                                        ".pdf",
-                                        true
-                                    )}
-
-                                {data.kategori === 4 && (
+                                {data.kategori != 5 && (
                                     <>
                                         {renderFileUpload(
-                                            "NIB RBA",
+                                            "NIB",
                                             "file_nib"
                                         )}
                                         {renderFileUpload("SKU", "file_sku")}
+                                    </>
+                                )}
+
+                                {data.kategori === 4 && (
+                                    <>
                                         {renderFileUpload(
                                             "Perizinan Teknis dan Standardisasi Lainnya",
                                             "file_perijinan",
