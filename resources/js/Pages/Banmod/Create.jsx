@@ -39,16 +39,17 @@ export default function BanmodPage({ meta }) {
 
         return (
             <Form.Group className="mb-4" key={fieldName}>
-                <div className="mb-2">
+                <div className="mb-2 fw-semibold">
                     {indexLabel} {label}
                 </div>
+
                 <Form.Label
                     className="text-primary"
                     style={{ fontSize: "11px" }}
                 >
-                    Format:{" "}
-                    {accept === ".pdf" ? "*.pdf" : "*.png, *.jpg, *.jpeg"}
+                    Format: {accept === ".pdf" ? "*.pdf" : "*.png, *.jpg, *.jpeg"}
                 </Form.Label>
+
                 <Form.Control
                     type="file"
                     accept={accept}
@@ -64,24 +65,55 @@ export default function BanmodPage({ meta }) {
                     {errors[fieldName]}
                 </Form.Control.Feedback>
 
-                {/* Image Preview */}
+                {/* Image Preview with Remove */}
                 {imagePreviewKey && data[imagePreviewKey] && (
-                    <div className="mt-3">
+                    <div className="mt-3 position-relative d-inline-block">
                         <img
                             className="object-fit-cover rounded border"
                             width={200}
                             height={200}
                             src={data[imagePreviewKey]}
                         />
+                        <Button
+                            size="sm"
+                            variant="danger"
+                            className="position-absolute top-0 end-0"
+                            onClick={() =>
+                                handleRemoveImage(fieldName, imagePreviewKey)
+                            }
+                        >
+                            ✕
+                        </Button>
                     </div>
                 )}
 
-                {/* File List */}
+                {/* PDF List + Preview + Remove */}
                 {!imagePreviewKey && data[fieldName]?.length > 0 && (
                     <ListGroup className="mt-3">
                         {data[fieldName].map((file, idx) => (
-                            <ListGroup.Item key={idx}>
-                                📄 {file.name}
+                            <ListGroup.Item
+                                key={idx}
+                                className="d-flex justify-content-between align-items-center"
+                            >
+                                <span>
+                                    📄 {file.name}{" "}
+                                    <a
+                                        href={URL.createObjectURL(file)}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="ms-2 text-decoration-underline"
+                                        style={{ fontSize: "12px" }}
+                                    >
+                                        Preview
+                                    </a>
+                                </span>
+                                <Button
+                                    size="sm"
+                                    variant="outline-danger"
+                                    onClick={() => handleRemoveFile(fieldName, idx)}
+                                >
+                                    Hapus
+                                </Button>
                             </ListGroup.Item>
                         ))}
                     </ListGroup>
@@ -89,6 +121,22 @@ export default function BanmodPage({ meta }) {
             </Form.Group>
         );
     };
+
+    const handleRemoveFile = (field, index) => {
+        setData((prev) => {
+            const updated = [...(prev[field] || [])];
+            updated.splice(index, 1);
+            return { ...prev, [field]: updated };
+        });
+    };
+    
+    const handleRemoveImage = (field, previewKey) => {
+        setData((prev) => ({
+            ...prev,
+            [field]: [],
+            [previewKey]: ""
+        }));
+    };    
 
     const { data, setData, errors, post, reset } = useForm({
         nik: "",

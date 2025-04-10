@@ -103,9 +103,9 @@ class HomeController extends Controller
 
     public function pelatihan()
     {
-        return Inertia::render('Home/Index', [
+        return Inertia::render('Pelatihan/FormPelatihan', [
             'meta' => [
-                'title' => 'Home Page',
+                'title' => 'Form Pendaftaran Pelatihan',
             ],
         ]);
     }
