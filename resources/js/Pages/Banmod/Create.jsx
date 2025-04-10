@@ -36,7 +36,6 @@ export default function BanmodPage({ meta }) {
         imagePreviewKey = null
     ) => {
         const indexLabel = `${fileIndex++}.`;
-
         return (
             <Form.Group className="mb-4" key={fieldName}>
                 <div className="mb-2 fw-semibold">
@@ -47,7 +46,8 @@ export default function BanmodPage({ meta }) {
                     className="text-primary"
                     style={{ fontSize: "11px" }}
                 >
-                    Format: {accept === ".pdf" ? "*.pdf" : "*.png, *.jpg, *.jpeg"}
+                    Format:{" "}
+                    {accept === ".pdf" ? "*.pdf" : "*.png, *.jpg, *.jpeg"}
                 </Form.Label>
 
                 <Form.Control
@@ -90,15 +90,43 @@ export default function BanmodPage({ meta }) {
                 {/* PDF List + Preview + Remove */}
                 {!imagePreviewKey && data[fieldName]?.length > 0 && (
                     <ListGroup className="mt-3">
-                        {data[fieldName].map((file, idx) => (
+                        {Array.isArray(data[fieldName]) ? (
+                            data[fieldName].map((file, idx) => (
+                                <ListGroup.Item
+                                    key={idx}
+                                    className="d-flex justify-content-between align-items-center"
+                                >
+                                    <span>
+                                        📄 {file.name}{" "}
+                                        <a
+                                            href={URL.createObjectURL(file)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="ms-2 text-decoration-underline"
+                                            style={{ fontSize: "12px" }}
+                                        >
+                                            Preview
+                                        </a>
+                                    </span>
+                                    <Button
+                                        size="sm"
+                                        variant="outline-danger"
+                                        onClick={() =>
+                                            handleRemoveFile(fieldName, idx)
+                                        }
+                                    >
+                                        Hapus
+                                    </Button>
+                                </ListGroup.Item>
+                            ))
+                        ) : (
                             <ListGroup.Item
-                                key={idx}
                                 className="d-flex justify-content-between align-items-center"
                             >
                                 <span>
-                                    📄 {file.name}{" "}
+                                    📄 {data[fieldName][0].name}{" "}
                                     <a
-                                        href={URL.createObjectURL(file)}
+                                        href={URL.createObjectURL(data[fieldName][0])}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="ms-2 text-decoration-underline"
@@ -110,12 +138,14 @@ export default function BanmodPage({ meta }) {
                                 <Button
                                     size="sm"
                                     variant="outline-danger"
-                                    onClick={() => handleRemoveFile(fieldName, idx)}
+                                    onClick={() =>
+                                        handleRemoveFile(data[fieldName][0], 0)
+                                    }
                                 >
                                     Hapus
                                 </Button>
                             </ListGroup.Item>
-                        ))}
+                        )}
                     </ListGroup>
                 )}
             </Form.Group>
@@ -129,14 +159,14 @@ export default function BanmodPage({ meta }) {
             return { ...prev, [field]: updated };
         });
     };
-    
+
     const handleRemoveImage = (field, previewKey) => {
         setData((prev) => ({
             ...prev,
             [field]: [],
-            [previewKey]: ""
+            [previewKey]: "",
         }));
-    };    
+    };
 
     const { data, setData, errors, post, reset } = useForm({
         nik: "",
@@ -832,10 +862,7 @@ export default function BanmodPage({ meta }) {
 
                                 {data.kategori != 5 && (
                                     <>
-                                        {renderFileUpload(
-                                            "NIB",
-                                            "file_nib"
-                                        )}
+                                        {renderFileUpload("NIB", "file_nib")}
                                         {renderFileUpload("SKU", "file_sku")}
                                     </>
                                 )}
