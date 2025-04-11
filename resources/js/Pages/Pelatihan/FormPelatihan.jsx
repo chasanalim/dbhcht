@@ -1,5 +1,4 @@
-import { Head, usePage } from "@inertiajs/react";
-import { useState } from "react";
+import { Head, usePage, useForm } from "@inertiajs/react";
 import { Form } from "react-bootstrap";
 import Layout from "@/Layouts/Layout";
 
@@ -13,11 +12,32 @@ import FormIndustri from "./Forms/FormIndustri";
 export default function FormPelatihan() {
     const { meta } = usePage().props;
 
-    const [data, setData] = useState({
+    const {
+        data,
+        setData,
+        errors,
+        post,
+        reset,
+    } = useForm({
         jenisPelatihan: "",
-    });
 
-    const [errors, setErrors] = useState({});
+        // Field umum
+        nik: "",
+        kk: "",
+        nama_lengkap: "",
+        jenis_kelamin: "",
+        no_hp: "",
+        tempat_lahir: "",
+        tanggal_lahir: "",
+        jalan: "",
+        kecamatan: "",
+        kelurahan: "",
+        rw: "",
+        rt: "",
+        pendidikan: "",
+        isDisabilitas: false,
+        jenis_disabilitas: [],
+    });
 
     return (
         <Layout>
@@ -46,7 +66,7 @@ export default function FormPelatihan() {
                             </div>
                         </Form.Group>
 
-                        {/* Render Form Berdasarkan Pilihan */}
+                        {/* Render form berdasarkan pilihan pelatihan */}
                         {data.jenisPelatihan === "keterampilan" && (
                             <FormKeterampilan data={data} setData={setData} errors={errors} />
                         )}
