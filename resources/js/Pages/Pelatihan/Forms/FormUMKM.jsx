@@ -1,6 +1,5 @@
 import { Form, Button, ListGroup } from "react-bootstrap";
 
-import Select from "react-select";
 import SelectLegalitasStatus from "@/Components/Select/SelectLegalitasStatus";
 import SelectLegalitasJenis from "@/Components/Select/SelectLegalitasJenis";
 import SelectSatuanProduksi from "@/Components/Select/SelectSatuanProduksi";

@@ -12,13 +12,7 @@ import FormIndustri from "./Forms/FormIndustri";
 export default function FormPelatihan() {
     const { meta } = usePage().props;
 
-    const {
-        data,
-        setData,
-        errors,
-        post,
-        reset,
-    } = useForm({
+    const { data, setData, errors, post, reset } = useForm({
         jenisPelatihan: "",
 
         // Field umum
@@ -52,7 +46,9 @@ export default function FormPelatihan() {
 
                         <Form.Group className="row mb-1">
                             <div className="col-md-12 col-12 mb-3">
-                                <Form.Label className="required">Jenis Pelatihan</Form.Label>
+                                <Form.Label className="required">
+                                    Jenis Pelatihan
+                                </Form.Label>
                                 <SelectJenisPelatihan
                                     value={data.jenisPelatihan}
                                     onChange={(item) =>
@@ -68,19 +64,39 @@ export default function FormPelatihan() {
 
                         {/* Render form berdasarkan pilihan pelatihan */}
                         {data.jenisPelatihan === "keterampilan" && (
-                            <FormKeterampilan data={data} setData={setData} errors={errors} />
+                            <FormKeterampilan
+                                data={data}
+                                setData={setData}
+                                errors={errors}
+                            />
                         )}
                         {data.jenisPelatihan === "umkm" && (
-                            <FormUMKM data={data} setData={setData} errors={errors} />
+                            <FormUMKM
+                                data={data}
+                                setData={setData}
+                                errors={errors}
+                            />
                         )}
                         {data.jenisPelatihan === "penyuluh" && (
-                            <FormPenyuluh data={data} setData={setData} errors={errors} />
+                            <FormPenyuluh
+                                data={data}
+                                setData={setData}
+                                errors={errors}
+                            />
                         )}
                         {data.jenisPelatihan === "petani" && (
-                            <FormPetani data={data} setData={setData} errors={errors} />
+                            <FormPetani
+                                data={data}
+                                setData={setData}
+                                errors={errors}
+                            />
                         )}
                         {data.jenisPelatihan === "industri" && (
-                            <FormIndustri data={data} setData={setData} errors={errors} />
+                            <FormIndustri
+                                data={data}
+                                setData={setData}
+                                errors={errors}
+                            />
                         )}
                     </div>
                 </div>
