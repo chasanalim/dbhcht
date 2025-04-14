@@ -8,6 +8,7 @@ import FormUMKM from "./Forms/FormUMKM";
 import FormPenyuluh from "./Forms/FormPenyuluh";
 import FormPetani from "./Forms/FormPetani";
 import FormIndustri from "./Forms/FormIndustri";
+import FormPenerimaBanmod from "./Forms/FormPenerimaBanmod";
 
 export default function FormPelatihan() {
     const { meta } = usePage().props;
@@ -93,6 +94,13 @@ export default function FormPelatihan() {
                         )}
                         {data.jenisPelatihan === "industri" && (
                             <FormIndustri
+                                data={data}
+                                setData={setData}
+                                errors={errors}
+                            />
+                        )}
+                        {data.jenisPelatihan === "penerimabanmod" && (
+                            <FormPenerimaBanmod
                                 data={data}
                                 setData={setData}
                                 errors={errors}

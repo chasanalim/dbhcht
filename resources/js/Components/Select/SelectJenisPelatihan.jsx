@@ -3,11 +3,18 @@ import Select from "react-select";
 
 export default function SelectJenisPelatihan({ onChange, value, errors }) {
     const options = [
-        { value: "keterampilan", label: "Pelatihan Keterampilan" },
+        {
+            value: "keterampilan",
+            label: "Pelatihan Keterampilan Untuk Pencari Kerja",
+        },
+        {
+            value: "penerimabanmod",
+            label: "Pelatihan Keterampilan Untuk Penerima Banmod",
+        },
         { value: "umkm", label: "Pelatihan UMKM" },
-        { value: "penyuluh", label: "Pelatihan Penyuluh" },
+        // { value: "penyuluh", label: "Pelatihan Penyuluh" },
         { value: "petani", label: "Pelatihan Petani" },
-        { value: "industri", label: "Pelatihan Industri" },
+        // { value: "industri", label: "Pelatihan Industri" },
     ];
 
     const customStyles = {
