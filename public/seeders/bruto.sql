@@ -1,9 +1,9 @@
-INSERT INTO brutos(id,jenis,nama) VALUES
- (1,1,'1-10 JUTA/BULAN')
-,(2,1,'11-20 JUTA/BULAN')
-,(3,1,'21-30 JUTA/BULAN')
-,(4,1,'>30 JUTA/BULAN')
-,(5,2,'< 30 JUTA/BULAN')
-,(6,2,'31-50 JUTA/BULAN')
-,(7,2,'51-70 JUTA/BULAN')
-,(8,2,'>70 JUTA/BULAN')
+INSERT INTO brutos(id,jenis,nama,skor) VALUES
+ (1,1,'1-10 JUTA/BULAN',1)
+,(2,1,'11-20 JUTA/BULAN',2)
+,(3,1,'21-30 JUTA/BULAN',3)
+,(4,1,'>30 JUTA/BULAN',4)
+,(5,2,'< 30 JUTA/BULAN',1)
+,(6,2,'31-50 JUTA/BULAN',2)
+,(7,2,'51-70 JUTA/BULAN',3)
+,(8,2,'>70 JUTA/BULAN',4)
