@@ -42,8 +42,8 @@ export default function Sidebar() {
                         </li>
                         <li>
                             <NavLink
-                                href={route("admin.downloads")}
-                                active={route().current("admin.downloads")}
+                                href={route("admin.downloads.index")}
+                                active={route().current("admin.downloads.index")}
                                 className="rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white"
                             >
                                 <i class="bi bi-cloud-arrow-down fs-5"></i>

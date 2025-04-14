@@ -12,7 +12,7 @@ class HomeController extends Controller
     {
         return Inertia::render('Home/Index', [
             'meta' => [
-                'title' => 'Home Page',
+                'tit                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 l                                                                        e' => 'Home Page',
             ],
         ]);
     }

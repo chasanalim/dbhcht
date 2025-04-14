@@ -34,7 +34,8 @@ class DatabaseSeeder extends Seeder
             StatusTempatTinggalSeeder::class,
             JumlahLegalitasSeeder::class,
             JumlahTeknologiDigitalSeeder::class,
-            PenyerapanTenagaMiskinSeeder::class
+            PenyerapanTenagaMiskinSeeder::class,
+            LampiranSeeder::class,
         ]);
     }
 }
