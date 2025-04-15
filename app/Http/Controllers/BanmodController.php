@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\KirimPendaftar;
 use App\Models\PendaftaranBanmod;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
 class BanmodController extends Controller
@@ -123,14 +125,17 @@ class BanmodController extends Controller
             $validated['file_sertifikat_pelatihan'] = '/storage/pendaftaran-banmod/pelatihan/' . $request->file('file_sertifikat_pelatihan')->hashName();
             $request->file('file_sertifikat_pelatihan')->storeAs('/pendaftaran-banmod/pelatihan', $request->file('file_sertifikat_pelatihan')->hashName(), 'public');
         }
-        // dd($validated);
         $storedPendaftaran = PendaftaranBanmod::create($validated);
 
-        return to_route('banmod.success')->with('success', 'Pendaftaran Berhasil.');
+        return to_route('banmod.success', $storedPendaftaran->id)->with('success', 'Pendaftaran Berhasil.');
     }
 
-    public function success()
+    public function success($id)
     {
+        $dataPendaftar = PendaftaranBanmod::find($id);
+
+        Mail::to(env('APP_EMAIL_BANMOD'))->send(new KirimPendaftar($dataPendaftar));
+
         return Inertia::render('Banmod/Success', [
             'meta' => [
                 'title' => 'Pendaftaran Banmod',
