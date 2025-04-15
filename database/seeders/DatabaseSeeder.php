@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\JumlahTenagaKerja;
 use App\Models\LamaUsaha;
+use App\Models\PenerimaBanmod;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -36,6 +37,7 @@ class DatabaseSeeder extends Seeder
             JumlahTeknologiDigitalSeeder::class,
             PenyerapanTenagaMiskinSeeder::class,
             LampiranSeeder::class,
+            PenerimaBanmodSeeder::class,
         ]);
     }
 }
