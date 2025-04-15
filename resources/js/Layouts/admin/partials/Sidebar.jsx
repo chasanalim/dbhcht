@@ -31,27 +31,73 @@ export default function Sidebar() {
                 <div className="sidebarnav">
                     <ul className="list-unstyled text-white mt-3">
                         <li>
+                            <h6 className="text-uppercase mt-3 menu">Dashboard</h6>
+                        </li>
+                        <li>
                             <NavLink
                                 href={route("admin.dashboard")}
                                 active={route().current("admin.dashboard")}
-                                className="rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white"
+                                className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                    route().current("admin.dashboard") ? "active" : ""
+                                }`}
                             >
-                                <i class="bi bi-clipboard-data fs-5"></i>
+                                <i className="bi bi-clipboard-data fs-5"></i>
                                 <span className="text-white mt-1">Dashboard</span>
                             </NavLink>
+                        </li>
+                        {/* <li>
+                            <h6 className="text-uppercase mt-3 menu">Bantuan Modal</h6>
                         </li>
                         <li>
                             <NavLink
                                 href={route("admin.downloads.index")}
                                 active={route().current("admin.downloads.index")}
-                                className="rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white"
+                                className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                    route().current("admin.downloads.index") ? "active" : ""
+                                }`}
                             >
-                                <i class="bi bi-cloud-arrow-down fs-5"></i>
+                                <i className="bi bi-people fs-5"></i>
                                 <span className="text-white mt-1">
-                                    Download File
+                                    Peserta
                                 </span>
                             </NavLink>
                         </li>
+                        <li>
+                            <h6 className="text-uppercase mt-3 menu">Pelatihan</h6>
+                        </li>
+                        <li>
+                            <NavLink
+                                href={route("admin.downloads.index")}
+                                active={route().current("admin.downloads.index")}
+                                className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                    route().current("admin.downloads.index") ? "active" : ""
+                                }`}
+                            >
+                                <i className="bi bi-people fs-5"></i>
+                                <span className="text-white mt-1">
+                                    Peserta
+                                </span>
+                            </NavLink>
+                        </li> */}
+                        <li>
+                            <h6 className="text-uppercase mt-3 menu">Master Data</h6>
+                        </li>
+                        <li>
+                            <NavLink
+                                href={route("admin.downloads.index")}
+                                active={route().current("admin.downloads.index")}
+                                className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                    route().current("admin.downloads.index") ? "active" : ""
+                                }`}
+                            >
+                                <i className="bi bi-cloud-arrow-down fs-5"></i>
+                                <span className="text-white mt-1">
+                                    Panduan Lampiran File
+                                </span>
+                            </NavLink>
+                        </li>
+
+
                     </ul>
                 </div>
             </div>

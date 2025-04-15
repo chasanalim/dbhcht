@@ -90,11 +90,11 @@ export default function LayoutNavigation() {
                             >
                                 <NavDropdown.Item
                                     as={Link}
-                                    href={route("profile.edit")}
+                                    href={route("admin.profile.edit")}
                                     className={classNames({
                                         active:
                                             route().current() ===
-                                            "profile.edit",
+                                            "admin.profile.edit",
                                     })}
                                 >
                                     <span>My Profile</span>

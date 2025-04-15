@@ -14,6 +14,8 @@ class LampiranFileController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+
     public function index(Request $request)
     {
         if ($request->wantsJson()) {
@@ -39,7 +41,12 @@ class LampiranFileController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/File/Create');
+        return Inertia::render('Admin/File/Create', [
+            'title' => 'Tambah File',
+            'file' => new LampiranFile(),
+            'action' => route('admin.downloads.store'),
+            'method' => 'POST',
+        ]);
     }
 
     /**
@@ -47,21 +54,27 @@ class LampiranFileController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         $request->validate([
-            'name' => 'required|string|max:255',
-            'file' => 'required|file|max:2048',
+            'nama' => 'required|string|max:255',
+            'deskripsi' => 'required|string|max:255',
+            'kategori' => 'required',
+            'file_name' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
         ]);
 
-        $file = $request->file('file');
-        $filename = time() . '_' . $file->getClientOriginalName();
-        $path = $file->storeAs('public/files', $filename);
+        $file = $request->file('file_name');
+        Storage::putFileAs('files', $file,$file->hashName());
+        // $file->storeAs('public/files', $file->hashName());
 
         LampiranFile::create([
-            'name' => $request->name,
-            'file_path' => $filename,
+            'nama' => $request->nama,
+            'deskripsi' => $request->deskripsi,
+            'kategori' => $request->kategori,
+            'file_name' => $file->hashName(),
         ]);
 
-        return redirect()->back()->with('message', 'File uploaded successfully');
+
+        return redirect()->route('admin.downloads.index')->with('message', 'File uploaded successfully');
     }
 
     /**
@@ -78,7 +91,13 @@ class LampiranFileController extends Controller
     public function edit($id)
     {
         $file = LampiranFile::findOrFail($id);
-        return response()->json($file);
+
+        return Inertia::render('Admin/File/Create', [
+            'title' => 'Edit File',
+            'file' => $file,
+            'action' => route('admin.downloads.update', $file->id),
+            'method' => 'PUT',
+        ]);
     }
 
     /**
@@ -87,27 +106,33 @@ class LampiranFileController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'file' => 'nullable|file|max:2048',
+            'nama' => 'required|string|max:255',
+            'deskripsi' => 'required|string|max:255',
+            'kategori' => 'required',
+            'file_name' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
         ]);
 
         $file = LampiranFile::findOrFail($id);
-        $file->name = $request->name;
 
-        if ($request->hasFile('file')) {
+        $file->nama = $request->nama;
+        $file->deskripsi = $request->deskripsi;
+        $file->kategori = $request->kategori;
+
+        if ($request->hasFile('file_name')) {
             // Delete old file
-            Storage::delete('public/files/' . $file->file_path);
+            Storage::delete('public/files/' . $file->file_name);
 
             // Store new file
-            $newFile = $request->file('file');
-            $filename = time() . '_' . $newFile->getClientOriginalName();
+            $newFile = $request->file('file_name');
+            $filename = $newFile->hashName();
             $newFile->storeAs('public/files', $filename);
-            $file->file_path = $filename;
+            $file->file_name = $filename;
         }
 
         $file->save();
 
-        return redirect()->back()->with('message', 'File updated successfully');
+        return redirect()->route('admin.downloads.index')
+            ->with('message', 'File berhasil diperbarui');
     }
 
     /**

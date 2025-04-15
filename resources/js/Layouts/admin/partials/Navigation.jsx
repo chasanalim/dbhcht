@@ -1,49 +1,71 @@
-    import { Link, usePage } from "@inertiajs/react";
-    import React, { useState } from "react";
-    import Dropdown from "@/Components/Dropdown";
+import { Link, usePage } from "@inertiajs/react";
+import React, { useState } from "react";
+import Dropdown from "@/Components/Dropdown";
 
-    export default function Navbar(props) {
-        const { auth } = usePage().props;
+export default function Navbar(props) {
+    const { auth } = usePage().props;
 
-        const activesidebar = () => {
-            const main = document.getElementById("main");
-            main.classList.toggle("activesidebar");
-        };
+    const activesidebar = () => {
+        const main = document.getElementById("main");
+        main.classList.toggle("activesidebar");
+    };
 
-        return (
-            <header>
-                <nav
-                    className="navbar bg-white border-bottom shadow-sm position-relative d-flex align-items-center justify-content-between  py-2 px-4"
-                >
-                    <button onClick={activesidebar} className="togle">
-                        <i className="bi bi-list fs-2"></i>
+    // Get current route name to determine active sidebar
+    const currentRoute = route().current();
+    const getActiveMenu = () => {
+        switch (true) {
+            case currentRoute.startsWith('admin.downloads'):
+                return 'Panduan Lampiran File';
+            case currentRoute.startsWith('admin.users'):
+                return 'Users';
+            case currentRoute.startsWith('admin.dashboard'):
+                return 'Dashboard';
+            default:
+                return '';
+        }
+    };
+
+    return (
+        <header>
+            <nav className="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+                <div className="container-fluid">
+                    <button
+                        onClick={activesidebar}
+                        className="btn btn-link text-dark"
+                    >
+                        <i className="bi bi-list fs-4"></i>
                     </button>
-                    <div className="notify d-flex align-content-center justify-content-between">
-                        <Dropdown>
-                            <Dropdown.Trigger>
-                                <span className="inline-flex rounded-md">
-                                    <button
-                                        type="button"
-                                        className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
-                                    >
-                                        {auth.user.name} {" "}
 
-                                        <i class="bi bi-chevron-down"></i>
-                                    </button>
-                                </span>
-                            </Dropdown.Trigger>
-                            <Dropdown.Content>
-                                <Dropdown.Link
-                                    href={route("logout")}
-                                    method="post"
-                                    as="button"
-                                >
-                                    Log Out
-                                </Dropdown.Link>
-                            </Dropdown.Content>
-                        </Dropdown>
+                    <div className="sidebar-active ms-1">
+                        <span className="fw-bold">{getActiveMenu()}</span>
                     </div>
-                </nav>
-            </header>
-        );
-    }
+
+                    <div className="ms-auto me-3">
+                        <div className="dropdown">
+                            <button
+                                className="btn btn-light dropdown-toggle"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                            >
+                                {auth.user.name}
+                            </button>
+                            <ul className="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <Link
+                                        href={route("logout")}
+                                        method="post"
+                                        as="button"
+                                        className="dropdown-item"
+                                    >
+                                        Log Out
+                                    </Link>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </header>
+    );
+}
