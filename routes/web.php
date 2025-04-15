@@ -52,6 +52,7 @@ Route::prefix('users')->as('users.')->group(function () {
 Route::prefix('banmod')->group(function () {
     Route::get('/', [BanmodController::class, 'index'])->name('banmod');
     Route::post('/store', [BanmodController::class, 'store'])->name('banmod.store');
+    Route::get('/success/{id}', [BanmodController::class, 'success'])->name('banmod.success');
 });
 
 Route::prefix('refer')->as('refer.')->group(function () {

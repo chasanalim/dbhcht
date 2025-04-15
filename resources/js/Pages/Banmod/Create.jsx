@@ -88,7 +88,7 @@ export default function BanmodPage({ meta }) {
                 )}
 
                 {/* PDF List + Preview + Remove */}
-                {!imagePreviewKey && data[fieldName]?.length > 0 && (
+                {!imagePreviewKey && (
                     <ListGroup className="mt-3">
                         {Array.isArray(data[fieldName]) ? (
                             data[fieldName].map((file, idx) => (
@@ -120,13 +120,13 @@ export default function BanmodPage({ meta }) {
                                 </ListGroup.Item>
                             ))
                         ) : (
-                            <ListGroup.Item
-                                className="d-flex justify-content-between align-items-center"
-                            >
+                            <ListGroup.Item className="d-flex justify-content-between align-items-center">
                                 <span>
-                                    📄 {data[fieldName][0].name}{" "}
+                                    📄 {data[fieldName].name}{" "}
                                     <a
-                                        href={URL.createObjectURL(data[fieldName][0])}
+                                        href={URL.createObjectURL(
+                                            data[fieldName]
+                                        )}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="ms-2 text-decoration-underline"
@@ -135,15 +135,15 @@ export default function BanmodPage({ meta }) {
                                         Preview
                                     </a>
                                 </span>
-                                <Button
+                                {/* <Button
                                     size="sm"
                                     variant="outline-danger"
                                     onClick={() =>
-                                        handleRemoveFile(data[fieldName][0], 0)
+                                        handleRemoveFile(data[fieldName], 0)
                                     }
                                 >
                                     Hapus
-                                </Button>
+                                </Button> */}
                             </ListGroup.Item>
                         )}
                     </ListGroup>
@@ -239,10 +239,9 @@ export default function BanmodPage({ meta }) {
 
     const handleUploadFile = (e, field_name, multiple) => {
         const choosenFiles = Array.prototype.slice.call(e.target.files);
-
         setData((prevState) => ({
             ...prevState,
-            [field_name]: multiple ? choosenFiles : e.target.files,
+            [field_name]: multiple ? choosenFiles : choosenFiles[0],
         }));
     };
 
@@ -278,6 +277,7 @@ export default function BanmodPage({ meta }) {
                                                 nik: e.target.value,
                                             }))
                                         }
+                                        name="nik"
                                         isInvalid={errors.nik}
                                         placeholder="Nomor KTP"
                                     ></Form.Control>
@@ -297,6 +297,7 @@ export default function BanmodPage({ meta }) {
                                                 kk: e.target.value,
                                             }))
                                         }
+                                        name="KK"
                                         isInvalid={errors.kk}
                                         placeholder="Nomor KK"
                                     ></Form.Control>
@@ -316,6 +317,7 @@ export default function BanmodPage({ meta }) {
                                                 name: e.target.value,
                                             }))
                                         }
+                                        name="nama"
                                         isInvalid={errors.name}
                                         placeholder="Nama Lengkap"
                                     ></Form.Control>
@@ -336,6 +338,7 @@ export default function BanmodPage({ meta }) {
                                                     tmp_lhr: e.target.value,
                                                 }))
                                             }
+                                            name="tmp_lhr"
                                             isInvalid={errors.tmp_lhr}
                                             placeholder="Tempat Lahir"
                                         ></Form.Control>
@@ -353,6 +356,7 @@ export default function BanmodPage({ meta }) {
                                                     tgl_lhr: e.target.value,
                                                 }))
                                             }
+                                            name="tgl_lhr"
                                             isInvalid={errors.tgl_lhr}
                                         ></Form.Control>
                                         <Form.Control.Feedback type="invalid">
@@ -373,6 +377,7 @@ export default function BanmodPage({ meta }) {
                                                 phone_number: e.target.value,
                                             }))
                                         }
+                                        name="phone_number"
                                         isInvalid={errors.phone_number}
                                         placeholder="628XXXXXXXXXX"
                                     ></Form.Control>
@@ -458,6 +463,7 @@ export default function BanmodPage({ meta }) {
                                     as="textarea"
                                     rows="3"
                                     value={data.alamat}
+                                    name="alamat"
                                     isInvalid={errors.alamat}
                                     autoComplete="alamat"
                                     placeholder="Alamat KTP (Jalan/Gang/Lingkungan/No rumah)"
@@ -491,6 +497,7 @@ export default function BanmodPage({ meta }) {
                                         as="textarea"
                                         rows="3"
                                         value={data.alamat_domisili}
+                                        name="alamat_domisili"
                                         isInvalid={errors.alamat_domisili}
                                         autoComplete="alamat_domisili"
                                         placeholder="Alamat Domisili"
@@ -525,6 +532,7 @@ export default function BanmodPage({ meta }) {
                                         as="textarea"
                                         rows="3"
                                         value={data.alamat_usaha}
+                                        name="alamat_usaha"
                                         isInvalid={errors.alamat_usaha}
                                         autoComplete="alamat_usaha"
                                         placeholder="Alamat Usaha"
@@ -631,7 +639,7 @@ export default function BanmodPage({ meta }) {
                                         onChange={(item) =>
                                             setData((prevState) => ({
                                                 ...prevState,
-                                                tanggungan_keluarga: item.value,
+                                                tanggungan_keluarga: item.id,
                                             }))
                                         }
                                         errors={errors.tanggungan_keluarga}
@@ -850,14 +858,14 @@ export default function BanmodPage({ meta }) {
                                 )}
                                 {renderFileUpload(
                                     "Foto Usaha / Produk",
-                                    "file_usaha",
+                                    "file_produk",
                                     ".png,.jpg,.jpeg",
                                     false,
                                     "imagePreviewUsaha"
                                 )}
                                 {renderFileUpload(
                                     "Surat Pernyataan Komitmen",
-                                    "file_komitmen"
+                                    "file_pernyataan"
                                 )}
 
                                 {data.kategori != 5 && (
@@ -871,7 +879,7 @@ export default function BanmodPage({ meta }) {
                                     <>
                                         {renderFileUpload(
                                             "Perizinan Teknis dan Standardisasi Lainnya",
-                                            "file_perijinan",
+                                            "file_perizinan",
                                             ".pdf",
                                             true
                                         )}
@@ -881,7 +889,7 @@ export default function BanmodPage({ meta }) {
                                         )}
                                         {renderFileUpload(
                                             "Business Plan",
-                                            "file_bisnis"
+                                            "file_bp"
                                         )}
                                     </>
                                 )}
@@ -891,7 +899,7 @@ export default function BanmodPage({ meta }) {
                                         {renderFileUpload("SKU", "file_sku")}
                                         {renderFileUpload(
                                             "Sertifikat Pelatihan Sesuai Usaha yang Diajukan",
-                                            "file_sertifikat"
+                                            "file_sertifikat_pelatihan"
                                         )}
                                     </>
                                 )}
