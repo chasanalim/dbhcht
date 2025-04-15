@@ -133,7 +133,6 @@ class BanmodController extends Controller
     public function success($id)
     {
         $dataPendaftar = PendaftaranBanmod::find($id);
-
         Mail::to(env('APP_EMAIL_BANMOD'))->send(new KirimPendaftar($dataPendaftar));
 
         return Inertia::render('Banmod/Success', [
