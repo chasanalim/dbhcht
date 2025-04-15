@@ -19,20 +19,33 @@ class LampiranFileController extends Controller
     public function index(Request $request)
     {
         if ($request->wantsJson()) {
-            $data = LampiranFile::latest();
+            $data = LampiranFile::query();
+
             return DataTables::of($data)
                 ->addIndexColumn()
+                ->addColumn('file_download', function ($row) {
+                    return asset('storage/files/' . $row->file_name);
+                })
                 ->addColumn('action', function ($row) {
                     return [
                         'edit_url' => route('admin.downloads.edit', $row->id),
-                        'delete_url' => route('admin.downloads.destroy', $row->id),
+                        'delete_url' => route('admin.downloads.destroy', $row->id)
                     ];
                 })
-                ->toJson();
+                ->rawColumns(['file_download'])
+                ->make(true);
         }
 
         return Inertia::render('Admin/File/Index', [
-            'title' => 'Lampiran File'
+            'title' => 'Data Lampiran File',
+            'can' => [
+                'create' => auth()->user()->can('create', LampiranFile::class),
+                'edit' => auth()->user()->can('edit', LampiranFile::class),
+                'delete' => auth()->user()->can('delete', LampiranFile::class),
+            ],
+            'flash' => [
+                'message' => session('message')
+            ],
         ]);
     }
 
@@ -63,7 +76,7 @@ class LampiranFileController extends Controller
         ]);
 
         $file = $request->file('file_name');
-        Storage::putFileAs('files', $file,$file->hashName());
+        Storage::putFileAs('files', $file, $file->hashName());
         // $file->storeAs('public/files', $file->hashName());
 
         LampiranFile::create([
