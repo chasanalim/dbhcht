@@ -41,7 +41,7 @@ export default function Sidebar() {
                                     route().current("admin.dashboard") ? "active" : ""
                                 }`}
                             >
-                                <i className="bi bi-clipboard-data fs-5"></i>
+                                <i className="bi bi-clipboard-data fs-5 "></i>
                                 <span className="text-white mt-1">Dashboard</span>
                             </NavLink>
                         </li>
@@ -93,6 +93,20 @@ export default function Sidebar() {
                                 <i className="bi bi-cloud-arrow-down fs-5"></i>
                                 <span className="text-white mt-1">
                                     Panduan Lampiran File
+                                </span>
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
+                                href={route("admin.banmod-lama")}
+                                active={route().current("admin.banmod-lama")}
+                                className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                    route().current("admin.banmod-lama") ? "active" : ""
+                                }`}
+                            >
+                                <i className="bi bi-person-fill-lock fs-5"></i>
+                                <span className="text-white mt-1">
+                                    Penerima Banmod Lama
                                 </span>
                             </NavLink>
                         </li>

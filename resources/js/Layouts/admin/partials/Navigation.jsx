@@ -20,6 +20,8 @@ export default function Navbar(props) {
                 return 'Users';
             case currentRoute.startsWith('admin.dashboard'):
                 return 'Dashboard';
+            case currentRoute.startsWith('admin.banmod-lama'):
+                return 'Penerima Banmod Lama';
             default:
                 return '';
         }

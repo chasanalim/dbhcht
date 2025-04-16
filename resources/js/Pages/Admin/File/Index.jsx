@@ -163,7 +163,7 @@ export default function Index({ title, can, flash }) {
                     <div className="col-12">
                         <div className="card">
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
-                                <h5 className="mb-0">{title}</h5>
+                                <h5 className="mb-0 fw-bold">{title}</h5>
                                 {/* {can.create && ( */}
                                 <Link
                                     href={route("admin.downloads.create")}
@@ -201,7 +201,7 @@ export default function Index({ title, can, flash }) {
             {/* Toast Notification */}
             {flash.message && (
                 <div
-                    className="position-fixed bottom-0 end-0 p-3"
+                    className="position-fixed top-0 end-0 p-3"
                     style={{ zIndex: 5 }}
                 >
                     <div

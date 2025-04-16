@@ -14,6 +14,8 @@ use App\Http\Controllers\KategoriBanmodController;
 use App\Http\Controllers\JumlahLegalitasController;
 use App\Http\Controllers\JumlahTenagaKerjaController;
 use App\Http\Controllers\Admin\LampiranFileController;
+use App\Http\Controllers\Admin\PendaftaranBanmodController;
+use App\Http\Controllers\Admin\PenerimaBanmodLamaController;
 use App\Http\Controllers\TanggunganKeluargaController;
 use App\Http\Controllers\StatusTempatTinggalController;
 use App\Http\Controllers\JumlahTeknologiDigitalController;
@@ -37,6 +39,8 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     })->name('dashboard');
 
     Route::resource('downloads', LampiranFileController::class);
+    Route::resource('banmod', PendaftaranBanmodController::class);
+    Route::get('/banmod-lama', [PenerimaBanmodLamaController::class, '__invoke'])->name('banmod-lama');
 
 });
 
