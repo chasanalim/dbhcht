@@ -22,4 +22,13 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+
+    # <IfModule mod_headers.c>
+    # Header always set Access-Control-Allow-Origin "http://banmodpelatihan.test"
+    # Header always set Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
+    # Header always set Access-Control-Allow-Headers "Content-Type, Authorization"
+    # Header always set Access-Control-Allow-Credentials true
+    # </IfModule>
+
+
 </IfModule>
