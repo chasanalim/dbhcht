@@ -20,14 +20,13 @@ use App\Http\Controllers\TanggunganKeluargaController;
 use App\Http\Controllers\StatusTempatTinggalController;
 use App\Http\Controllers\JumlahTeknologiDigitalController;
 use App\Http\Controllers\PenyerapanTenagaMiskinController;
+use App\Http\Controllers\PelatihanPenerimaBanmodController;
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/download', [HomeController::class, 'file'])->name('download');
 Route::get('/download/{file}', [HomeController::class, 'download'])->name('download.file');
 Route::get('/pelatihan', [HomeController::class, 'pelatihan'])->name('pelatihan');
-
-
 
 Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -41,7 +40,6 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::resource('downloads', LampiranFileController::class);
     Route::resource('banmod', PendaftaranBanmodController::class);
     Route::get('/banmod-lama', [PenerimaBanmodLamaController::class, '__invoke'])->name('banmod-lama');
-
 });
 
 Route::prefix('users')->as('users.')->group(function () {
@@ -57,6 +55,13 @@ Route::prefix('banmod')->group(function () {
     Route::get('/', [BanmodController::class, 'index'])->name('banmod');
     Route::post('/store', [BanmodController::class, 'store'])->name('banmod.store');
     Route::get('/success/{id}', [BanmodController::class, 'success'])->name('banmod.success');
+});
+
+Route::prefix('pelatihan/banmod')->group(function () {
+    Route::get('/', [PelatihanPenerimaBanmodController::class, 'create'])->name('banmod.create');
+    Route::post('/', [PelatihanPenerimaBanmodController::class, 'store'])->name('banmod.store');
+    Route::post('/cek-nik', [PelatihanPenerimaBanmodController::class, 'cekNIK'])->name('banmod.cekNIK.post');
+    Route::get('/cek-nik/{nik}', [PelatihanPenerimaBanmodController::class, 'cekNIK'])->name('banmod.cekNIK.get');
 });
 
 Route::prefix('refer')->as('refer.')->group(function () {

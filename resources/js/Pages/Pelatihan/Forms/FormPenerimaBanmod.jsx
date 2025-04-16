@@ -1,5 +1,6 @@
 import { Form, Button, ListGroup } from "react-bootstrap";
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
 
 import SelectKecamatan from "@/Components/Select/SelectKecamatan";
 import SelectKelurahan from "@/Components/Select/SelectKelurahan";
@@ -7,6 +8,70 @@ import SelectRt from "@/Components/Select/SelectRt";
 import SelectRw from "@/Components/Select/SelectRw";
 
 export default function FormPenerimaBanmod({ data, setData, errors }) {
+    const [nikStatus, setNikStatus] = useState(null); // Status pengecekan NIK
+    const [pesertaData, setPesertaData] = useState(null); // Data peserta jika NIK ditemukan
+    const [isEditable, setIsEditable] = useState(true); // Menentukan apakah form bisa diedit
+    const [errorMessage, setErrorMessage] = useState(""); // Pesan error
+    const [isConfirmed, setIsConfirmed] = useState(null); // null | true | false
+    const [dataPenerima, setDataPenerima] = useState(null);
+    const [tampilKonfirmasi, setTampilKonfirmasi] = useState(false);
+    const [editMode, setEditMode] = useState(false);
+
+    // Fungsi untuk mengecek NIK di database
+    const cekNik = async () => {
+        setErrorMessage("");
+        setNikStatus("");
+        setTampilKonfirmasi(false);
+        setEditMode(false);
+        try {
+            const response = await axios.get(
+                `/pelatihan/banmod/cek-nik/${data.nik}`
+            );
+            if (response.data.success) {
+                const d = response.data.data;
+                setDataPenerima(d);
+                setNikStatus("NIK valid!");
+                setData((prev) => ({
+                    ...prev,
+                    nama: d.nama_lengkap,
+                    no_kk: d.no_kk,
+                    kecamatan: d.kecamatan_ktp,
+                    kelurahan: d.kelurahan_ktp,
+                    rw: d.rw,
+                    rt: d.rt,
+                    jalan: d.alamat_ktp,
+                }));
+                setTampilKonfirmasi(true);
+            } else {
+                setErrorMessage(
+                    "NIK tidak ditemukan atau Anda bukan penerima bantuan."
+                );
+                setDataPenerima(null);
+            }
+        } catch (error) {
+            setErrorMessage("Terjadi kesalahan saat cek NIK.");
+        }
+    };
+
+    // Fungsi untuk menangani perubahan NIK
+    const handleNikChange = (e) => {
+        setData("nik", e.target.value);
+        setNikStatus("");
+        setErrorMessage("");
+        setDataPenerima(null);
+        setTampilKonfirmasi(false);
+        setEditMode(false);
+    };
+
+    // Fungsi untuk menangani konfirmasi apakah data sudah sesuai
+    const handleDataConfirmation = (isConfirmed) => {
+        if (isConfirmed) {
+            setIsEditable(false); // Jika ya, form tidak bisa diedit
+        } else {
+            setIsEditable(true); // Jika tidak, form bisa diedit
+        }
+    };
+
     let fileIndex = 1;
 
     const handleUploadFoto = (e, field_name, preview_name) => {
@@ -204,9 +269,77 @@ export default function FormPenerimaBanmod({ data, setData, errors }) {
                 <Form.Control
                     type="text"
                     value={data.nik}
-                    onChange={(e) => setData("nik", e.target.value)}
+                    onChange={handleNikChange}
+                    isInvalid={!!errors.nik || !!errorMessage}
                 />
+                {errorMessage && (
+                    <div className="text-danger">{errorMessage}</div>
+                )}
+                {nikStatus && <div className="text-success">{nikStatus}</div>}
+                <Button className="mt-2" variant="primary" onClick={cekNik}>
+                    Cek NIK
+                </Button>
             </Form.Group>
+
+            {/* Munculkan data jika ditemukan */}
+            {dataPenerima && (
+                <>
+                    <hr />
+                    <Form.Group className="mb-3">
+                        <Form.Label>Nama</Form.Label>
+                        <Form.Control
+                            type="text"
+                            value={data.nama}
+                            readOnly={!editMode}
+                            onChange={(e) => setData("nama", e.target.value)}
+                        />
+                    </Form.Group>
+
+                    <Form.Group className="mb-3">
+                        <Form.Label>No KK</Form.Label>
+                        <Form.Control
+                            type="text"
+                            value={data.no_kk}
+                            readOnly={!editMode}
+                            onChange={(e) => setData("no_kk", e.target.value)}
+                        />
+                    </Form.Group>
+
+                    {/* Konfirmasi */}
+                    {tampilKonfirmasi && (
+                        <div className="mb-3">
+                            <Form.Label>
+                                Apakah data sudah sesuai dan tidak ada
+                                perubahan?
+                            </Form.Label>
+                            <div className="d-flex gap-2">
+                                <Button
+                                    variant="outline-success"
+                                    onClick={() => setEditMode(false)}
+                                >
+                                    Ya, sesuai
+                                </Button>
+                                <Button
+                                    variant="outline-warning"
+                                    onClick={() => setEditMode(true)}
+                                >
+                                    Tidak, saya ingin edit
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                </>
+            )}
+
+            {!dataPenerima && errorMessage && (
+                <div className="alert alert-warning mt-3">
+                    NIK YANG ANDA MASUKKAN SALAH ATAU ANDA BUKAN PENERIMA
+                    BANTUAN MODAL. INFO LEBIH LANJUT KIRIM WA KE{" "}
+                    <strong>0811398319</strong> DENGAN FORMAT:
+                    <br />
+                    <strong>NIK_NAMA_KELURAHAN_KELUHAN/PERTANYAAN</strong>
+                </div>
+            )}
 
             <div className="big-text text-muted mb-4">
                 Alamat Usaha
