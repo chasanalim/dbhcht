@@ -38,6 +38,7 @@ class DatabaseSeeder extends Seeder
             PenyerapanTenagaMiskinSeeder::class,
             LampiranSeeder::class,
             PenerimaBanmodSeeder::class,
+            PenerimaBanmodWusSeeder::class,
         ]);
     }
 }
