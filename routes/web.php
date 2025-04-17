@@ -58,10 +58,10 @@ Route::prefix('banmod')->group(function () {
 });
 
 Route::prefix('pelatihan/banmod')->group(function () {
-    Route::get('/', [PelatihanPenerimaBanmodController::class, 'create'])->name('banmod.create');
-    Route::post('/', [PelatihanPenerimaBanmodController::class, 'store'])->name('banmod.store');
-    Route::post('/cek-nik', [PelatihanPenerimaBanmodController::class, 'cekNIK'])->name('banmod.cekNIK.post');
-    Route::get('/cek-nik/{nik}', [PelatihanPenerimaBanmodController::class, 'cekNIK'])->name('banmod.cekNIK.get');
+    Route::get('/', [PelatihanPenerimaBanmodController::class, 'create'])->name('pelatihan-banmod.create');
+    Route::post('/', [PelatihanPenerimaBanmodController::class, 'store'])->name('pelatihan-banmod.store');
+    Route::post('/cek-nik', [PelatihanPenerimaBanmodController::class, 'cekNIK'])->name('pelatihan-banmod.cekNIK.post');
+    Route::get('/cek-nik/{nik}', [PelatihanPenerimaBanmodController::class, 'cekNIK'])->name('pelatihan-banmod.cekNIK.get');
 });
 
 Route::prefix('refer')->as('refer.')->group(function () {
