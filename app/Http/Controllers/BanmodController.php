@@ -21,13 +21,13 @@ class BanmodController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->all());
         $validated = $request->validate([
             "nik" => ['required', 'size:16', 'string'],
             "kk" => ['required', 'size:16', 'string'],
             "name" => ['required', 'string'],
             "tmp_lhr" => ['required', 'string'],
             "tgl_lhr" => ['required', 'date', 'before:today'],
+            "jenis_kelamin" => ['required', 'string'],
             "alamat" => ['required', 'string'],
             "kode_kecamatan" => ['required', 'string'],
             "nama_kecamatan" => ['required', 'string'],
@@ -126,13 +126,13 @@ class BanmodController extends Controller
             $request->file('file_sertifikat_pelatihan')->storeAs('/pendaftaran-banmod/pelatihan', $request->file('file_sertifikat_pelatihan')->hashName(), 'public');
         }
         $storedPendaftaran = PendaftaranBanmod::create($validated);
-
         return to_route('banmod.success', $storedPendaftaran->id)->with('success', 'Pendaftaran Berhasil.');
     }
 
     public function success($id)
     {
         $dataPendaftar = PendaftaranBanmod::find($id);
+        // dd($dataPendaftar);
         Mail::to(env('APP_EMAIL_BANMOD'))->send(new KirimPendaftar($dataPendaftar));
 
         return Inertia::render('Banmod/Success', [
