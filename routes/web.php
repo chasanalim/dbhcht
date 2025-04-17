@@ -14,6 +14,10 @@ use App\Http\Controllers\KategoriBanmodController;
 use App\Http\Controllers\JumlahLegalitasController;
 use App\Http\Controllers\JumlahTenagaKerjaController;
 use App\Http\Controllers\Admin\LampiranFileController;
+use App\Http\Controllers\Admin\PelatihanBanmodController;
+use App\Http\Controllers\Admin\PelatihanKerjaController;
+use App\Http\Controllers\Admin\PelatihanPertanianController;
+use App\Http\Controllers\Admin\PelatihanUMKMController;
 use App\Http\Controllers\Admin\PendaftaranBanmodController;
 use App\Http\Controllers\Admin\PenerimaBanmodLamaController;
 use App\Http\Controllers\TanggunganKeluargaController;
@@ -34,11 +38,15 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/dashboard', function () {
-        return Inertia::render('Admin/Dashboard');
+        return Inertia::render('Admin/Dashboard/Dashboard');
     })->name('dashboard');
 
     Route::resource('downloads', LampiranFileController::class);
     Route::resource('banmod', PendaftaranBanmodController::class);
+    Route::resource('umkm', PelatihanUMKMController::class);
+    Route::resource('pertanian', PelatihanPertanianController::class);
+    Route::resource('pelatihan-banmod', PelatihanBanmodController::class);
+    Route::resource('kerja', PelatihanKerjaController::class);
     Route::get('/banmod-lama', [PenerimaBanmodLamaController::class, '__invoke'])->name('banmod-lama');
 });
 

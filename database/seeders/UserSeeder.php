@@ -22,7 +22,7 @@ class UserSeeder extends Seeder
                 'email_verified_at' => now(),
                 'phone_number' => '085854445232',
                 'address' => 'Jl. Basuki Rahmat No. 15, Pocanan, Kota Kediri',
-                'password' => Hash::make('{P4ssw0rd}'),
+                'password' => Hash::make('banmod123'),
                 'role' => 'admin',
             ],
             [
