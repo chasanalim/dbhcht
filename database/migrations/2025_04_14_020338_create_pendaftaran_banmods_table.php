@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string("tmp_lhr");
             $table->date("tgl_lhr");
             $table->string("alamat");
+            $table->string("jenis_kelamin");
             $table->string("kode_kecamatan");
             $table->string("nama_kecamatan");
             $table->string("kode_kelurahan");

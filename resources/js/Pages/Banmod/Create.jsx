@@ -1,5 +1,6 @@
 import SelectBruto from "@/Components/Select/SelectBruto";
 import SelectDisabilitas from "@/Components/Select/SelectDisabilitas";
+import SelectJenisKelamin from "@/Components/Select/SelectJenisKelamin";
 import SelectKategoriUsaha from "@/Components/Select/SelectKategoriUsaha";
 import SelectKecamatan from "@/Components/Select/SelectKecamatan";
 import SelectKelurahan from "@/Components/Select/SelectKelurahan";
@@ -175,6 +176,7 @@ export default function BanmodPage({ meta }) {
         tmp_lhr: "",
         tgl_lhr: "",
         alamat: "",
+        jenis_kelamin: "",
         kode_kecamatan: "",
         nama_kecamatan: "",
         kode_kelurahan: "",
@@ -364,6 +366,27 @@ export default function BanmodPage({ meta }) {
                                         </Form.Control.Feedback>
                                     </div>
                                 </div>
+
+                                <Form.Group className="row mb-1">
+                                    <div className="col-md-12 col-12 mb-3">
+                                        <div className="col-md-6 col-12 mb-3">
+                                            <Form.Label className="required">
+                                                Jenis Kelamin
+                                            </Form.Label>
+                                            <SelectJenisKelamin
+                                                onChange={(item) =>
+                                                    // console.log(item)
+                                                    setData((prevState) => ({
+                                                        ...prevState,
+                                                        jenis_kelamin:
+                                                            item,
+                                                    }))
+                                                }
+                                                errors={errors.jenis_kelamin}
+                                            />
+                                        </div>
+                                    </div>
+                                </Form.Group>
 
                                 <div className="mb-3">
                                     <Form.Label className="required">
