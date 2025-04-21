@@ -332,7 +332,7 @@ export default function BanmodPage({ meta }) {
                         {errorMessage && (
                             <div className="text-danger">{errorMessage}</div>
                         )}
-                        {nikStatus && (
+                        {(nikStatus && !!data.kategori) && (
                             <>
                                 <div className="text-success mb-3">
                                     {nikStatus}
