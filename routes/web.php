@@ -66,6 +66,11 @@ Route::prefix('banmod')->group(function () {
     Route::get('/cek-nik/{nik}', [BanmodController::class, 'ceknik'])->name('banmod.ceknik');
 });
 
+Route::prefix('peserta')->group(function () {
+    Route::post('/', [BanmodController::class, 'peserta'])->name('peserta');
+    Route::get('/', [BanmodController::class, 'peserta'])->name('peserta');
+});
+
 Route::prefix('pelatihan/banmod')->group(function () {
     Route::get('/', [PelatihanPenerimaBanmodController::class, 'create'])->name('pelatihan-banmod.create');
     Route::post('/', [PelatihanPenerimaBanmodController::class, 'store'])->name('pelatihan-banmod.store');
