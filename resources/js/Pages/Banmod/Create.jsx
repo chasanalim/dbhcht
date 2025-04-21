@@ -24,6 +24,8 @@ import CurrencyInput from "react-currency-input-field";
 export default function BanmodPage({ meta }) {
     const [nikStatus, setNikStatus] = useState(null); // Status pengecekan NIK
     const [errorMessage, setErrorMessage] = useState(""); // Pesan error
+    const [isKomitmenChecked, setIsKomitmenChecked] = useState(false);
+
     // const { auth } = usePage().props;
 
     // const [showDomisili, setShowDomisili, showUsaha, setShowUsaha] =
@@ -36,7 +38,7 @@ export default function BanmodPage({ meta }) {
         setNikStatus("");
         try {
             const response = await axios.get(`/banmod/cek-nik/${data.nik}`);
-            if (response.data.success) {
+            if (response.data.success || data.kategori == "5") {
                 setNikStatus("NIK valid!");
             } else {
                 setErrorMessage(response.data.message);
@@ -332,7 +334,9 @@ export default function BanmodPage({ meta }) {
                         )}
                         {nikStatus && (
                             <>
-                                <div className="text-success">{nikStatus}</div>
+                                <div className="text-success mb-3">
+                                    {nikStatus}
+                                </div>
                                 <div className="mb-3">
                                     <Form.Label className="required">
                                         No. KK
@@ -1000,9 +1004,29 @@ export default function BanmodPage({ meta }) {
                                         )}
                                     </>
                                 )}
+                                <div className="big-text text-muted mb-4">
+                                    Pernyataan Komitmen
+                                    <div className="underline"></div>
+                                </div>
+                                <Form.Check
+                                    type="checkbox"
+                                    label="Saya menyatakan data yang saya masukkan benar dan bersedia mengikuti proses seleksi penerima bantuan modal sampai selesai"
+                                    checked={isKomitmenChecked}
+                                    onChange={(e) =>
+                                        setIsKomitmenChecked(e.target.checked)
+                                    }
+                                />
                                 <hr />
                                 <div className="card-footer d-flex justify-content-center mt-4 gap-2">
-                                    <Button type="submit">
+                                    <Button
+                                        type="submit"
+                                        disabled={!isKomitmenChecked}
+                                        className={
+                                            !isKomitmenChecked
+                                                ? "opacity-50"
+                                                : ""
+                                        }
+                                    >
                                         Simpan{" "}
                                         <i
                                             className="fa fa-paper-plane ms-1"
