@@ -25,6 +25,7 @@ use App\Http\Controllers\StatusTempatTinggalController;
 use App\Http\Controllers\JumlahTeknologiDigitalController;
 use App\Http\Controllers\PenyerapanTenagaMiskinController;
 use App\Http\Controllers\PelatihanPenerimaBanmodController;
+use App\Http\Controllers\SkorPelatihanController;
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -72,6 +73,8 @@ Route::prefix('pelatihan/banmod')->group(function () {
     Route::post('/cek-nik', [PelatihanPenerimaBanmodController::class, 'cekNIK'])->name('pelatihan-banmod.cekNIK.post');
     Route::get('/cek-nik/{nik}', [PelatihanPenerimaBanmodController::class, 'cekNIK'])->name('pelatihan-banmod.cekNIK.get');
 });
+
+Route::get('/skor/{kategori}', [SkorPelatihanController::class, 'getSkorByKategori']);
 
 Route::prefix('refer')->as('refer.')->group(function () {
     Route::prefix('kategoribanmod')->as('kategoribanmod.')->group(function () {
