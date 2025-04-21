@@ -1,4 +1,7 @@
 import { Form, Button, ListGroup } from "react-bootstrap";
+import Select from "react-select";
+import { useEffect, useState } from "react";
+import { useForm } from "@inertiajs/react";
 
 import SelectLegalitasStatus from "@/Components/Select/SelectLegalitasStatus";
 import SelectLegalitasJenis from "@/Components/Select/SelectLegalitasJenis";
@@ -12,17 +15,88 @@ import SelectKecamatan from "@/Components/Select/SelectKecamatan";
 import SelectKelurahan from "@/Components/Select/SelectKelurahan";
 import SelectRt from "@/Components/Select/SelectRt";
 import SelectRw from "@/Components/Select/SelectRw";
+import SelectPrioritasPelatihan from "@/Components/Select/SelectPrioritasPelatihan";
 
-export default function FormUMKM({ data, setData, errors }) {
+export default function FormUMKM() {
+    const { data, setData, errors, post, processing, reset } = useForm({
+        nik: "",
+        kk: "",
+        nama: "",
+        jenis_kelamin: "",
+        alamat_ktp: "",
+        alamat_usaha: "",
+        disabilitas: "",
+        pendidikan: "",
+        bidang_usaha: "",
+        legalitas_status: "",
+        legalitas_jenis: "",
+        kapasitas_produksi: "",
+        satuan_produksi: "",
+        pemasaran: "",
+        kecamatan: "",
+        kelurahan: "",
+        rt: "",
+        rw: "",
+        foto_profil: null,
+        preview_foto_profil: "",
+        ktp_file: null,
+        kk_file: null,
+        nib_file: null,
+        prioritas_pelatihan_1: "",
+        prioritas_pelatihan_2: "",
+        prioritas_pelatihan_3: "",
+        alasan: "",
+        kesesuaian: "",
+        pengalaman: "",
+    });
+
+    const [skorAlasanOptions, setSkorAlasanOptions] = useState([]);
+    const [skorKesesuaianOptions, setSkorKesesuaianOptions] = useState([]);
+    const [skorPengalamanOptions, setSkorPengalamanOptions] = useState([]);
+
+    useEffect(() => {
+        fetch("/skor/alasan")
+            .then((res) => res.json())
+            .then((res) => {
+                setSkorAlasanOptions(
+                    res.map((i) => ({
+                        value: i.skor,
+                        label: i.jawaban,
+                    }))
+                );
+            });
+
+        fetch("/skor/kesesuaian")
+            .then((res) => res.json())
+            .then((res) => {
+                setSkorKesesuaianOptions(
+                    res.map((i) => ({
+                        value: i.skor,
+                        label: i.jawaban,
+                    }))
+                );
+            });
+
+        fetch("/skor/pengalaman")
+            .then((res) => res.json())
+            .then((res) => {
+                setSkorPengalamanOptions(
+                    res.map((i) => ({
+                        value: i.skor,
+                        label: i.jawaban,
+                    }))
+                );
+            });
+    }, []);
+
     let fileIndex = 1;
 
     const handleUploadFoto = (e, field_name, preview_name) => {
-        // const choosenFiles = Array.prototype.slice.call(e.target.files);
         let reader = new FileReader();
         let file = e.target.files[0];
 
         reader.onloadend = () => {
-            setData((prevState) => ({
+            setFormData((prevState) => ({
                 ...prevState,
                 [field_name]: file,
                 [preview_name]: reader.result,
@@ -35,7 +109,7 @@ export default function FormUMKM({ data, setData, errors }) {
     const handleUploadFile = (e, field_name, multiple) => {
         const choosenFiles = Array.prototype.slice.call(e.target.files);
 
-        setData((prevState) => ({
+        setFormData((prevState) => ({
             ...prevState,
             [field_name]: multiple ? choosenFiles : e.target.files,
         }));
@@ -43,13 +117,12 @@ export default function FormUMKM({ data, setData, errors }) {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        post(route("banmod.store"), {
-            forceFormData: true,
-        });
+        // Simpan data atau kirim ke server
+        console.log(data);
     };
 
     const handleRemoveFile = (field, index) => {
-        setData((prev) => {
+        setFormData((prev) => {
             const updated = [...(prev[field] || [])];
             updated.splice(index, 1);
             return { ...prev, [field]: updated };
@@ -57,7 +130,7 @@ export default function FormUMKM({ data, setData, errors }) {
     };
 
     const handleRemoveImage = (field, previewKey) => {
-        setData((prev) => ({
+        setFormData((prev) => ({
             ...prev,
             [field]: [],
             [previewKey]: "",
@@ -94,11 +167,7 @@ export default function FormUMKM({ data, setData, errors }) {
                             ? handleUploadFoto(e, fieldName, imagePreviewKey)
                             : handleUploadFile(e, fieldName, multiple)
                     }
-                    isInvalid={errors[fieldName]}
                 />
-                <Form.Control.Feedback type="invalid">
-                    {errors[fieldName]}
-                </Form.Control.Feedback>
 
                 {/* Image Preview with Remove */}
                 {imagePreviewKey && data[imagePreviewKey] && (
@@ -681,10 +750,131 @@ export default function FormUMKM({ data, setData, errors }) {
             )}
             {renderFileUpload("Kartu Keluarga (KK)", "file_kk")}
 
+            {renderFileUpload(
+                "Surat Pernyataan Komitmen (PDF)",
+                "file_pernyataan",
+                ".pdf"
+            )}
+
             <hr />
 
+            <div className="big-text text-muted mb-4">
+                Pilihan Pelatihan
+                <div className="underline"></div>
+            </div>
+
+            <Form.Group className="mb-3">
+                {/* <Form.Label className="required">Pilih Pelatihan</Form.Label> */}
+                <SelectPrioritasPelatihan
+                    prioritasKe={1}
+                    value={data.prioritas1}
+                    onChange={(val) => setData("prioritas1", val)}
+                    selectedValues={[data.prioritas2, data.prioritas3]}
+                    errors={errors.prioritas1}
+                />
+
+                <SelectPrioritasPelatihan
+                    prioritasKe={2}
+                    value={data.prioritas2}
+                    onChange={(val) => setData("prioritas2", val)}
+                    selectedValues={[data.prioritas1, data.prioritas3]}
+                    errors={errors.prioritas2}
+                />
+
+                <SelectPrioritasPelatihan
+                    prioritasKe={3}
+                    value={data.prioritas3}
+                    onChange={(val) => setData("prioritas3", val)}
+                    selectedValues={[data.prioritas1, data.prioritas2]}
+                    errors={errors.prioritas3}
+                />
+            </Form.Group>
+
+            <div className="big-text text-muted mb-4">
+                Skala Prioritas Peserta Pelatihan
+                <div className="underline"></div>
+            </div>
+
+            <Form.Group className="mb-3">
+                <Form.Label>Alasan Mengikuti Pelatihan</Form.Label>
+                <Select
+                    options={skorAlasanOptions}
+                    value={skorAlasanOptions.find(
+                        (opt) => opt.value === data.skor_alasan_id
+                    )}
+                    onChange={(selected) =>
+                        setData("skor_alasan_id", selected?.value)
+                    }
+                    className={errors.skor_alasan_id ? "is-invalid" : ""}
+                />
+                {errors.skor_alasan_id && (
+                    <div className="invalid-feedback d-block">
+                        {errors.skor_alasan_id}
+                    </div>
+                )}
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+                <Form.Label>Kesesuaian Usaha</Form.Label>
+                <Select
+                    options={skorKesesuaianOptions}
+                    value={skorKesesuaianOptions.find(
+                        (opt) => opt.value === data.skor_kesesuaian_id
+                    )}
+                    onChange={(selected) =>
+                        setData("skor_kesesuaian_id", selected?.value)
+                    }
+                    className={errors.skor_kesesuaian_id ? "is-invalid" : ""}
+                />
+                {errors.skor_kesesuaian_id && (
+                    <div className="invalid-feedback d-block">
+                        {errors.skor_kesesuaian_id}
+                    </div>
+                )}
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+                <Form.Label>Pengalaman Pelatihan</Form.Label>
+                <Select
+                    options={skorPengalamanOptions}
+                    value={skorPengalamanOptions.find(
+                        (opt) => opt.value === data.skor_pengalaman_id
+                    )}
+                    onChange={(selected) =>
+                        setData("skor_pengalaman_id", selected?.value)
+                    }
+                    className={errors.skor_pengalaman_id ? "is-invalid" : ""}
+                />
+                {errors.skor_pengalaman_id && (
+                    <div className="invalid-feedback d-block">
+                        {errors.skor_pengalaman_id}
+                    </div>
+                )}
+            </Form.Group>
+
+            <Form.Group className="mt-4 mb-3">
+                <Form.Check
+                    type="checkbox"
+                    label="Saya menyatakan data yang saya masukkan benar dan bersedia mengikuti pelatihan sampai selesai"
+                    checked={data.komitmen}
+                    onChange={(e) =>
+                        setData({ ...data, komitmen: e.target.checked })
+                    }
+                    isInvalid={!!errors.komitmen}
+                />
+                {errors.komitmen && (
+                    <div className="invalid-feedback d-block">
+                        {errors.komitmen}
+                    </div>
+                )}
+            </Form.Group>
+
             <div className="card-footer d-flex justify-content-center mt-4 gap-2">
-                <Button type="submit">
+                <Button
+                    type="submit"
+                    disabled={!data.komitmen}
+                    className={!data.komitmen ? "opacity-50" : ""}
+                >
                     Simpan{" "}
                     <i
                         className="fa fa-paper-plane ms-1"
