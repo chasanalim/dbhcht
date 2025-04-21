@@ -18,16 +18,33 @@ import SelectTenagaKerja from "@/Components/Select/SelectTenagaKerja";
 import Layout from "@/Layouts/Layout";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import React, { useEffect, useState } from "react";
-import { Button, Form, ListGroup } from "react-bootstrap";
+import { Button, Form, InputGroup, ListGroup } from "react-bootstrap";
 import CurrencyInput from "react-currency-input-field";
 
 export default function BanmodPage({ meta }) {
+    const [nikStatus, setNikStatus] = useState(null); // Status pengecekan NIK
+    const [errorMessage, setErrorMessage] = useState(""); // Pesan error
     // const { auth } = usePage().props;
 
     // const [showDomisili, setShowDomisili, showUsaha, setShowUsaha] =
     //     useState(false);
 
     let fileIndex = 1;
+
+    const ceknik = async () => {
+        setErrorMessage("");
+        setNikStatus("");
+        try {
+            const response = await axios.get(`/banmod/cek-nik/${data.nik}`);
+            if (response.data.success) {
+                setNikStatus("NIK valid!");
+            } else {
+                setErrorMessage(response.data.message);
+            }
+        } catch (error) {
+            setErrorMessage("Terjadi kesalahan saat cek NIK.");
+        }
+    };
 
     const renderFileUpload = (
         label,
@@ -266,27 +283,56 @@ export default function BanmodPage({ meta }) {
                             <div className="underline"></div>
                         </div>
                         <Form.Group className="row mb-1">
-                            <div className="col-md-12 col-12">
-                                <div className="mb-3">
-                                    <Form.Label className="required">
-                                        NIK
-                                    </Form.Label>
-                                    <Form.Control
-                                        value={data.nik}
-                                        onChange={(e) =>
-                                            setData((prevState) => ({
-                                                ...prevState,
-                                                nik: e.target.value,
-                                            }))
-                                        }
-                                        name="nik"
-                                        isInvalid={errors.nik}
-                                        placeholder="Nomor KTP"
-                                    ></Form.Control>
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.nik}
-                                    </Form.Control.Feedback>
-                                </div>
+                            <div className="col-md-12 col-12 mb-3">
+                                <Form.Label className="required">
+                                    Kategori Usaha
+                                </Form.Label>
+                                <SelectKategoriUsaha
+                                    onChange={(item) =>
+                                        setData((prevState) => ({
+                                            ...prevState,
+                                            kategori: item.id,
+                                            jenis_kategori: item.jenis,
+                                        }))
+                                    }
+                                    errors={errors.kategori}
+                                />
+                            </div>
+                        </Form.Group>
+                        <div className="mb-3">
+                            <Form.Label className="required">NIK</Form.Label>
+                            <InputGroup className="mb-3" hasValidation>
+                                <Form.Control
+                                    name="nik"
+                                    isInvalid={errors.nik}
+                                    placeholder="Nomor KTP"
+                                    value={data.nik}
+                                    onChange={(e) =>
+                                        setData((prevState) => ({
+                                            ...prevState,
+                                            nik: e.target.value,
+                                        }))
+                                    }
+                                />
+                                <Button
+                                    className="z-0"
+                                    variant="outline-primary"
+                                    onClick={ceknik}
+                                >
+                                    Cek NIK
+                                </Button>
+
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.nik}
+                                </Form.Control.Feedback>
+                            </InputGroup>
+                        </div>
+                        {errorMessage && (
+                            <div className="text-danger">{errorMessage}</div>
+                        )}
+                        {nikStatus && (
+                            <>
+                                <div className="text-success">{nikStatus}</div>
                                 <div className="mb-3">
                                     <Form.Label className="required">
                                         No. KK
@@ -366,7 +412,6 @@ export default function BanmodPage({ meta }) {
                                         </Form.Control.Feedback>
                                     </div>
                                 </div>
-
                                 <Form.Group className="row mb-1">
                                     <div className="col-md-12 col-12 mb-3">
                                         <div className="col-md-6 col-12 mb-3">
@@ -378,8 +423,7 @@ export default function BanmodPage({ meta }) {
                                                     // console.log(item)
                                                     setData((prevState) => ({
                                                         ...prevState,
-                                                        jenis_kelamin:
-                                                            item,
+                                                        jenis_kelamin: item,
                                                     }))
                                                 }
                                                 errors={errors.jenis_kelamin}
@@ -387,7 +431,6 @@ export default function BanmodPage({ meta }) {
                                         </div>
                                     </div>
                                 </Form.Group>
-
                                 <div className="mb-3">
                                     <Form.Label className="required">
                                         No WA
@@ -408,536 +451,567 @@ export default function BanmodPage({ meta }) {
                                         {errors.phone_number}
                                     </Form.Control.Feedback>
                                 </div>
-                            </div>
-                        </Form.Group>
-                        <Form.Group className="row mb-1">
-                            <div className="col-md-6 col-12 mb-3">
-                                <Form.Label className="required">
-                                    Kecamatan
-                                </Form.Label>
-                                <SelectKecamatan
-                                    onChange={(item) =>
-                                        setData((prevState) => ({
-                                            ...prevState,
-                                            kode_kecamatan: item.id,
-                                            nama_kecamatan: item.text,
-                                        }))
-                                    }
-                                    errors={errors.nama_kecamatan}
-                                />
-                            </div>
-                            <div className="col-md-6 col-12 mb-3">
-                                <Form.Label className="required">
-                                    Kelurahan
-                                </Form.Label>
-                                <SelectKelurahan
-                                    kodeKecamatan={data.kode_kecamatan}
-                                    onChange={(item) =>
-                                        setData((prevState) => ({
-                                            ...prevState,
-                                            kode_kelurahan: item.id,
-                                            nama_kelurahan: item.text,
-                                        }))
-                                    }
-                                    errors={errors.nama_kelurahan}
-                                />
-                            </div>
-                        </Form.Group>
-                        <Form.Group className="row mb-1">
-                            <div className="col-md-6 col-12 mb-3">
-                                <Form.Label className="required">RW</Form.Label>
-                                <SelectRw
-                                    kodeKelurahan={data.kode_kelurahan}
-                                    onChange={(item) =>
-                                        setData((prevState) => ({
-                                            ...prevState,
-                                            kode_rw: item.id,
-                                            nama_rw: item.text,
-                                        }))
-                                    }
-                                    errors={errors.nama_rw}
-                                />
-                            </div>
-                            <div className="col-md-6 col-12 mb-3">
-                                <Form.Label className="required">RT</Form.Label>
-                                <SelectRt
-                                    kodeKelurahan={data.kode_kelurahan}
-                                    kodeRw={data.nama_rw}
-                                    onChange={(item) =>
-                                        setData((prevState) => ({
-                                            ...prevState,
-                                            kode_rt: item.id,
-                                            nama_rt: item.text,
-                                        }))
-                                    }
-                                    errors={errors.nama_rt}
-                                />
-                            </div>
-                        </Form.Group>
-                        <Form.Group className="row mb-1">
-                            <div className="col-md-12 col-12 mb-3">
-                                <Form.Label className="required">
-                                    Alamat
-                                </Form.Label>
-                                <Form.Control
-                                    onChange={(e) =>
-                                        setData("alamat", e.target.value)
-                                    }
-                                    as="textarea"
-                                    rows="3"
-                                    value={data.alamat}
-                                    name="alamat"
-                                    isInvalid={errors.alamat}
-                                    autoComplete="alamat"
-                                    placeholder="Alamat KTP (Jalan/Gang/Lingkungan/No rumah)"
-                                />
-                                <Form.Control.Feedback type="invalid">
-                                    {errors.alamat}
-                                </Form.Control.Feedback>
-                            </div>
-                        </Form.Group>
-                        <Form.Group className="row mb-1">
-                            <div className="col-md-12 col-12 mb-3">
-                                <Form.Label>Alamat Domisili</Form.Label>
-                                <Form.Check
-                                    type="checkbox"
-                                    id="switchDomisili"
-                                    label="Tidak sama dengan KTP"
-                                    onChange={(e) => {
-                                        setData("isDomisili", e.target.checked);
-                                    }}
-                                />
-                            </div>
-                            {data.isDomisili && (
-                                <div className="col-md-12 col-12 mb-3">
-                                    <Form.Control
-                                        onChange={(e) =>
-                                            setData(
-                                                "alamat_domisili",
-                                                e.target.value
-                                            )
-                                        }
-                                        as="textarea"
-                                        rows="3"
-                                        value={data.alamat_domisili}
-                                        name="alamat_domisili"
-                                        isInvalid={errors.alamat_domisili}
-                                        autoComplete="alamat_domisili"
-                                        placeholder="Alamat Domisili"
-                                    />
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.alamat_domisili}
-                                    </Form.Control.Feedback>
-                                </div>
-                            )}
-                        </Form.Group>
-                        <Form.Group className="row mb-1">
-                            <div className="col-md-12 col-12 mb-3">
-                                <Form.Label>Alamat Usaha</Form.Label>
-                                <Form.Check
-                                    type="checkbox"
-                                    id="switchUsaha"
-                                    label="Tidak sama dengan KTP"
-                                    onChange={(e) => {
-                                        setData("isUsaha", e.target.checked);
-                                    }}
-                                />
-                            </div>
-                            {data.isUsaha && (
-                                <div className="col-md-12 col-12 mb-3">
-                                    <Form.Control
-                                        onChange={(e) =>
-                                            setData(
-                                                "alamat_usaha",
-                                                e.target.value
-                                            )
-                                        }
-                                        as="textarea"
-                                        rows="3"
-                                        value={data.alamat_usaha}
-                                        name="alamat_usaha"
-                                        isInvalid={errors.alamat_usaha}
-                                        autoComplete="alamat_usaha"
-                                        placeholder="Alamat Usaha"
-                                    />
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.alamat_usaha}
-                                    </Form.Control.Feedback>
-                                </div>
-                            )}
-                        </Form.Group>
-                        <Form.Group className="row mb-1">
-                            <div className="col-md-12 col-12 mb-3">
-                                <div className="col-md-6 col-12 mb-3">
-                                    <Form.Label className="required">
-                                        Listrik
-                                    </Form.Label>
-                                    <SelectListrik
-                                        onChange={(item) =>
-                                            setData((prevState) => ({
-                                                ...prevState,
-                                                daya_listrik: item.value,
-                                            }))
-                                        }
-                                        errors={errors.daya_listrik}
-                                    />
-                                </div>
-                            </div>
-                        </Form.Group>
-                        <Form.Group className="row mb-1">
-                            <div className="col-md-12 col-12 mb-3">
-                                <Form.Check
-                                    type="checkbox"
-                                    id="switchDisabilitas"
-                                    label="Apakah Anda Penyandang Disabilitas Fisik/Sensorik?"
-                                    onChange={(e) => {
-                                        setData(
-                                            "isDisabilitas",
-                                            e.target.checked
-                                        );
-                                    }}
-                                />
-                            </div>
-                            {data.isDisabilitas && (
-                                <div className="col-md-12 col-12 mb-3">
-                                    <SelectDisabilitas
-                                        onChange={(item) =>
-                                            setData((prevState) => ({
-                                                ...prevState,
-                                                disabilitas: item,
-                                            }))
-                                        }
-                                        errors={errors.disabilitas}
-                                    />
-                                </div>
-                            )}
-                        </Form.Group>
-                        <div className="big-text text-muted mb-4">
-                            Profil Usaha
-                            <div className="underline"></div>
-                        </div>
-                        <Form.Group className="row mb-1">
-                            <div className="col-md-12 col-12 mb-3">
-                                <Form.Label className="required">
-                                    Kategori Usaha
-                                </Form.Label>
-                                <SelectKategoriUsaha
-                                    onChange={(item) =>
-                                        setData((prevState) => ({
-                                            ...prevState,
-                                            kategori: item.id,
-                                            jenis_kategori: item.jenis,
-                                        }))
-                                    }
-                                    errors={errors.kategori}
-                                />
-                            </div>
-                        </Form.Group>
-                        <Form.Group className="row mb-1">
-                            <div className="col-md-12 col-12 mb-3">
-                                <Form.Label className="required">
-                                    Klaster Usaha
-                                </Form.Label>
-                                <SelectKlasterUsaha
-                                    kodeJenis={data.jenis_kategori}
-                                    onChange={(item) =>
-                                        setData((prevState) => ({
-                                            ...prevState,
-                                            klaster_usaha: item.id,
-                                        }))
-                                    }
-                                    errors={errors.klaster_usaha}
-                                />
-                            </div>
-                        </Form.Group>
-                        {data.kategori == 5 && (
-                            <Form.Group className="row mb-1">
-                                <div className="col-md-12 col-12 mb-3">
-                                    <Form.Label className="required">
-                                        Jumlah Keluarga yang Ditanggung Dalam 1
-                                        KK
-                                    </Form.Label>
-                                    <SelectTanggunganKeluarga
-                                        kodeJenis={data.jenis_kategori}
-                                        onChange={(item) =>
-                                            setData((prevState) => ({
-                                                ...prevState,
-                                                tanggungan_keluarga: item.id,
-                                            }))
-                                        }
-                                        errors={errors.tanggungan_keluarga}
-                                    />
-                                </div>
-                            </Form.Group>
-                        )}
-                        <Form.Group className="row mb-1">
-                            <div className="col-md-12 col-12 mb-3">
-                                <Form.Label className="required">
-                                    Lama Usaha
-                                </Form.Label>
-                                <SelectLamaUsaha
-                                    kodeJenis={data.jenis_kategori}
-                                    onChange={(item) =>
-                                        setData((prevState) => ({
-                                            ...prevState,
-                                            lama_usaha: item.id,
-                                        }))
-                                    }
-                                    errors={errors.lama_usaha}
-                                />
-                            </div>
-                        </Form.Group>
-                        {data.kategori != 5 && (
-                            <Form.Group className="row mb-1">
-                                <div className="col-md-12 col-12 mb-3">
-                                    <Form.Label className="required">
-                                        Jumlah Tenaga Kerja
-                                    </Form.Label>
-                                    <SelectTenagaKerja
-                                        kodeJenis={data.jenis_kategori}
-                                        onChange={(item) =>
-                                            setData((prevState) => ({
-                                                ...prevState,
-                                                jumlah_tenaga: item.id,
-                                            }))
-                                        }
-                                        errors={errors.jumlah_tenaga}
-                                    />
-                                </div>
-                            </Form.Group>
-                        )}
-                        {data.kategori != 5 && (
-                            <Form.Group className="row mb-1">
-                                <div className="col-md-12 col-12 mb-3">
-                                    <Form.Label className="required">
-                                        Pendapatan Kotor per Bulan
-                                    </Form.Label>
-                                    <SelectBruto
-                                        kodeJenis={data.jenis_kategori}
-                                        onChange={(item) =>
-                                            setData((prevState) => ({
-                                                ...prevState,
-                                                bruto: item.id,
-                                            }))
-                                        }
-                                        errors={errors.bruto}
-                                    />
-                                </div>
-                            </Form.Group>
-                        )}
-                        {data.kategori == 5 && (
-                            <Form.Group className="row mb-1">
-                                <div className="col-md-12 col-12 mb-3">
-                                    <Form.Label className="required">
-                                        Status Tempat Tinggal
-                                    </Form.Label>
-                                    <SelectTempatTinggal
-                                        kodeJenis={data.jenis_kategori}
-                                        onChange={(item) =>
-                                            setData((prevState) => ({
-                                                ...prevState,
-                                                status_tempat_tinggal: item.id,
-                                            }))
-                                        }
-                                        errors={errors.status_tempat_tinggal}
-                                    />
-                                </div>
-                            </Form.Group>
-                        )}
-                        <Form.Group className="row mb-1">
-                            <div className="col-md-12 col-12 mb-3">
-                                <Form.Label className="required">
-                                    Aset (Selain Tanah & Bangunan)
-                                </Form.Label>
-                                <div className="col-12 mb-3">
-                                    <CurrencyInput
-                                        placeholder="Rp."
-                                        prefix={"Rp. "}
-                                        groupSeparator="."
-                                        decimalSeparator=","
-                                        allowDecimals={false}
-                                        className={`form-control ${
-                                            errors.aset ? `is-invalid` : ``
-                                        }`}
-                                        onValueChange={(value, name, values) =>
-                                            setData((prevState) => ({
-                                                ...prevState,
-                                                aset: value,
-                                            }))
-                                        }
-                                    />
-                                    <div className="invalid-feedback">
-                                        {errors.aset}
+                                <Form.Group className="row mb-1">
+                                    <div className="col-md-6 col-12 mb-3">
+                                        <Form.Label className="required">
+                                            Kecamatan
+                                        </Form.Label>
+                                        <SelectKecamatan
+                                            onChange={(item) =>
+                                                setData((prevState) => ({
+                                                    ...prevState,
+                                                    kode_kecamatan: item.id,
+                                                    nama_kecamatan: item.text,
+                                                }))
+                                            }
+                                            errors={errors.nama_kecamatan}
+                                        />
                                     </div>
-                                </div>
-                            </div>
-                        </Form.Group>
-                        <Form.Group className="row mb-1">
-                            <div className="col-md-12 col-12 mb-3">
-                                <Form.Label className="required">
-                                    Hutang
-                                </Form.Label>
-                                <div className="col-12 mb-3">
-                                    <CurrencyInput
-                                        placeholder="Rp."
-                                        prefix={"Rp. "}
-                                        groupSeparator="."
-                                        decimalSeparator=","
-                                        allowDecimals={false}
-                                        className={`form-control ${
-                                            errors.hutang ? `is-invalid` : ``
-                                        }`}
-                                        onValueChange={(value, name, values) =>
-                                            setData((prevState) => ({
-                                                ...prevState,
-                                                hutang: value,
-                                            }))
-                                        }
-                                    />
-                                    <div className="invalid-feedback">
-                                        {errors.hutang}
+                                    <div className="col-md-6 col-12 mb-3">
+                                        <Form.Label className="required">
+                                            Kelurahan
+                                        </Form.Label>
+                                        <SelectKelurahan
+                                            kodeKecamatan={data.kode_kecamatan}
+                                            onChange={(item) =>
+                                                setData((prevState) => ({
+                                                    ...prevState,
+                                                    kode_kelurahan: item.id,
+                                                    nama_kelurahan: item.text,
+                                                }))
+                                            }
+                                            errors={errors.nama_kelurahan}
+                                        />
                                     </div>
+                                </Form.Group>
+                                <Form.Group className="row mb-1">
+                                    <div className="col-md-6 col-12 mb-3">
+                                        <Form.Label className="required">
+                                            RW
+                                        </Form.Label>
+                                        <SelectRw
+                                            kodeKelurahan={data.kode_kelurahan}
+                                            onChange={(item) =>
+                                                setData((prevState) => ({
+                                                    ...prevState,
+                                                    kode_rw: item.id,
+                                                    nama_rw: item.text,
+                                                }))
+                                            }
+                                            errors={errors.nama_rw}
+                                        />
+                                    </div>
+                                    <div className="col-md-6 col-12 mb-3">
+                                        <Form.Label className="required">
+                                            RT
+                                        </Form.Label>
+                                        <SelectRt
+                                            kodeKelurahan={data.kode_kelurahan}
+                                            kodeRw={data.nama_rw}
+                                            onChange={(item) =>
+                                                setData((prevState) => ({
+                                                    ...prevState,
+                                                    kode_rt: item.id,
+                                                    nama_rt: item.text,
+                                                }))
+                                            }
+                                            errors={errors.nama_rt}
+                                        />
+                                    </div>
+                                </Form.Group>
+                                <Form.Group className="row mb-1">
+                                    <div className="col-md-12 col-12 mb-3">
+                                        <Form.Label className="required">
+                                            Alamat
+                                        </Form.Label>
+                                        <Form.Control
+                                            onChange={(e) =>
+                                                setData(
+                                                    "alamat",
+                                                    e.target.value
+                                                )
+                                            }
+                                            as="textarea"
+                                            rows="3"
+                                            value={data.alamat}
+                                            name="alamat"
+                                            isInvalid={errors.alamat}
+                                            autoComplete="alamat"
+                                            placeholder="Alamat KTP (Jalan/Gang/Lingkungan/No rumah)"
+                                        />
+                                        <Form.Control.Feedback type="invalid">
+                                            {errors.alamat}
+                                        </Form.Control.Feedback>
+                                    </div>
+                                </Form.Group>
+                                <Form.Group className="row mb-1">
+                                    <div className="col-md-12 col-12 mb-3">
+                                        <Form.Label>Alamat Domisili</Form.Label>
+                                        <Form.Check
+                                            type="checkbox"
+                                            id="switchDomisili"
+                                            label="Tidak sama dengan KTP"
+                                            onChange={(e) => {
+                                                setData(
+                                                    "isDomisili",
+                                                    e.target.checked
+                                                );
+                                            }}
+                                        />
+                                    </div>
+                                    {data.isDomisili && (
+                                        <div className="col-md-12 col-12 mb-3">
+                                            <Form.Control
+                                                onChange={(e) =>
+                                                    setData(
+                                                        "alamat_domisili",
+                                                        e.target.value
+                                                    )
+                                                }
+                                                as="textarea"
+                                                rows="3"
+                                                value={data.alamat_domisili}
+                                                name="alamat_domisili"
+                                                isInvalid={
+                                                    errors.alamat_domisili
+                                                }
+                                                autoComplete="alamat_domisili"
+                                                placeholder="Alamat Domisili"
+                                            />
+                                            <Form.Control.Feedback type="invalid">
+                                                {errors.alamat_domisili}
+                                            </Form.Control.Feedback>
+                                        </div>
+                                    )}
+                                </Form.Group>
+                                <Form.Group className="row mb-1">
+                                    <div className="col-md-12 col-12 mb-3">
+                                        <Form.Label>Alamat Usaha</Form.Label>
+                                        <Form.Check
+                                            type="checkbox"
+                                            id="switchUsaha"
+                                            label="Tidak sama dengan KTP"
+                                            onChange={(e) => {
+                                                setData(
+                                                    "isUsaha",
+                                                    e.target.checked
+                                                );
+                                            }}
+                                        />
+                                    </div>
+                                    {data.isUsaha && (
+                                        <div className="col-md-12 col-12 mb-3">
+                                            <Form.Control
+                                                onChange={(e) =>
+                                                    setData(
+                                                        "alamat_usaha",
+                                                        e.target.value
+                                                    )
+                                                }
+                                                as="textarea"
+                                                rows="3"
+                                                value={data.alamat_usaha}
+                                                name="alamat_usaha"
+                                                isInvalid={errors.alamat_usaha}
+                                                autoComplete="alamat_usaha"
+                                                placeholder="Alamat Usaha"
+                                            />
+                                            <Form.Control.Feedback type="invalid">
+                                                {errors.alamat_usaha}
+                                            </Form.Control.Feedback>
+                                        </div>
+                                    )}
+                                </Form.Group>
+                                <Form.Group className="row mb-1">
+                                    <div className="col-md-12 col-12 mb-3">
+                                        <div className="col-md-6 col-12 mb-3">
+                                            <Form.Label className="required">
+                                                Listrik
+                                            </Form.Label>
+                                            <SelectListrik
+                                                onChange={(item) =>
+                                                    setData((prevState) => ({
+                                                        ...prevState,
+                                                        daya_listrik:
+                                                            item.value,
+                                                    }))
+                                                }
+                                                errors={errors.daya_listrik}
+                                            />
+                                        </div>
+                                    </div>
+                                </Form.Group>
+                                <Form.Group className="row mb-1">
+                                    <div className="col-md-12 col-12 mb-3">
+                                        <Form.Check
+                                            type="checkbox"
+                                            id="switchDisabilitas"
+                                            label="Apakah Anda Penyandang Disabilitas Fisik/Sensorik?"
+                                            onChange={(e) => {
+                                                setData(
+                                                    "isDisabilitas",
+                                                    e.target.checked
+                                                );
+                                            }}
+                                        />
+                                    </div>
+                                    {data.isDisabilitas && (
+                                        <div className="col-md-12 col-12 mb-3">
+                                            <SelectDisabilitas
+                                                onChange={(item) =>
+                                                    setData((prevState) => ({
+                                                        ...prevState,
+                                                        disabilitas: item,
+                                                    }))
+                                                }
+                                                errors={errors.disabilitas}
+                                            />
+                                        </div>
+                                    )}
+                                </Form.Group>
+                                <div className="big-text text-muted mb-4">
+                                    Profil Usaha
+                                    <div className="underline"></div>
                                 </div>
-                            </div>
-                        </Form.Group>
-                        {data.kategori == 4 && (
-                            <Form.Group className="row mb-1">
-                                <div className="col-md-12 col-12 mb-3">
-                                    <Form.Label className="required">
-                                        Jumlah Legalitas dan Standarisasi
-                                    </Form.Label>
-                                    <SelectLegalitas
-                                        kodeJenis={data.jenis_kategori}
-                                        onChange={(item) =>
-                                            setData((prevState) => ({
-                                                ...prevState,
-                                                jumlah_legalitas: item.id,
-                                            }))
-                                        }
-                                        errors={errors.jumlah_legalitas}
-                                    />
-                                </div>
-                                <div className="col-md-12 col-12 mb-3">
-                                    <Form.Label className="required">
-                                        Jumlah Teknologi Dalam Pemasaran
-                                    </Form.Label>
-                                    <SelectTeknologi
-                                        kodeJenis={data.jenis_kategori}
-                                        onChange={(item) =>
-                                            setData((prevState) => ({
-                                                ...prevState,
-                                                jumlah_teknologi: item.id,
-                                            }))
-                                        }
-                                        errors={errors.jumlah_teknologi}
-                                    />
-                                </div>
-                                <div className="col-md-12 col-12 mb-3">
-                                    <Form.Label className="required">
-                                        Jumlah Rencana Penyerapan Tenaga Kerja
-                                        Miskin
-                                    </Form.Label>
-                                    <SelectPenyerapanNaker
-                                        kodeJenis={data.jenis_kategori}
-                                        onChange={(item) =>
-                                            setData((prevState) => ({
-                                                ...prevState,
-                                                jumlah_penyerapan_naker:
-                                                    item.id,
-                                            }))
-                                        }
-                                        errors={errors.jumlah_penyerapan_naker}
-                                    />
-                                </div>
-                            </Form.Group>
-                        )}
-                        <div className="big-text text-muted mb-4">
-                            Upload Berkas
-                            <div className="underline"></div>
-                        </div>
-                        {data.kategori && (
-                            <>
-                                {renderFileUpload(
-                                    "Pas Foto Berwarna",
-                                    "file_foto",
-                                    ".png,.jpg,.jpeg",
-                                    false,
-                                    "imagePreviewPasFoto"
+                                <Form.Group className="row mb-1">
+                                    <div className="col-md-12 col-12 mb-3">
+                                        <Form.Label className="required">
+                                            Klaster Usaha
+                                        </Form.Label>
+                                        <SelectKlasterUsaha
+                                            kodeJenis={data.jenis_kategori}
+                                            onChange={(item) =>
+                                                setData((prevState) => ({
+                                                    ...prevState,
+                                                    klaster_usaha: item.id,
+                                                }))
+                                            }
+                                            errors={errors.klaster_usaha}
+                                        />
+                                    </div>
+                                </Form.Group>
+                                {data.kategori == 5 && (
+                                    <Form.Group className="row mb-1">
+                                        <div className="col-md-12 col-12 mb-3">
+                                            <Form.Label className="required">
+                                                Jumlah Keluarga yang Ditanggung
+                                                Dalam 1 KK
+                                            </Form.Label>
+                                            <SelectTanggunganKeluarga
+                                                kodeJenis={data.jenis_kategori}
+                                                onChange={(item) =>
+                                                    setData((prevState) => ({
+                                                        ...prevState,
+                                                        tanggungan_keluarga:
+                                                            item.id,
+                                                    }))
+                                                }
+                                                errors={
+                                                    errors.tanggungan_keluarga
+                                                }
+                                            />
+                                        </div>
+                                    </Form.Group>
                                 )}
-                                {renderFileUpload(
-                                    "Foto KTP",
-                                    "file_ktp",
-                                    ".png,.jpg,.jpeg",
-                                    false,
-                                    "imagePreviewKTP"
-                                )}
-                                {renderFileUpload(
-                                    "Kartu Keluarga (KK)",
-                                    "file_kk"
-                                )}
-                                {renderFileUpload(
-                                    "Surat Keterangan Domisili (jika berbeda KTP)",
-                                    "file_skd"
-                                )}
-                                {renderFileUpload(
-                                    "Foto Usaha / Produk",
-                                    "file_produk",
-                                    ".png,.jpg,.jpeg",
-                                    false,
-                                    "imagePreviewUsaha"
-                                )}
-                                {renderFileUpload(
-                                    "Surat Pernyataan Komitmen",
-                                    "file_pernyataan"
-                                )}
-
+                                <Form.Group className="row mb-1">
+                                    <div className="col-md-12 col-12 mb-3">
+                                        <Form.Label className="required">
+                                            Lama Usaha
+                                        </Form.Label>
+                                        <SelectLamaUsaha
+                                            kodeJenis={data.jenis_kategori}
+                                            onChange={(item) =>
+                                                setData((prevState) => ({
+                                                    ...prevState,
+                                                    lama_usaha: item.id,
+                                                }))
+                                            }
+                                            errors={errors.lama_usaha}
+                                        />
+                                    </div>
+                                </Form.Group>
                                 {data.kategori != 5 && (
-                                    <>
-                                        {renderFileUpload("NIB", "file_nib")}
-                                        {renderFileUpload("SKU", "file_sku")}
-                                    </>
+                                    <Form.Group className="row mb-1">
+                                        <div className="col-md-12 col-12 mb-3">
+                                            <Form.Label className="required">
+                                                Jumlah Tenaga Kerja
+                                            </Form.Label>
+                                            <SelectTenagaKerja
+                                                kodeJenis={data.jenis_kategori}
+                                                onChange={(item) =>
+                                                    setData((prevState) => ({
+                                                        ...prevState,
+                                                        jumlah_tenaga: item.id,
+                                                    }))
+                                                }
+                                                errors={errors.jumlah_tenaga}
+                                            />
+                                        </div>
+                                    </Form.Group>
                                 )}
+                                {data.kategori != 5 && (
+                                    <Form.Group className="row mb-1">
+                                        <div className="col-md-12 col-12 mb-3">
+                                            <Form.Label className="required">
+                                                Pendapatan Kotor per Bulan
+                                            </Form.Label>
+                                            <SelectBruto
+                                                kodeJenis={data.jenis_kategori}
+                                                onChange={(item) =>
+                                                    setData((prevState) => ({
+                                                        ...prevState,
+                                                        bruto: item.id,
+                                                    }))
+                                                }
+                                                errors={errors.bruto}
+                                            />
+                                        </div>
+                                    </Form.Group>
+                                )}
+                                {data.kategori == 5 && (
+                                    <Form.Group className="row mb-1">
+                                        <div className="col-md-12 col-12 mb-3">
+                                            <Form.Label className="required">
+                                                Status Tempat Tinggal
+                                            </Form.Label>
+                                            <SelectTempatTinggal
+                                                kodeJenis={data.jenis_kategori}
+                                                onChange={(item) =>
+                                                    setData((prevState) => ({
+                                                        ...prevState,
+                                                        status_tempat_tinggal:
+                                                            item.id,
+                                                    }))
+                                                }
+                                                errors={
+                                                    errors.status_tempat_tinggal
+                                                }
+                                            />
+                                        </div>
+                                    </Form.Group>
+                                )}
+                                <Form.Group className="row mb-1">
+                                    <div className="col-md-12 col-12 mb-3">
+                                        <Form.Label className="required">
+                                            Aset (Selain Tanah & Bangunan)
+                                        </Form.Label>
+                                        <div className="col-12 mb-3">
+                                            <CurrencyInput
+                                                placeholder="Rp."
+                                                prefix={"Rp. "}
+                                                groupSeparator="."
+                                                decimalSeparator=","
+                                                allowDecimals={false}
+                                                className={`form-control ${
+                                                    errors.aset
+                                                        ? `is-invalid`
+                                                        : ``
+                                                }`}
+                                                onValueChange={(
+                                                    value,
+                                                    name,
+                                                    values
+                                                ) =>
+                                                    setData((prevState) => ({
+                                                        ...prevState,
+                                                        aset: value,
+                                                    }))
+                                                }
+                                            />
+                                            <div className="invalid-feedback">
+                                                {errors.aset}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Form.Group>
+                                <Form.Group className="row mb-1">
+                                    <div className="col-md-12 col-12 mb-3">
+                                        <Form.Label className="required">
+                                            Hutang
+                                        </Form.Label>
+                                        <div className="col-12 mb-3">
+                                            <CurrencyInput
+                                                placeholder="Rp."
+                                                prefix={"Rp. "}
+                                                groupSeparator="."
+                                                decimalSeparator=","
+                                                allowDecimals={false}
+                                                className={`form-control ${
+                                                    errors.hutang
+                                                        ? `is-invalid`
+                                                        : ``
+                                                }`}
+                                                onValueChange={(
+                                                    value,
+                                                    name,
+                                                    values
+                                                ) =>
+                                                    setData((prevState) => ({
+                                                        ...prevState,
+                                                        hutang: value,
+                                                    }))
+                                                }
+                                            />
+                                            <div className="invalid-feedback">
+                                                {errors.hutang}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Form.Group>
+                                {data.kategori == 4 && (
+                                    <Form.Group className="row mb-1">
+                                        <div className="col-md-12 col-12 mb-3">
+                                            <Form.Label className="required">
+                                                Jumlah Legalitas dan
+                                                Standarisasi
+                                            </Form.Label>
+                                            <SelectLegalitas
+                                                kodeJenis={data.jenis_kategori}
+                                                onChange={(item) =>
+                                                    setData((prevState) => ({
+                                                        ...prevState,
+                                                        jumlah_legalitas:
+                                                            item.id,
+                                                    }))
+                                                }
+                                                errors={errors.jumlah_legalitas}
+                                            />
+                                        </div>
+                                        <div className="col-md-12 col-12 mb-3">
+                                            <Form.Label className="required">
+                                                Jumlah Teknologi Dalam Pemasaran
+                                            </Form.Label>
+                                            <SelectTeknologi
+                                                kodeJenis={data.jenis_kategori}
+                                                onChange={(item) =>
+                                                    setData((prevState) => ({
+                                                        ...prevState,
+                                                        jumlah_teknologi:
+                                                            item.id,
+                                                    }))
+                                                }
+                                                errors={errors.jumlah_teknologi}
+                                            />
+                                        </div>
+                                        <div className="col-md-12 col-12 mb-3">
+                                            <Form.Label className="required">
+                                                Jumlah Rencana Penyerapan Tenaga
+                                                Kerja Miskin
+                                            </Form.Label>
+                                            <SelectPenyerapanNaker
+                                                kodeJenis={data.jenis_kategori}
+                                                onChange={(item) =>
+                                                    setData((prevState) => ({
+                                                        ...prevState,
+                                                        jumlah_penyerapan_naker:
+                                                            item.id,
+                                                    }))
+                                                }
+                                                errors={
+                                                    errors.jumlah_penyerapan_naker
+                                                }
+                                            />
+                                        </div>
+                                    </Form.Group>
+                                )}
+                                <div className="big-text text-muted mb-4">
+                                    Upload Berkas
+                                    <div className="underline"></div>
+                                </div>
+                                {data.kategori && (
+                                    <>
+                                        {renderFileUpload(
+                                            "Pas Foto Berwarna",
+                                            "file_foto",
+                                            ".png,.jpg,.jpeg",
+                                            false,
+                                            "imagePreviewPasFoto"
+                                        )}
+                                        {renderFileUpload(
+                                            "Foto KTP",
+                                            "file_ktp",
+                                            ".png,.jpg,.jpeg",
+                                            false,
+                                            "imagePreviewKTP"
+                                        )}
+                                        {renderFileUpload(
+                                            "Kartu Keluarga (KK)",
+                                            "file_kk"
+                                        )}
+                                        {renderFileUpload(
+                                            "Surat Keterangan Domisili (jika berbeda KTP)",
+                                            "file_skd"
+                                        )}
+                                        {renderFileUpload(
+                                            "Foto Usaha / Produk",
+                                            "file_produk",
+                                            ".png,.jpg,.jpeg",
+                                            false,
+                                            "imagePreviewUsaha"
+                                        )}
+                                        {renderFileUpload(
+                                            "Surat Pernyataan Komitmen",
+                                            "file_pernyataan"
+                                        )}
 
-                                {data.kategori === 4 && (
-                                    <>
-                                        {renderFileUpload(
-                                            "Perizinan Teknis dan Standardisasi Lainnya",
-                                            "file_perizinan",
-                                            ".pdf",
-                                            true
+                                        {data.kategori != 5 && (
+                                            <>
+                                                {renderFileUpload(
+                                                    "NIB",
+                                                    "file_nib"
+                                                )}
+                                                {renderFileUpload(
+                                                    "SKU",
+                                                    "file_sku"
+                                                )}
+                                            </>
                                         )}
-                                        {renderFileUpload(
-                                            "Bukti Kepemilikan Akun SIINas",
-                                            "file_siinas"
-                                        )}
-                                        {renderFileUpload(
-                                            "Business Plan",
-                                            "file_bp"
-                                        )}
-                                    </>
-                                )}
 
-                                {data.kategori === 5 && (
-                                    <>
-                                        {renderFileUpload("SKU", "file_sku")}
-                                        {renderFileUpload(
-                                            "Sertifikat Pelatihan Sesuai Usaha yang Diajukan",
-                                            "file_sertifikat_pelatihan"
+                                        {data.kategori === 4 && (
+                                            <>
+                                                {renderFileUpload(
+                                                    "Perizinan Teknis dan Standardisasi Lainnya",
+                                                    "file_perizinan",
+                                                    ".pdf",
+                                                    true
+                                                )}
+                                                {renderFileUpload(
+                                                    "Bukti Kepemilikan Akun SIINas",
+                                                    "file_siinas"
+                                                )}
+                                                {renderFileUpload(
+                                                    "Business Plan",
+                                                    "file_bp"
+                                                )}
+                                            </>
+                                        )}
+
+                                        {data.kategori === 5 && (
+                                            <>
+                                                {renderFileUpload(
+                                                    "SKU",
+                                                    "file_sku"
+                                                )}
+                                                {renderFileUpload(
+                                                    "Sertifikat Pelatihan Sesuai Usaha yang Diajukan",
+                                                    "file_sertifikat_pelatihan"
+                                                )}
+                                            </>
                                         )}
                                     </>
                                 )}
+                                <hr />
+                                <div className="card-footer d-flex justify-content-center mt-4 gap-2">
+                                    <Button type="submit">
+                                        Simpan{" "}
+                                        <i
+                                            className="fa fa-paper-plane ms-1"
+                                            aria-hidden="true"
+                                        ></i>
+                                    </Button>
+                                </div>
                             </>
                         )}
-                        <hr />
-                        <div className="card-footer d-flex justify-content-center mt-4 gap-2">
-                            <Button type="submit">
-                                Simpan{" "}
-                                <i
-                                    className="fa fa-paper-plane ms-1"
-                                    aria-hidden="true"
-                                ></i>
-                            </Button>
-                        </div>
                     </Form>
                 </div>
             </div>

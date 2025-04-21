@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\KirimPendaftar;
 use App\Models\PendaftaranBanmod;
+use App\Models\PenerimaBanmod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
@@ -140,5 +141,22 @@ class BanmodController extends Controller
                 'title' => 'Pendaftaran Banmod',
             ],
         ]);
+    }
+
+    public function ceknik($nik)
+    {
+        $data = PenerimaBanmod::where('nik', $nik)->first();
+
+        if ($data) {
+            return response()->json([
+                'success' => false,
+                'message' => 'NIK anda ditemukan dan pernah terdaftar sebagai penerima bantuan modal.',
+            ]);
+        } else {
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+            ]);
+        }
     }
 }
