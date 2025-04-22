@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use Inertia\Inertia;
 use Illuminate\Http\Request;
-use App\Models\PenerimaBanmod;
 use Yajra\DataTables\DataTables;
+use App\Models\PenerimaBanmodWus;
 use App\Http\Controllers\Controller;
 
-class PenerimaBanmodLamaController extends Controller
+class PenerimaPelatihanBanmodController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,21 +16,21 @@ class PenerimaBanmodLamaController extends Controller
     public function index(Request $request)
     {
         if ($request->wantsJson()) {
-            $data = PenerimaBanmod::query();
+            $data = PenerimaBanmodWus::query();
 
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     return [
-                        'edit_url' => route('admin.banmodlama.edit', $row->id),
+                        'edit_url' => route('admin.banmodwirausaha.edit', $row->id),
                         // 'delete_url' => route('admin.banmodwirausaha.destroy', $row->id)
                     ];
                 })
                 ->make(true);
         }
 
-        return Inertia::render('Admin/PenerimaBanmodLama/Index', [
-            'title' => 'Penerima Banmod Lama',
+        return Inertia::render('Admin/PenerimaPelatihanBanmod/Index', [
+            'title' => 'Penerima Pelatihan Banmod',
             'flash' => [
                 'message' => session('message')
             ],
@@ -66,12 +66,12 @@ class PenerimaBanmodLamaController extends Controller
      */
     public function edit(string $id)
     {
-        $banmod = PenerimaBanmod::findOrFail($id);
+        $banmod = PenerimaBanmodWus::findOrFail($id);
 
-        return Inertia::render('Admin/PenerimaBanmodLama/Create', [
-            'title' => 'Edit Penerima Banmod Lama',
+        return Inertia::render('Admin/PenerimaPelatihanBanmod/Create', [
+            'title' => 'Edit Penerima Pelatihan Banmod',
             'banmod' => $banmod,
-            'action' => route('admin.banmodlama.update', $banmod->id),
+            'action' => route('admin.banmodwirausaha.update', $banmod->id),
             'method' => 'PUT',
         ]);
     }
@@ -81,12 +81,12 @@ class PenerimaBanmodLamaController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $banmod = PenerimaBanmod::find($id);
+        $banmod = PenerimaBanmodWus::find($id);
 
         $request->validate([
             'nama' => ['required', 'string', 'max:255'],
-            'nik' => ['required', 'numeric', 'digits:16', 'unique:penerima_banmods,nik,' . $id],
-            'nik' => ['required', 'numeric', 'digits:16', 'unique:penerima_banmods,kk,' . $id],
+            'nik' => ['required', 'numeric', 'digits:16', 'unique:penerima_banmod_wuses,nik,' . $id],
+            'nik' => ['required', 'numeric', 'digits:16', 'unique:penerima_banmod_wuses,kk,' . $id],
         ]);
 
         $banmod->update([
@@ -95,7 +95,7 @@ class PenerimaBanmodLamaController extends Controller
             'nama' => $request->nama,
         ]);
 
-        return redirect()->route('admin.banmodlama.index')->with('message', 'Penerima Banmod Lama updated successfully');
+        return redirect()->route('admin.banmodwirausaha.index')->with('message', 'Penerima Pelatihan Banmod updated successfully');
     }
 
     /**

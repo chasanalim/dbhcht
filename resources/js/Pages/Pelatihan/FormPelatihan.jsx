@@ -1,4 +1,4 @@
-import { Head, usePage, useForm } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 import { Form } from "react-bootstrap";
 import Layout from "@/Layouts/Layout";
 
@@ -10,29 +10,11 @@ import FormPetani from "./Forms/FormPetani";
 import FormIndustri from "./Forms/FormIndustri";
 import FormPenerimaBanmod from "./Forms/FormPenerimaBanmod";
 
+import { useState } from "react";
+
 export default function FormPelatihan() {
     const { meta } = usePage().props;
-
-    const { data, setData, errors, post, reset } = useForm({
-        jenisPelatihan: "",
-
-        // Field umum
-        nik: "",
-        kk: "",
-        nama_lengkap: "",
-        jenis_kelamin: "",
-        no_hp: "",
-        tempat_lahir: "",
-        tanggal_lahir: "",
-        jalan: "",
-        kecamatan: "",
-        kelurahan: "",
-        rw: "",
-        rt: "",
-        pendidikan: "",
-        isDisabilitas: false,
-        jenis_disabilitas: [],
-    });
+    const [jenisPelatihan, setJenisPelatihan] = useState("");
 
     return (
         <Layout>
@@ -51,60 +33,24 @@ export default function FormPelatihan() {
                                     Jenis Pelatihan
                                 </Form.Label>
                                 <SelectJenisPelatihan
-                                    value={data.jenisPelatihan}
+                                    value={jenisPelatihan}
                                     onChange={(item) =>
-                                        setData((prev) => ({
-                                            ...prev,
-                                            jenisPelatihan: item.value,
-                                        }))
+                                        setJenisPelatihan(item.value)
                                     }
-                                    errors={errors.jenisPelatihan}
+                                    errors={null}
                                 />
                             </div>
                         </Form.Group>
 
-                        {/* Render form berdasarkan pilihan pelatihan */}
-                        {data.jenisPelatihan === "keterampilan" && (
-                            <FormKeterampilan
-                                data={data}
-                                setData={setData}
-                                errors={errors}
-                            />
+                        {jenisPelatihan === "keterampilan" && (
+                            <FormKeterampilan />
                         )}
-                        {data.jenisPelatihan === "umkm" && (
-                            <FormUMKM
-                                data={data}
-                                setData={setData}
-                                errors={errors}
-                            />
-                        )}
-                        {data.jenisPelatihan === "penyuluh" && (
-                            <FormPenyuluh
-                                data={data}
-                                setData={setData}
-                                errors={errors}
-                            />
-                        )}
-                        {data.jenisPelatihan === "petani" && (
-                            <FormPetani
-                                data={data}
-                                setData={setData}
-                                errors={errors}
-                            />
-                        )}
-                        {data.jenisPelatihan === "industri" && (
-                            <FormIndustri
-                                data={data}
-                                setData={setData}
-                                errors={errors}
-                            />
-                        )}
-                        {data.jenisPelatihan === "penerimabanmod" && (
-                            <FormPenerimaBanmod
-                                data={data}
-                                setData={setData}
-                                errors={errors}
-                            />
+                        {jenisPelatihan === "umkm" && <FormUMKM />}
+                        {jenisPelatihan === "penyuluh" && <FormPenyuluh />}
+                        {jenisPelatihan === "petani" && <FormPetani />}
+                        {jenisPelatihan === "industri" && <FormIndustri />}
+                        {jenisPelatihan === "penerimabanmod" && (
+                            <FormPenerimaBanmod />
                         )}
                     </div>
                 </div>

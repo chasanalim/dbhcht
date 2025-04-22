@@ -56,6 +56,12 @@ class HandleInertiaRequests extends Middleware
                 'show' => true,
             ],
             [
+                'label' => 'List Pendaftar Banmod',
+                'route' => 'peserta',
+                'icon' => 'bi bi-person-lines-fill',
+                'show' => true,
+            ],
+            [
                 'label' => 'Daftar Pelatihan',
                 'route' => 'pelatihan',
                 'icon' => 'bi bi-person-arms-up',
@@ -85,6 +91,8 @@ class HandleInertiaRequests extends Middleware
             ],
             'env' => [
                 'app_url_esuket' => env('APP_URL_ESUKET'),
+                'app_email_banmod' => env('APP_EMAIL_BANMOD'),
+                'app_wa_banmod' => env('APP_WA_BANMOD'),
             ],
             'flash' => [
                 'success' => fn() => $request->session()->get('success'),

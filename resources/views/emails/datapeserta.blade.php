@@ -80,11 +80,13 @@
                     <td style="padding: 16px 0; color: #2d3748;">{{ $peserta->daya_listrik }}</td>
                 </tr>
                 @if ($peserta->isDisabilitas)
-                    @foreach ($peserta->disabilitas as $item)
-                        <tr style="border-bottom: 1px solid #edf2f7;">
-                            <td style="padding: 16px 0; color: #2d3748;">{{ $item->label }}</td>
-                        </tr>
-                    @endforeach
+
+                    <tr style="border-bottom: 1px solid #edf2f7;">
+                        <td style="padding: 16px 0; color: #718096;"><strong>Disabilitas</strong></td>
+                        <td style="padding: 16px 0; color: #2d3748;">
+                            {{ implode(', ', array_map(function($el){ return $el['label']; }, $peserta->disabilitas)); }}
+                        </td>
+                    </tr>
                 @endif
 
                 <tr style="border-bottom: 1px solid #edf2f7;">

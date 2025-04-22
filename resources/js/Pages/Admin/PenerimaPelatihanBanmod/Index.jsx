@@ -17,7 +17,7 @@ export default function Index({ title, flash }) {
             serverSide: true,
             responsive: true,
             ajax: {
-                url: route("admin.banmodlama.index"),
+                url: route("admin.banmodwirausaha.index"),
                 type: "GET",
                 headers: {
                     "X-Requested-With": "XMLHttpRequest",
@@ -104,7 +104,7 @@ export default function Index({ title, flash }) {
                 {
                     data: "jenis_usaha",
                     name: "jenis_usaha",
-                    width: "10%",
+                    width: "30%",
                 },
             ],
             drawCallback: function () {
@@ -157,7 +157,7 @@ export default function Index({ title, flash }) {
                                 <div className="table-responsive">
                                     <table
                                         ref={tableRef}
-                                        className="table table-sm table-hover"
+                                        className="table table-sm table-striped table-hover"
                                     >
                                         <thead>
                                             <tr>
@@ -183,7 +183,6 @@ export default function Index({ title, flash }) {
                     </div>
                 </div>
             </div>
-
             {flash.message && (
                 <div
                     className="position-fixed top-0 end-0 p-3"

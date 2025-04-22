@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Mail\KirimPendaftar;
 use App\Models\PendaftaranBanmod;
+use App\Models\PenerimaBanmod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
+use Yajra\DataTables\DataTables;
 
 class BanmodController extends Controller
 {
@@ -42,7 +44,7 @@ class BanmodController extends Controller
             "isUsaha" => ['nullable', 'boolean'],
             "alamat_usaha" => ['nullable', 'required_if:isDomisili,true', 'string'],
             "phone_number" => ['required', 'numeric', 'digits_between:10,15'],
-            "daya_listrik" => ['required', 'numeric'],
+            "daya_listrik" => ['required', 'string'],
             "isDisabilitas" => ['nullable', 'boolean'],
             "disabilitas" => ['nullable'],
             "disabilitas.*.value" => ['nullable', 'required_if:isDisabilitas,true', 'string'],
@@ -63,8 +65,8 @@ class BanmodController extends Controller
             "file_foto" => ['required', 'image'],
             "file_ktp" => ['required', 'image'],
             "file_kk" => ['required', 'file'],
-            "file_nib" => ['nullable', 'required_if:kategori,1,2,3,4', 'file'],
-            "file_sku" => ['nullable', 'required_if:kategori,4,5', 'file'],
+            "file_nib" => ['nullable', 'required_without_all:file_nib,file_sku', 'required_if:kategori,4', 'file'],
+            "file_sku" => ['nullable', 'required_without_all:file_nib,file_sku', 'required_if:kategori,4,5', 'file'],
             "file_skd" => ['nullable', 'required_if:isDomisili,true', 'file'],
             "file_produk" => ['required', 'image'],
             "file_pernyataan" => ['required', 'file'],
@@ -138,6 +140,49 @@ class BanmodController extends Controller
         return Inertia::render('Banmod/Success', [
             'meta' => [
                 'title' => 'Pendaftaran Banmod',
+            ],
+        ]);
+    }
+
+    public function ceknik($nik)
+    {
+        $data = PenerimaBanmod::where('nik', $nik)->first();
+
+        if ($data) {
+            return response()->json([
+                'success' => false,
+                'message' => 'NIK anda ditemukan dan pernah terdaftar sebagai penerima bantuan modal.',
+            ]);
+        } else {
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+            ]);
+        }
+    }
+
+    public function peserta(Request $request)
+    {
+        if ($request->wantsJson()) {
+            $data = PendaftaranBanmod::query();
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                // ->addColumn('action', function ($row) {
+                //     return [
+                //         'edit_url' => route('admin.banmod.edit', $row->id),
+                //         'delete_url' => route('admin.banmod.destroy', $row->id)
+                //     ];
+                // })
+                ->make(true);
+        }
+
+        return Inertia::render('Banmod/Peserta', [
+            'meta' => [
+                'title' => 'Pendaftar Bantuan Modal',
+                'flash' => [
+                    'message' => session('message')
+                ],
             ],
         ]);
     }

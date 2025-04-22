@@ -8,7 +8,7 @@ import { Toast, Tooltip } from "bootstrap";
 // Import bootstrap JS
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
-export default function Index({ title, flash }) {
+export default function Index({ title, can, flash }) {
     const tableRef = useRef();
 
     useEffect(() => {
@@ -17,7 +17,7 @@ export default function Index({ title, flash }) {
             serverSide: true,
             responsive: true,
             ajax: {
-                url: route("admin.banmodlama.index"),
+                url: route("admin.user.index"),
                 type: "GET",
                 headers: {
                     "X-Requested-With": "XMLHttpRequest",
@@ -32,11 +32,45 @@ export default function Index({ title, flash }) {
                     className: "text-center",
                 },
                 {
+                    data: "name",
+                    name: "name",
+                    orderable: true,
+                    searchable: true,
+                },
+                {
+                    data: "nik",
+                    name: "nik",
+                },
+                {
+                    data: "email",
+                    name: "email",
+                },
+                {
+                    data: "phone_number",
+                    name: "phone_number",
+                },
+                {
+                    data: "roles",
+                    name: "roles",
+                    render: function (data) {
+                        return data === "admin"
+                            ? '<span class="badge bg-danger">Admin</span>'
+                            : data === "dinkop"
+                            ? '<span class="badge bg-warning">Dinkop</span>'
+                            : data === "disperindag"
+                            ? '<span class="badge bg-info">Disperindag</span>'
+                            : data === "pertanian"
+                            ? '<span class="badge bg-primary">Pertanian</span>'
+                            : '<span class="badge bg-success">Walikota</span>';
+                    },
+                },
+
+                {
                     data: "action",
                     name: "action",
                     orderable: false,
                     searchable: false,
-                    width: "10%",
+                    width: "20%",
                     className: "text-center",
                     render: function (data) {
                         let buttons = "";
@@ -51,60 +85,20 @@ export default function Index({ title, flash }) {
                                     <i class="bi bi-pencil-square"></i>
                                 </button>`;
                         // }
+
+                        // if (can.delete) {
+                        buttons += `
+                                <button
+                                    onclick="deleteItem('${data.delete_url}')"
+                                    class="btn btn-danger btn-sm"
+                                    data-bs-toggle="tooltip"
+                                    title="Hapus Data">
+                                    <i class="bi bi-trash"></i>
+                                </button>`;
+                        // }
+
                         return buttons;
                     },
-                },
-                {
-                    data: "nik",
-                    name: "nik",
-                    orderable: true,
-                    searchable: true,
-                },
-                {
-                    data: "kk",
-                    name: "kk",
-                    orderable: true,
-                    searchable: true,
-                },
-                {
-                    data: "nama",
-                    name: "nama",
-                },
-                {
-                    data: "jenis_kelamin",
-                    name: "jenis_kelamin",
-                    render: function (data) {
-                        return data === "P" ? "PEREMPUAN" : "LAKI-LAKI";
-                    },
-                },
-                {
-                    data: "kec",
-                    name: "kec",
-                },
-                {
-                    data: "kel",
-                    name: "kel",
-                },
-                {
-                    data: "rt",
-                    name: "rt",
-                },
-                {
-                    data: "rw",
-                    name: "rw",
-                },
-                {
-                    data: "alamat",
-                    name: "alamat",
-                },
-                {
-                    data: "tahun_dapat_bantuan",
-                    name: "tahun_dapat_bantuan",
-                },
-                {
-                    data: "jenis_usaha",
-                    name: "jenis_usaha",
-                    width: "10%",
                 },
             ],
             drawCallback: function () {
@@ -142,6 +136,18 @@ export default function Index({ title, flash }) {
         };
     }, [flash]);
 
+    const deleteItem = (url) => {
+        if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
+            router.delete(url, {
+                onSuccess: () => {
+                    $(tableRef.current).DataTable().ajax.reload();
+                },
+            });
+        }
+    };
+
+    window.deleteItem = deleteItem;
+
     return (
         <AdminLayout>
             <Head title={title} />
@@ -151,29 +157,32 @@ export default function Index({ title, flash }) {
                     <div className="col-12">
                         <div className="card">
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
-                                <h5 className="mb-2 fw-bold">{title}</h5>
+                                <h5 className="mb-0 fw-bold">{title}</h5>
+                                {can.create && (
+                                <Link
+                                    href={route("admin.user.create")}
+                                    className="btn btn-primary mb-3"
+                                >
+                                    <i className="bi bi-plus-circle me-2"></i>
+                                    Tambah User
+                                </Link>
+                                )}
                             </div>
                             <div className="card-body">
                                 <div className="table-responsive">
                                     <table
                                         ref={tableRef}
-                                        className="table table-sm table-hover"
+                                        className="table table-striped table-hover"
                                     >
                                         <thead>
                                             <tr>
                                                 <th>No</th>
-                                                <th>Aksi</th>
+                                                <th>Nama</th>
                                                 <th>NIK</th>
-                                                <th>NO KK</th>
-                                                <th>NAMA LENGKAP</th>
-                                                <th>JK</th>
-                                                <th>KECAMATAN</th>
-                                                <th>KELURAHAN</th>
-                                                <th>RT</th>
-                                                <th>RW</th>
-                                                <th>ALAMAT</th>
-                                                <th>TAHUN DAPAT BANTUAN</th>
-                                                <th>JENIS USAHA</th>
+                                                <th>Email</th>
+                                                <th>No Hp</th>
+                                                <th>Role</th>
+                                                <th>Aksi</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -184,6 +193,7 @@ export default function Index({ title, flash }) {
                 </div>
             </div>
 
+            {/* Toast Notification */}
             {flash.message && (
                 <div
                     className="position-fixed top-0 end-0 p-3"
