@@ -11,82 +11,58 @@ class PelatihanUmkmController extends Controller
 {
     public function store(Request $request)
     {
-        // Validasi form
-        $validator = Validator::make($request->all(), [
-            'nik' => 'required|unique:pelatihan_umkm,nik',
-            'no_kk' => 'required',
-            'jenis_kelamin' => 'required',
-            'nama_lengkap' => 'required',
-            'no_hp' => 'required',
-            'jalan' => 'required',
-            'kecamatan' => 'required',
-            'kelurahan' => 'required',
-            'rt' => 'required',
-            'rw' => 'required',
-            'tempat_lahir' => 'required',
-            'tgl_lahir' => 'required|date',
-            'pendidikan' => 'required',
-            'is_disabilitas' => 'boolean',
-            'jenis_disabilitas' => 'nullable|json',
-            'prioritas_1' => 'required',
-            'prioritas_2' => 'nullable',
-            'prioritas_3' => 'nullable',
-            'alasan' => 'required',
-            'kesesuaian' => 'required',
-            'pengalaman' => 'required',
-            'komitmen' => 'required',
-            'file_foto' => 'required|file|mimes:jpeg,png,jpg',
-            'file_ktp' => 'required|file|mimes:jpeg,png,jpg,pdf',
-            'file_kk' => 'required|file|mimes:jpeg,png,jpg,pdf',
-            'file_pernyataan' => 'required|file|mimes:pdf',
+        $data = $request->validate([
+            'nik' => 'required|numeric|digits:16|unique:pelatihan_umkm,nik',
+            'kk' => 'required|numeric|digits:16',
+            'nama_lengkap' => 'required|string|max:255',
+            'tmp_lhr' => 'required|string|max:100',
+            'tgl_lhr' => 'required|date',
+            'jenis_kelamin' => 'required|string',
+            'no_hp' => 'required|string|min:11|max:14',
+            'pendidikan' => 'required|string',
+            'is_disabilitas' => 'required|in:ya,tidak',
+            'jenis_disabilitas' => 'nullable|array',
+            'nama_usaha' => 'required|string|max:255',
+            'tahun_berdiri' => 'required|string',
+            'bidang_usaha' => 'required|string',
+            'alamat' => 'required|string',
+            'nama_kecamatan' => 'required|string',
+            'nama_kelurahan' => 'required|string',
+            'nama_rw' => 'required|string',
+            'nama_rt' => 'required|string',
+            'nib' => 'required|string',
+            'legalitas_status' => 'required|string',
+            'legalitas_jenis' => 'nullable|array',
+            'modal' => 'required|numeric',
+            'omset' => 'required|numeric',
+            'kapasitas_jumlah' => 'required|numeric',
+            'kapasitas_satuan' => 'required|string',
+            'jangkauan' => 'required|string',
+            'prioritas_1' => 'required|string',
+            'prioritas_2' => 'required|string',
+            'prioritas_3' => 'required|string',
+            'alasan' => 'required|integer',
+            'kesesuaian' => 'required|integer',
+            'pengalaman' => 'required|integer',
+            'komitmen' => 'required|boolean',
+            'file_foto' => 'required|file|mimes:jpg,jpeg,png|max:2048',
+            'file_ktp' => 'required|file|mimes:jpg,jpeg,png|max:2048',
+            'file_kk' => 'required|file|mimes:jpg,jpeg,png|max:2048',
+            'file_pernyataan' => 'required|file|mimes:pdf|max:2048',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
+        // Simpan file upload
+        $data['file_foto'] = $request->file('file_foto')->store('umkm/foto');
+        $data['file_ktp'] = $request->file('file_ktp')->store('umkm/ktp');
+        $data['file_kk'] = $request->file('file_kk')->store('umkm/kk');
+        $data['file_pernyataan'] = $request->file('file_pernyataan')->store('umkm/pernyataan');
 
-        // Simpan data ke database
-        $pelatihan = new PelatihanUmkm;
-        $pelatihan->nik = $request->nik;
-        $pelatihan->no_kk = $request->no_kk;
-        $pelatihan->jenis_kelamin = $request->jenis_kelamin;
-        $pelatihan->nama_lengkap = $request->nama_lengkap;
-        $pelatihan->no_hp = $request->no_hp;
-        $pelatihan->jalan = $request->jalan;
-        $pelatihan->kecamatan = $request->kecamatan;
-        $pelatihan->kelurahan = $request->kelurahan;
-        $pelatihan->rt = $request->rt;
-        $pelatihan->rw = $request->rw;
-        $pelatihan->tempat_lahir = $request->tempat_lahir;
-        $pelatihan->tgl_lahir = $request->tgl_lahir;
-        $pelatihan->pendidikan = $request->pendidikan;
-        $pelatihan->is_disabilitas = $request->is_disabilitas;
-        $pelatihan->jenis_disabilitas = $request->jenis_disabilitas;
-        $pelatihan->prioritas_1 = $request->prioritas_1;
-        $pelatihan->prioritas_2 = $request->prioritas_2;
-        $pelatihan->prioritas_3 = $request->prioritas_3;
-        $pelatihan->alasan = $request->alasan;
-        $pelatihan->kesesuaian = $request->kesesuaian;
-        $pelatihan->pengalaman = $request->pengalaman;
-        $pelatihan->komitmen = $request->komitmen;
+        // Format array ke string json (jika dibutuhkan)
+        $data['jenis_disabilitas'] = json_encode($data['jenis_disabilitas'] ?? []);
+        $data['legalitas_jenis'] = json_encode($data['legalitas_jenis'] ?? []);
 
-        // Upload file
-        if ($request->hasFile('file_foto')) {
-            $pelatihan->file_foto = $request->file('file_foto')->store('uploads');
-        }
-        if ($request->hasFile('file_ktp')) {
-            $pelatihan->file_ktp = $request->file('file_ktp')->store('uploads');
-        }
-        if ($request->hasFile('file_kk')) {
-            $pelatihan->file_kk = $request->file('file_kk')->store('uploads');
-        }
-        if ($request->hasFile('file_pernyataan')) {
-            $pelatihan->file_pernyataan = $request->file('file_pernyataan')->store('uploads');
-        }
+        PelatihanUmkm::create($data);
 
-        // Simpan ke database
-        $pelatihan->save();
-
-        return response()->json(['message' => 'Data berhasil disimpan', 'data' => $pelatihan], 201);
+        return redirect()->back()->with('success', 'Pendaftaran berhasil disimpan!');
     }
 }
