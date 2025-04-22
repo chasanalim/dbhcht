@@ -81,6 +81,8 @@ Route::prefix('pelatihan/banmod')->group(function () {
     Route::get('/cek-nik/{nik}', [PelatihanPenerimaBanmodController::class, 'cekNIK'])->name('pelatihan-banmod.cekNIK.get');
 });
 
+Route::post('/pelatihan/umkm', [PelatihanUmkmController::class, 'store'])->name('pelatihan.umkm.store');
+
 Route::get('/skor/{kategori}', [SkorPelatihanController::class, 'getSkorByKategori']);
 
 Route::prefix('refer')->as('refer.')->group(function () {
