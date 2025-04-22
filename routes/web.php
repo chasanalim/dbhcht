@@ -20,13 +20,14 @@ use App\Http\Controllers\Admin\PelatihanPertanianController;
 use App\Http\Controllers\Admin\PelatihanUMKMController;
 use App\Http\Controllers\Admin\PendaftaranBanmodController;
 use App\Http\Controllers\Admin\PenerimaBanmodLamaController;
+use App\Http\Controllers\JenisPelatihanPetaniController;
 use App\Http\Controllers\TanggunganKeluargaController;
 use App\Http\Controllers\StatusTempatTinggalController;
 use App\Http\Controllers\JumlahTeknologiDigitalController;
 use App\Http\Controllers\PenyerapanTenagaMiskinController;
 use App\Http\Controllers\PelatihanPenerimaBanmodController;
 use App\Http\Controllers\SkorPelatihanController;
-
+use App\Http\Controllers\SkorPelatihanPetaniController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/download', [HomeController::class, 'file'])->name('download');
@@ -41,6 +42,7 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         return Inertia::render('Admin/Dashboard/Dashboard');
     })->name('dashboard');
+
 
     Route::resource('downloads', LampiranFileController::class);
     Route::resource('banmod', PendaftaranBanmodController::class);
@@ -65,6 +67,11 @@ Route::prefix('banmod')->group(function () {
     Route::post('/store', [BanmodController::class, 'store'])->name('banmod.store');
     Route::get('/success/{id}', [BanmodController::class, 'success'])->name('banmod.success');
     Route::get('/cek-nik/{nik}', [BanmodController::class, 'ceknik'])->name('banmod.ceknik');
+});
+
+Route::prefix('peserta')->group(function () {
+    Route::post('/', [BanmodController::class, 'peserta'])->name('peserta');
+    Route::get('/', [BanmodController::class, 'peserta'])->name('peserta');
 });
 
 Route::prefix('pelatihan/banmod')->group(function () {
@@ -106,6 +113,12 @@ Route::prefix('refer')->as('refer.')->group(function () {
     });
     Route::prefix('penyerapannaker')->as('penyerapannaker.')->group(function () {
         Route::get('/', [PenyerapanTenagaMiskinController::class, 'index'])->name('index');
+    });
+    Route::prefix('jenispelatihanpetani')->as('jenispelatihanpetani.')->group(function () {
+        Route::get('/', [JenisPelatihanPetaniController::class, 'index'])->name('index');
+    });
+    Route::prefix('penyerapannaker')->as('penyerapannaker.')->group(function () {
+        Route::get('/', [SkorPelatihanPetaniController::class, 'index'])->name('index');
     });
 });
 require __DIR__ . '/auth.php';

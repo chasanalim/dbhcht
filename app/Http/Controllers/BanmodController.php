@@ -8,6 +8,7 @@ use App\Models\PenerimaBanmod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
+use Yajra\DataTables\DataTables;
 
 class BanmodController extends Controller
 {
@@ -158,5 +159,31 @@ class BanmodController extends Controller
                 'data' => $data,
             ]);
         }
+    }
+
+    public function peserta(Request $request)
+    {
+        if ($request->wantsJson()) {
+            $data = PendaftaranBanmod::query();
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                // ->addColumn('action', function ($row) {
+                //     return [
+                //         'edit_url' => route('admin.banmod.edit', $row->id),
+                //         'delete_url' => route('admin.banmod.destroy', $row->id)
+                //     ];
+                // })
+                ->make(true);
+        }
+
+        return Inertia::render('Banmod/Peserta', [
+            'meta' => [
+                'title' => 'Pendaftar Bantuan Modal',
+                'flash' => [
+                    'message' => session('message')
+                ],
+            ],
+        ]);
     }
 }
