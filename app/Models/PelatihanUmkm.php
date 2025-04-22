@@ -18,6 +18,7 @@ class PelatihanUmkm extends Model
         'tempat_lahir',
         'tgl_lahir',
         'jenis_kelamin',
+        'no_hp',
         'jalan',
         'kecamatan',
         'kelurahan',
@@ -51,7 +52,8 @@ class PelatihanUmkm extends Model
         'prioritas_3',
         'alasan',
         'kesesuaian',
-        'pengalaman'
+        'pengalaman',
+        'komitmen',
     ];
 
     // Define any relationships, for example if a PelatihanUmkm has a SkorPelatihanUmkm

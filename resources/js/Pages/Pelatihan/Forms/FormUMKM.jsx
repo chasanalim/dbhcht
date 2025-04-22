@@ -20,34 +20,53 @@ import SelectPrioritasPelatihan from "@/Components/Select/SelectPrioritasPelatih
 export default function FormUMKM() {
     const { data, setData, errors, post, processing, reset } = useForm({
         nik: "",
-        kk: "",
-        nama: "",
+        no_kk: "",
+        nama_lengkap: "",
+        tempat_lahir: "",
+        tgl_lahir: "",
         jenis_kelamin: "",
-        alamat_ktp: "",
-        alamat_usaha: "",
-        disabilitas: "",
-        pendidikan: "",
-        bidang_usaha: "",
-        legalitas_status: "",
-        legalitas_jenis: "",
-        kapasitas_produksi: "",
-        satuan_produksi: "",
-        pemasaran: "",
+        no_hp: "",
+        jalan: "",
         kecamatan: "",
         kelurahan: "",
-        rt: "",
         rw: "",
-        foto_profil: null,
-        preview_foto_profil: "",
-        ktp_file: null,
-        kk_file: null,
-        nib_file: null,
-        prioritas_pelatihan_1: "",
-        prioritas_pelatihan_2: "",
-        prioritas_pelatihan_3: "",
+        rt: "",
+        pendidikan: "",
+        is_disabilitas: false,
+        jenis_disabilitas: [],
+
+        nama_usaha: "",
+        tahun_berdiri: "",
+        bidang_usaha: "",
+        alamat_usaha: "",
+        kec_usaha: "",
+        kel_usaha: "",
+        rw_usaha: "",
+        rt_usaha: "",
+        nib: "",
+        legalitas_status: "",
+        legalitas_jenis: [],
+
+        modal: "",
+        omset: "",
+        kapasitas_satuan: "",
+        kapasitas_jumlah: "",
+        jangkauan: "",
+
+        file_foto: null,
+        file_ktp: null,
+        file_kk: null,
+        file_pernyataan: null,
+
+        prioritas_1: "",
+        prioritas_2: "",
+        prioritas_3: "",
+
         alasan: "",
         kesesuaian: "",
         pengalaman: "",
+
+        komitmen: false,
     });
 
     const [skorAlasanOptions, setSkorAlasanOptions] = useState([]);
@@ -96,7 +115,7 @@ export default function FormUMKM() {
         let file = e.target.files[0];
 
         reader.onloadend = () => {
-            setFormData((prevState) => ({
+            setData((prevState) => ({
                 ...prevState,
                 [field_name]: file,
                 [preview_name]: reader.result,
@@ -109,7 +128,7 @@ export default function FormUMKM() {
     const handleUploadFile = (e, field_name, multiple) => {
         const choosenFiles = Array.prototype.slice.call(e.target.files);
 
-        setFormData((prevState) => ({
+        setData((prevState) => ({
             ...prevState,
             [field_name]: multiple ? choosenFiles : e.target.files,
         }));
@@ -122,7 +141,7 @@ export default function FormUMKM() {
     };
 
     const handleRemoveFile = (field, index) => {
-        setFormData((prev) => {
+        setData((prev) => {
             const updated = [...(prev[field] || [])];
             updated.splice(index, 1);
             return { ...prev, [field]: updated };
@@ -130,7 +149,7 @@ export default function FormUMKM() {
     };
 
     const handleRemoveImage = (field, previewKey) => {
-        setFormData((prev) => ({
+        setData((prev) => ({
             ...prev,
             [field]: [],
             [previewKey]: "",
@@ -269,7 +288,7 @@ export default function FormUMKM() {
                 <Form.Control
                     type="text"
                     value={data.nik || ""}
-                    onChange={(e) => setData({ ...data, nik: e.target.value })}
+                    onChange={(e) => setData("nik", e.target.value)}
                     isInvalid={!!errors.nik}
                 />
                 <Form.Control.Feedback type="invalid">
@@ -282,12 +301,12 @@ export default function FormUMKM() {
                 <Form.Label className="required">Nomor KK</Form.Label>
                 <Form.Control
                     type="text"
-                    value={data.kk || ""}
-                    onChange={(e) => setData({ ...data, kk: e.target.value })}
-                    isInvalid={!!errors.kk}
+                    value={data.no_kk || ""}
+                    onChange={(e) => setData("no_kk", e.target.value)}
+                    isInvalid={!!errors.no_kk}
                 />
                 <Form.Control.Feedback type="invalid">
-                    {errors.kk}
+                    {errors.no_kk}
                 </Form.Control.Feedback>
             </Form.Group>
 
@@ -296,9 +315,7 @@ export default function FormUMKM() {
                 <Form.Label className="required">Jenis Kelamin</Form.Label>
                 <SelectJenisKelamin
                     value={data.jenis_kelamin}
-                    onChange={(value) =>
-                        setData({ ...data, jenis_kelamin: value })
-                    }
+                    onChange={(value) => setData("jenis_kelamin", value)}
                     errors={errors.jenis_kelamin}
                 />
             </Form.Group>
@@ -309,9 +326,7 @@ export default function FormUMKM() {
                 <Form.Control
                     type="text"
                     value={data.nama_lengkap || ""}
-                    onChange={(e) =>
-                        setData({ ...data, nama_lengkap: e.target.value })
-                    }
+                    onChange={(e) => setData("nama_lengkap", e.target.value)}
                     isInvalid={!!errors.nama_lengkap}
                 />
                 <Form.Control.Feedback type="invalid">
@@ -325,9 +340,7 @@ export default function FormUMKM() {
                 <Form.Control
                     type="text"
                     value={data.no_hp || ""}
-                    onChange={(e) =>
-                        setData({ ...data, no_hp: e.target.value })
-                    }
+                    onChange={(e) => setData("no_hp", e.target.value)}
                     isInvalid={!!errors.no_hp}
                 />
                 <Form.Control.Feedback type="invalid">
@@ -341,13 +354,13 @@ export default function FormUMKM() {
                     <Form.Label className="required">Kecamatan</Form.Label>
                     <SelectKecamatan
                         onChange={(item) =>
-                            setData((prevState) => ({
-                                ...prevState,
+                            setData((prev) => ({
+                                ...prev,
                                 kode_kecamatan: item.id,
-                                nama_kecamatan: item.text,
+                                kecamatan: item.text,
                             }))
                         }
-                        errors={errors.nama_kecamatan}
+                        errors={errors.kecamatan}
                     />
                 </div>
                 <div className="col-md-6 col-12 mb-3">
@@ -355,98 +368,91 @@ export default function FormUMKM() {
                     <SelectKelurahan
                         kodeKecamatan={data.kode_kecamatan}
                         onChange={(item) =>
-                            setData((prevState) => ({
-                                ...prevState,
+                            setData((prev) => ({
+                                ...prev,
                                 kode_kelurahan: item.id,
-                                nama_kelurahan: item.text,
+                                kelurahan: item.text,
                             }))
                         }
-                        errors={errors.nama_kelurahan}
+                        errors={errors.kelurahan}
                     />
                 </div>
             </Form.Group>
+
             <Form.Group className="row mb-1">
                 <div className="col-md-6 col-12 mb-3">
                     <Form.Label className="required">RW</Form.Label>
                     <SelectRw
                         kodeKelurahan={data.kode_kelurahan}
                         onChange={(item) =>
-                            setData((prevState) => ({
-                                ...prevState,
+                            setData((prev) => ({
+                                ...prev,
                                 kode_rw: item.id,
-                                nama_rw: item.text,
+                                rw: item.text,
                             }))
                         }
-                        errors={errors.nama_rw}
+                        errors={errors.rw}
                     />
                 </div>
                 <div className="col-md-6 col-12 mb-3">
                     <Form.Label className="required">RT</Form.Label>
                     <SelectRt
                         kodeKelurahan={data.kode_kelurahan}
-                        kodeRw={data.nama_rw}
+                        kodeRw={data.rw}
                         onChange={(item) =>
-                            setData((prevState) => ({
-                                ...prevState,
+                            setData((prev) => ({
+                                ...prev,
                                 kode_rt: item.id,
-                                nama_rt: item.text,
+                                rt: item.text,
                             }))
                         }
-                        errors={errors.nama_rt}
+                        errors={errors.rt}
                     />
-                </div>
-            </Form.Group>
-            <Form.Group className="row mb-1">
-                <div className="col-md-12 col-12 mb-3">
-                    <Form.Label className="required">Alamat</Form.Label>
-                    <Form.Control
-                        onChange={(e) => setData("alamat", e.target.value)}
-                        as="textarea"
-                        rows="3"
-                        value={data.alamat}
-                        isInvalid={errors.alamat}
-                        autoComplete="alamat"
-                        placeholder="Alamat KTP (Jalan/Gang/Lingkungan/No rumah)"
-                    />
-                    <Form.Control.Feedback type="invalid">
-                        {errors.alamat}
-                    </Form.Control.Feedback>
                 </div>
             </Form.Group>
 
-            {/* Tanggal Lahir */}
+            <Form.Group className="mb-3">
+                <Form.Label className="required">Alamat Lengkap</Form.Label>
+                <Form.Control
+                    as="textarea"
+                    rows="3"
+                    value={data.jalan || ""}
+                    onChange={(e) => setData("jalan", e.target.value)}
+                    isInvalid={!!errors.jalan}
+                    placeholder="Alamat sesuai KTP (Jalan/Gang/Lingkungan/No rumah)"
+                />
+                <Form.Control.Feedback type="invalid">
+                    {errors.jalan}
+                </Form.Control.Feedback>
+            </Form.Group>
+
+            {/* Tempat, Tanggal Lahir */}
             <div className="row mb-3">
-                <Form.Label className="required">Tempat/Tgl. Lahir</Form.Label>
+                <Form.Label className="required">
+                    Tempat / Tanggal Lahir
+                </Form.Label>
                 <div className="col-md-8">
                     <Form.Control
-                        value={data.tmp_lhr}
-                        onChange={(e) =>
-                            setData((prevState) => ({
-                                ...prevState,
-                                tmp_lhr: e.target.value,
-                            }))
-                        }
-                        isInvalid={errors.tmp_lhr}
                         placeholder="Tempat Lahir"
-                    ></Form.Control>
+                        value={data.tempat_lahir}
+                        onChange={(e) =>
+                            setData("tempat_lahir", e.target.value)
+                        }
+                        isInvalid={!!errors.tempat_lahir}
+                    />
                     <Form.Control.Feedback type="invalid">
-                        {errors.tmp_lhr}
+                        {errors.tempat_lahir}
                     </Form.Control.Feedback>
                 </div>
                 <div className="col-md-4">
                     <Form.Control
                         type="date"
-                        value={data.tgl_lhr}
-                        onChange={(e) =>
-                            setData((prevState) => ({
-                                ...prevState,
-                                tgl_lhr: e.target.value,
-                            }))
-                        }
-                        isInvalid={errors.tgl_lhr}
-                    ></Form.Control>
+                        value={data.tgl_lahir}
+                        onChange={(e) => setData("tgl_lahir", e.target.value)}
+                        isInvalid={!!errors.tgl_lahir}
+                    />
                     <Form.Control.Feedback type="invalid">
-                        {errors.tgl_lhr}
+                        {errors.tgl_lahir}
                     </Form.Control.Feedback>
                 </div>
             </div>
@@ -458,7 +464,7 @@ export default function FormUMKM() {
                 </Form.Label>
                 <SelectPendidikan
                     value={data.pendidikan}
-                    onChange={(val) => setData({ ...data, pendidikan: val })}
+                    onChange={(val) => setData("pendidikan", val)}
                     errors={errors.pendidikan}
                 />
             </Form.Group>
@@ -469,13 +475,19 @@ export default function FormUMKM() {
                     Penyandang Disabilitas
                 </Form.Label>
                 <SelectDisabilitas
-                    value={data.disabilitas || []}
-                    onChange={(val) => setData({ ...data, disabilitas: val })}
-                    errors={errors.disabilitas}
+                    value={data.jenis_disabilitas}
+                    onChange={(val) => {
+                        setData({
+                            ...data,
+                            is_disabilitas: val.length > 0 ? "ya" : "tidak",
+                            jenis_disabilitas: val,
+                        });
+                    }}
+                    errors={errors.jenis_disabilitas}
                 />
             </Form.Group>
 
-            {/* Profil Usaha*/}
+            {/* Profil Usaha */}
             <div className="big-text text-muted mb-4 mt-5">
                 Profil Usaha
                 <div className="underline"></div>
@@ -486,9 +498,7 @@ export default function FormUMKM() {
                 <Form.Label className="required">Nama Usaha</Form.Label>
                 <Form.Control
                     value={data.nama_usaha}
-                    onChange={(e) =>
-                        setData({ ...data, nama_usaha: e.target.value })
-                    }
+                    onChange={(e) => setData("nama_usaha", e.target.value)}
                     isInvalid={!!errors.nama_usaha}
                 />
                 <Form.Control.Feedback type="invalid">
@@ -504,9 +514,7 @@ export default function FormUMKM() {
                 <Form.Control
                     type="month"
                     value={data.tahun_berdiri}
-                    onChange={(e) =>
-                        setData({ ...data, tahun_berdiri: e.target.value })
-                    }
+                    onChange={(e) => setData("tahun_berdiri", e.target.value)}
                     isInvalid={!!errors.tahun_berdiri}
                 />
                 <Form.Control.Feedback type="invalid">
@@ -519,90 +527,24 @@ export default function FormUMKM() {
                 <Form.Label className="required">Bidang Usaha</Form.Label>
                 <SelectBidangUsaha
                     value={data.bidang_usaha}
-                    onChange={(item) =>
-                        setData({ ...data, bidang_usaha: item.value })
-                    }
+                    onChange={(item) => setData("bidang_usaha", item.value)}
                     errors={errors.bidang_usaha}
                 />
             </Form.Group>
 
             {/* Alamat Usaha */}
-            <Form.Group className="row mb-1">
-                <div className="col-md-6 col-12 mb-3">
-                    <Form.Label className="required">Kecamatan</Form.Label>
-                    <SelectKecamatan
-                        onChange={(item) =>
-                            setData((prevState) => ({
-                                ...prevState,
-                                kode_kecamatan: item.id,
-                                nama_kecamatan: item.text,
-                            }))
-                        }
-                        errors={errors.nama_kecamatan}
-                    />
-                </div>
-                <div className="col-md-6 col-12 mb-3">
-                    <Form.Label className="required">Kelurahan</Form.Label>
-                    <SelectKelurahan
-                        kodeKecamatan={data.kode_kecamatan}
-                        onChange={(item) =>
-                            setData((prevState) => ({
-                                ...prevState,
-                                kode_kelurahan: item.id,
-                                nama_kelurahan: item.text,
-                            }))
-                        }
-                        errors={errors.nama_kelurahan}
-                    />
-                </div>
-            </Form.Group>
-            <Form.Group className="row mb-1">
-                <div className="col-md-6 col-12 mb-3">
-                    <Form.Label className="required">RW</Form.Label>
-                    <SelectRw
-                        kodeKelurahan={data.kode_kelurahan}
-                        onChange={(item) =>
-                            setData((prevState) => ({
-                                ...prevState,
-                                kode_rw: item.id,
-                                nama_rw: item.text,
-                            }))
-                        }
-                        errors={errors.nama_rw}
-                    />
-                </div>
-                <div className="col-md-6 col-12 mb-3">
-                    <Form.Label className="required">RT</Form.Label>
-                    <SelectRt
-                        kodeKelurahan={data.kode_kelurahan}
-                        kodeRw={data.nama_rw}
-                        onChange={(item) =>
-                            setData((prevState) => ({
-                                ...prevState,
-                                kode_rt: item.id,
-                                nama_rt: item.text,
-                            }))
-                        }
-                        errors={errors.nama_rt}
-                    />
-                </div>
-            </Form.Group>
-            <Form.Group className="row mb-1">
-                <div className="col-md-12 col-12 mb-3">
-                    <Form.Label className="required">Alamat</Form.Label>
-                    <Form.Control
-                        onChange={(e) => setData("alamat", e.target.value)}
-                        as="textarea"
-                        rows="3"
-                        value={data.alamat}
-                        isInvalid={errors.alamat}
-                        autoComplete="alamat"
-                        placeholder="Alamat KTP (Jalan/Gang/Lingkungan/No rumah)"
-                    />
-                    <Form.Control.Feedback type="invalid">
-                        {errors.alamat}
-                    </Form.Control.Feedback>
-                </div>
+            <Form.Group className="mb-3">
+                <Form.Label className="required">Alamat Usaha</Form.Label>
+                <Form.Control
+                    as="textarea"
+                    rows="3"
+                    value={data.alamat_usaha}
+                    onChange={(e) => setData("alamat_usaha", e.target.value)}
+                    isInvalid={!!errors.alamat_usaha}
+                />
+                <Form.Control.Feedback type="invalid">
+                    {errors.alamat_usaha}
+                </Form.Control.Feedback>
             </Form.Group>
 
             {/* NIB */}
@@ -610,7 +552,7 @@ export default function FormUMKM() {
                 <Form.Label className="required">Nomor NIB</Form.Label>
                 <Form.Control
                     value={data.nib}
-                    onChange={(e) => setData({ ...data, nib: e.target.value })}
+                    onChange={(e) => setData("nib", e.target.value)}
                     isInvalid={!!errors.nib}
                 />
                 <Form.Control.Feedback type="invalid">
@@ -624,27 +566,26 @@ export default function FormUMKM() {
                     Memiliki Legalitas Usaha?
                 </Form.Label>
                 <SelectLegalitasStatus
-                    value={data.memiliki_legalitas}
+                    value={data.legalitas_status}
                     onChange={(value) =>
                         setData({
                             ...data,
-                            memiliki_legalitas: value,
-                            legalitas: value === "tidak" ? [] : data.legalitas,
+                            legalitas_status: value,
+                            legalitas_jenis:
+                                value === "tidak" ? [] : data.legalitas_jenis,
                         })
                     }
-                    errors={errors.memiliki_legalitas}
+                    errors={errors.legalitas_status}
                 />
             </Form.Group>
 
-            {data.memiliki_legalitas === "ya" && (
+            {data.legalitas_status === "ya" && (
                 <Form.Group className="mb-3">
                     <Form.Label>Pilih Jenis Legalitas</Form.Label>
                     <SelectLegalitasJenis
-                        value={data.legalitas}
-                        onChange={(valueArray) =>
-                            setData({ ...data, legalitas: valueArray })
-                        }
-                        errors={errors.legalitas}
+                        value={data.legalitas_jenis}
+                        onChange={(val) => setData("legalitas_jenis", val)}
+                        errors={errors.legalitas_jenis}
                     />
                 </Form.Group>
             )}
@@ -655,9 +596,7 @@ export default function FormUMKM() {
                 <Form.Control
                     type="number"
                     value={data.modal}
-                    onChange={(e) =>
-                        setData({ ...data, modal: e.target.value })
-                    }
+                    onChange={(e) => setData("modal", e.target.value)}
                     isInvalid={!!errors.modal}
                 />
                 <Form.Control.Feedback type="invalid">
@@ -673,9 +612,7 @@ export default function FormUMKM() {
                 <Form.Control
                     type="number"
                     value={data.omset}
-                    onChange={(e) =>
-                        setData({ ...data, omset: e.target.value })
-                    }
+                    onChange={(e) => setData("omset", e.target.value)}
                     isInvalid={!!errors.omset}
                 />
                 <Form.Control.Feedback type="invalid">
@@ -693,23 +630,20 @@ export default function FormUMKM() {
                         <Form.Control
                             type="number"
                             placeholder="Volume Produksi"
-                            value={data.kapasitas}
+                            value={data.kapasitas_jumlah}
                             onChange={(e) =>
-                                setData({ ...data, kapasitas: e.target.value })
+                                setData("kapasitas_jumlah", e.target.value)
                             }
-                            isInvalid={!!errors.kapasitas}
+                            isInvalid={!!errors.kapasitas_jumlah}
                         />
                     </div>
                     <div className="col-md-6">
                         <SelectSatuanProduksi
-                            value={data.satuan_kapasitas}
+                            value={data.kapasitas_satuan}
                             onChange={(item) =>
-                                setData({
-                                    ...data,
-                                    satuan_kapasitas: item.value,
-                                })
+                                setData("kapasitas_satuan", item.value)
                             }
-                            errors={errors.satuan_kapasitas}
+                            errors={errors.kapasitas_satuan}
                         />
                     </div>
                 </div>
@@ -721,11 +655,9 @@ export default function FormUMKM() {
                     Jangkauan Pemasaran
                 </Form.Label>
                 <SelectPemasaran
-                    value={data.jangkauan_pemasaran}
-                    onChange={(item) =>
-                        setData({ ...data, jangkauan_pemasaran: item.value })
-                    }
-                    errors={errors.jangkauan_pemasaran}
+                    value={data.jangkauan}
+                    onChange={(item) => setData("jangkauan", item.value)}
+                    errors={errors.jangkauan}
                 />
             </Form.Group>
 
@@ -767,26 +699,26 @@ export default function FormUMKM() {
                 {/* <Form.Label className="required">Pilih Pelatihan</Form.Label> */}
                 <SelectPrioritasPelatihan
                     prioritasKe={1}
-                    value={data.prioritas1}
-                    onChange={(val) => setData("prioritas1", val)}
-                    selectedValues={[data.prioritas2, data.prioritas3]}
-                    errors={errors.prioritas1}
+                    value={data.prioritas_1}
+                    onChange={(val) => setData("prioritas_1", val)}
+                    selectedValues={[data.prioritas_2, data.prioritas_3]}
+                    errors={errors.prioritas_1}
                 />
 
                 <SelectPrioritasPelatihan
                     prioritasKe={2}
-                    value={data.prioritas2}
-                    onChange={(val) => setData("prioritas2", val)}
-                    selectedValues={[data.prioritas1, data.prioritas3]}
-                    errors={errors.prioritas2}
+                    value={data.prioritas_2}
+                    onChange={(val) => setData("prioritas_2", val)}
+                    selectedValues={[data.prioritas_1, data.prioritas_3]}
+                    errors={errors.prioritas_2}
                 />
 
                 <SelectPrioritasPelatihan
                     prioritasKe={3}
-                    value={data.prioritas3}
-                    onChange={(val) => setData("prioritas3", val)}
-                    selectedValues={[data.prioritas1, data.prioritas2]}
-                    errors={errors.prioritas3}
+                    value={data.prioritas_3}
+                    onChange={(val) => setData("prioritas_3", val)}
+                    selectedValues={[data.prioritas_1, data.prioritas_2]}
+                    errors={errors.prioritas_3}
                 />
             </Form.Group>
 
@@ -800,16 +732,14 @@ export default function FormUMKM() {
                 <Select
                     options={skorAlasanOptions}
                     value={skorAlasanOptions.find(
-                        (opt) => opt.value === data.skor_alasan_id
+                        (opt) => opt.value === data.alasan
                     )}
-                    onChange={(selected) =>
-                        setData("skor_alasan_id", selected?.value)
-                    }
-                    className={errors.skor_alasan_id ? "is-invalid" : ""}
+                    onChange={(selected) => setData("alasan", selected?.value)}
+                    className={errors.alasan ? "is-invalid" : ""}
                 />
-                {errors.skor_alasan_id && (
+                {errors.alasan && (
                     <div className="invalid-feedback d-block">
-                        {errors.skor_alasan_id}
+                        {errors.alasan}
                     </div>
                 )}
             </Form.Group>
@@ -819,16 +749,16 @@ export default function FormUMKM() {
                 <Select
                     options={skorKesesuaianOptions}
                     value={skorKesesuaianOptions.find(
-                        (opt) => opt.value === data.skor_kesesuaian_id
+                        (opt) => opt.value === data.kesesuaian
                     )}
                     onChange={(selected) =>
-                        setData("skor_kesesuaian_id", selected?.value)
+                        setData("kesesuaian", selected?.value)
                     }
-                    className={errors.skor_kesesuaian_id ? "is-invalid" : ""}
+                    className={errors.kesesuaian ? "is-invalid" : ""}
                 />
-                {errors.skor_kesesuaian_id && (
+                {errors.kesesuaian && (
                     <div className="invalid-feedback d-block">
-                        {errors.skor_kesesuaian_id}
+                        {errors.kesesuaian}
                     </div>
                 )}
             </Form.Group>
@@ -838,16 +768,16 @@ export default function FormUMKM() {
                 <Select
                     options={skorPengalamanOptions}
                     value={skorPengalamanOptions.find(
-                        (opt) => opt.value === data.skor_pengalaman_id
+                        (opt) => opt.value === data.pengalaman
                     )}
                     onChange={(selected) =>
-                        setData("skor_pengalaman_id", selected?.value)
+                        setData("pengalaman", selected?.value)
                     }
-                    className={errors.skor_pengalaman_id ? "is-invalid" : ""}
+                    className={errors.pengalaman ? "is-invalid" : ""}
                 />
-                {errors.skor_pengalaman_id && (
+                {errors.pengalaman && (
                     <div className="invalid-feedback d-block">
-                        {errors.skor_pengalaman_id}
+                        {errors.pengalaman}
                     </div>
                 )}
             </Form.Group>
