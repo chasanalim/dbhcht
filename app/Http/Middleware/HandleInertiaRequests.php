@@ -57,7 +57,7 @@ class HandleInertiaRequests extends Middleware
             ],
             [
                 'label' => 'List Pendaftar Banmod',
-                'route' => 'peserta',
+                'route' => 'peserta.get',
                 'icon' => 'bi bi-person-lines-fill',
                 'show' => true,
             ],
