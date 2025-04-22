@@ -1,8 +1,7 @@
 import React from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
+// import "bootstrap/dist/css/bootstrap.min.css";
+// import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import Navigation from "./partials/Navigation";
-import "../../../css/style.css";
 import { Head } from "@inertiajs/react";
 import Sidebar from "./partials/Sidebar";
 

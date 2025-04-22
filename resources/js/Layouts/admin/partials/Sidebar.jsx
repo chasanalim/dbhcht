@@ -1,33 +1,11 @@
 import React, { useEffect, useRef } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
+// import "bootstrap/dist/css/bootstrap.min.css";
+// import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { Link, usePage } from "@inertiajs/react";
 import NavLink from "@/Components/NavLink";
-import { Dropdown } from "bootstrap";
-import * as bootstrap from "bootstrap";
 
 export default function Sidebar() {
     const { auth, userProfileImage } = usePage().props;
-    const dropdownRefs = useRef([]);
-
-    useEffect(() => {
-        // Initialize all dropdowns
-        const dropdownElements = document.querySelectorAll(".dropdown-toggle");
-        dropdownElements.forEach((dropdownToggle) => {
-            const dropdown = new bootstrap.Dropdown(dropdownToggle, {
-                offset: [0, 0],
-                boundary: "window",
-            });
-            dropdownRefs.current.push(dropdown);
-        });
-
-        // Cleanup on unmount
-        return () => {
-            dropdownRefs.current.forEach((dropdown) => {
-                dropdown.dispose();
-            });
-        };
-    }, []);
 
     return (
         <div className="sidebar h-100 pt-3">
@@ -45,10 +23,10 @@ export default function Sidebar() {
                 </div>
                 <div className="profile text-center mb-3 position-relative">
                     <div className="profile_text mt-4">
-                        <span className="d-block fs-6 mb-0 text-uppercase">
+                        <span className="d-block fs-6 mb-0 text-uppercase text-white">
                             {auth.user.name}
                         </span>
-                        <span className="d-block fs-7">{auth.user.email}</span>
+                        <span className="d-block text-white fs-6">{auth.user.email}</span>
                     </div>
                     <hr className="text-white border-2" />
                 </div>
