@@ -117,7 +117,7 @@ Route::prefix('refer')->as('refer.')->group(function () {
     Route::prefix('jenispelatihanpetani')->as('jenispelatihanpetani.')->group(function () {
         Route::get('/', [JenisPelatihanPetaniController::class, 'index'])->name('index');
     });
-    Route::prefix('penyerapannaker')->as('penyerapannaker.')->group(function () {
+    Route::prefix('skorpelatihanpetani')->as('skorpelatihanpetani.')->group(function () {
         Route::get('/', [SkorPelatihanPetaniController::class, 'index'])->name('index');
     });
 });
