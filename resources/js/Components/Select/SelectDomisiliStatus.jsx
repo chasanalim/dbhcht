@@ -1,17 +1,12 @@
 import React from "react";
 import Select from "react-select";
 
-const options = [
-    { value: "SD", label: "SD" },
-    { value: "SMP", label: "SMP" },
-    { value: "SMA", label: "SMA" },
-    { value: "Diploma", label: "Diploma" },
-    { value: "S1", label: "S1" },
-    { value: "S2", label: "S2" },
-    { value: "S3", label: "S3" },
-];
+export default function SelectDomisiliStatus({ value, onChange, errors }) {
+    const options = [
+        { value: "ya", label: "Ya" },
+        { value: "tidak", label: "Tidak" },
+    ];
 
-export default function SelectPendidikan({ value, onChange, errors }) {
     const customStyles = {
         control: (provided) => ({
             ...provided,
@@ -21,15 +16,15 @@ export default function SelectPendidikan({ value, onChange, errors }) {
     };
 
     return (
-        <>
+        <div>
             <Select
                 options={options}
                 value={options.find((opt) => opt.value === value)}
-                onChange={(opt) => onChange(opt.value)}
+                onChange={(item) => onChange(item.value)}
                 styles={customStyles}
                 className={errors ? "is-invalid" : ""}
             />
             {errors && <div className="invalid-feedback d-block">{errors}</div>}
-        </>
+        </div>
     );
 }

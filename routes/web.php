@@ -10,24 +10,26 @@ use App\Http\Controllers\BanmodController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LamaUsahaController;
 use App\Http\Controllers\KlasterUsahaController;
+use App\Http\Controllers\SkorPelatihanController;
 use App\Http\Controllers\KategoriBanmodController;
+use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\JumlahLegalitasController;
 use App\Http\Controllers\JumlahTenagaKerjaController;
 use App\Http\Controllers\Admin\LampiranFileController;
-use App\Http\Controllers\Admin\PelatihanBanmodController;
-use App\Http\Controllers\Admin\PelatihanKerjaController;
-use App\Http\Controllers\Admin\PelatihanPertanianController;
-use App\Http\Controllers\Admin\PelatihanUMKMController;
-use App\Http\Controllers\Admin\PendaftaranBanmodController;
-use App\Http\Controllers\Admin\PenerimaBanmodLamaController;
-use App\Http\Controllers\JenisPelatihanPetaniController;
 use App\Http\Controllers\TanggunganKeluargaController;
+use App\Http\Controllers\Admin\PelatihanUMKMController;
+use App\Http\Controllers\SkorPelatihanPetaniController;
 use App\Http\Controllers\StatusTempatTinggalController;
+use App\Http\Controllers\Admin\PelatihanKerjaController;
+use App\Http\Controllers\JenisPelatihanPetaniController;
+use App\Http\Controllers\Admin\PelatihanBanmodController;
 use App\Http\Controllers\JumlahTeknologiDigitalController;
 use App\Http\Controllers\PenyerapanTenagaMiskinController;
+use App\Http\Controllers\Admin\PendaftaranBanmodController;
 use App\Http\Controllers\PelatihanPenerimaBanmodController;
-use App\Http\Controllers\SkorPelatihanController;
-use App\Http\Controllers\SkorPelatihanPetaniController;
+use App\Http\Controllers\Admin\PelatihanPertanianController;
+use App\Http\Controllers\Admin\PenerimaBanmodLamaController;
+use App\Http\Controllers\Admin\PenerimaPelatihanBanmodController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/download', [HomeController::class, 'file'])->name('download');
@@ -50,7 +52,9 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::resource('pertanian', PelatihanPertanianController::class);
     Route::resource('pelatihan-banmod', PelatihanBanmodController::class);
     Route::resource('kerja', PelatihanKerjaController::class);
-    Route::get('/banmod-lama', [PenerimaBanmodLamaController::class, '__invoke'])->name('banmod-lama');
+    Route::resource('user', UserAdminController::class);
+    Route::resource('banmodlama', PenerimaBanmodLamaController::class);
+    Route::resource('banmodwirausaha', PenerimaPelatihanBanmodController::class);
 });
 
 Route::prefix('users')->as('users.')->group(function () {
@@ -119,7 +123,7 @@ Route::prefix('refer')->as('refer.')->group(function () {
     Route::prefix('jenispelatihanpetani')->as('jenispelatihanpetani.')->group(function () {
         Route::get('/', [JenisPelatihanPetaniController::class, 'index'])->name('index');
     });
-    Route::prefix('penyerapannaker')->as('penyerapannaker.')->group(function () {
+    Route::prefix('skorpelatihanpetani')->as('skorpelatihanpetani.')->group(function () {
         Route::get('/', [SkorPelatihanPetaniController::class, 'index'])->name('index');
     });
 });
