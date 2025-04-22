@@ -30,6 +30,7 @@ use App\Http\Controllers\PelatihanPenerimaBanmodController;
 use App\Http\Controllers\Admin\PelatihanPertanianController;
 use App\Http\Controllers\Admin\PenerimaBanmodLamaController;
 use App\Http\Controllers\Admin\PenerimaPelatihanBanmodController;
+use App\Http\Controllers\RegPelatihanUmkmController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/download', [HomeController::class, 'file'])->name('download');
@@ -85,7 +86,7 @@ Route::prefix('pelatihan/banmod')->group(function () {
     Route::get('/cek-nik/{nik}', [PelatihanPenerimaBanmodController::class, 'cekNIK'])->name('pelatihan-banmod.cekNIK.get');
 });
 
-Route::post('/pelatihan/umkm', [PelatihanUmkmController::class, 'store'])->name('pelatihan.umkm.store');
+Route::post('/pelatihan/umkm', [RegPelatihanUmkmController::class, 'store'])->name('pelatihan.umkm.store');
 
 Route::get('/skor/{kategori}', [SkorPelatihanController::class, 'getSkorByKategori']);
 
