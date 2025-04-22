@@ -1,8 +1,10 @@
 import React from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import Navigation from "./partials/Navigation";
-import Sidebar from "./partials/Sidebar";
 import "../../../css/style.css";
 import { Head } from "@inertiajs/react";
+import Sidebar from "./partials/Sidebar";
 
 export default function AdminLayout({ children }) {
     return (

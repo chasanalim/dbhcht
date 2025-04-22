@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { Link, usePage } from "@inertiajs/react";
@@ -8,19 +8,25 @@ import * as bootstrap from "bootstrap";
 
 export default function Sidebar() {
     const { auth, userProfileImage } = usePage().props;
-    // Initialize dropdowns
-    useEffect(() => {
-        // Get all dropdowns
-        const dropdownElementList =
-            document.querySelectorAll(".dropdown-toggle");
+    const dropdownRefs = useRef([]);
 
-        // Initialize each dropdown
-        dropdownElementList.forEach((dropdownToggle) => {
-            new bootstrap.Dropdown(dropdownToggle, {
+    useEffect(() => {
+        // Initialize all dropdowns
+        const dropdownElements = document.querySelectorAll(".dropdown-toggle");
+        dropdownElements.forEach((dropdownToggle) => {
+            const dropdown = new bootstrap.Dropdown(dropdownToggle, {
                 offset: [0, 0],
                 boundary: "window",
             });
+            dropdownRefs.current.push(dropdown);
         });
+
+        // Cleanup on unmount
+        return () => {
+            dropdownRefs.current.forEach((dropdown) => {
+                dropdown.dispose();
+            });
+        };
     }, []);
 
     return (
@@ -90,6 +96,61 @@ export default function Sidebar() {
                                 </span>
                             </NavLink>
                         </li>
+
+                        <li className="nav-item dropdown">
+                            <button
+                                className="sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white w-100 border-0 dropdown-toggle"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                            >
+                                <i className="bi bi-mortarboard fs-5"></i>
+                                <span className="text-white mt-1 ms-2 me-auto">
+                                    Pelatihan
+                                </span>
+                                <i className="bi bi-chevron-down ms-2 mt-1"></i>
+                            </button>
+                            <ul className="dropdown-menu dropdown-menu-dark">
+                                <li>
+                                    <NavLink
+                                        href={route("admin.umkm.index")}
+                                        className="dropdown-item"
+                                    >
+                                        <i className="bi bi-circle-fill fs-8 me-2"></i>
+                                        Pelatihan UMKM
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <NavLink
+                                        href={route("admin.kerja.index")}
+                                        className="dropdown-item"
+                                    >
+                                        <i className="bi bi-circle-fill fs-8 me-2"></i>
+                                        Pelatihan Pencari Kerja
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <NavLink
+                                        href={route(
+                                            "admin.pelatihan-banmod.index"
+                                        )}
+                                        className="dropdown-item"
+                                    >
+                                        <i className="bi bi-circle-fill fs-8 me-2"></i>
+                                        Pelatihan Penerima Banmod
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <NavLink
+                                        href={route("admin.pertanian.index")}
+                                        className="dropdown-item"
+                                    >
+                                        <i className="bi bi-circle-fill fs-8 me-2"></i>
+                                        Pelatihan Pertanian
+                                    </NavLink>
+                                </li>
+                            </ul>
+                        </li>
+
                         <li>
                             <h6 className="text-uppercase mt-3 menu">
                                 Pelatihan UMKM
@@ -207,7 +268,9 @@ export default function Sidebar() {
                         <li>
                             <NavLink
                                 href={route("admin.banmodlama.index")}
-                                active={route().current("admin.banmodlama.index")}
+                                active={route().current(
+                                    "admin.banmodlama.index"
+                                )}
                                 className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                     route().current("admin.banmodlama.index")
                                         ? "active"
@@ -223,9 +286,13 @@ export default function Sidebar() {
                         <li>
                             <NavLink
                                 href={route("admin.banmodwirausaha.index")}
-                                active={route().current("admin.banmodwirausaha.index")}
+                                active={route().current(
+                                    "admin.banmodwirausaha.index"
+                                )}
                                 className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
-                                    route().current("admin.banmodwirausaha.index")
+                                    route().current(
+                                        "admin.banmodwirausaha.index"
+                                    )
                                         ? "active"
                                         : ""
                                 }`}
@@ -244,9 +311,7 @@ export default function Sidebar() {
                         <li>
                             <NavLink
                                 href={route("admin.user.index")}
-                                active={route().current(
-                                    "admin.user.index"
-                                )}
+                                active={route().current("admin.user.index")}
                                 className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                     route().current("admin.user.index")
                                         ? "active"

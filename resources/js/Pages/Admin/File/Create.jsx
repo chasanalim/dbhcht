@@ -79,8 +79,17 @@ export default function Create({ title, file, action, method = "POST" }) {
                                                     <option value="banmod">
                                                         Bantuan Modal
                                                     </option>
-                                                    <option value="pelatihan">
-                                                        Pelatihan
+                                                    <option value="pelatihan-banmod">
+                                                        Pelatihan Penerima Banmod
+                                                    </option>
+                                                    <option value="pencari-kerja">
+                                                        Pelatihan Pencari Kerja
+                                                    </option>
+                                                    <option value="pertanian">
+                                                        Pelatihan Pertanian
+                                                    </option>
+                                                    <option value="umkm">
+                                                        Pelatihan UMKM
                                                     </option>
                                                 </select>
                                                 {errors.kategori && (

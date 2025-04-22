@@ -67,7 +67,6 @@ class LampiranFileController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
         $request->validate([
             'nama' => 'required|string|max:255',
             'deskripsi' => 'required|string|max:255',
@@ -76,8 +75,8 @@ class LampiranFileController extends Controller
         ]);
 
         $file = $request->file('file_name');
-        Storage::putFileAs('files', $file, $file->hashName());
-        // $file->storeAs('public/files', $file->hashName());
+        // Storage::putFileAs('files', $file, $file->hashName());
+        $file->storeAs('/files', $file->hashName(),'public');
 
         LampiranFile::create([
             'nama' => $request->nama,
@@ -118,6 +117,8 @@ class LampiranFileController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $file = LampiranFile::findOrFail($id);
+
         $request->validate([
             'nama' => 'required|string|max:255',
             'deskripsi' => 'required|string|max:255',
@@ -125,7 +126,6 @@ class LampiranFileController extends Controller
             'file_name' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
         ]);
 
-        $file = LampiranFile::findOrFail($id);
 
         $file->nama = $request->nama;
         $file->deskripsi = $request->deskripsi;
@@ -138,8 +138,9 @@ class LampiranFileController extends Controller
             // Store new file
             $newFile = $request->file('file_name');
             $filename = $newFile->hashName();
-            $newFile->storeAs('public/files', $filename);
+            $newFile->storeAs('/files', $filename);
             $file->file_name = $filename;
+
         }
 
         $file->save();
@@ -154,7 +155,7 @@ class LampiranFileController extends Controller
     public function destroy($id)
     {
         $file = LampiranFile::findOrFail($id);
-        Storage::delete('public/files/' . $file->file_path);
+        Storage::delete('public/files/' . $file->file_name);
         $file->delete();
 
         return redirect()->back()->with('message', 'File deleted successfully');
