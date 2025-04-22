@@ -68,7 +68,13 @@ export default function Index({ title, can, flash }) {
                     render: function (data) {
                         return data === "banmod"
                             ? '<span class="badge bg-info">Bantuan Modal</span>'
-                            : '<span class="badge bg-success">Pelatihan</span>';
+                            : data === "pencari-kerja"
+                            ? '<span class="badge bg-warning">Pelatihan Pencari Kerja</span>'
+                            : data === "pelatihan-banmod"
+                            ? '<span class="badge bg-danger">Pelatihan Penerima Banmod</span>'
+                            : data === "umkm"
+                            ? '<span class="badge bg-secondary">Pelatihan UMKM</span>'
+                            : '<span class="badge bg-success">Pelatihan Pertanian</span>';
                     },
                 },
                 {
