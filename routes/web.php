@@ -74,8 +74,8 @@ Route::prefix('banmod')->group(function () {
 });
 
 Route::prefix('peserta')->group(function () {
-    Route::post('/', [BanmodController::class, 'peserta'])->name('peserta');
-    Route::get('/', [BanmodController::class, 'peserta'])->name('peserta');
+    Route::post('/', [BanmodController::class, 'peserta'])->name('peserta.post');
+    Route::get('/', [BanmodController::class, 'peserta'])->name('peserta.get');
 });
 
 Route::prefix('pelatihan/banmod')->group(function () {
