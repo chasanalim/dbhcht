@@ -2,16 +2,13 @@ import React from "react";
 import Select from "react-select";
 
 const options = [
-    { value: "SD", label: "SD" },
-    { value: "SMP", label: "SMP" },
-    { value: "SMA", label: "SMA" },
-    { value: "Diploma", label: "Diploma" },
-    { value: "S1", label: "S1" },
-    { value: "S2", label: "S2" },
-    { value: "S3", label: "S3" },
+    { value: "pertanian", label: "Pertanian" },
+    { value: "perikanan", label: "Perikanan" },
+    { value: "peternakan", label: "Peternakan" },
+    { value: "kelompokwanitatani", label: "Kelompok Wanita Tani" },
 ];
 
-export default function SelectPendidikan({ value, onChange, errors }) {
+export default function SelectBidangUsahaKelompok({ value, onChange, errors }) {
     const customStyles = {
         control: (provided) => ({
             ...provided,

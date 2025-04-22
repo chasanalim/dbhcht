@@ -2,16 +2,12 @@ import React from "react";
 import Select from "react-select";
 
 const options = [
-    { value: "SD", label: "SD" },
-    { value: "SMP", label: "SMP" },
-    { value: "SMA", label: "SMA" },
-    { value: "Diploma", label: "Diploma" },
-    { value: "S1", label: "S1" },
-    { value: "S2", label: "S2" },
-    { value: "S3", label: "S3" },
+    { value: "kurangdarisatu", label: "Kurang dari 1 Tahun" },
+    { value: "satusampaidua", label: "1 s.d. 2 Tahun" },
+    { value: "lebihdaridua", label: "Lebih dari 2 Tahun" },
 ];
 
-export default function SelectPendidikan({ value, onChange, errors }) {
+export default function SelectMasaAktifKolompok({ value, onChange, errors }) {
     const customStyles = {
         control: (provided) => ({
             ...provided,
