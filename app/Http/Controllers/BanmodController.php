@@ -168,12 +168,6 @@ class BanmodController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                // ->addColumn('action', function ($row) {
-                //     return [
-                //         'edit_url' => route('admin.banmod.edit', $row->id),
-                //         'delete_url' => route('admin.banmod.destroy', $row->id)
-                //     ];
-                // })
                 ->make(true);
         }
 
