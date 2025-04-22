@@ -17,7 +17,7 @@ export default function Index({ title, can, flash }) {
             serverSide: true,
             responsive: true,
             ajax: {
-                url: route("admin.pelatihan-banmod.index"),
+                url: route("admin.user.index"),
                 type: "GET",
                 headers: {
                     "X-Requested-With": "XMLHttpRequest",
@@ -32,11 +32,45 @@ export default function Index({ title, can, flash }) {
                     className: "text-center",
                 },
                 {
+                    data: "name",
+                    name: "name",
+                    orderable: true,
+                    searchable: true,
+                },
+                {
+                    data: "nik",
+                    name: "nik",
+                },
+                {
+                    data: "email",
+                    name: "email",
+                },
+                {
+                    data: "phone_number",
+                    name: "phone_number",
+                },
+                {
+                    data: "roles",
+                    name: "roles",
+                    render: function (data) {
+                        return data === "admin"
+                            ? '<span class="badge bg-danger">Admin</span>'
+                            : data === "dinkop"
+                            ? '<span class="badge bg-warning">Dinkop</span>'
+                            : data === "disperindag"
+                            ? '<span class="badge bg-info">Disperindag</span>'
+                            : data === "pertanian"
+                            ? '<span class="badge bg-primary">Pertanian</span>'
+                            : '<span class="badge bg-success">Walikota</span>';
+                    },
+                },
+
+                {
                     data: "action",
                     name: "action",
                     orderable: false,
                     searchable: false,
-                    width: "10%",
+                    width: "20%",
                     className: "text-center",
                     render: function (data) {
                         let buttons = "";
@@ -66,61 +100,6 @@ export default function Index({ title, can, flash }) {
                         return buttons;
                     },
                 },
-                {
-                    data: "nik",
-                    name: "nik",
-                    orderable: true,
-                    searchable: true,
-                },
-                {
-                    data: "kk",
-                    name: "kk",
-                },
-                {
-                    data: "name",
-                    name: "name",
-                },
-                {
-                    data: "tmp_lhr",
-                    name: "tmp_lhr",
-                },
-                {
-                    data: "tgl_lhr",
-                    name: "tgl_lhr",
-                },
-                {
-                    data: "alamat",
-                    name: "alamat",
-                },
-                {
-                    data: "nama_kecamatan",
-                    name: "nama_kecamatan",
-                },
-                {
-                    data: "nama_kelurahan",
-                    name: "nama_kelurahan",
-                },
-                {
-                    data: "nama_rw",
-                    name: "nama_rw",
-                },
-                {
-                    data: "nama_rt",
-                    name: "nama_rt",
-                },
-                {
-                    data: "alamat_domisili",
-                    name: "alamat_domisili",
-                },
-                {
-                    data: "alamat_usaha",
-                    name: "alamat_usaha",
-                },
-                {
-                    data: "phone_number",
-                    name: "phone_number",
-                },
-
             ],
             drawCallback: function () {
                 // Initialize tooltips
@@ -178,58 +157,32 @@ export default function Index({ title, can, flash }) {
                     <div className="col-12">
                         <div className="card">
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
-                                <h5 className="my-2 fw-bold">{title} 2025</h5>
+                                <h5 className="mb-0 fw-bold">{title}</h5>
+                                {can.create && (
+                                <Link
+                                    href={route("admin.user.create")}
+                                    className="btn btn-primary mb-3"
+                                >
+                                    <i className="bi bi-plus-circle me-2"></i>
+                                    Tambah User
+                                </Link>
+                                )}
                             </div>
                             <div className="card-body">
                                 <div className="table-responsive">
                                     <table
                                         ref={tableRef}
-                                        className="table table-sm table-striped table-hover"
+                                        className="table table-striped table-hover"
                                     >
                                         <thead>
                                             <tr>
                                                 <th>No</th>
+                                                <th>Nama</th>
                                                 <th>NIK</th>
-                                                <th>NO KK</th>
-                                                <th>NAMA</th>
-                                                <th>TEMPAT LAHIR</th>
-                                                <th>TGL LAHIR</th>
-                                                <th>ALAMAT</th>
-                                                <th>KECAMATAN</th>
-                                                <th>KELURAHAN</th>
-                                                <th>RW</th>
-                                                <th>RT</th>
-                                                <th>AlAMAT DOMISILI</th>
-                                                <th>ALAMAT USAHA</th>
-                                                <th>NO HP</th>
-                                                {/* <th>DAYA LISTRIK</th>
-                                                <th>DISABILITAS</th>
-                                                <th>KATEGORI</th>
-                                                <th>JENIS KATEGORI</th>
-                                                <th>KLASTER USAHA</th>
-                                                <th>TANGGUNGAN KELUARGA</th>
-                                                <th>LAMA USAHA</th>
-                                                <th>JUMLAH TENAGA</th>
-                                                <th>BRUTO</th>
-                                                <th>STATUS TEMPAT TINGGAL</th>
-                                                <th>ASET</th>
-                                                <th>HUTANG</th>
-                                                <th>JUMLAH LEGALITAS</th>
-                                                <th>JUMLAH TEKNOLOGI</th>
-                                                <th>JUMLAH PENYERAPAN NAKER</th>
-                                                <th>FOTO</th>
-                                                <th>KTP</th>
-                                                <th>KK</th>
-                                                <th>NIB</th>
-                                                <th>SKU</th>
-                                                <th>SKD</th>
-                                                <th>PRODUK</th>
-                                                <th>PERNYATAAN</th>
-                                                <th>PERIZINAN</th>
-                                                <th>SIINAS</th>
-                                                <th>BP</th>
-                                                <th>SERTIFIKAT PELATIHAN</th> */}
-                                                <th>AKSI</th>
+                                                <th>Email</th>
+                                                <th>No Hp</th>
+                                                <th>Role</th>
+                                                <th>Aksi</th>
                                             </tr>
                                         </thead>
                                     </table>

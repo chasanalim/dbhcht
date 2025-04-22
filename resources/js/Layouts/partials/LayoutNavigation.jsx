@@ -77,47 +77,47 @@ export default function LayoutNavigation() {
                             }
                             return;
                         })}
-                    {isAuth && (
-                        <Nav className="me-auto">
-                            <NavDropdown
-                                title={
-                                    <>
-                                        <i className="bi bi-person me-2"></i>
-                                        {`Hi, ${auth.user?.name}`}
-                                    </>
-                                }
-                                id="basic-nav-dropdown"
-                            >
-                                <NavDropdown.Item
-                                    as={Link}
-                                    href={route("admin.profile.edit")}
-                                    className={classNames({
-                                        active:
-                                            route().current() ===
-                                            "admin.profile.edit",
-                                    })}
+                        {isAuth && (
+                            <Nav className="me-auto">
+                                <NavDropdown
+                                    title={
+                                        <>
+                                            <i className="bi bi-person me-2"></i>
+                                            {`Hi, ${auth.user?.name}`}
+                                        </>
+                                    }
+                                    id="basic-nav-dropdown"
                                 >
-                                    <span>My Profile</span>
-                                </NavDropdown.Item>
-                                {auth.permissions?.includes("read users") && (
+                                    <NavDropdown.Item
+                                        as={Link}
+                                        href={route("admin.profile.edit")}
+                                        className={classNames({
+                                            active:
+                                                route().current() ===
+                                                "admin.profile.edit",
+                                        })}
+                                    >
+                                        <span>My Profile</span>
+                                    </NavDropdown.Item>
+
                                     <NavDropdown.Item
                                         as={Link}
                                         href={route("admin.dashboard")}
                                     >
                                         <span>Dashbaord Admin</span>
                                     </NavDropdown.Item>
-                                )}
-                                <NavDropdown.Divider />
-                                <NavDropdown.Item
-                                    as={Link}
-                                    method="post"
-                                    href={route("logout")}
-                                >
-                                    <span>Logout</span>
-                                </NavDropdown.Item>
-                            </NavDropdown>
-                        </Nav>
-                    )}
+
+                                    <NavDropdown.Divider />
+                                    <NavDropdown.Item
+                                        as={Link}
+                                        method="post"
+                                        href={route("logout")}
+                                    >
+                                        <span>Logout</span>
+                                    </NavDropdown.Item>
+                                </NavDropdown>
+                            </Nav>
+                        )}
                     </Nav>
                 </Navbar.Collapse>
             </Container>

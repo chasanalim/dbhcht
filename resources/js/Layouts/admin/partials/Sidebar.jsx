@@ -85,7 +85,9 @@ export default function Sidebar() {
                                 }`}
                             >
                                 <i className="bi bi-people fs-5"></i>
-                                <span className="text-white mt-1 ms-2">Daftar Peserta</span>
+                                <span className="text-white mt-1 ms-2">
+                                    Daftar Peserta
+                                </span>
                             </NavLink>
                         </li>
                         <li>
@@ -96,9 +98,7 @@ export default function Sidebar() {
                         <li>
                             <NavLink
                                 href={route("admin.umkm.index")}
-                                active={route().current(
-                                    "admin.umkm.index"
-                                )}
+                                active={route().current("admin.umkm.index")}
                                 className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                     route().current("admin.umkm.index")
                                         ? "active"
@@ -106,7 +106,30 @@ export default function Sidebar() {
                                 }`}
                             >
                                 <i className="bi bi-people fs-5"></i>
-                                <span className="text-white mt-1 ms-2">Daftar Peserta</span>
+                                <span className="text-white mt-1 ms-2">
+                                    Daftar Peserta
+                                </span>
+                            </NavLink>
+                        </li>
+                        <li>
+                            <h6 className="text-uppercase mt-3 menu">
+                                Pelatihan Pencari Kerja
+                            </h6>
+                        </li>
+                        <li>
+                            <NavLink
+                                href={route("admin.kerja.index")}
+                                active={route().current("admin.kerja.index")}
+                                className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                    route().current("admin.kerja.index")
+                                        ? "active"
+                                        : ""
+                                }`}
+                            >
+                                <i className="bi bi-people fs-5"></i>
+                                <span className="text-white mt-1 ms-2">
+                                    Daftar Peserta
+                                </span>
                             </NavLink>
                         </li>
                         <li>
@@ -121,13 +144,17 @@ export default function Sidebar() {
                                     "admin.pelatihan-banmod.index"
                                 )}
                                 className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
-                                    route().current("admin.pelatihan-banmod.index")
+                                    route().current(
+                                        "admin.pelatihan-banmod.index"
+                                    )
                                         ? "active"
                                         : ""
                                 }`}
                             >
                                 <i className="bi bi-people fs-5"></i>
-                                <span className="text-white mt-1 ms-2">Daftar Peserta</span>
+                                <span className="text-white mt-1 ms-2">
+                                    Daftar Peserta
+                                </span>
                             </NavLink>
                         </li>
                         <li>
@@ -148,28 +175,9 @@ export default function Sidebar() {
                                 }`}
                             >
                                 <i className="bi bi-people fs-5"></i>
-                                <span className="text-white mt-1 ms-2">Daftar Peserta</span>
-                            </NavLink>
-                        </li>
-                        <li>
-                            <h6 className="text-uppercase mt-3 menu">
-                                Pelatihan Pencari Kerja
-                            </h6>
-                        </li>
-                        <li>
-                            <NavLink
-                                href={route("admin.kerja.index")}
-                                active={route().current(
-                                    "admin.kerja.index"
-                                )}
-                                className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
-                                    route().current("admin.kerja.index")
-                                        ? "active"
-                                        : ""
-                                }`}
-                            >
-                                <i className="bi bi-people fs-5"></i>
-                                <span className="text-white mt-1 ms-2">Daftar Peserta</span>
+                                <span className="text-white mt-1 ms-2">
+                                    Daftar Peserta
+                                </span>
                             </NavLink>
                         </li>
 
@@ -198,10 +206,10 @@ export default function Sidebar() {
                         </li>
                         <li>
                             <NavLink
-                                href={route("admin.banmod-lama")}
-                                active={route().current("admin.banmod-lama")}
+                                href={route("admin.banmodlama.index")}
+                                active={route().current("admin.banmodlama.index")}
                                 className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
-                                    route().current("admin.banmod-lama")
+                                    route().current("admin.banmodlama.index")
                                         ? "active"
                                         : ""
                                 }`}
@@ -213,23 +221,39 @@ export default function Sidebar() {
                             </NavLink>
                         </li>
                         <li>
+                            <NavLink
+                                href={route("admin.banmodwirausaha.index")}
+                                active={route().current("admin.banmodwirausaha.index")}
+                                className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                    route().current("admin.banmodwirausaha.index")
+                                        ? "active"
+                                        : ""
+                                }`}
+                            >
+                                <i className="bi bi-person-fill-lock fs-5"></i>
+                                <span className="text-white mt-1 ms-2">
+                                    Penerima Pelatihan Banmod
+                                </span>
+                            </NavLink>
+                        </li>
+                        <li>
                             <h6 className="text-uppercase mt-3 menu">
                                 Manajemen User
                             </h6>
                         </li>
                         <li>
                             <NavLink
-                                href={route("admin.downloads.index")}
+                                href={route("admin.user.index")}
                                 active={route().current(
-                                    "admin.downloads.index"
+                                    "admin.user.index"
                                 )}
                                 className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
-                                    route().current("admin.downloads.index")
+                                    route().current("admin.user.index")
                                         ? "active"
                                         : ""
                                 }`}
                             >
-                                <i className="bi bi-cloud-arrow-down fs-5"></i>
+                                <i className="bi bi-person-fill-gear fs-5"></i>
                                 <span className="text-white mt-1 ms-2 ms-2">
                                     User
                                 </span>
