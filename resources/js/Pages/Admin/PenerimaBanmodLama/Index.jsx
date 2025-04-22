@@ -17,7 +17,7 @@ export default function Index({ title, flash }) {
             serverSide: true,
             responsive: true,
             ajax: {
-                url: route("admin.banmod-lama"),
+                url: route("admin.banmodlama.index"),
                 type: "GET",
                 headers: {
                     "X-Requested-With": "XMLHttpRequest",
@@ -32,37 +32,58 @@ export default function Index({ title, flash }) {
                     className: "text-center",
                 },
                 {
+                    data: "action",
+                    name: "action",
+                    orderable: false,
+                    searchable: false,
+                    width: "10%",
+                    className: "text-center",
+                    render: function (data) {
+                        let buttons = "";
+
+                        // if (can.edit) {
+                        buttons += `
+                                <button
+                                    onclick="window.location.href='${data.edit_url}'"
+                                    class="btn btn-warning btn-sm me-2"
+                                    data-bs-toggle="tooltip"
+                                    title="Edit Data">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>`;
+                        // }
+                        return buttons;
+                    },
+                },
+                {
                     data: "nik",
                     name: "nik",
                     orderable: true,
                     searchable: true,
                 },
                 {
-                    data: "no_kk",
-                    name: "no_kk",
+                    data: "kk",
+                    name: "kk",
                     orderable: true,
                     searchable: true,
                 },
                 {
-                    data: "nama_lengkap",
-                    name: "nama_lengkap",
+                    data: "nama",
+                    name: "nama",
                 },
                 {
                     data: "jenis_kelamin",
                     name: "jenis_kelamin",
                     render: function (data) {
-                        return data === "P"
-                            ? 'PEREMPUAN'
-                            : 'LAKI-LAKI';
+                        return data === "P" ? "PEREMPUAN" : "LAKI-LAKI";
                     },
                 },
                 {
-                    data: "kecamatan_ktp",
-                    name: "kecamatan_ktp",
+                    data: "kec",
+                    name: "kec",
                 },
                 {
-                    data: "kelurahan_ktp",
-                    name: "kelurahan_ktp",
+                    data: "kel",
+                    name: "kel",
                 },
                 {
                     data: "rt",
@@ -73,8 +94,8 @@ export default function Index({ title, flash }) {
                     name: "rw",
                 },
                 {
-                    data: "alamat_ktp",
-                    name: "alamat_ktp",
+                    data: "alamat",
+                    name: "alamat",
                 },
                 {
                     data: "tahun_dapat_bantuan",
@@ -83,9 +104,8 @@ export default function Index({ title, flash }) {
                 {
                     data: "jenis_usaha",
                     name: "jenis_usaha",
-                    width: "40%",
+                    width: "10%",
                 },
-
             ],
             drawCallback: function () {
                 // Initialize tooltips
@@ -132,17 +152,17 @@ export default function Index({ title, flash }) {
                         <div className="card">
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
                                 <h5 className="mb-2 fw-bold">{title}</h5>
-
                             </div>
                             <div className="card-body">
                                 <div className="table-responsive">
                                     <table
                                         ref={tableRef}
-                                        className="table table-sm table-striped table-hover"
+                                        className="table table-sm table-hover"
                                     >
                                         <thead>
                                             <tr>
                                                 <th>No</th>
+                                                <th>Aksi</th>
                                                 <th>NIK</th>
                                                 <th>NO KK</th>
                                                 <th>NAMA LENGKAP</th>
@@ -164,7 +184,30 @@ export default function Index({ title, flash }) {
                 </div>
             </div>
 
-
+            {flash.message && (
+                <div
+                    className="position-fixed top-0 end-0 p-3"
+                    style={{ zIndex: 5 }}
+                >
+                    <div
+                        id="toast"
+                        className="toast align-items-center text-white bg-success border-0"
+                        role="alert"
+                        aria-live="assertive"
+                        aria-atomic="true"
+                    >
+                        <div className="d-flex">
+                            <div className="toast-body">{flash.message}</div>
+                            <button
+                                type="button"
+                                className="btn-close btn-close-white me-2 m-auto"
+                                data-bs-dismiss="toast"
+                                aria-label="Close"
+                            ></button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </AdminLayout>
     );
 }
