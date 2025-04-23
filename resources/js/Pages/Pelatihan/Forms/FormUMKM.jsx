@@ -126,11 +126,11 @@ export default function FormUMKM() {
     };
 
     const handleUploadFile = (e, field_name, multiple) => {
-        const choosenFiles = Array.prototype.slice.call(e.target.files);
+        const files = Array.prototype.slice.call(e.target.files);
 
         setData((prevState) => ({
             ...prevState,
-            [field_name]: multiple ? choosenFiles : e.target.files,
+            [field_name]: multiple ? files : files[0],
         }));
     };
 
@@ -346,6 +346,7 @@ export default function FormUMKM() {
                         value={data.no_hp || ""}
                         onChange={(e) => setData("no_hp", e.target.value)}
                         isInvalid={!!errors.no_hp}
+                        placeholder="628XXXXXXXXXX"
                     />
                     <Form.Control.Feedback type="invalid">
                         {errors.no_hp}
@@ -476,21 +477,30 @@ export default function FormUMKM() {
                 </Form.Group>
 
                 {/* Disabilitas */}
-                <Form.Group className="mb-3">
-                    <Form.Label className="required">
-                        Penyandang Disabilitas
-                    </Form.Label>
-                    <SelectDisabilitas
-                        value={data.jenis_disabilitas}
-                        onChange={(val) => {
-                            setData({
-                                ...data,
-                                is_disabilitas: val.length > 0 ? "ya" : "tidak",
-                                jenis_disabilitas: val,
-                            });
-                        }}
-                        errors={errors.jenis_disabilitas}
-                    />
+                <Form.Group className="row mb-1">
+                    <div className="col-md-12 col-12 mb-3">
+                        <Form.Check
+                            type="checkbox"
+                            id="switchDisabilitas"
+                            label="Apakah Anda Penyandang Disabilitas Fisik/Sensorik?"
+                            onChange={(e) => {
+                                setData("is_disabilitas", e.target.checked);
+                            }}
+                        />
+                    </div>
+                    {data.is_disabilitas && (
+                        <div className="col-md-12 col-12 mb-3">
+                            <SelectDisabilitas
+                                onChange={(item) =>
+                                    setData((prevState) => ({
+                                        ...prevState,
+                                        jenis_disabilitas: item,
+                                    }))
+                                }
+                                errors={errors.jenis_disabilitas}
+                            />
+                        </div>
+                    )}
                 </Form.Group>
 
                 {/* Profil Usaha */}
@@ -518,7 +528,7 @@ export default function FormUMKM() {
                         Tahun Pendirian Usaha
                     </Form.Label>
                     <Form.Control
-                        type="year"
+                        type="number"
                         value={data.tahun_berdiri}
                         onChange={(e) =>
                             setData("tahun_berdiri", e.target.value)
@@ -535,12 +545,74 @@ export default function FormUMKM() {
                     <Form.Label className="required">Bidang Usaha</Form.Label>
                     <SelectBidangUsaha
                         value={data.bidang_usaha}
-                        onChange={(item) => setData("bidang_usaha", item.value)}
+                        onChange={(item) => setData("bidang_usaha", item)}
                         errors={errors.bidang_usaha}
                     />
                 </Form.Group>
 
                 {/* Alamat Usaha */}
+                <Form.Group className="row mb-1">
+                    <div className="col-md-6 col-12 mb-3">
+                        <Form.Label className="required">Kecamatan</Form.Label>
+                        <SelectKecamatan
+                            onChange={(item) =>
+                                setData((prev) => ({
+                                    ...prev,
+                                    kode_kecamatan: item.id,
+                                    kec_usaha: item.text,
+                                }))
+                            }
+                            errors={errors.kec_usaha}
+                        />
+                    </div>
+                    <div className="col-md-6 col-12 mb-3">
+                        <Form.Label className="required">Kelurahan</Form.Label>
+                        <SelectKelurahan
+                            kodeKecamatan={data.kode_kecamatan}
+                            onChange={(item) =>
+                                setData((prev) => ({
+                                    ...prev,
+                                    kode_kelurahan: item.id,
+                                    kel_usaha: item.text,
+                                }))
+                            }
+                            errors={errors.kel_usaha}
+                        />
+                    </div>
+                </Form.Group>
+
+                <Form.Group className="row mb-1">
+                    <div className="col-md-6 col-12 mb-3">
+                        <Form.Label className="required">RW</Form.Label>
+                        <SelectRw
+                            kodeKelurahan={data.kode_kelurahan}
+                            onChange={(item) =>
+                                setData((prev) => ({
+                                    ...prev,
+                                    kode_rw: item.id,
+                                    rw_usaha: item.text,
+                                }))
+                            }
+                            errors={errors.rw_usaha}
+                        />
+                    </div>
+                    <div className="col-md-6 col-12 mb-3">
+                        <Form.Label className="required">RT</Form.Label>
+                        <SelectRt
+                            kodeKelurahan={data.kode_kelurahan}
+                            kodeRw={data.rw}
+                            onChange={(item) =>
+                                setData((prev) => ({
+                                    ...prev,
+                                    kode_rt: item.id,
+                                    rt_usaha: item.text,
+                                }))
+                            }
+                            errors={errors.rt_usaha}
+                        />
+                    </div>
+                </Form.Group>
+
                 <Form.Group className="mb-3">
                     <Form.Label className="required">Alamat Usaha</Form.Label>
                     <Form.Control
@@ -577,21 +649,20 @@ export default function FormUMKM() {
                     </Form.Label>
                     <SelectLegalitasStatus
                         value={data.legalitas_status}
-                        onChange={(value) =>
+                        onChange={(value) => {
+                            const intValue = value === "ya" ? 1 : 0;
                             setData({
                                 ...data,
-                                legalitas_status: value,
+                                legalitas_status: intValue,
                                 legalitas_jenis:
-                                    value === "tidak"
-                                        ? []
-                                        : data.legalitas_jenis,
-                            })
-                        }
+                                    intValue === 0 ? [] : data.legalitas_jenis,
+                            });
+                        }}
                         errors={errors.legalitas_status}
                     />
                 </Form.Group>
 
-                {data.legalitas_status === "ya" && (
+                {data.legalitas_status === 1 && (
                     <Form.Group className="mb-3">
                         <Form.Label>Pilih Jenis Legalitas</Form.Label>
                         <SelectLegalitasJenis
@@ -653,7 +724,7 @@ export default function FormUMKM() {
                             <SelectSatuanProduksi
                                 value={data.kapasitas_satuan}
                                 onChange={(item) =>
-                                    setData("kapasitas_satuan", item.value)
+                                    setData("kapasitas_satuan", item)
                                 }
                                 errors={errors.kapasitas_satuan}
                             />
@@ -668,7 +739,7 @@ export default function FormUMKM() {
                     </Form.Label>
                     <SelectPemasaran
                         value={data.jangkauan}
-                        onChange={(item) => setData("jangkauan", item.value)}
+                        onChange={(item) => setData("jangkauan", item)}
                         errors={errors.jangkauan}
                     />
                 </Form.Group>
