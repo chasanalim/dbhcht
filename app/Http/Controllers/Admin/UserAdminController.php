@@ -21,10 +21,6 @@ class UserAdminController extends Controller
 
         $data = User::with('roles')->get();
 
-        // return response()->json([
-        //     'data' => $data,
-        // ]);
-        // dd($data);
 
         if ($request->wantsJson()) {
 
