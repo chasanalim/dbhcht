@@ -1,49 +1,90 @@
 .navbar {
-  .nav-link {
-    color: white !important;
+    .nav-link {
+        color: white !important;
 
-    // Default icon color
-    i {
-      color: white !important;
+        // Default icon color
+        i {
+            color: white !important;
+        }
+
+        &.active {
+            background-color: $primary;
+            border-radius: 20px;
+            padding: 8px 16px;
+            color: black !important;
+
+            // Active icon color
+            i {
+                color: black !important;
+            }
+        }
     }
-
-    &.active {
-      background-color: $primary;
-      border-radius: 20px;
-      padding: 8px 16px;
-      color: black !important;
-
-      // Active icon color
-      i {
-        color: black !important;
-      }
-    }
-  }
 }
 
 .navbar-background {
-  background-color: $secondary;
-  transition: border-radius 0.3s ease;
+    background-color: $secondary;
+    transition: border-radius 0.3s ease;
 }
 
 .custom-navbar {
-  min-height: 85px;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  transition: border-radius 0.3s ease;
+    min-height: 85px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    transition: border-radius 0.3s ease;
 
-  &.scrolled {
-    border-bottom-left-radius: 25px;
-    border-bottom-right-radius: 25px;
-  }
+    &.scrolled {
+        border-bottom-left-radius: 25px;
+        border-bottom-right-radius: 25px;
+    }
 }
 
 .navbar-style {
-  .dropdown-item {
-    color: black !important;
-  }
+    .dropdown-item {
+        color: black !important;
+    }
 
-  .fa {
-    color: white !important;
-  }
+    .fa {
+        color: white !important;
+    }
+}
+
+// ...existing code...
+
+// Add these new styles
+.nav-dropdown-dark {
+    .dropdown-toggle {
+        color: #212529 !important;
+
+        i {
+            color: #212529 !important;
+        }
+    }
+}
+
+.dropdown-item-dark {
+    color: #212529 !important;
+
+    &:hover {
+        background-color: #f8f9fa;
+    }
+}
+
+// Override bootstrap default styles
+#basic-nav-dropdown {
+    &::after {
+        color: #212529 !important;
+    }
+}
+
+// Remove or modify the conflicting styles
+.navbar {
+    .nav-link {
+        color: #212529 !important; // Changed from white to dark color
+
+        i {
+            color: #212529 !important; // Changed from white to dark color
+        }
+
+        // ...rest of the existing styles...
+    }
 }

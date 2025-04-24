@@ -1,11 +1,30 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 // import "bootstrap/dist/css/bootstrap.min.css";
 // import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { Link, usePage } from "@inertiajs/react";
 import NavLink from "@/Components/NavLink";
+import { Nav, NavDropdown } from "react-bootstrap";
 
 export default function Sidebar() {
     const { auth, userProfileImage } = usePage().props;
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    // Check if any submenu is active
+    const isAnySubmenuActive = () => {
+        return (
+            route().current("admin.banmod.index") ||
+            route().current("admin.banmod.buruh-pabrik-rokok") ||
+            route().current("admin.banmod.buruh-tani-tembakau") ||
+            route().current("admin.banmod.pekerja-pabrik-rokok") ||
+            route().current("admin.banmod.ikm") ||
+            route().current("admin.banmod.masyarakat-miskin") ||
+            route().current("admin.umkm.index")
+        );
+    };
+
+    // Set dropdown open state on mount and when route changes
+    useEffect(() => {
+        setIsDropdownOpen(isAnySubmenuActive());
+    }, []);
 
     return (
         <div className="sidebar h-100 pt-3">
@@ -26,7 +45,9 @@ export default function Sidebar() {
                         <span className="d-block fs-6 mb-0 text-uppercase text-white">
                             {auth.user.name}
                         </span>
-                        <span className="d-block text-white fs-6">{auth.user.email}</span>
+                        <span className="d-block text-white fs-6">
+                            {auth.user.email}
+                        </span>
                     </div>
                     <hr className="text-white border-2" />
                 </div>
@@ -58,7 +79,7 @@ export default function Sidebar() {
                                 Bantuan Modal
                             </h6>
                         </li>
-                        <li>
+                        {/* <li>
                             <NavLink
                                 href={route("admin.banmod.index")}
                                 active={route().current("admin.banmod.index")}
@@ -73,60 +94,123 @@ export default function Sidebar() {
                                     Daftar Peserta
                                 </span>
                             </NavLink>
-                        </li>
+                        </li> */}
 
-                        <li className="nav-item dropdown">
-                            <button
-                                className="sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white w-100 border-0 dropdown-toggle"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
-                            >
-                                <i className="bi bi-mortarboard fs-5"></i>
-                                <span className="text-white mt-1 ms-2 me-auto">
-                                    Pelatihan
-                                </span>
-                                <i className="bi bi-chevron-down ms-2 mt-1"></i>
-                            </button>
-                            <ul className="dropdown-menu dropdown-menu-dark">
-                                <li>
-                                    <NavLink
-                                        href={route("admin.umkm.index")}
-                                        className="dropdown-item"
-                                    >
-                                        <i className="bi bi-circle-fill fs-8 me-2"></i>
-                                        Pelatihan UMKM
-                                    </NavLink>
-                                </li>
-                                <li>
-                                    <NavLink
-                                        href={route("admin.kerja.index")}
-                                        className="dropdown-item"
-                                    >
-                                        <i className="bi bi-circle-fill fs-8 me-2"></i>
-                                        Pelatihan Pencari Kerja
-                                    </NavLink>
-                                </li>
-                                <li>
-                                    <NavLink
-                                        href={route(
-                                            "admin.pelatihan-banmod.index"
+                        <li>
+                            <Nav className="sidebar-link rounded-3 d-flex text-decoration-none text-white">
+                                <NavDropdown
+                                    show={isDropdownOpen}
+                                    onToggle={(isOpen) =>
+                                        setIsDropdownOpen(isOpen)
+                                    }
+                                    title={
+                                        <div className="d-flex align-items-center justify-content-between w-100">
+                                            <div className="d-flex align-items-center">
+                                                <i className="bi bi-people fs-5 text-white"></i>
+                                                <span className="text-white mt-1 ms-2">
+                                                    Daftar Peserta
+                                                </span>
+                                            </div>
+                                            <i
+                                                className="bi bi-chevron-down mt-1 text-white"
+                                                style={{ marginLeft: "95px" }}
+                                            ></i>
+                                        </div>
+                                    }
+                                    id="basic-nav-dropdown"
+                                >
+                                    <NavDropdown.Item
+                                        as={Link}
+                                        method="get"
+                                        href={route("admin.banmod.index")}
+                                        active={route().current(
+                                            "admin.banmod.index"
                                         )}
-                                        className="dropdown-item"
+                                        className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                            route().current("admin.banmod.index")
+                                                ? "active"
+                                                : ""
+                                        }`}
                                     >
-                                        <i className="bi bi-circle-fill fs-8 me-2"></i>
-                                        Pelatihan Penerima Banmod
-                                    </NavLink>
-                                </li>
-                                <li>
-                                    <NavLink
-                                        href={route("admin.pertanian.index")}
-                                        className="dropdown-item"
+                                        <span>ALL</span>
+                                    </NavDropdown.Item>
+                                    <NavDropdown.Item
+                                        as={Link}
+                                        method="get"
+                                        href={route("admin.banmod.buruh-pabrik-rokok")}
+                                        active={route().current(
+                                            "admin.banmod.buruh-pabrik-rokok"
+                                        )}
+                                        className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                            route().current("admin.banmod.buruh-pabrik-rokok")
+                                                ? "active"
+                                                : ""
+                                        }`}
                                     >
-                                        <i className="bi bi-circle-fill fs-8 me-2"></i>
-                                        Pelatihan Pertanian
-                                    </NavLink>
-                                </li>
-                            </ul>
+                                        <span>BURUH PABRIK ROKOK</span>
+                                    </NavDropdown.Item>
+                                    <NavDropdown.Item
+                                        as={Link}
+                                        method="get"
+                                        href={route("admin.banmod.buruh-tani-tembakau")}
+                                        active={route().current(
+                                            "admin.banmod.buruh-tani-tembakau"
+                                        )}
+                                        className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                            route().current("admin.banmod.buruh-tani-tembakau")
+                                                ? "active"
+                                                : ""
+                                        }`}
+                                    >
+                                        <span>BURUH TANI TEMBAKAU</span>
+                                    </NavDropdown.Item>
+                                    <NavDropdown.Item
+                                        as={Link}
+                                        method="get"
+                                        href={route("admin.banmod.pekerja-pabrik-rokok")}
+                                        active={route().current(
+                                            "admin.banmod.pekerja-pabrik-rokok"
+                                        )}
+                                        className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                            route().current("admin.banmod.pekerja-pabrik-rokok")
+                                                ? "active"
+                                                : ""
+                                        }`}
+                                    >
+                                        <span>PEKERJA PABRIK ROKOK</span>
+                                    </NavDropdown.Item>
+                                    <NavDropdown.Item
+                                        as={Link}
+                                        method="get"
+                                        href={route("admin.banmod.ikm")}
+                                        active={route().current(
+                                            "admin.banmod.ikm"
+                                        )}
+                                        className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                            route().current("admin.banmod.ikm")
+                                                ? "active"
+                                                : ""
+                                        }`}
+                                    >
+                                        <span>INDUSTRI KECIL DAN MENENGAH</span>
+                                    </NavDropdown.Item>
+                                    <NavDropdown.Item
+                                        as={Link}
+                                        method="get"
+                                        href={route("admin.banmod.masyarakat-miskin")}
+                                        active={route().current(
+                                            "admin.banmod.masyarakat-miskin"
+                                        )}
+                                        className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                            route().current("admin.banmod.masyarakat-miskin")
+                                                ? "active"
+                                                : ""
+                                        }`}
+                                    >
+                                        <span>MASYARAKAT MISKIN</span>
+                                    </NavDropdown.Item>
+                                </NavDropdown>
+                            </Nav>
                         </li>
 
                         <li>
@@ -299,6 +383,22 @@ export default function Sidebar() {
                                 <i className="bi bi-person-fill-gear fs-5"></i>
                                 <span className="text-white mt-1 ms-2 ms-2">
                                     User
+                                </span>
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
+                                href={route("admin.privileges.index")}
+                                active={route().current("admin.privileges.index")}
+                                className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                    route().current("admin.privileges.index")
+                                        ? "active"
+                                        : ""
+                                }`}
+                            >
+                                <i className="bi bi-person-fill-gear fs-5"></i>
+                                <span className="text-white mt-1 ms-2 ms-2">
+                                    Privileges
                                 </span>
                             </NavLink>
                         </li>
