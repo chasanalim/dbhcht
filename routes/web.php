@@ -14,6 +14,8 @@ use App\Http\Controllers\SkorPelatihanController;
 use App\Http\Controllers\KategoriBanmodController;
 use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\JumlahLegalitasController;
+use App\Http\Controllers\Admin\PrivilegesController;
+use App\Http\Controllers\RegPelatihanUmkmController;
 use App\Http\Controllers\JumlahTenagaKerjaController;
 use App\Http\Controllers\Admin\LampiranFileController;
 use App\Http\Controllers\TanggunganKeluargaController;
@@ -30,7 +32,6 @@ use App\Http\Controllers\PelatihanPenerimaBanmodController;
 use App\Http\Controllers\Admin\PelatihanPertanianController;
 use App\Http\Controllers\Admin\PenerimaBanmodLamaController;
 use App\Http\Controllers\Admin\PenerimaPelatihanBanmodController;
-use App\Http\Controllers\RegPelatihanUmkmController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/download', [HomeController::class, 'file'])->name('download');
@@ -61,7 +62,7 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::resource('user', UserAdminController::class);
     Route::resource('banmodlama', PenerimaBanmodLamaController::class);
     Route::resource('banmodwirausaha', PenerimaPelatihanBanmodController::class);
-    Route::resource('privileges', UserAdminController::class);
+    Route::resource('privileges', PrivilegesController::class);
 });
 
 Route::prefix('users')->as('users.')->group(function () {

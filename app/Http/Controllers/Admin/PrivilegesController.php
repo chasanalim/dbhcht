@@ -6,8 +6,10 @@ use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
+use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
-use Spatie\Permission\Contracts\Role;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Validator;
 
 class PrivilegesController extends Controller
 {
@@ -16,31 +18,30 @@ class PrivilegesController extends Controller
      */
     public function index(Request $request)
     {
-        $data = User::with('roles')->get();
+        $roles = Role::with('permissions')->get();
 
         if ($request->wantsJson()) {
-
-            return DataTables::of($data)
+            return DataTables::of($roles)
                 ->addIndexColumn()
-                ->addColumn('roles', function ($row) {
-                    return $row->roles->pluck('name')->implode(', ');
+                ->addColumn('permissions', function ($row) {
+                    return $row->permissions->pluck('name')->implode(', ');
                 })
                 ->addColumn('action', function ($row) {
                     return [
-                        'edit_url' => route('admin.user.edit', $row->id),
-                        'delete_url' => route('admin.user.destroy', $row->id)
+                        'edit_url' => route('admin.privileges.edit', $row->id),
+                        'delete_url' => route('admin.privileges.destroy', $row->id)
                     ];
                 })
-                ->rawColumns(['action', 'roles'])
+                ->rawColumns(['action', 'permissions'])
                 ->make(true);
         }
 
-        return Inertia::render('Admin/User/Index', [
-            'title' => 'Manajemen User',
+        return Inertia::render('Admin/Privileges/Index', [
+            'title' => 'Manajemen Role & Permission',
             'can' => [
-                'create' => auth()->user()->can('add-user', User::class),
-                'edit' => auth()->user()->can('edit-user', User::class),
-                'delete' => auth()->user()->can('delete-user', User::class),
+                'create' => auth()->user()->can('add-role'),
+                'edit' => auth()->user()->can('edit-role'),
+                'delete' => auth()->user()->can('delete-role'),
             ],
             'flash' => [
                 'message' => session('message')
@@ -53,7 +54,15 @@ class PrivilegesController extends Controller
      */
     public function create()
     {
-        //
+        $permissions = Permission::all();
+
+        return Inertia::render('Admin/Privileges/Create', [
+            'title' => 'Tambah Role',
+            'permissions' => $permissions->map(fn($permission) => [
+                'value' => $permission->id,
+                'label' => $permission->name
+            ])
+        ]);
     }
 
     /**
@@ -61,7 +70,21 @@ class PrivilegesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|unique:roles,name',
+            'permissions' => 'required|array'
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $role = Role::create(['name' => $request->name]);
+        $role->syncPermissions($request->permissions);
+
+        return redirect()
+            ->route('admin.privileges.index')
+            ->with('message', 'Role berhasil ditambahkan');
     }
 
     /**
@@ -77,7 +100,21 @@ class PrivilegesController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $role = Role::with('permissions')->findOrFail($id);
+        $permissions = Permission::all();
+
+        return Inertia::render('Admin/Privileges/Create', [
+            'title' => 'Edit Role',
+            'role' => [
+                'id' => $role->id,
+                'name' => $role->name,
+                'permissions' => $role->permissions->pluck('id')->toArray()
+            ],
+            'permissions' => $permissions->map(fn($permission) => [
+                'value' => $permission->id,
+                'label' => $permission->name
+            ])
+        ]);
     }
 
     /**
@@ -85,7 +122,22 @@ class PrivilegesController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|unique:roles,name,' . $id,
+            'permissions' => 'required|array'
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $role = Role::findOrFail($id);
+        $role->update(['name' => $request->name]);
+        $role->syncPermissions($request->permissions);
+
+        return redirect()
+            ->route('admin.privileges.index')
+            ->with('message', 'Role berhasil diupdate');
     }
 
     /**
@@ -93,6 +145,9 @@ class PrivilegesController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $role = Role::findOrFail($id);
+        $role->delete();
+
+        return back()->with('message', 'Role berhasil dihapus');
     }
 }
