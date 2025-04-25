@@ -98,6 +98,18 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn() => $request->session()->get('success'),
                 'error' => fn() => $request->session()->get('error'),
             ],
+            'can' => [
+                'viewBanmod' => $request->user()?->hasPermissionTo('view-banmod'),
+                'viewUmkm' => $request->user()?->hasPermissionTo('view-pelatihan-umkm'),
+                'viewKerja' => $request->user()?->hasPermissionTo('view-pelatihan-kerja'),
+                'viewPelatihanBanmod' => $request->user()?->hasPermissionTo('view-pelatihan-banmod'),
+                'viewPertanian' => $request->user()?->hasPermissionTo('view-pelatihan-pertanian'),
+                'viewMasterLampiranFile' => $request->user()?->hasPermissionTo('view-lampiran-file'),
+                'viewMasterBanmod' => $request->user()?->hasPermissionTo('view-master-banmod'),
+                'viewMasterPertanian' => $request->user()?->hasPermissionTo('view-master-pertanian'),
+                'viewUser' => $request->user()?->hasPermissionTo('view-user'),
+                'viewPrivileges' => $request->user()?->hasPermissionTo('view-role'),
+            ],
         ];
     }
 }
