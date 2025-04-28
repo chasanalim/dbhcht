@@ -1,0 +1,5 @@
+INSERT INTO alasan_pelatihan_ket_kerjas(id,nama,skor) VALUES
+ (1,'BUTUH PEKERJAAN',4)
+,(2,'MENINGKATKAN KETRAMPILAN',3)
+,(3,'MENCARI PENGALAMAN',2),
+(4,'MENGISI WAKTU LUANG',1)

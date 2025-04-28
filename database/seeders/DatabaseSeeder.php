@@ -42,6 +42,8 @@ class DatabaseSeeder extends Seeder
             SkorPelatihanUmkmSeeder::class,
             JenisPelatihanPetaniSeeder::class,
             SkorPelatihanPetaniSeeder::class,
+            JenisPelatihanKetKerjaSeeder::class,
+            AlasanPelatihanKetKerjaSeeder::class,
         ]);
     }
 }

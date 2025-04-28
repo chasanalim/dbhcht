@@ -32,6 +32,9 @@ use App\Http\Controllers\PelatihanPenerimaBanmodController;
 use App\Http\Controllers\Admin\PelatihanPertanianController;
 use App\Http\Controllers\Admin\PenerimaBanmodLamaController;
 use App\Http\Controllers\Admin\PenerimaPelatihanBanmodController;
+use App\Http\Controllers\AlasanPelatihanKetKerjaController;
+use App\Http\Controllers\JenisPelatihanKetKerjaController;
+use App\Models\JenisPelatihanKetKerja;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/download', [HomeController::class, 'file'])->name('download');
@@ -133,6 +136,12 @@ Route::prefix('refer')->as('refer.')->group(function () {
     });
     Route::prefix('skorpelatihanpetani')->as('skorpelatihanpetani.')->group(function () {
         Route::get('/', [SkorPelatihanPetaniController::class, 'index'])->name('index');
+    });
+    Route::prefix('jenispelatihanketkerja')->as('jenispelatihanketkerja.')->group(function () {
+        Route::get('/', [JenisPelatihanKetKerjaController::class, 'index'])->name('index');
+    });
+    Route::prefix('alasanpelatihanketkerja')->as('alasanpelatihanketkerja.')->group(function () {
+        Route::get('/', [AlasanPelatihanKetKerjaController::class, 'index'])->name('index');
     });
 });
 require __DIR__ . '/auth.php';

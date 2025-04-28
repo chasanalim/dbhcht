@@ -1,52 +1,54 @@
-import React from "react";
+import axios from "axios";
+import React, { Fragment, useEffect, useState } from "react";
+import { Form } from "react-bootstrap";
 import Select from "react-select";
 
 export default function SelectJenisPelatihanKeterampilan({
-    value,
-    onChange,
+    pendidikan_min,
+    usia_max,
+    onChange = (item) => {},
     errors,
 }) {
-    const options = [
-        "Western Food",
-        "Bakery",
-        "Teknisi HP",
-        "Perawatan AC",
-        "Teknisi Komputer",
-        "Desain Grafis",
-        "Jahit",
-        "Pengelasan",
-        "Teknik Bangunan",
-        "Instalasi Listrik",
-        "Tata Rias / MUA",
-        "Tata Rambut / Salon",
-        "Tata Rambut / Barber",
-        "Barista",
-        "Videografi / Video Editing",
-        "Terapis SPA",
-        "Satpam / Gada Pratama",
-        "Administrasi Perkantoran",
-        "Perhotelan / Housekeeping",
-        "Teknik Sepeda Motor",
-    ].map((item) => ({ value: item, label: item }));
+    const [loading, setLoading] = useState(false);
+    const [data, setData] = useState([]);
 
-    const customStyles = {
-        control: (provided) => ({
-            ...provided,
-            borderColor: errors ? "#dc3545" : provided.borderColor,
-            boxShadow: "none",
-        }),
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const url = route("refer.jenispelatihanketkerja.index");
+            const { data } = await axios.get(url, {
+                params: {
+                    pendidikan: pendidikan_min,
+                    usia: usia_max,
+                },
+            });
+
+            setData(data);
+            setLoading(false);
+        } catch (error) {
+            console.error(error);
+            setLoading(false);
+        }
     };
 
+    useEffect(() => {
+        if (!!pendidikan_min && !!usia_max) {
+            fetchData();
+        }
+    }, [pendidikan_min , usia_max]);
+
     return (
-        <div>
+        <Fragment>
             <Select
-                options={options}
-                value={options.find((opt) => opt.value === value)}
-                onChange={(item) => onChange(item.value)}
-                styles={customStyles}
-                className={errors ? "is-invalid" : ""}
+                options={data}
+                getOptionValue={(option) => option.id}
+                getOptionLabel={(option) => option.nama}
+                onChange={(item) => onChange(item)}
+                isLoading={loading}
             />
-            {errors && <div className="invalid-feedback d-block">{errors}</div>}
-        </div>
+            {!!errors && (
+                <Form.Text className="text-danger">{errors}</Form.Text>
+            )}
+        </Fragment>
     );
 }
