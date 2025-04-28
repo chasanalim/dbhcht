@@ -45,6 +45,8 @@ class DatabaseSeeder extends Seeder
             KelompokTaniSeeder::class,
             KelompokPelatihanPetaniSeeder::class,
             MasaAktifKelompokTaniSeeder::class,
+            JenisPelatihanKetKerjaSeeder::class,
+            AlasanPelatihanKetKerjaSeeder::class,
         ]);
     }
 }

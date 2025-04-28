@@ -35,6 +35,9 @@ use App\Http\Controllers\Admin\PenerimaPelatihanBanmodController;
 use App\Http\Controllers\RegPelatihanPetaniController;
 use App\Http\Controllers\RegPelatihanUmkmController;
 use App\Http\Controllers\RegSkorPelatihanPetaniController;
+use App\Http\Controllers\AlasanPelatihanKetKerjaController;
+use App\Http\Controllers\JenisPelatihanKetKerjaController;
+use App\Models\JenisPelatihanKetKerja;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/download', [HomeController::class, 'file'])->name('download');
@@ -148,6 +151,12 @@ Route::prefix('regpelatihanpetani')->as('regpelatihanpetani.')->group(function (
     });
     Route::prefix('skorpelatihanpetani')->as('skorpelatihanpetani.')->group(function () {
         Route::get('/', [RegSkorPelatihanPetaniController::class, 'skorpelatihanpetani'])->name('skorpelatihanpetani');
+    });
+    Route::prefix('jenispelatihanketkerja')->as('jenispelatihanketkerja.')->group(function () {
+        Route::get('/', [JenisPelatihanKetKerjaController::class, 'index'])->name('index');
+    });
+    Route::prefix('alasanpelatihanketkerja')->as('alasanpelatihanketkerja.')->group(function () {
+        Route::get('/', [AlasanPelatihanKetKerjaController::class, 'index'])->name('index');
     });
 });
 require __DIR__ . '/auth.php';

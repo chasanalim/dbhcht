@@ -8,8 +8,62 @@ import SelectKecamatan from "@/Components/Select/SelectKecamatan";
 import SelectKelurahan from "@/Components/Select/SelectKelurahan";
 import SelectRt from "@/Components/Select/SelectRt";
 import SelectRw from "@/Components/Select/SelectRw";
+import { useForm } from "@inertiajs/react";
 
-export default function FormKeterampilan({ data, setData, errors }) {
+export default function FormKeterampilan() {
+    const { data, setData, errors, post, reset } = useForm({
+        tahun: "",
+        nik: "",
+        no_kk: "",
+        nama_lengkap: "",
+        tmp_lhr: "",
+        tgl_lhr: "",
+        usia: "",
+        jenis_kelamin: "",
+        alamat: "",
+        kode_kecamatan: "",
+        nama_kecamatan: "",
+        kode_kelurahan: "",
+        nama_kelurahan: "",
+        kode_rw: "",
+        nama_rw: "",
+        kode_rt: "",
+        nama_rt: "",
+        phone_number: "",
+
+        // nama_usaha: "",
+        // tahun_berdiri: "",
+        // bidang_usaha: "",
+        // alamat_usaha: "",
+        // kec_usaha: "",
+        // kel_usaha: "",
+        // rw_usaha: "",
+        // rt_usaha: "",
+        // nib: "",
+        // legalitas_status: "",
+        // legalitas_jenis: [],
+
+        // modal: "",
+        // omset: "",
+        // kapasitas_satuan: "",
+        // kapasitas_jumlah: "",
+        // jangkauan: "",
+
+        // file_foto: null,
+        // file_ktp: null,
+        // file_kk: null,
+        // file_pernyataan: null,
+
+        // prioritas_1: "",
+        // prioritas_2: "",
+        // prioritas_3: "",
+
+        // alasan: "",
+        // kesesuaian: "",
+        // pengalaman: "",
+
+        // komitmen: false,
+    });
     let fileIndex = 1;
 
     const handleUploadFoto = (e, field_name, preview_name) => {
@@ -183,6 +237,28 @@ export default function FormKeterampilan({ data, setData, errors }) {
         );
     };
 
+    const handleUsia = (birthDate) => {
+        const today = new Date();
+        const birth = new Date(birthDate);
+
+        let age = today.getFullYear() - birth.getFullYear();
+        const monthDiff = today.getMonth() - birth.getMonth();
+
+        // Adjust age if birthday hasn't occurred this year
+        if (
+            monthDiff < 0 ||
+            (monthDiff === 0 && today.getDate() < birth.getDate())
+        ) {
+            age--;
+        }
+        console.log("Usia: ", age);
+        setData((prevState) => ({
+            ...prevState,
+            tgl_lhr: birthDate,
+            usia: age,
+        }));
+    };
+
     return (
         <>
             <div className="big-text text-muted mb-4">
@@ -212,14 +288,14 @@ export default function FormKeterampilan({ data, setData, errors }) {
                     <Form.Label className="required">Nomor KK</Form.Label>
                     <Form.Control
                         type="text"
-                        value={data.kk || ""}
+                        value={data.no_kk || ""}
                         onChange={(e) =>
-                            setData({ ...data, kk: e.target.value })
+                            setData({ ...data, no_kk: e.target.value })
                         }
-                        isInvalid={!!errors.kk}
+                        isInvalid={!!errors.no_kk}
                     />
                     <Form.Control.Feedback type="invalid">
-                        {errors.kk}
+                        {errors.no_kk}
                     </Form.Control.Feedback>
                 </Form.Group>
 
@@ -359,12 +435,7 @@ export default function FormKeterampilan({ data, setData, errors }) {
                         <Form.Control
                             type="date"
                             value={data.tgl_lhr}
-                            onChange={(e) =>
-                                setData((prevState) => ({
-                                    ...prevState,
-                                    tgl_lhr: e.target.value,
-                                }))
-                            }
+                            onChange={(e) => handleUsia(e.target.value)}
                             isInvalid={errors.tgl_lhr}
                         ></Form.Control>
                         <Form.Control.Feedback type="invalid">
@@ -403,8 +474,14 @@ export default function FormKeterampilan({ data, setData, errors }) {
                         Jenis Pelatihan
                     </Form.Label>
                     <SelectJenisPelatihanKeterampilan
-                        value={data.jenis_pelatihan}
-                        onChange={(val) => setData("jenis_pelatihan", val)}
+                        pendidikan_min={data.pendidikan}
+                        usia_max={data.usia}
+                        onChange={(item) =>
+                            setData((prevState) => ({
+                                ...prevState,
+                                jenis_pelatihan: item.id,
+                            }))
+                        }
                         errors={errors.jenis_pelatihan}
                     />
                 </Form.Group>
