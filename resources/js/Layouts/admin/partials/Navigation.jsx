@@ -61,6 +61,10 @@ export default function Navbar(props) {
                                 as={Link}
                                 method="post"
                                 href={route("logout")}
+                                preserveScroll
+                                onSuccess={() => {
+                                    window.location.href = "/login";
+                                }}
                             >
                                 <span>Logout</span>
                             </NavDropdown.Item>

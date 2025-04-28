@@ -8,6 +8,11 @@ import { Nav, NavDropdown } from "react-bootstrap";
 export default function Sidebar() {
     const { auth, userProfileImage, can } = usePage().props;
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+    // Add null checks
+    if (!auth?.user) {
+        return null;
+    }
     // Check if any submenu is active
     const isAnySubmenuActive = () => {
         return (
@@ -16,8 +21,7 @@ export default function Sidebar() {
             route().current("admin.banmod.buruh-tani-tembakau") ||
             route().current("admin.banmod.pekerja-pabrik-rokok") ||
             route().current("admin.banmod.ikm") ||
-            route().current("admin.banmod.masyarakat-miskin") ||
-            route().current("admin.umkm.index")
+            route().current("admin.banmod.masyarakat-miskin")
         );
     };
 
@@ -40,7 +44,7 @@ export default function Sidebar() {
                         </span>
                     </NavLink>
                 </div>
-                <div className="profile text-center mb-3 position-relative">
+                {/* <div className="profile text-center mb-3 position-relative">
                     <div className="profile_text mt-4">
                         <span className="d-block fs-6 mb-0 text-uppercase text-white">
                             {auth.user.name}
@@ -49,8 +53,8 @@ export default function Sidebar() {
                             {auth.user.email}
                         </span>
                     </div>
-                    <hr className="text-white border-2" />
-                </div>
+                    </div> */}
+                <hr className="text-white border-2" />
                 <div className="sidebarnav">
                     <ul className="list-unstyled text-white mt-3">
                         <li>
@@ -344,15 +348,16 @@ export default function Sidebar() {
                             </>
                         )}
 
-                        {(can.viewMasterLampiranFile || can.viewMasterBanmod) &&  (
-                                <>
-                                    <li>
-                                        <h6 className="text-uppercase mt-3 menu">
-                                            Master Data
-                                        </h6>
-                                    </li>
-                                </>
-                            )}
+                        {(can.viewMasterLampiranFile ||
+                            can.viewMasterBanmod) && (
+                            <>
+                                <li>
+                                    <h6 className="text-uppercase mt-3 menu">
+                                        Master Data
+                                    </h6>
+                                </li>
+                            </>
+                        )}
                         {can.viewMasterLampiranFile && (
                             <>
                                 <li>
