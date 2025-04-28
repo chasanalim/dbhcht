@@ -1,5 +1,5 @@
 import { Form, Button, ListGroup } from "react-bootstrap";
-import React from "react";
+import React, { useState } from "react";
 
 import SelectAlasanPelatihan from "@/Components/Select/SelectAlasanPelatihan";
 import SelectJenisPelatihanKeterampilan from "@/Components/Select/SelectJenisPelatihanKeterampilan";
@@ -9,10 +9,11 @@ import SelectKelurahan from "@/Components/Select/SelectKelurahan";
 import SelectRt from "@/Components/Select/SelectRt";
 import SelectRw from "@/Components/Select/SelectRw";
 import { useForm } from "@inertiajs/react";
+import SelectJenisKelamin from "@/Components/Select/SelectJenisKelamin";
 
 export default function FormKeterampilan() {
+    const [isKomitmenChecked, setIsKomitmenChecked] = useState(false);
     const { data, setData, errors, post, reset } = useForm({
-        tahun: "",
         nik: "",
         no_kk: "",
         nama_lengkap: "",
@@ -30,39 +31,11 @@ export default function FormKeterampilan() {
         kode_rt: "",
         nama_rt: "",
         phone_number: "",
-
-        // nama_usaha: "",
-        // tahun_berdiri: "",
-        // bidang_usaha: "",
-        // alamat_usaha: "",
-        // kec_usaha: "",
-        // kel_usaha: "",
-        // rw_usaha: "",
-        // rt_usaha: "",
-        // nib: "",
-        // legalitas_status: "",
-        // legalitas_jenis: [],
-
-        // modal: "",
-        // omset: "",
-        // kapasitas_satuan: "",
-        // kapasitas_jumlah: "",
-        // jangkauan: "",
-
-        // file_foto: null,
-        // file_ktp: null,
-        // file_kk: null,
-        // file_pernyataan: null,
-
-        // prioritas_1: "",
-        // prioritas_2: "",
-        // prioritas_3: "",
-
-        // alasan: "",
-        // kesesuaian: "",
-        // pengalaman: "",
-
-        // komitmen: false,
+        alasan: "",
+        pendidikan: "",
+        jenis_pelatihan: "",
+        file_ktp: [],
+        file_kk: [],
     });
     let fileIndex = 1;
 
@@ -87,23 +60,32 @@ export default function FormKeterampilan() {
 
         setData((prevState) => ({
             ...prevState,
-            [field_name]: multiple ? choosenFiles : e.target.files,
+            [field_name]: multiple ? choosenFiles : e.target.files[0],
         }));
     };
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        post(route("banmod.store"), {
+        post(route("pelatihan.kerja.store"), {
             forceFormData: true,
         });
     };
 
-    const handleRemoveFile = (field, index) => {
-        setData((prev) => {
-            const updated = [...(prev[field] || [])];
-            updated.splice(index, 1);
-            return { ...prev, [field]: updated };
-        });
+    const handleRemoveFile = (field, index = null) => {
+        if (index !== null) {
+            // Handle array of files
+            setData((prev) => {
+                const updated = [...(prev[field] || [])];
+                updated.splice(index, 1);
+                return { ...prev, [field]: updated };
+            });
+        } else {
+            // Handle single file
+            setData((prev) => ({
+                ...prev,
+                [field]: null,
+            }));
+        }
     };
 
     const handleRemoveImage = (field, previewKey) => {
@@ -173,66 +155,77 @@ export default function FormKeterampilan() {
                 )}
 
                 {/* PDF/File Preview */}
-                {!imagePreviewKey && data[fieldName]?.length > 0 && (
-                    <ListGroup className="mt-3">
-                        {Array.isArray(data[fieldName]) ? (
-                            data[fieldName].map((file, idx) => (
-                                <ListGroup.Item
-                                    key={idx}
-                                    className="d-flex justify-content-between align-items-center"
-                                >
-                                    <span>
-                                        📄 {file.name}{" "}
-                                        <a
-                                            href={URL.createObjectURL(file)}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="ms-2 text-decoration-underline"
-                                            style={{ fontSize: "12px" }}
+                {!imagePreviewKey &&
+                    data[fieldName] &&
+                    (data[fieldName] instanceof File ||
+                        (Array.isArray(data[fieldName]) &&
+                            data[fieldName].length > 0)) && (
+                        <ListGroup className="mt-3">
+                            {multiple ? (
+                                Array.isArray(data[fieldName]) &&
+                                data[fieldName].map((file, idx) => (
+                                    <ListGroup.Item
+                                        key={idx}
+                                        className="d-flex justify-content-between align-items-center"
+                                    >
+                                        <span>
+                                            📄 {file.name}
+                                            {file instanceof File && (
+                                                <a
+                                                    href={URL.createObjectURL(
+                                                        file
+                                                    )}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="ms-2 text-decoration-underline"
+                                                    style={{ fontSize: "12px" }}
+                                                >
+                                                    Preview
+                                                </a>
+                                            )}
+                                        </span>
+                                        <Button
+                                            size="sm"
+                                            variant="outline-danger"
+                                            onClick={() =>
+                                                handleRemoveFile(fieldName, idx)
+                                            }
                                         >
-                                            Preview
-                                        </a>
+                                            Hapus
+                                        </Button>
+                                    </ListGroup.Item>
+                                ))
+                            ) : (
+                                <ListGroup.Item className="d-flex justify-content-between align-items-center">
+                                    <span>
+                                        📄 {data[fieldName].name}
+                                        {data[fieldName] instanceof File && (
+                                            <a
+                                                href={URL.createObjectURL(
+                                                    data[fieldName]
+                                                )}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="ms-2 text-decoration-underline"
+                                                style={{ fontSize: "12px" }}
+                                            >
+                                                Preview
+                                            </a>
+                                        )}
                                     </span>
                                     <Button
                                         size="sm"
                                         variant="outline-danger"
                                         onClick={() =>
-                                            handleRemoveFile(fieldName, idx)
+                                            handleRemoveFile(fieldName)
                                         }
                                     >
                                         Hapus
                                     </Button>
                                 </ListGroup.Item>
-                            ))
-                        ) : (
-                            <ListGroup.Item className="d-flex justify-content-between align-items-center">
-                                <span>
-                                    📄 {data[fieldName][0]?.name}
-                                    <a
-                                        href={URL.createObjectURL(
-                                            data[fieldName][0]
-                                        )}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="ms-2 text-decoration-underline"
-                                        style={{ fontSize: "12px" }}
-                                    >
-                                        Preview
-                                    </a>
-                                </span>
-                                <Button
-                                    size="sm"
-                                    variant="outline-danger"
-                                    onClick={() =>
-                                        handleRemoveFile(fieldName, 0)
-                                    }
-                                >
-                                    Hapus
-                                </Button>
-                            </ListGroup.Item>
-                        )}
-                    </ListGroup>
-                )}
+                            )}
+                        </ListGroup>
+                    )}
             </Form.Group>
         );
     };
@@ -251,7 +244,6 @@ export default function FormKeterampilan() {
         ) {
             age--;
         }
-        console.log("Usia: ", age);
         setData((prevState) => ({
             ...prevState,
             tgl_lhr: birthDate,
@@ -271,6 +263,7 @@ export default function FormKeterampilan() {
                 <Form.Group className="mb-3">
                     <Form.Label className="required">NIK</Form.Label>
                     <Form.Control
+                        name="nik"
                         type="text"
                         value={data.nik || ""}
                         onChange={(e) =>
@@ -287,6 +280,7 @@ export default function FormKeterampilan() {
                 <Form.Group className="mb-3">
                     <Form.Label className="required">Nomor KK</Form.Label>
                     <Form.Control
+                        name="KK"
                         type="text"
                         value={data.no_kk || ""}
                         onChange={(e) =>
@@ -303,6 +297,7 @@ export default function FormKeterampilan() {
                 <Form.Group className="mb-3">
                     <Form.Label className="required">Nama Lengkap</Form.Label>
                     <Form.Control
+                        name="nama"
                         type="text"
                         value={data.nama_lengkap || ""}
                         onChange={(e) =>
@@ -315,6 +310,25 @@ export default function FormKeterampilan() {
                     </Form.Control.Feedback>
                 </Form.Group>
 
+                <Form.Group className="row mb-1">
+                    <div className="col-md-12 col-12 mb-3">
+                        <div className="col-md-6 col-12 mb-3">
+                            <Form.Label className="required">
+                                Jenis Kelamin
+                            </Form.Label>
+                            <SelectJenisKelamin
+                                onChange={(item) =>
+                                    // console.log(item)
+                                    setData((prevState) => ({
+                                        ...prevState,
+                                        jenis_kelamin: item,
+                                    }))
+                                }
+                                errors={errors.jenis_kelamin}
+                            />
+                        </div>
+                    </div>
+                </Form.Group>
                 {/* Alamat Sesuai KTP */}
                 <Form.Group className="row mb-1">
                     <div className="col-md-6 col-12 mb-3">
@@ -399,14 +413,14 @@ export default function FormKeterampilan() {
                     <Form.Label className="required">No HP / WA</Form.Label>
                     <Form.Control
                         type="text"
-                        value={data.no_hp || ""}
+                        value={data.phone_number || ""}
                         onChange={(e) =>
-                            setData({ ...data, no_hp: e.target.value })
+                            setData({ ...data, phone_number: e.target.value })
                         }
-                        isInvalid={!!errors.no_hp}
+                        isInvalid={!!errors.phone_number}
                     />
                     <Form.Control.Feedback type="invalid">
-                        {errors.no_hp}
+                        {errors.phone_number}
                     </Form.Control.Feedback>
                 </Form.Group>
 
@@ -417,6 +431,7 @@ export default function FormKeterampilan() {
                     </Form.Label>
                     <div className="col-md-8">
                         <Form.Control
+                            name="tmp_lhr"
                             value={data.tmp_lhr}
                             onChange={(e) =>
                                 setData((prevState) => ({
@@ -433,6 +448,7 @@ export default function FormKeterampilan() {
                     </div>
                     <div className="col-md-4">
                         <Form.Control
+                            name="tgl_lhr"
                             type="date"
                             value={data.tgl_lhr}
                             onChange={(e) => handleUsia(e.target.value)}
@@ -451,8 +467,11 @@ export default function FormKeterampilan() {
                     </Form.Label>
                     <SelectPendidikan
                         value={data.pendidikan}
-                        onChange={(val) =>
-                            setData({ ...data, pendidikan: val })
+                        onChange={(item) =>
+                            setData((prevState) => ({
+                                ...prevState,
+                                pendidikan: item,
+                            }))
                         }
                         errors={errors.pendidikan}
                     />
@@ -464,7 +483,12 @@ export default function FormKeterampilan() {
                     </Form.Label>
                     <SelectAlasanPelatihan
                         value={data.alasan}
-                        onChange={(val) => setData("alasan", val)}
+                        onChange={(item) =>
+                            setData((prevState) => ({
+                                ...prevState,
+                                alasan: item.id,
+                            }))
+                        }
                         errors={errors.alasan}
                     />
                 </Form.Group>
@@ -498,7 +522,12 @@ export default function FormKeterampilan() {
                     false,
                     "imagePreviewKTP"
                 )}
-                {renderFileUpload("Kartu Keluarga (KK)", "file_kk")}
+                {renderFileUpload(
+                    "Kartu Keluarga (KK)",
+                    "file_kk",
+                    ".pdf",
+                    false // Set multiple to false
+                )}
 
                 <div className="big-text text-muted mb-4">
                     Pernyataan Komitmen
@@ -507,13 +536,17 @@ export default function FormKeterampilan() {
                 <Form.Check
                     type="checkbox"
                     label="Saya menyatakan bahwa data yang dimasukkan benar dan bersedia mengikuti pelatihan sampai selesai"
-                    checked={data.komitmen}
-                    onChange={(e) => setData("komitmen", e.target.checked)}
+                    checked={isKomitmenChecked}
+                    onChange={(e) => setIsKomitmenChecked(e.target.checked)}
                 />
                 <hr />
 
                 <div className="card-footer d-flex justify-content-center mt-4 gap-2">
-                    <Button type="submit">
+                    <Button
+                        type="submit"
+                        disabled={!isKomitmenChecked}
+                        className={!isKomitmenChecked ? "opacity-50" : ""}
+                    >
                         Simpan{" "}
                         <i
                             className="fa fa-paper-plane ms-1"

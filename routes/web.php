@@ -34,6 +34,7 @@ use App\Http\Controllers\RegPelatihanPetaniController;
 use App\Http\Controllers\RegSkorPelatihanPetaniController;
 use App\Http\Controllers\AlasanPelatihanKetKerjaController;
 use App\Http\Controllers\JenisPelatihanKetKerjaController;
+use App\Http\Controllers\RegPelatihanKeterampilanKerjaController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/download', [HomeController::class, 'file'])->name('download');
@@ -96,6 +97,9 @@ Route::prefix('pelatihan/banmod')->group(function () {
 });
 
 Route::post('/pelatihan/umkm', [RegPelatihanUmkmController::class, 'store'])->name('pelatihan.umkm.store');
+
+Route::post('/pelatihan/kerja', [RegPelatihanKeterampilanKerjaController::class, 'store'])->name('pelatihan.kerja.store');
+
 
 Route::get('/skor/{kategori}', [SkorPelatihanController::class, 'getSkorByKategori']);
 

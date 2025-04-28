@@ -108,7 +108,7 @@ export default function BanmodPage({ meta }) {
                 )}
 
                 {/* PDF List + Preview + Remove */}
-                {!imagePreviewKey && (
+                {!imagePreviewKey && data[fieldName]?.length > 0 &&(
                     <ListGroup className="mt-3">
                         {Array.isArray(data[fieldName]) ? (
                             data[fieldName].map((file, idx) => (
