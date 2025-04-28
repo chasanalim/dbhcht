@@ -1,83 +1,67 @@
-import { Form, Button, ListGroup } from "react-bootstrap";
+import { Form, Button, InputGroup, ListGroup } from "react-bootstrap";
 import React, { useState } from "react";
 import axios from "axios";
+import { useForm } from "@inertiajs/react";
+import Select from "react-select";
 
 import SelectKecamatan from "@/Components/Select/SelectKecamatan";
 import SelectKelurahan from "@/Components/Select/SelectKelurahan";
 import SelectRt from "@/Components/Select/SelectRt";
 import SelectRw from "@/Components/Select/SelectRw";
-import { useForm } from "@inertiajs/react";
 import SelectTahun from "@/Components/Select/SelectTahun";
 
 export default function FormPenerimaBanmod() {
-    const [nikStatus, setNikStatus] = useState(null); // Status pengecekan NIK
-    const [pesertaData, setPesertaData] = useState(null); // Data peserta jika NIK ditemukan
-    const [isEditable, setIsEditable] = useState(true); // Menentukan apakah form bisa diedit
-    const [errorMessage, setErrorMessage] = useState(""); // Pesan error
-    const [isConfirmed, setIsConfirmed] = useState(null); // null | true | false
+    const [nikStatus, setNikStatus] = useState(null);
     const [dataPenerima, setDataPenerima] = useState(null);
+    const [errorMessage, setErrorMessage] = useState("");
     const [tampilKonfirmasi, setTampilKonfirmasi] = useState(false);
     const [editMode, setEditMode] = useState(false);
 
     const { data, setData, errors, post, reset } = useForm({
-        tahun: "",
+        tahun_penerimaan: "",
         nik: "",
-        no_kk: "",
         nama_lengkap: "",
-        tempat_lahir: "",
-        tgl_lahir: "",
-        jenis_kelamin: "",
-        alamat: "",
-        kode_kecamatan: "",
-        nama_kecamatan: "",
-        kode_kelurahan: "",
-        nama_kelurahan: "",
-        kode_rw: "",
-        nama_rw: "",
-        kode_rt: "",
-        nama_rt: "",
-        phone_number: "",
+        no_kk: "",
+        no_hp: "",
 
-        // nama_usaha: "",
-        // tahun_berdiri: "",
-        // bidang_usaha: "",
-        // alamat_usaha: "",
-        // kec_usaha: "",
-        // kel_usaha: "",
-        // rw_usaha: "",
-        // rt_usaha: "",
-        // nib: "",
-        // legalitas_status: "",
-        // legalitas_jenis: [],
+        // Alamat KTP
+        kecamatan_ktp: "",
+        kelurahan_ktp: "",
+        rw_ktp: "",
+        rt_ktp: "",
+        jalan_ktp: "",
 
-        // modal: "",
-        // omset: "",
-        // kapasitas_satuan: "",
-        // kapasitas_jumlah: "",
-        // jangkauan: "",
+        // Alamat Usaha
+        kecamatan_usaha: "",
+        kelurahan_usaha: "",
+        rw_usaha: "",
+        rt_usaha: "",
+        jalan_usaha: "",
 
-        // file_foto: null,
-        // file_ktp: null,
-        // file_kk: null,
-        // file_pernyataan: null,
+        // Pelatihan & Perkembangan
+        jenis_pelatihan_industri: "",
+        perkembangan_omzet: "",
+        perkembangan_tenaga_kerja: "",
 
-        // prioritas_1: "",
-        // prioritas_2: "",
-        // prioritas_3: "",
+        // Skor Pelatihan
+        skor_ketrampilan: "",
+        skor_kualitas_produk: "",
+        skor_permasalahan_usaha: "",
+        skor_mengisi_waktu: "",
+        skor_diajak_teman: "",
 
-        // alasan: "",
-        // kesesuaian: "",
-        // pengalaman: "",
+        // Files
+        file_ktp: null,
+        file_kk: null,
+        file_nib: null,
 
-        // komitmen: false,
+        komitmen: false,
     });
 
-    // Fungsi untuk mengecek NIK di database
+    // Fungsi untuk mengecek NIK
     const cekNik = async () => {
         setErrorMessage("");
         setNikStatus("");
-        setTampilKonfirmasi(false);
-        setEditMode(false);
         try {
             const response = await axios.get(
                 `/pelatihan/banmod/cek-nik/${data.nik}`
@@ -88,13 +72,13 @@ export default function FormPenerimaBanmod() {
                 setNikStatus("NIK valid!");
                 setData((prev) => ({
                     ...prev,
-                    nama_lengkap: d.nama_lengkap,
-                    no_kk: d.no_kk,
-                    kecamatan: d.kecamatan,
-                    kelurahan: d.kelurahan,
-                    rw: d.rw,
-                    rt: d.rt,
-                    alamat: d.alamat,
+                    nama_lengkap: d.nama,
+                    no_kk: d.kk,
+                    kecamatan_ktp: d.kec,
+                    kelurahan_ktp: d.kel,
+                    rw_ktp: d.rw,
+                    rt_ktp: d.rt,
+                    jalan_ktp: d.alamat,
                 }));
                 setTampilKonfirmasi(true);
             } else {
@@ -108,29 +92,8 @@ export default function FormPenerimaBanmod() {
         }
     };
 
-    // Fungsi untuk menangani perubahan NIK
-    const handleNikChange = (e) => {
-        setData("nik", e.target.value);
-        setNikStatus("");
-        setErrorMessage("");
-        setDataPenerima(null);
-        setTampilKonfirmasi(false);
-        setEditMode(false);
-    };
-
-    // Fungsi untuk menangani konfirmasi apakah data sudah sesuai
-    const handleDataConfirmation = (isConfirmed) => {
-        if (isConfirmed) {
-            setIsEditable(false); // Jika ya, form tidak bisa diedit
-        } else {
-            setIsEditable(true); // Jika tidak, form bisa diedit
-        }
-    };
-
-    let fileIndex = 1;
-
+    // Add these state handlers for file uploads
     const handleUploadFoto = (e, field_name, preview_name) => {
-        // const choosenFiles = Array.prototype.slice.call(e.target.files);
         let reader = new FileReader();
         let file = e.target.files[0];
 
@@ -146,19 +109,12 @@ export default function FormPenerimaBanmod() {
     };
 
     const handleUploadFile = (e, field_name, multiple) => {
-        const choosenFiles = Array.prototype.slice.call(e.target.files);
+        const files = Array.prototype.slice.call(e.target.files);
 
         setData((prevState) => ({
             ...prevState,
-            [field_name]: multiple ? choosenFiles : e.target.files,
+            [field_name]: multiple ? files : files[0],
         }));
-    };
-
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        post(route("banmod.store"), {
-            forceFormData: true,
-        });
     };
 
     const handleRemoveFile = (field, index) => {
@@ -177,6 +133,10 @@ export default function FormPenerimaBanmod() {
         }));
     };
 
+    // Add file index counter
+    let fileIndex = 1;
+
+    // Add renderFileUpload function
     const renderFileUpload = (
         label,
         fieldName,
@@ -207,11 +167,7 @@ export default function FormPenerimaBanmod() {
                             ? handleUploadFoto(e, fieldName, imagePreviewKey)
                             : handleUploadFile(e, fieldName, multiple)
                     }
-                    isInvalid={errors[fieldName]}
                 />
-                <Form.Control.Feedback type="invalid">
-                    {errors[fieldName]}
-                </Form.Control.Feedback>
 
                 {/* Image Preview with Remove */}
                 {imagePreviewKey && data[imagePreviewKey] && (
@@ -270,10 +226,10 @@ export default function FormPenerimaBanmod() {
                         ) : (
                             <ListGroup.Item className="d-flex justify-content-between align-items-center">
                                 <span>
-                                    📄 {data[fieldName][0]?.name}
+                                    📄 {data[fieldName]?.name}
                                     <a
                                         href={URL.createObjectURL(
-                                            data[fieldName][0]
+                                            data[fieldName]
                                         )}
                                         target="_blank"
                                         rel="noopener noreferrer"
@@ -300,87 +256,253 @@ export default function FormPenerimaBanmod() {
         );
     };
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        post(route("banmod.store"), {
+            forceFormData: true,
+            onSuccess: () => {
+                reset();
+                setTampilKonfirmasi(false);
+                setDataPenerima(null);
+                setNikStatus(null);
+            },
+        });
+    };
+
     return (
-        <>
+        <Form onSubmit={handleSubmit} encType="multipart/form-data">
+            {/* Form Title */}
+            <h4 className="text-center fw-bold mb-4">
+                FORM PENDAFTARAN PELATIHAN KETRAMPILAN KERJA BAGI PENERIMA
+                BANTUAN MODAL
+            </h4>
+
+            {/* Form Description */}
+            <div className="alert alert-info mb-4">
+                <strong>DESKRIPSI PELATIHAN:</strong>
+                <p className="mb-2">
+                    Pelatihan akan dilaksanakan selama 10 hari, meliputi:
+                </p>
+                <ul className="mb-0">
+                    <li>Manajemen Keuangan (1 hari)</li>
+                    <li>Manajemen Pemasaran (1 hari)</li>
+                    <li>Peningkatan Mutu Produk (3 hari termasuk praktek)</li>
+                    <li>Pendampingan di Lokasi Usaha (5 hari)</li>
+                </ul>
+            </div>
+
+            {/* Section A: Identitas Pendaftar */}
             <div className="big-text text-muted mb-4">
-                Data Peserta
+                A. Identitas Pendaftar
                 <div className="underline"></div>
             </div>
 
-            <Form.Group className="row mb-1">
-                <div className="col-md-12 col-12 mb-3">
-                    <Form.Label className="required">
-                        Tahun Penerimaan Bantuan
-                    </Form.Label>
-                    <SelectTahun
-                        onChange={(item) =>
-                            setData((prevState) => ({
-                                ...prevState,
-                                tahun: item.value,
-                            }))
-                        }
-                        errors={errors.tahun}
-                    />
-                </div>
-            </Form.Group>
-
+            {/* Tahun Penerimaan */}
             <Form.Group className="mb-3">
-                <Form.Label>NIK</Form.Label>
-                <Form.Control
-                    type="text"
-                    value={data.nik}
-                    onChange={handleNikChange}
-                    isInvalid={!!errors.nik || !!errorMessage}
+                <Form.Label className="required">
+                    Tahun Penerimaan Bantuan
+                </Form.Label>
+                <SelectTahun
+                    value={data.tahun_penerimaan}
+                    onChange={(item) => setData("tahun_penerimaan", item.value)}
+                    errors={errors.tahun_penerimaan}
                 />
-                {errorMessage && (
-                    <div className="text-danger">{errorMessage}</div>
-                )}
-                {nikStatus && <div className="text-success">{nikStatus}</div>}
-                <Button className="mt-2" variant="primary" onClick={cekNik}>
-                    Cek NIK
-                </Button>
             </Form.Group>
 
-            {/* Munculkan data jika ditemukan */}
+            {/* NIK & Pengecekan */}
+            <Form.Group className="mb-3">
+                <Form.Label className="required">NIK</Form.Label>
+                <InputGroup className="mb-3" hasValidation>
+                    <Form.Control
+                        name="nik"
+                        isInvalid={errors.nik}
+                        placeholder="Nomor KTP"
+                        value={data.nik}
+                        onChange={(e) => {
+                            setData("nik", e.target.value);
+                            setNikStatus("");
+                            setErrorMessage("");
+                            setDataPenerima(null);
+                            setTampilKonfirmasi(false);
+                        }}
+                    />
+                    <Button
+                        className="z-0"
+                        variant="outline-primary"
+                        onClick={cekNik} // Changed from ceknik to cekNik
+                    >
+                        Cek NIK
+                    </Button>
+                    <Form.Control.Feedback type="invalid">
+                        {errors.nik}
+                    </Form.Control.Feedback>
+                </InputGroup>
+            </Form.Group>
+
+            {errorMessage && <div className="text-danger">{errorMessage}</div>}
+
+            {nikStatus && <div className="text-success mb-3">{nikStatus}</div>}
+
+            {/* Data Penerima */}
             {dataPenerima && (
                 <>
-                    <hr />
                     <Form.Group className="mb-3">
-                        <Form.Label>Nama</Form.Label>
+                        <Form.Label className="required">
+                            Nama Lengkap
+                        </Form.Label>
                         <Form.Control
                             type="text"
                             value={data.nama_lengkap}
+                            onChange={(e) =>
+                                setData("nama_lengkap", e.target.value)
+                            }
                             readOnly={!editMode}
-                            onChange={(e) => setData("nama", e.target.value)}
+                            isInvalid={!!errors.nama_lengkap}
                         />
+                        <Form.Control.Feedback type="invalid">
+                            {errors.nama_lengkap}
+                        </Form.Control.Feedback>
                     </Form.Group>
 
                     <Form.Group className="mb-3">
-                        <Form.Label>No KK</Form.Label>
+                        <Form.Label className="required">No KK</Form.Label>
                         <Form.Control
                             type="text"
                             value={data.no_kk}
                             readOnly={!editMode}
                             onChange={(e) => setData("no_kk", e.target.value)}
+                            isInvalid={!!errors.no_kk}
                         />
+                        <Form.Control.Feedback type="invalid">
+                            {errors.no_kk}
+                        </Form.Control.Feedback>
                     </Form.Group>
 
-                    {/* Konfirmasi */}
+                    <div className="big-text text-muted mb-4 mt-4">
+                        Alamat KTP
+                        <div className="underline"></div>
+                    </div>
+
+                    <Form.Group className="row mb-1">
+                        <div className="col-md-6 col-12 mb-3">
+                            <Form.Label className="required">
+                                Kecamatan
+                            </Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={data.kecamatan_ktp}
+                                readOnly={!editMode}
+                                onChange={(e) =>
+                                    setData("kecamatan_ktp", e.target.value)
+                                }
+                                isInvalid={!!errors.kecamatan_ktp}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.kecamatan_ktp}
+                            </Form.Control.Feedback>
+                        </div>
+                        <div className="col-md-6 col-12 mb-3">
+                            <Form.Label className="required">
+                                Kelurahan
+                            </Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={data.kelurahan_ktp}
+                                readOnly={!editMode}
+                                onChange={(e) =>
+                                    setData("kelurahan_ktp", e.target.value)
+                                }
+                                isInvalid={!!errors.kelurahan_ktp}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.kelurahan_ktp}
+                            </Form.Control.Feedback>
+                        </div>
+                    </Form.Group>
+
+                    <Form.Group className="row mb-3">
+                        <div className="col-md-6 col-12 mb-3">
+                            <Form.Label className="required">RW</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={data.rw_ktp}
+                                readOnly={!editMode}
+                                onChange={(e) =>
+                                    setData("rw_ktp", e.target.value)
+                                }
+                                isInvalid={!!errors.rw_ktp}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.rw_ktp}
+                            </Form.Control.Feedback>
+                        </div>
+                        <div className="col-md-6 col-12 mb-3">
+                            <Form.Label className="required">RT</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={data.rt_ktp}
+                                readOnly={!editMode}
+                                onChange={(e) =>
+                                    setData("rt_ktp", e.target.value)
+                                }
+                                isInvalid={!!errors.rt_ktp}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.rt_ktp}
+                            </Form.Control.Feedback>
+                        </div>
+                    </Form.Group>
+
+                    <Form.Group className="mb-4">
+                        <Form.Label className="required">
+                            Alamat Lengkap KTP
+                        </Form.Label>
+                        <Form.Control
+                            as="textarea"
+                            rows={3}
+                            value={data.jalan_ktp}
+                            readOnly={!editMode}
+                            onChange={(e) =>
+                                setData("jalan_ktp", e.target.value)
+                            }
+                            placeholder="Alamat lengkap KTP (Jalan/Gang/Lingkungan/No)"
+                            isInvalid={!!errors.jalan_ktp}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errors.jalan_ktp}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+
+                    <Form.Group className="mb-3">
+                        <Form.Label className="required">No HP/WA</Form.Label>
+                        <Form.Control
+                            type="text"
+                            value={data.no_hp}
+                            onChange={(e) => setData("no_hp", e.target.value)}
+                            placeholder="628XXXXXXXXXX"
+                            isInvalid={!!errors.no_hp}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errors.no_hp}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+
+                    {/* Konfirmasi Data */}
                     {tampilKonfirmasi && (
-                        <div className="mb-3">
-                            <Form.Label>
+                        <div className="alert alert-warning mb-3">
+                            <Form.Label className="fw-bold">
                                 Apakah data sudah sesuai dan tidak ada
                                 perubahan?
                             </Form.Label>
-                            <div className="d-flex gap-2">
+                            <div className="d-flex gap-2 mt-2">
                                 <Button
-                                    variant="outline-success"
+                                    variant="success"
                                     onClick={() => setEditMode(false)}
                                 >
                                     Ya, sesuai
                                 </Button>
                                 <Button
-                                    variant="outline-warning"
+                                    variant="warning"
                                     onClick={() => setEditMode(true)}
                                 >
                                     Tidak, saya ingin edit
@@ -388,9 +510,289 @@ export default function FormPenerimaBanmod() {
                             </div>
                         </div>
                     )}
+
+                    {/* Alamat Usaha */}
+                    <div className="big-text text-muted mb-4 mt-4">
+                        Alamat Usaha
+                        <div className="underline"></div>
+                    </div>
+
+                    <Form.Group className="row mb-1">
+                        <div className="col-md-6 col-12 mb-3">
+                            <Form.Label className="required">
+                                Kecamatan
+                            </Form.Label>
+                            <SelectKecamatan
+                                onChange={(item) =>
+                                    setData((prev) => ({
+                                        ...prev,
+                                        kode_kecamatan_usaha: item.id,
+                                        kecamatan_usaha: item.text,
+                                    }))
+                                }
+                                errors={errors.kecamatan_usaha}
+                            />
+                        </div>
+                        <div className="col-md-6 col-12 mb-3">
+                            <Form.Label className="required">
+                                Kelurahan
+                            </Form.Label>
+                            <SelectKelurahan
+                                kodeKecamatan={data.kode_kecamatan_usaha}
+                                onChange={(item) =>
+                                    setData((prev) => ({
+                                        ...prev,
+                                        kelurahan_usaha: item.text,
+                                    }))
+                                }
+                                errors={errors.kelurahan_usaha}
+                            />
+                        </div>
+                    </Form.Group>
+
+                    <Form.Group className="row mb-3">
+                        <div className="col-md-6 col-12 mb-3">
+                            <Form.Label className="required">RW</Form.Label>
+                            <SelectRw
+                                kodeKelurahan={data.kode_kelurahan_usaha}
+                                onChange={(item) =>
+                                    setData((prev) => ({
+                                        ...prev,
+                                        rw_usaha: item.text,
+                                    }))
+                                }
+                                errors={errors.rw_usaha}
+                            />
+                        </div>
+                        <div className="col-md-6 col-12 mb-3">
+                            <Form.Label className="required">RT</Form.Label>
+                            <SelectRt
+                                kodeKelurahan={data.kode_kelurahan_usaha}
+                                kodeRw={data.rw_usaha}
+                                onChange={(item) =>
+                                    setData((prev) => ({
+                                        ...prev,
+                                        rt_usaha: item.text,
+                                    }))
+                                }
+                                errors={errors.rt_usaha}
+                            />
+                        </div>
+                    </Form.Group>
+
+                    <Form.Group className="mb-4">
+                        <Form.Label className="required">
+                            Alamat Lengkap Usaha
+                        </Form.Label>
+                        <Form.Control
+                            as="textarea"
+                            rows={3}
+                            value={data.jalan_usaha}
+                            onChange={(e) =>
+                                setData("jalan_usaha", e.target.value)
+                            }
+                            placeholder="Alamat lengkap usaha (Jalan/Gang/Lingkungan/No)"
+                            isInvalid={!!errors.jalan_usaha}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errors.jalan_usaha}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+
+                    {/* Jenis Pelatihan & Perkembangan */}
+                    <div className="big-text text-muted mb-4">
+                        Data Pelatihan
+                        <div className="underline"></div>
+                    </div>
+
+                    <Form.Group className="mb-3">
+                        <Form.Label className="required">
+                            Jenis Pelatihan Industri
+                        </Form.Label>
+                        <Form.Select
+                            value={data.jenis_pelatihan_industri}
+                            onChange={(e) =>
+                                setData(
+                                    "jenis_pelatihan_industri",
+                                    e.target.value
+                                )
+                            }
+                            isInvalid={!!errors.jenis_pelatihan_industri}
+                        >
+                            <option value="">Pilih Jenis Pelatihan</option>
+                            {[
+                                "Tenun",
+                                "Batik/Ecoprint",
+                                "Sulam/Bordir",
+                                "Rajut",
+                                "Aksesoris (Gelang, Kalung)",
+                                "Anyaman",
+                                "Kerajinan Lainnya",
+                                "Penjahitan Pakaian",
+                                "Penjahitan Tas, Dompet, dll",
+                                "Bengkel",
+                                "Makanan (Roti)",
+                                "Makanan (Kue Kering)",
+                                "Makanan (Kue Basah)",
+                                "Makanan (Catering)",
+                                "Makanan (Olahan Daging/Ikan)",
+                                "Makanan (Keripik, Krupuk, Rempeyek)",
+                                "Minuman (Jamu)",
+                                "Minuman (Kekinian)",
+                                "Fotokopi/Percetakan",
+                                "Sablon Kaos",
+                            ].map((item, i) => (
+                                <option key={i} value={item}>
+                                    {item}
+                                </option>
+                            ))}
+                        </Form.Select>
+                        <Form.Control.Feedback type="invalid">
+                            {errors.jenis_pelatihan_industri}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+
+                    {/* Perkembangan Section */}
+                    {[
+                        {
+                            label: "Perkembangan Omzet (Pendapatan Kotor) Usaha",
+                            name: "perkembangan_omzet",
+                        },
+                        {
+                            label: "Perkembangan Jumlah Tenaga Kerja",
+                            name: "perkembangan_tenaga_kerja",
+                        },
+                    ].map((item, i) => (
+                        <Form.Group key={i} className="mb-3">
+                            <Form.Label className="required">
+                                {item.label}
+                            </Form.Label>
+                            <Form.Select
+                                value={data[item.name]}
+                                onChange={(e) =>
+                                    setData(item.name, e.target.value)
+                                }
+                                isInvalid={!!errors[item.name]}
+                            >
+                                <option value="">Pilih Jawaban</option>
+                                <option value="meningkat">
+                                    Meningkat/Bertambah
+                                </option>
+                                <option value="tetap">Tetap</option>
+                                <option value="turun">Turun/Berkurang</option>
+                            </Form.Select>
+                            <Form.Control.Feedback type="invalid">
+                                {errors[item.name]}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+                    ))}
+
+                    {/* Skor Section */}
+                    <div className="big-text text-muted mb-4">
+                        Alasan Mengikuti Pelatihan
+                        <div className="underline"></div>
+                    </div>
+
+                    {[
+                        {
+                            label: "Mengikuti pelatihan untuk meningkatkan keterampilan dan kemampuan",
+                            name: "skor_ketrampilan",
+                        },
+                        {
+                            label: "Mengikuti pelatihan untuk meningkatkan kualitas produk",
+                            name: "skor_kualitas_produk",
+                        },
+                        {
+                            label: "Mengikuti pelatihan untuk mencari solusi atas permasalahan usaha",
+                            name: "skor_permasalahan_usaha",
+                        },
+                        {
+                            label: "Mengikuti pelatihan untuk mengisi waktu luang",
+                            name: "skor_mengisi_waktu",
+                        },
+                        {
+                            label: "Mengikuti pelatihan karena diajak teman",
+                            name: "skor_diajak_teman",
+                        },
+                    ].map((item, i) => (
+                        <Form.Group key={i} className="mb-3">
+                            <Form.Label className="required">
+                                {item.label}
+                            </Form.Label>
+                            <Form.Select
+                                value={data[item.name]}
+                                onChange={(e) =>
+                                    setData(item.name, e.target.value)
+                                }
+                                isInvalid={!!errors[item.name]}
+                            >
+                                <option value="">Pilih Jawaban</option>
+                                <option value="sangat_setuju">
+                                    Sangat Setuju
+                                </option>
+                                <option value="setuju">Setuju</option>
+                                <option value="kurang_setuju">
+                                    Kurang Setuju
+                                </option>
+                            </Form.Select>
+                            <Form.Control.Feedback type="invalid">
+                                {errors[item.name]}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+                    ))}
+
+                    {/* Upload Section */}
+                    <div className="big-text text-muted mb-4">
+                        B. Berkas yang Diupload
+                        <div className="underline"></div>
+                    </div>
+
+                    {renderFileUpload(
+                        "KTP",
+                        "file_ktp",
+                        ".png,.jpg,.jpeg",
+                        false,
+                        "imagePreviewKTP"
+                    )}
+                    {renderFileUpload("Kartu Keluarga (KK)", "file_kk", ".pdf")}
+                    {renderFileUpload("NIB", "file_nib", ".pdf")}
+
+                    {/* Komitmen Section */}
+                    <div className="big-text text-muted mb-4">
+                        C. Pernyataan Komitmen
+                        <div className="underline"></div>
+                    </div>
+
+                    <Form.Group className="mb-4">
+                        <Form.Check
+                            type="checkbox"
+                            id="komitmen"
+                            label="DENGAN INI MENYATAKAN BAHWA DATA YANG SAYA MASUKKAN ADALAH BENAR DAN SAYA BERSEDIA MENGIKUTI PELATIHAN SAMPAI SELESAI. APABILA SAYA MELANGGAR MAKA BERSEDIA MENERIMA SANKSI YANG DIBERIKAN"
+                            checked={data.komitmen}
+                            onChange={(e) =>
+                                setData("komitmen", e.target.checked)
+                            }
+                            isInvalid={!!errors.komitmen}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errors.komitmen}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+
+                    {/* Submit Button */}
+                    <div className="d-flex justify-content-center mt-4">
+                        <Button
+                            type="submit"
+                            disabled={!data.komitmen}
+                            className={!data.komitmen ? "opacity-50" : ""}
+                        >
+                            Kirim <i className="fa fa-paper-plane ms-1"></i>
+                        </Button>
+                    </div>
                 </>
             )}
 
+            {/* Error Message for Invalid NIK */}
             {!dataPenerima && errorMessage && (
                 <div className="alert alert-warning mt-3">
                     NIK YANG ANDA MASUKKAN SALAH ATAU ANDA BUKAN PENERIMA
@@ -400,224 +802,6 @@ export default function FormPenerimaBanmod() {
                     <strong>NIK_NAMA_KELURAHAN_KELUHAN/PERTANYAAN</strong>
                 </div>
             )}
-
-            {/* <div className="big-text text-muted mb-4">
-                Alamat Usaha
-                <div className="underline"></div>
-            </div> */}
-            {/* Alamat Usaha */}
-            {/* <Form.Group className="row mb-1">
-                <div className="col-md-6 col-12 mb-3">
-                    <Form.Label className="required">Kecamatan</Form.Label>
-                    <SelectKecamatan
-                        onChange={(item) =>
-                            setData((prevState) => ({
-                                ...prevState,
-                                kode_kecamatan: item.id,
-                                nama_kecamatan: item.text,
-                            }))
-                        }
-                        errors={errors.nama_kecamatan}
-                    />
-                </div>
-                <div className="col-md-6 col-12 mb-3">
-                    <Form.Label className="required">Kelurahan</Form.Label>
-                    <SelectKelurahan
-                        kodeKecamatan={data.kode_kecamatan}
-                        onChange={(item) =>
-                            setData((prevState) => ({
-                                ...prevState,
-                                kode_kelurahan: item.id,
-                                nama_kelurahan: item.text,
-                            }))
-                        }
-                        errors={errors.nama_kelurahan}
-                    />
-                </div>
-            </Form.Group>
-            <Form.Group className="row mb-1">
-                <div className="col-md-6 col-12 mb-3">
-                    <Form.Label className="required">RW</Form.Label>
-                    <SelectRw
-                        kodeKelurahan={data.kode_kelurahan}
-                        onChange={(item) =>
-                            setData((prevState) => ({
-                                ...prevState,
-                                kode_rw: item.id,
-                                nama_rw: item.text,
-                            }))
-                        }
-                        errors={errors.nama_rw}
-                    />
-                </div>
-                <div className="col-md-6 col-12 mb-3">
-                    <Form.Label className="required">RT</Form.Label>
-                    <SelectRt
-                        kodeKelurahan={data.kode_kelurahan}
-                        kodeRw={data.nama_rw}
-                        onChange={(item) =>
-                            setData((prevState) => ({
-                                ...prevState,
-                                kode_rt: item.id,
-                                nama_rt: item.text,
-                            }))
-                        }
-                        errors={errors.nama_rt}
-                    />
-                </div>
-            </Form.Group>
-            <Form.Group className="row mb-1">
-                <div className="col-md-12 col-12 mb-3">
-                    <Form.Label className="required">Alamat</Form.Label>
-                    <Form.Control
-                        onChange={(e) => setData("alamat", e.target.value)}
-                        as="textarea"
-                        rows="3"
-                        value={data.alamat}
-                        isInvalid={errors.alamat}
-                        autoComplete="alamat"
-                        placeholder="Alamat KTP (Jalan/Gang/Lingkungan/No rumah)"
-                    />
-                    <Form.Control.Feedback type="invalid">
-                        {errors.alamat}
-                    </Form.Control.Feedback>
-                </div>
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-                <Form.Label>Jenis Pelatihan Industri</Form.Label>
-                <Form.Select
-                    value={data.jenis_pelatihan}
-                    onChange={(e) => setData("jenis_pelatihan", e.target.value)}
-                >
-                    <option value="">Pilih Jenis</option>
-                    {[
-                        "Tenun",
-                        "Batik/Ecoprint",
-                        "Sulam/Bordir",
-                        "Rajut",
-                        "Aksesoris",
-                        "Anyaman",
-                        "Kerajinan Lainnya",
-                        "Penjahit Pakaian",
-                        "Kerajinan Tas",
-                        "Bengkel",
-                        "Roti",
-                        "Kue Kering",
-                        "Kue Basah",
-                        "Catering",
-                        "Olahan Daging/Ikan",
-                        "Keripik",
-                        "Minuman (Jamu)",
-                        "Minuman (Kekinian)",
-                        "Fotokopi/Percetakan",
-                    ].map((j, i) => (
-                        <option key={i} value={j}>
-                            {j}
-                        </option>
-                    ))}
-                </Form.Select>
-            </Form.Group>
-
-            {[
-                {
-                    label: "Perkembangan Omzet Pendapatan Kotor Usaha",
-                    name: "perkembangan_omzet",
-                },
-                {
-                    label: "Perkembangan Jumlah Tenaga Kerja",
-                    name: "perkembangan_tenaga_kerja",
-                },
-            ].map(({ label, name }, i) => (
-                <Form.Group key={i} className="mb-3">
-                    <Form.Label>{label}</Form.Label>
-                    <Form.Select
-                        value={data[name]}
-                        onChange={(e) => setData(name, e.target.value)}
-                    >
-                        <option value="">Pilih Jawaban</option>
-                        <option value="a">Bertambah / Meningkat</option>
-                        <option value="b">Tetap</option>
-                        <option value="c">Berkurang / Turun</option>
-                    </Form.Select>
-                </Form.Group>
-            ))}
-
-            {[
-                {
-                    label: "Mengikuti pelatihan untuk meningkatkan keterampilan dan kemampuan",
-                    name: "ikut_keterampilan",
-                },
-                {
-                    label: "Mengikuti pelatihan untuk meningkatkan kualitas produk",
-                    name: "ikut_kualitas_produk",
-                },
-                {
-                    label: "Mengikuti pelatihan untuk memperoleh solusi atas permasalahan usaha",
-                    name: "ikut_solusi_usaha",
-                },
-                {
-                    label: "Mengikuti pelatihan untuk minat di bidang tersebut",
-                    name: "ikut_minat_dibidang",
-                },
-                {
-                    label: "Mengikuti pelatihan untuk mengisi waktu luang",
-                    name: "ikut_waktu_luang",
-                },
-                {
-                    label: "Mengikuti pelatihan karena diajak teman",
-                    name: "ikut_ajak_teman",
-                },
-            ].map(({ label, name }, i) => (
-                <Form.Group key={i} className="mb-3">
-                    <Form.Label>{label}</Form.Label>
-                    <Form.Select
-                        value={data[name]}
-                        onChange={(e) => setData(name, e.target.value)}
-                    >
-                        <option value="">Pilih Jawaban</option>
-                        <option value="a">Sangat Setuju</option>
-                        <option value="b">Setuju</option>
-                        <option value="c">Kurang Setuju</option>
-                    </Form.Select>
-                </Form.Group>
-            ))}
-
-            <div className="big-text text-muted mb-4">
-                Upload Berkas
-                <div className="underline"></div>
-            </div>
-            {renderFileUpload(
-                "Foto KTP",
-                "file_ktp",
-                ".png,.jpg,.jpeg",
-                false,
-                "imagePreviewKTP"
-            )}
-            {renderFileUpload("Kartu Keluarga (KK)", "file_kk")}
-            {renderFileUpload("NIB", "file_nib")} */}
-
-            <div className="big-text text-muted mb-4">
-                Pernyataan Komitmen
-                <div className="underline"></div>
-            </div>
-            <Form.Check
-                type="checkbox"
-                label="Saya menyatakan data yang saya masukkan benar dan bersedia mengikuti pelatihan sampai selesai"
-                checked={data.komitmen}
-                onChange={(e) => setData("komitmen", e.target.checked)}
-            />
-            <hr />
-
-            <div className="card-footer d-flex justify-content-center mt-4 gap-2">
-                <Button type="submit">
-                    Simpan{" "}
-                    <i
-                        className="fa fa-paper-plane ms-1"
-                        aria-hidden="true"
-                    ></i>
-                </Button>
-            </div>
-        </>
+        </Form>
     );
 }
