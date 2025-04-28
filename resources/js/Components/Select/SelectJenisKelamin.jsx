@@ -2,8 +2,8 @@ import React from "react";
 import Select from "react-select";
 
 const options = [
-    { value: "L", label: "Laki-laki" },
-    { value: "P", label: "Perempuan" },
+    { value: "L", label: "LAKI-LAKI" },
+    { value: "P", label: "PEREMPUAN" },
 ];
 
 export default function SelectJenisKelamin({ value, onChange, errors }) {
