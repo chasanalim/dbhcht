@@ -9,13 +9,22 @@ use Illuminate\Validation\Rule;
 use Yajra\DataTables\DataTables;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Support\Facades\Hash;
 
-class UserAdminController extends Controller
+class UserAdminController extends Controller implements HasMiddleware
 {
     /**
      * Display a listing of the resource.
      */
+
+    public static function middleware(): array
+    {
+        return [
+            'permission:view-user',
+        ];
+    }
+
     public function index(Request $request)
     {
 
@@ -41,11 +50,6 @@ class UserAdminController extends Controller
 
         return Inertia::render('Admin/User/Index', [
             'title' => 'Manajemen User',
-            'can' => [
-                'create' => auth()->user()->can('add-user', User::class),
-                'edit' => auth()->user()->can('edit-user', User::class),
-                'delete' => auth()->user()->can('delete-user', User::class),
-            ],
             'flash' => [
                 'message' => session('message')
             ],
@@ -130,7 +134,7 @@ class UserAdminController extends Controller
      */
     public function edit(string $id)
     {
-        $user= User::with('roles')->findOrFail($id);
+        $user = User::with('roles')->findOrFail($id);
 
         return Inertia::render('Admin/User/Create', [
             'title' => 'Edit User',
@@ -168,11 +172,11 @@ class UserAdminController extends Controller
                 'name' => ['required', 'string', 'max:255'],
                 'nik' => ['required', 'numeric', 'digits:16', 'unique:users,nik,' . $id],
                 'phone_number' => [
-                'required',
-                'numeric',
-                'digits_between:10,13',
-                Rule::unique('users', 'phone_number')->ignore($id),
-            ],
+                    'required',
+                    'numeric',
+                    'digits_between:10,13',
+                    Rule::unique('users', 'phone_number')->ignore($id),
+                ],
                 'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $id],
             ]);
         } else {
@@ -181,10 +185,10 @@ class UserAdminController extends Controller
                 'name' => ['required', 'string', 'max:255'],
                 'nik' => ['required', 'numeric', 'digits:16', 'unique:users,nik,' . $id],
                 'phone_number' => [
-                'required',
-                'numeric',
-                'digits_between:10,13',
-                Rule::unique('users', 'phone_number')->ignore($id),
+                    'required',
+                    'numeric',
+                    'digits_between:10,13',
+                    Rule::unique('users', 'phone_number')->ignore($id),
                 ],
                 'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $id],
                 'password' => [
@@ -222,7 +226,6 @@ class UserAdminController extends Controller
         $user->syncRoles($request->role);
 
         return redirect()->route('admin.user.index')->with('message', 'User updated successfully');
-
     }
 
     /**

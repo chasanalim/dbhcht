@@ -8,14 +8,22 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controllers\HasMiddleware;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Validator;
 
-class PrivilegesController extends Controller
+class PrivilegesController extends Controller implements HasMiddleware
 {
     /**
      * Display a listing of the resource.
      */
+    public static function middleware(): array
+    {
+        return [
+            'permission:view-role',
+            // 'role:admin',
+        ];
+    }
     public function index(Request $request)
     {
         $roles = Role::with('permissions')->get();
@@ -38,11 +46,6 @@ class PrivilegesController extends Controller
 
         return Inertia::render('Admin/Privileges/Index', [
             'title' => 'Manajemen Role & Permission',
-            'can' => [
-                'create' => auth()->user()->can('add-role'),
-                'edit' => auth()->user()->can('edit-role'),
-                'delete' => auth()->user()->can('delete-role'),
-            ],
             'flash' => [
                 'message' => session('message')
             ],

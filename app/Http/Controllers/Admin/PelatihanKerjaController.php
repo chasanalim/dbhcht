@@ -7,12 +7,20 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Models\PendaftaranBanmod;
 use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controllers\HasMiddleware;
 
-class PelatihanKerjaController extends Controller
+class PelatihanKerjaController extends Controller implements HasMiddleware
 {
     /**
      * Display a listing of the resource.
      */
+    public static function middleware(): array
+    {
+        return [
+            'permission:view-pelatihan-kerja',
+            // 'role:admin',
+        ];
+    }
     public function index(Request $request)
     {
         if ($request->wantsJson()) {

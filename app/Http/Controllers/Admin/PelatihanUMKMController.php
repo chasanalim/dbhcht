@@ -7,12 +7,21 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
 use App\Models\PelatihanUmkm;
+use Illuminate\Routing\Controllers\HasMiddleware;
 
-class PelatihanUMKMController extends Controller
+class PelatihanUMKMController extends Controller implements HasMiddleware
 {
     /**
      * Display a listing of the resource.
      */
+    
+    public static function middleware(): array
+    {
+        return [
+            'permission:view-pelatihan-umkm',
+            // 'role:admin',
+        ];
+    }
     public function index(Request $request)
     {
         if ($request->wantsJson()) {

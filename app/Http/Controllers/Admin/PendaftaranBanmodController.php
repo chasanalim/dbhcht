@@ -7,12 +7,20 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Models\PendaftaranBanmod;
 use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controllers\HasMiddleware;
 
-class PendaftaranBanmodController extends Controller
+class PendaftaranBanmodController extends Controller implements HasMiddleware
 {
     /**
      * Display a listing of the resource.
      */
+    public static function middleware(): array
+    {
+        return [
+            'permission:view-banmod',
+            // 'role:admin',
+        ];
+    }
     public function index(Request $request)
     {
         $data = PendaftaranBanmod::all();
