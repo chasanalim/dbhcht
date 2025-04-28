@@ -6,8 +6,10 @@ import SelectKecamatan from "@/Components/Select/SelectKecamatan";
 import SelectKelurahan from "@/Components/Select/SelectKelurahan";
 import SelectRt from "@/Components/Select/SelectRt";
 import SelectRw from "@/Components/Select/SelectRw";
+import { useForm } from "@inertiajs/react";
+import SelectTahun from "@/Components/Select/SelectTahun";
 
-export default function FormPenerimaBanmod({ data, setData, errors }) {
+export default function FormPenerimaBanmod() {
     const [nikStatus, setNikStatus] = useState(null); // Status pengecekan NIK
     const [pesertaData, setPesertaData] = useState(null); // Data peserta jika NIK ditemukan
     const [isEditable, setIsEditable] = useState(true); // Menentukan apakah form bisa diedit
@@ -16,6 +18,59 @@ export default function FormPenerimaBanmod({ data, setData, errors }) {
     const [dataPenerima, setDataPenerima] = useState(null);
     const [tampilKonfirmasi, setTampilKonfirmasi] = useState(false);
     const [editMode, setEditMode] = useState(false);
+
+    const { data, setData, errors, post, reset } = useForm({
+        tahun: "",
+        nik: "",
+        no_kk: "",
+        nama_lengkap: "",
+        tempat_lahir: "",
+        tgl_lahir: "",
+        jenis_kelamin: "",
+        alamat: "",
+        kode_kecamatan: "",
+        nama_kecamatan: "",
+        kode_kelurahan: "",
+        nama_kelurahan: "",
+        kode_rw: "",
+        nama_rw: "",
+        kode_rt: "",
+        nama_rt: "",
+        phone_number: "",
+
+        // nama_usaha: "",
+        // tahun_berdiri: "",
+        // bidang_usaha: "",
+        // alamat_usaha: "",
+        // kec_usaha: "",
+        // kel_usaha: "",
+        // rw_usaha: "",
+        // rt_usaha: "",
+        // nib: "",
+        // legalitas_status: "",
+        // legalitas_jenis: [],
+
+        // modal: "",
+        // omset: "",
+        // kapasitas_satuan: "",
+        // kapasitas_jumlah: "",
+        // jangkauan: "",
+
+        // file_foto: null,
+        // file_ktp: null,
+        // file_kk: null,
+        // file_pernyataan: null,
+
+        // prioritas_1: "",
+        // prioritas_2: "",
+        // prioritas_3: "",
+
+        // alasan: "",
+        // kesesuaian: "",
+        // pengalaman: "",
+
+        // komitmen: false,
+    });
 
     // Fungsi untuk mengecek NIK di database
     const cekNik = async () => {
@@ -33,13 +88,13 @@ export default function FormPenerimaBanmod({ data, setData, errors }) {
                 setNikStatus("NIK valid!");
                 setData((prev) => ({
                     ...prev,
-                    nama: d.nama_lengkap,
+                    nama_lengkap: d.nama_lengkap,
                     no_kk: d.no_kk,
-                    kecamatan: d.kecamatan_ktp,
-                    kelurahan: d.kelurahan_ktp,
+                    kecamatan: d.kecamatan,
+                    kelurahan: d.kelurahan,
                     rw: d.rw,
                     rt: d.rt,
-                    jalan: d.alamat_ktp,
+                    alamat: d.alamat,
                 }));
                 setTampilKonfirmasi(true);
             } else {
@@ -251,17 +306,22 @@ export default function FormPenerimaBanmod({ data, setData, errors }) {
                 Data Peserta
                 <div className="underline"></div>
             </div>
-            <Form.Group className="mb-3">
-                <Form.Label>Tahun Penerimaan Bantuan</Form.Label>
-                <Form.Select
-                    value={data.tahun}
-                    onChange={(e) => setData("tahun", e.target.value)}
-                >
-                    <option value="">Pilih Tahun</option>
-                    <option value="2022">2022</option>
-                    <option value="2023">2023</option>
-                    <option value="2024">2024</option>
-                </Form.Select>
+
+            <Form.Group className="row mb-1">
+                <div className="col-md-12 col-12 mb-3">
+                    <Form.Label className="required">
+                        Tahun Penerimaan Bantuan
+                    </Form.Label>
+                    <SelectTahun
+                        onChange={(item) =>
+                            setData((prevState) => ({
+                                ...prevState,
+                                tahun: item.value,
+                            }))
+                        }
+                        errors={errors.tahun}
+                    />
+                </div>
             </Form.Group>
 
             <Form.Group className="mb-3">
@@ -289,7 +349,7 @@ export default function FormPenerimaBanmod({ data, setData, errors }) {
                         <Form.Label>Nama</Form.Label>
                         <Form.Control
                             type="text"
-                            value={data.nama}
+                            value={data.nama_lengkap}
                             readOnly={!editMode}
                             onChange={(e) => setData("nama", e.target.value)}
                         />
@@ -341,12 +401,12 @@ export default function FormPenerimaBanmod({ data, setData, errors }) {
                 </div>
             )}
 
-            <div className="big-text text-muted mb-4">
+            {/* <div className="big-text text-muted mb-4">
                 Alamat Usaha
                 <div className="underline"></div>
-            </div>
+            </div> */}
             {/* Alamat Usaha */}
-            <Form.Group className="row mb-1">
+            {/* <Form.Group className="row mb-1">
                 <div className="col-md-6 col-12 mb-3">
                     <Form.Label className="required">Kecamatan</Form.Label>
                     <SelectKecamatan
@@ -423,12 +483,6 @@ export default function FormPenerimaBanmod({ data, setData, errors }) {
                     </Form.Control.Feedback>
                 </div>
             </Form.Group>
-            <Form.Control
-                className="mb-3"
-                placeholder="Jalan/Lingkungan/Gang/No"
-                value={data.jalan}
-                onChange={(e) => setData("jalan", e.target.value)}
-            />
 
             <Form.Group className="mb-3">
                 <Form.Label>Jenis Pelatihan Industri</Form.Label>
@@ -541,7 +595,7 @@ export default function FormPenerimaBanmod({ data, setData, errors }) {
                 "imagePreviewKTP"
             )}
             {renderFileUpload("Kartu Keluarga (KK)", "file_kk")}
-            {renderFileUpload("NIB", "file_nib")}
+            {renderFileUpload("NIB", "file_nib")} */}
 
             <div className="big-text text-muted mb-4">
                 Pernyataan Komitmen

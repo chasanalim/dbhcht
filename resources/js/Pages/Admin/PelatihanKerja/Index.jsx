@@ -1,6 +1,6 @@
 import AdminLayout from "@/Layouts/admin/AdminLayout";
 import { Head, Link, router } from "@inertiajs/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import $ from "jquery";
 import "datatables.net-bs5";
 import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
@@ -8,8 +8,9 @@ import { Toast, Tooltip } from "bootstrap";
 // Import bootstrap JS
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
-export default function Index({ title, can, flash }) {
+export default function Index({ title, can, flash, dataRoute, categories }) {
     const tableRef = useRef();
+    const [selectedCategory, setSelectedCategory] = useState("all");
 
     useEffect(() => {
         const dt = $(tableRef.current).DataTable({
@@ -17,8 +18,11 @@ export default function Index({ title, can, flash }) {
             serverSide: true,
             responsive: true,
             ajax: {
-                url: route("admin.banmod.index"),
+                url: route("admin.kerja.index"),
                 type: "GET",
+                data: function (d) {
+                    d.kategori = selectedCategory;
+                },
                 headers: {
                     "X-Requested-With": "XMLHttpRequest",
                 },
@@ -120,7 +124,6 @@ export default function Index({ title, can, flash }) {
                     data: "phone_number",
                     name: "phone_number",
                 },
-
             ],
             drawCallback: function () {
                 // Initialize tooltips
@@ -155,7 +158,11 @@ export default function Index({ title, can, flash }) {
                 }
             });
         };
-    }, [flash]);
+    }, [flash, selectedCategory]);
+
+    const handleCategoryChange = (e) => {
+        setSelectedCategory(e.target.value);
+    };
 
     const deleteItem = (url) => {
         if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
@@ -178,7 +185,29 @@ export default function Index({ title, can, flash }) {
                     <div className="col-12">
                         <div className="card">
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
-                                <h5 className="my-2 fw-bold">{title} 2025</h5>
+                                <h5 className="my-2 fw-bold">{title}</h5>
+                            </div>
+                            <div className="d-flex align-items-center gap-3 justify-content-center mt-2">
+                                <div className="d-flex align-items-center">
+                                    <label className="m-2 text-sm fw-bold w-100 ">
+                                        Filter Pelatihan:
+                                    </label>
+                                    <select
+                                        className="form-select form-select-sm m-2"
+                                        style={{ minWidth: "200px" }}
+                                        value={selectedCategory}
+                                        onChange={handleCategoryChange}
+                                    >
+                                        {categories.map((category) => (
+                                            <option
+                                                key={category.id}
+                                                value={category.id}
+                                            >
+                                                {category.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
                             <div className="card-body">
                                 <div className="table-responsive">

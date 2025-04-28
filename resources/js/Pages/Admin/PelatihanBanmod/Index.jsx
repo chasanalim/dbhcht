@@ -17,7 +17,7 @@ export default function Index({ title, can, flash }) {
             serverSide: true,
             responsive: true,
             ajax: {
-                url: route("admin.pelatihan-banmod.index"),
+                url: route("admin.kerja.index"),
                 type: "GET",
                 headers: {
                     "X-Requested-With": "XMLHttpRequest",

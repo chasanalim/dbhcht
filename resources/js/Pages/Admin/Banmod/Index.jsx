@@ -1,14 +1,14 @@
 import AdminLayout from "@/Layouts/admin/AdminLayout";
 import { Head, Link, router } from "@inertiajs/react";
 import { useEffect, useRef } from "react";
-import $ from "jquery";
+import $, { data } from "jquery";
 import "datatables.net-bs5";
 import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
 import { Toast, Tooltip } from "bootstrap";
 // Import bootstrap JS
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
-export default function Index({ title, can, flash }) {
+export default function Index({ title, can, flash ,dataRoute}) {
     const tableRef = useRef();
 
     useEffect(() => {
@@ -17,7 +17,7 @@ export default function Index({ title, can, flash }) {
             serverSide: true,
             responsive: true,
             ajax: {
-                url: route("admin.banmod.index"),
+                url: dataRoute,
                 type: "GET",
                 headers: {
                     "X-Requested-With": "XMLHttpRequest",
@@ -178,7 +178,7 @@ export default function Index({ title, can, flash }) {
                     <div className="col-12">
                         <div className="card">
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
-                                <h5 className="my-2 fw-bold">{title} 2025</h5>
+                                <h5 className="my-2 fw-bold">{title}</h5>
                             </div>
                             <div className="card-body">
                                 <div className="table-responsive">

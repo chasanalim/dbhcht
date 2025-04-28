@@ -75,7 +75,7 @@ export default function Index({ title, can, flash }) {
                     render: function (data) {
                         let buttons = "";
 
-                        // if (can.edit) {
+                        if (can.editUser) {
                         buttons += `
                                 <button
                                     onclick="window.location.href='${data.edit_url}'"
@@ -84,9 +84,9 @@ export default function Index({ title, can, flash }) {
                                     title="Edit Data">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>`;
-                        // }
+                        }
 
-                        // if (can.delete) {
+                        if (can.deleteUser) {
                         buttons += `
                                 <button
                                     onclick="deleteItem('${data.delete_url}')"
@@ -95,7 +95,7 @@ export default function Index({ title, can, flash }) {
                                     title="Hapus Data">
                                     <i class="bi bi-trash"></i>
                                 </button>`;
-                        // }
+                        }
 
                         return buttons;
                     },
@@ -158,7 +158,7 @@ export default function Index({ title, can, flash }) {
                         <div className="card">
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
                                 <h5 className="mb-0 fw-bold">{title}</h5>
-                                {can.create && (
+                                {can.createUser && (
                                 <Link
                                     href={route("admin.user.create")}
                                     className="btn btn-primary mb-3"

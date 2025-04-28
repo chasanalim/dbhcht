@@ -66,6 +66,12 @@ class UserRoleSeeder extends Seeder
         Permission::create(['name' => 'edit-lampiran-file', 'guard_name' => 'web']);
         Permission::create(['name' => 'delete-lampiran-file', 'guard_name' => 'web']);
 
+        Permission::create(['name' => 'view-master-banmod', 'guard_name' => 'web']);
+        Permission::create(['name' => 'edit-master-banmod', 'guard_name' => 'web']);
+
+        Permission::create(['name' => 'view-master-pertanian', 'guard_name' => 'web']);
+        Permission::create(['name' => 'edit-master-pertanian', 'guard_name' => 'web']);
+
         Permission::create(['name' => 'view-user', 'guard_name' => 'web']);
         Permission::create(['name' => 'add-user', 'guard_name' => 'web']);
         Permission::create(['name' => 'edit-user', 'guard_name' => 'web']);
@@ -76,11 +82,6 @@ class UserRoleSeeder extends Seeder
         Permission::create(['name' => 'add-role', 'guard_name' => 'web']);
         Permission::create(['name' => 'edit-role', 'guard_name' => 'web']);
         Permission::create(['name' => 'delete-role', 'guard_name' => 'web']);
-
-        Permission::create(['name' => 'view-permission', 'guard_name' => 'web']);
-        Permission::create(['name' => 'add-permission', 'guard_name' => 'web']);
-        Permission::create(['name' => 'edit-permission', 'guard_name' => 'web']);
-        Permission::create(['name' => 'delete-permission', 'guard_name' => 'web']);
 
         //Role
         Role::create(['name' => 'admin', 'guard_name' => 'web']);
@@ -125,10 +126,6 @@ class UserRoleSeeder extends Seeder
             'add-role',
             'edit-role',
             'delete-role',
-            'view-permission',
-            'add-permission',
-            'edit-permission',
-            'delete-permission',
         ]);
 
         $roleDinkop = Role::findByName('dinkop');
@@ -155,6 +152,8 @@ class UserRoleSeeder extends Seeder
             'add-pelatihan-banmod',
             'edit-pelatihan-banmod',
             'delete-pelatihan-banmod',
+            'view-master-banmod',
+            'edit-master-banmod',
         ]);
 
         $rolePertanian = Role::findByName('pertanian');
@@ -164,6 +163,8 @@ class UserRoleSeeder extends Seeder
             'add-pelatihan-pertanian',
             'edit-pelatihan-pertanian',
             'delete-pelatihan-pertanian',
+            'view-master-pertanian',
+            'edit-master-pertanian',
         ]);
 
 

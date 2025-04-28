@@ -14,6 +14,8 @@ use App\Http\Controllers\SkorPelatihanController;
 use App\Http\Controllers\KategoriBanmodController;
 use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\JumlahLegalitasController;
+use App\Http\Controllers\Admin\PrivilegesController;
+use App\Http\Controllers\RegPelatihanUmkmController;
 use App\Http\Controllers\JumlahTenagaKerjaController;
 use App\Http\Controllers\Admin\LampiranFileController;
 use App\Http\Controllers\TanggunganKeluargaController;
@@ -50,6 +52,11 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
 
 
     Route::resource('downloads', LampiranFileController::class);
+    Route::get('banmod/buruh-pabrik-rokok', [PendaftaranBanmodController::class, 'buruh_pabrik_rokok'])->name('banmod.buruh-pabrik-rokok');
+    Route::get('banmod/buruh-tani-tembakau', [PendaftaranBanmodController::class, 'buruh_tani_tembakau'])->name('banmod.buruh-tani-tembakau');
+    Route::get('banmod/pekerja-pabrik-rokok', [PendaftaranBanmodController::class, 'pekerja_pabrik_rokok'])->name('banmod.pekerja-pabrik-rokok');
+    Route::get('banmod/ikm', [PendaftaranBanmodController::class, 'ikm'])->name('banmod.ikm');
+    Route::get('banmod/masyarakat-miskin', [PendaftaranBanmodController::class, 'masyarakat_miskin'])->name('banmod.masyarakat-miskin');
     Route::resource('banmod', PendaftaranBanmodController::class);
     Route::resource('umkm', PelatihanUMKMController::class);
     Route::resource('pertanian', PelatihanPertanianController::class);
@@ -58,6 +65,7 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::resource('user', UserAdminController::class);
     Route::resource('banmodlama', PenerimaBanmodLamaController::class);
     Route::resource('banmodwirausaha', PenerimaPelatihanBanmodController::class);
+    Route::resource('privileges', PrivilegesController::class);
 });
 
 Route::prefix('users')->as('users.')->group(function () {

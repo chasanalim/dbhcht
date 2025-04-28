@@ -1,0 +1,19 @@
+.form-select {
+    &:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    &.bg-light:disabled {
+        background-color: #e9ecef !important;
+    }
+}
+
+.filter-group {
+    transition: all 0.3s ease;
+
+    &.disabled {
+        opacity: 0.7;
+        pointer-events: none;
+    }
+}

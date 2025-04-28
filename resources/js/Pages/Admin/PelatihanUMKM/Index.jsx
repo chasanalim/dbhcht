@@ -1,6 +1,6 @@
 import AdminLayout from "@/Layouts/admin/AdminLayout";
 import { Head, Link, router } from "@inertiajs/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import $ from "jquery";
 import "datatables.net-bs5";
 import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
@@ -8,8 +8,85 @@ import { Toast, Tooltip } from "bootstrap";
 // Import bootstrap JS
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
-export default function Index({ title, can, flash }) {
+export default function Index({ title, can, flash, pelatihan }) {
     const tableRef = useRef();
+
+    const [selectedPelatihan1, setSelectedPelatihan1] =
+        useState("Semua Pelatihan");
+    const [selectedPelatihan2, setSelectedPelatihan2] =
+        useState("Semua Pelatihan");
+    const [selectedPelatihan3, setSelectedPelatihan3] =
+        useState("Semua Pelatihan");
+    const [disabledFilters, setDisabledFilters] = useState({
+        prioritas_1: false,
+        prioritas_2: false,
+        prioritas_3: false,
+    });
+    const handlePelatihan1Change = (e) => {
+        const value = e.target.value;
+        setSelectedPelatihan1(value);
+
+        if (value !== "Semua Pelatihan") {
+            setDisabledFilters({
+                prioritas_1: false,
+                prioritas_2: true,
+                prioritas_3: true,
+            });
+            // Reset other filters when this one is selected
+            setSelectedPelatihan2("Semua Pelatihan");
+            setSelectedPelatihan3("Semua Pelatihan");
+        } else {
+            setDisabledFilters({
+                prioritas_1: false,
+                prioritas_2: false,
+                prioritas_3: false,
+            });
+        }
+    };
+
+    const handlePelatihan2Change = (e) => {
+        const value = e.target.value;
+        setSelectedPelatihan2(value);
+
+        if (value !== "Semua Pelatihan") {
+            setDisabledFilters({
+                prioritas_1: true,
+                prioritas_2: false,
+                prioritas_3: true,
+            });
+            // Reset other filters when this one is selected
+            setSelectedPelatihan1("Semua Pelatihan");
+            setSelectedPelatihan3("Semua Pelatihan");
+        } else {
+            setDisabledFilters({
+                prioritas_1: false,
+                prioritas_2: false,
+                prioritas_3: false,
+            });
+        }
+    };
+
+    const handlePelatihan3Change = (e) => {
+        const value = e.target.value;
+        setSelectedPelatihan3(value);
+
+        if (value !== "Semua Pelatihan") {
+            setDisabledFilters({
+                prioritas_1: true,
+                prioritas_2: true,
+                prioritas_3: false,
+            });
+            // Reset other filters when this one is selected
+            setSelectedPelatihan1("Semua Pelatihan");
+            setSelectedPelatihan2("Semua Pelatihan");
+        } else {
+            setDisabledFilters({
+                prioritas_1: false,
+                prioritas_2: false,
+                prioritas_3: false,
+            });
+        }
+    };
 
     useEffect(() => {
         const dt = $(tableRef.current).DataTable({
@@ -17,8 +94,13 @@ export default function Index({ title, can, flash }) {
             serverSide: true,
             responsive: true,
             ajax: {
-                url: route("admin.banmod.index"),
+                url: route("admin.umkm.index"),
                 type: "GET",
+                data: function (d) {
+                    d.prioritas_1 = selectedPelatihan1;
+                    d.prioritas_2 = selectedPelatihan2;
+                    d.prioritas_3 = selectedPelatihan3;
+                },
                 headers: {
                     "X-Requested-With": "XMLHttpRequest",
                 },
@@ -73,54 +155,58 @@ export default function Index({ title, can, flash }) {
                     searchable: true,
                 },
                 {
-                    data: "kk",
-                    name: "kk",
+                    data: "no_kk",
+                    name: "no_kk",
                 },
                 {
-                    data: "name",
-                    name: "name",
+                    data: "nama_lengkap",
+                    name: "nama_lengkap",
                 },
                 {
-                    data: "tmp_lhr",
-                    name: "tmp_lhr",
+                    data: "tempat_lahir",
+                    name: "tempat_lahir",
                 },
                 {
-                    data: "tgl_lhr",
-                    name: "tgl_lhr",
+                    data: "tgl_lahir",
+                    name: "tgl_lahir",
                 },
                 {
-                    data: "alamat",
-                    name: "alamat",
+                    data: "jalan",
+                    name: "jalan",
                 },
                 {
-                    data: "nama_kecamatan",
-                    name: "nama_kecamatan",
+                    data: "kecamatan",
+                    name: "kecamatan",
                 },
-                {
-                    data: "nama_kelurahan",
-                    name: "nama_kelurahan",
-                },
-                {
-                    data: "nama_rw",
-                    name: "nama_rw",
-                },
-                {
-                    data: "nama_rt",
-                    name: "nama_rt",
-                },
-                {
-                    data: "alamat_domisili",
-                    name: "alamat_domisili",
-                },
-                {
-                    data: "alamat_usaha",
-                    name: "alamat_usaha",
-                },
-                {
-                    data: "phone_number",
-                    name: "phone_number",
-                },
+                // {
+                //     data: "kelurahan",
+                //     name: "kelurahan",
+                // },
+                // {
+                //     data: "rw",
+                //     name: "rw",
+                // },
+                // {
+                //     data: "rt",
+                //     name: "rt",
+                // },
 
+                {
+                    data: "no_hp",
+                    name: "no_hp",
+                },
+                {
+                    data: "prioritas_1",
+                    name: "prioritas_1",
+                },
+                {
+                    data: "prioritas_2",
+                    name: "prioritas_2",
+                },
+                {
+                    data: "prioritas_3",
+                    name: "prioritas_3",
+                },
             ],
             drawCallback: function () {
                 // Initialize tooltips
@@ -155,7 +241,7 @@ export default function Index({ title, can, flash }) {
                 }
             });
         };
-    }, [flash]);
+    }, [flash, selectedPelatihan1, selectedPelatihan2, selectedPelatihan3]);
 
     const deleteItem = (url) => {
         if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
@@ -180,6 +266,83 @@ export default function Index({ title, can, flash }) {
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
                                 <h5 className="my-2 fw-bold">{title} 2025</h5>
                             </div>
+                            <div className="d-flex align-items-center gap-3 justify-content-center mt-2">
+                                <div className="d-flex align-items-center">
+                                    <label className="m-2 text-sm fw-bold w-100">
+                                        Prioritas 1:
+                                    </label>
+                                    <select
+                                        className={`form-select form-select-sm m-2 ${
+                                            disabledFilters.prioritas_1
+                                                ? "bg-light"
+                                                : ""
+                                        }`}
+                                        style={{ minWidth: "350px" }}
+                                        value={selectedPelatihan1}
+                                        onChange={handlePelatihan1Change}
+                                        disabled={disabledFilters.prioritas_1}
+                                    >
+                                        {pelatihan.map((item) => (
+                                            <option
+                                                key={item.name}
+                                                value={item.name}
+                                            >
+                                                {item.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="d-flex align-items-center">
+                                    <label className="m-2 text-sm fw-bold w-100">
+                                        Prioritas 2:
+                                    </label>
+                                    <select
+                                        className={`form-select form-select-sm m-2 ${
+                                            disabledFilters.prioritas_2
+                                                ? "bg-light"
+                                                : ""
+                                        }`}
+                                        style={{ minWidth: "350px" }}
+                                        value={selectedPelatihan2}
+                                        onChange={handlePelatihan2Change}
+                                        disabled={disabledFilters.prioritas_2}
+                                    >
+                                        {pelatihan.map((item) => (
+                                            <option
+                                                key={item.name}
+                                                value={item.name}
+                                            >
+                                                {item.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="d-flex align-items-center">
+                                    <label className="m-2 text-sm fw-bold w-100">
+                                        Prioritas 3:
+                                    </label>
+                                    <select
+                                        className={`form-select form-select-sm m-2 ${
+                                            disabledFilters.prioritas_3
+                                                ? "bg-light"
+                                                : ""
+                                        }`}
+                                        style={{ minWidth: "350px" }}
+                                        value={selectedPelatihan3}
+                                        onChange={handlePelatihan3Change}
+                                        disabled={disabledFilters.prioritas_3}
+                                    >
+                                        {pelatihan.map((item) => (
+                                            <option
+                                                key={item.name}
+                                                value={item.name}
+                                            >
+                                                {item.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
                             <div className="card-body">
                                 <div className="table-responsive">
                                     <table
@@ -189,6 +352,7 @@ export default function Index({ title, can, flash }) {
                                         <thead>
                                             <tr>
                                                 <th>No</th>
+                                                <th>AKSI</th>
                                                 <th>NIK</th>
                                                 <th>NO KK</th>
                                                 <th>NAMA</th>
@@ -196,12 +360,13 @@ export default function Index({ title, can, flash }) {
                                                 <th>TGL LAHIR</th>
                                                 <th>ALAMAT</th>
                                                 <th>KECAMATAN</th>
-                                                <th>KELURAHAN</th>
+                                                {/* <th>KELURAHAN</th>
                                                 <th>RW</th>
-                                                <th>RT</th>
-                                                <th>AlAMAT DOMISILI</th>
-                                                <th>ALAMAT USAHA</th>
+                                                <th>RT</th> */}
                                                 <th>NO HP</th>
+                                                <th>PRIORITAS 1</th>
+                                                <th>PRIORITAS 2</th>
+                                                <th>PRIORITAS 3</th>
                                                 {/* <th>DAYA LISTRIK</th>
                                                 <th>DISABILITAS</th>
                                                 <th>KATEGORI</th>
@@ -229,7 +394,6 @@ export default function Index({ title, can, flash }) {
                                                 <th>SIINAS</th>
                                                 <th>BP</th>
                                                 <th>SERTIFIKAT PELATIHAN</th> */}
-                                                <th>AKSI</th>
                                             </tr>
                                         </thead>
                                     </table>

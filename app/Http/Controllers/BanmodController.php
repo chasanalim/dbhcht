@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\KirimPendaftar;
 use App\Models\PendaftaranBanmod;
 use App\Models\PenerimaBanmod;
+use App\Traits\GeneralTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
@@ -12,6 +13,8 @@ use Yajra\DataTables\DataTables;
 
 class BanmodController extends Controller
 {
+    use GeneralTrait;
+
     public function index()
     {
         return Inertia::render('Banmod/Create', [
@@ -136,6 +139,11 @@ class BanmodController extends Controller
         $dataPendaftar = PendaftaranBanmod::find($id);
         // dd($dataPendaftar);
         Mail::to(env('APP_EMAIL_BANMOD'))->send(new KirimPendaftar($dataPendaftar));
+
+        // Send WhatsApp message
+        $message = "Terima kasih telah mendaftar Program Bantuan Modal UMKM Kota Kediri. Data Anda telah kami terima dan akan diproses lebih lanjut. Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan. Jika ada pertanyaan, silakan hubungi kami melalui: " . env('APP_WA_BANMOD'); ;
+        $phoneNumber = $dataPendaftar->phone_number;
+        $this->sendWhatsappMessage($message, $phoneNumber);
 
         return Inertia::render('Banmod/Success', [
             'meta' => [

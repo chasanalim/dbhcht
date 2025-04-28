@@ -31,7 +31,7 @@ class UserSeeder extends Seeder
             'email' => 'banmodpel.dinkop@kedirikota.go.id',
             'email_verified_at' => now(),
             'phone_number' => '085133564587',
-            'password' => Hash::make('{P4ssw0rd}'),
+            'password' => Hash::make('banmod123'),
         ]);
         $dinkop->assignRole('dinkop');
 
@@ -41,7 +41,7 @@ class UserSeeder extends Seeder
             'email' => 'banmodpel.disperindag@kedirikota.go.id',
             'email_verified_at' => now(),
             'phone_number' => '085733566587',
-            'password' => Hash::make('{P4ssw0rd}'),
+            'password' => Hash::make('banmod123'),
         ]);
         $disperindag->assignRole('disperindag');
 
@@ -51,7 +51,7 @@ class UserSeeder extends Seeder
             'email' => 'banmodpel.pertanian@kedirikota.go.id',
             'email_verified_at' => now(),
             'phone_number' => '085733562587',
-            'password' => Hash::make('{P4ssw0rd}'),
+            'password' => Hash::make('banmod123'),
         ]);
         $pertanian->assignRole('pertanian');
 
@@ -61,7 +61,7 @@ class UserSeeder extends Seeder
             'email' => 'banmodpel.walikota@kedirikota.go.id',
             'email_verified_at' => now(),
             'phone_number' => '085733568587',
-            'password' => Hash::make('{P4ssw0rd}'),
+            'password' => Hash::make('banmod123'),
         ]);
         $walikota->assignRole('walikota');
     }

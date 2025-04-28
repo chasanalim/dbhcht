@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\LampiranFile;
+use App\Models\PenerimaBanmod;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -80,9 +82,13 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user() ? User::findOrFail(Auth::id()) : null,
-                'roles' => $request->user() ? $request->user()->roles->pluck('name') : [],
-                'permissions' => $request->user() ? $request->user()->getPermissionsViaRoles()->pluck('name') : [],
+                'user' => $request->user() ? [
+                    'id' => $request->user()->id,
+                    'name' => $request->user()->name,
+                    'email' => $request->user()->email,
+                    'roles' => $request->user()->roles->pluck('name'),
+                    'permissions' => $request->user()->getAllPermissions()->pluck('name'),
+                ] : null,
             ],
             'navigations' => $this->_navigations($request),
             'ziggy' => fn() => [
@@ -98,6 +104,31 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn() => $request->session()->get('success'),
                 'error' => fn() => $request->session()->get('error'),
             ],
+            'can' => $request->user() ? [
+                'viewBanmod' => $request->user()->can('view-banmod'),
+                'viewUmkm' => $request->user()->can('view-pelatihan-umkm'),
+                'viewKerja' => $request->user()->can('view-pelatihan-kerja'),
+                'viewPelatihanBanmod' => $request->user()->can('view-pelatihan-banmod'),
+                'viewPertanian' => $request->user()->can('view-pelatihan-pertanian'),
+
+                'viewMasterLampiranFile' => $request->user()->can('view-lampiran-file'),
+                'createMasterLampiranFile' => $request->user()->can('add-lampiran-file'),
+                'editMasterLampiranFile' => $request->user()->can('edit-lampiran-file'),
+                'deleteMasterLampiranFile' => $request->user()->can('delete-lampiran-file'),
+
+                'viewMasterBanmod' => $request->user()->can('view-master-banmod'),
+                'editMasterBanmod' => $request->user()->can('edit-master-banmod'),
+
+                'viewUser' => $request->user()->can('view-user'),
+                'createUser' => $request->user()->can('add-user'),
+                'editUser' => $request->user()->can('edit-user'),
+                'deleteUser' => $request->user()->can('delete-user'),
+
+                'viewRole' => $request->user()->can('view-role'),
+                'createRole' => $request->user()->can('add-role'),
+                'editRole' => $request->user()->can('edit-role'),
+                'deleteRole' => $request->user()->can('delete-role'),
+            ] : [],
         ];
     }
 }

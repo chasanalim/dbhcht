@@ -6,14 +6,22 @@ use Inertia\Inertia;
 use App\Models\LampiranFile;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controllers\HasMiddleware;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Storage;
 
-class LampiranFileController extends Controller
+class LampiranFileController extends Controller implements HasMiddleware
 {
     /**
      * Display a listing of the resource.
      */
+    public static function middleware(): array
+    {
+        return [
+            'permission:view-lampiran-file',
+            // 'role:admin',
+        ];
+    }
 
 
     public function index(Request $request)
@@ -38,11 +46,6 @@ class LampiranFileController extends Controller
 
         return Inertia::render('Admin/File/Index', [
             'title' => 'Data Lampiran File',
-            'can' => [
-                'create' => auth()->user()->can('create', LampiranFile::class),
-                'edit' => auth()->user()->can('edit', LampiranFile::class),
-                'delete' => auth()->user()->can('delete', LampiranFile::class),
-            ],
             'flash' => [
                 'message' => session('message')
             ],

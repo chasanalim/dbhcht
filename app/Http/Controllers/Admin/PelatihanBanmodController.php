@@ -4,16 +4,26 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
 
-class PelatihanBanmodController extends Controller
+class PelatihanBanmodController extends Controller implements HasMiddleware
 {
     /**
      * Display a listing of the resource.
      */
+
+    public static function middleware(): array
+    {
+        return [
+            'permission:view-pelatihan-banmod',
+            // 'role:admin',
+        ];
+    }
+
     public function index()
     {
         return inertia('Admin/PelatihanBanmod/Index', [
-            'title' => 'Pelatihan Banmod',
+            'title' => 'Pelatihan Penerima Banmod',
             'flash' => [
                 'message' => session('message')
             ],

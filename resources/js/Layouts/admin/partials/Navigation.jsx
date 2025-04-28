@@ -1,6 +1,8 @@
 import { Link, usePage } from "@inertiajs/react";
 import React, { useState } from "react";
 import Dropdown from "@/Components/Dropdown";
+import { Nav, NavDropdown } from "react-bootstrap";
+import classNames from "classnames";
 
 export default function Navbar(props) {
     const { auth } = usePage().props;
@@ -14,16 +16,16 @@ export default function Navbar(props) {
     const currentRoute = route().current();
     const getActiveMenu = () => {
         switch (true) {
-            case currentRoute.startsWith('admin.downloads'):
-                return 'Panduan Lampiran File';
-            case currentRoute.startsWith('admin.users'):
-                return 'Users';
-            case currentRoute.startsWith('admin.dashboard'):
-                return 'Dashboard';
-            case currentRoute.startsWith('admin.banmod-lama'):
-                return 'Penerima Banmod Lama';
+            case currentRoute.startsWith("admin.downloads"):
+                return "Panduan Lampiran File";
+            case currentRoute.startsWith("admin.users"):
+                return "Users";
+            case currentRoute.startsWith("admin.dashboard"):
+                return "Dashboard";
+            case currentRoute.startsWith("admin.banmod-lama"):
+                return "Penerima Banmod Lama";
             default:
-                return '';
+                return "";
         }
     };
 
@@ -42,30 +44,32 @@ export default function Navbar(props) {
                         <span className="fw-bold">{getActiveMenu()}</span>
                     </div>
 
-                    <div className="ms-auto me-3">
-                        <div className="dropdown">
-                            <button
-                                className="btn btn-light dropdown-toggle"
-                                type="button"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
+                    <Nav className="ms-auto">
+                        <NavDropdown
+                            className="nav-dropdown-dark"
+                            align="end"
+                            style={{ color: "black" }}
+                            title={
+                                <>
+                                    <i className="bi bi-person me-2"></i>
+                                    {` ${auth.user?.name}`}
+                                </>
+                            }
+                            id="basic-nav-dropdown"
+                        >
+                            <NavDropdown.Item
+                                as={Link}
+                                method="post"
+                                href={route("logout")}
+                                preserveScroll
+                                onSuccess={() => {
+                                    window.location.href = "/login";
+                                }}
                             >
-                                {auth.user.name}
-                            </button>
-                            <ul className="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <Link
-                                        href={route("logout")}
-                                        method="post"
-                                        as="button"
-                                        className="dropdown-item"
-                                    >
-                                        Log Out
-                                    </Link>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+                                <span>Logout</span>
+                            </NavDropdown.Item>
+                        </NavDropdown>
+                    </Nav>
                 </div>
             </nav>
         </header>
