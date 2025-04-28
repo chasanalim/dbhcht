@@ -1,49 +1,46 @@
+import axios from "axios";
 import React, { Fragment, useEffect, useState } from "react";
+import { Form } from "react-bootstrap";
 import Select from "react-select";
 
 export default function SelectJenisPelatihanPetani2({
-    onChange,
-    value,
+    onChange = (item) => {},
     errors,
 }) {
-    const options = [
-        { value: "bawang_merah", label: "Pelatihan budidaya bawang merah" },
-        { value: "hidroponik", label: "Pelatihan hidroponik" },
-        {
-            value: "jagung",
-            label: "Pelatihan budidaya jagung (slptt) untuk kelompok tani",
-        },
-        { value: "jamur", label: "Pelatihan budidaya aneka jamur" },
-        {
-            value: "mikroorganisme",
-            label: "Pelatihan pembuatan mikroorganisme",
-        },
-        { value: "perikanan", label: "Pelatihan budidaya perikanan" },
-        {
-            value: "tanaman_sehat",
-            label: "Pelatihan Manajemen Budidaya Tanaman Sehat di Pekarangan Pangan Lestari Kelompok Wanita Tani ",
-        },
-        { value: "peternakan", label: "Pelatihan budidaya peternakan " },
-    ];
+    const [loading, setLoading] = useState(false);
+    const [data, setData] = useState([]);
 
-    const customStyles = {
-        control: (provided) => ({
-            ...provided,
-            borderColor: errors ? "#dc3545" : provided.borderColor,
-            boxShadow: "none",
-        }),
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const url = route(
+                "regpelatihanpetani.jenispelatihanpetani2.jenispelatihanpetani2"
+            );
+            const { data } = await axios.get(url);
+            setData(data);
+            setLoading(false);
+        } catch (error) {
+            console.error(error);
+            setLoading(false);
+        }
     };
 
+    useEffect(() => {
+        fetchData();
+    }, []);
+
     return (
-        <div>
+        <Fragment>
             <Select
-                options={options}
-                value={options.find((opt) => opt.value === value)}
+                options={data}
+                getOptionValue={(option) => option.id}
+                getOptionLabel={(option) => option.nama}
                 onChange={(item) => onChange(item)}
-                styles={customStyles}
-                className={errors ? "is-invalid" : ""}
+                isLoading={loading}
             />
-            {errors && <div className="invalid-feedback d-block">{errors}</div>}
-        </div>
+            {!!errors && (
+                <Form.Text className="text-danger">{errors}</Form.Text>
+            )}
+        </Fragment>
     );
 }

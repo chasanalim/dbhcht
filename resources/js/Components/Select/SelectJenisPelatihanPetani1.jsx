@@ -1,36 +1,46 @@
+import axios from "axios";
 import React, { Fragment, useEffect, useState } from "react";
+import { Form } from "react-bootstrap";
 import Select from "react-select";
 
 export default function SelectJenisPelatihanPetani1({
-    onChange,
-    value,
+    onChange = (item) => {},
     errors,
 }) {
-    const options = [
-        {
-            value: "jagung",
-            label: "Pelatihan budidaya jagung (slptt) untuk penyuluh swadaya",
-        },
-    ];
+    const [loading, setLoading] = useState(false);
+    const [data, setData] = useState([]);
 
-    const customStyles = {
-        control: (provided) => ({
-            ...provided,
-            borderColor: errors ? "#dc3545" : provided.borderColor,
-            boxShadow: "none",
-        }),
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const url = route(
+                "regpelatihanpetani.jenispelatihanpetani1.jenispelatihanpetani1"
+            );
+            const { data } = await axios.get(url);
+            setData(data);
+            setLoading(false);
+        } catch (error) {
+            console.error(error);
+            setLoading(false);
+        }
     };
 
+    useEffect(() => {
+        fetchData();
+    }, []);
+
     return (
-        <div>
+        <Fragment>
             <Select
-                options={options}
-                value={options.find((opt) => opt.value === value)}
+                options={data}
+                getOptionValue={(option) => option.id}
+                getOptionLabel={(option) => option.nama}
                 onChange={(item) => onChange(item)}
-                styles={customStyles}
-                className={errors ? "is-invalid" : ""}
+                isLoading={loading}
             />
-            {errors && <div className="invalid-feedback d-block">{errors}</div>}
-        </div>
+            {!!errors && (
+                <Form.Text className="text-danger">{errors}</Form.Text>
+            )}
+        </Fragment>
     );
 }

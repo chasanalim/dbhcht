@@ -1,4 +1,4 @@
-INSERT INTO skor_pelatihan_petanis(id,jenis,nama,skor) VALUES
-(1,1,'DENGAN MENGIKUTI PELATIHAN INI BISA MENINGKATKAN PRODUKTIVITAS PERTANIAN/PETERNAKAN/PERIKANAN, SERTA PENINGKATAN PEREKONOMIAN KELUARGA',3),
-(2,1,'DENGAN MENGIKUTI PELATIHAN INI SAYA MENDAPATKAN KETERAMPILAN PRAKTIS YANG DAPAT LANGSUNG DITERAPKAN ',2),
-(3,1,' DAPAT MENDAPATAN WAWASAN BARU ',1)
+INSERT INTO skor_pelatihan_petanis(id,kategori,jawaban,skor) VALUES
+(1,1,'Dengan mengikuti pelatihan ini, bisa meningkatkan produktivitas pertanian/peternakan/perikanan, serta peningkatan perekonomian keluarga',3),
+(2,1,'Dengan mengikuti pelatihan ini, saya mendapatkan keterampilan praktis yang dapat langsung diterapkan',2),
+(3,1,'Dapat mendapatkan wawasan baru',1)

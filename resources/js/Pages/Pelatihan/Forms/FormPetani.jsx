@@ -740,7 +740,6 @@ export default function FormPetani() {
                             setData((prevState) => ({
                                 ...prevState,
                                 kategori: item.id,
-                                jenis_kategori: item.jenis,
                             }))
                         }
                         errors={errors.kategori}
