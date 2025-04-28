@@ -130,6 +130,12 @@ Route::prefix('refer')->as('refer.')->group(function () {
     Route::prefix('penyerapannaker')->as('penyerapannaker.')->group(function () {
         Route::get('/', [PenyerapanTenagaMiskinController::class, 'index'])->name('index');
     });
+    Route::prefix('jenispelatihanketkerja')->as('jenispelatihanketkerja.')->group(function () {
+        Route::get('/', [JenisPelatihanKetKerjaController::class, 'index'])->name('index');
+    });
+    Route::prefix('alasanpelatihanketkerja')->as('alasanpelatihanketkerja.')->group(function () {
+        Route::get('/', [AlasanPelatihanKetKerjaController::class, 'index'])->name('index');
+    });
 });
 
 Route::prefix('regpelatihanpetani')->as('regpelatihanpetani.')->group(function () {
@@ -147,12 +153,6 @@ Route::prefix('regpelatihanpetani')->as('regpelatihanpetani.')->group(function (
     });
     Route::prefix('skorpelatihanpetani')->as('skorpelatihanpetani.')->group(function () {
         Route::get('/', [RegSkorPelatihanPetaniController::class, 'skorpelatihanpetani'])->name('skorpelatihanpetani');
-    });
-    Route::prefix('jenispelatihanketkerja')->as('jenispelatihanketkerja.')->group(function () {
-        Route::get('/', [JenisPelatihanKetKerjaController::class, 'index'])->name('index');
-    });
-    Route::prefix('alasanpelatihanketkerja')->as('alasanpelatihanketkerja.')->group(function () {
-        Route::get('/', [AlasanPelatihanKetKerjaController::class, 'index'])->name('index');
     });
 });
 require __DIR__ . '/auth.php';
