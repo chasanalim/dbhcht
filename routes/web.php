@@ -20,10 +20,8 @@ use App\Http\Controllers\JumlahTenagaKerjaController;
 use App\Http\Controllers\Admin\LampiranFileController;
 use App\Http\Controllers\TanggunganKeluargaController;
 use App\Http\Controllers\Admin\PelatihanUMKMController;
-use App\Http\Controllers\SkorPelatihanPetaniController;
 use App\Http\Controllers\StatusTempatTinggalController;
 use App\Http\Controllers\Admin\PelatihanKerjaController;
-use App\Http\Controllers\JenisPelatihanPetaniController;
 use App\Http\Controllers\Admin\PelatihanBanmodController;
 use App\Http\Controllers\JumlahTeknologiDigitalController;
 use App\Http\Controllers\PenyerapanTenagaMiskinController;
@@ -36,7 +34,6 @@ use App\Http\Controllers\RegPelatihanPetaniController;
 use App\Http\Controllers\RegSkorPelatihanPetaniController;
 use App\Http\Controllers\AlasanPelatihanKetKerjaController;
 use App\Http\Controllers\JenisPelatihanKetKerjaController;
-use App\Models\JenisPelatihanKetKerja;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/download', [HomeController::class, 'file'])->name('download');
