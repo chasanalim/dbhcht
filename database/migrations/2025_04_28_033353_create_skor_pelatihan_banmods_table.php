@@ -9,11 +9,11 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
-        Schema::create('skor_pelatihan_petanis', function (Blueprint $table) {
+        Schema::create('skor_pelatihan_banmod', function (Blueprint $table) {
             $table->id();
-            $table->string('kategori');
+            $table->string('kategori'); // contoh: 'ketrampilan', 'kualitas_produk', 'permasalahan_usaha', dst
             $table->string('jawaban');
             $table->integer('skor');
             $table->timestamps();
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('skor_pelatihan_petanis');
+        Schema::dropIfExists('skor_pelatihan_banmods');
     }
 };

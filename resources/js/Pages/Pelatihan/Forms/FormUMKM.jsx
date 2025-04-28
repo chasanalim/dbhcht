@@ -2,6 +2,7 @@ import { Form, Button, ListGroup } from "react-bootstrap";
 import Select from "react-select";
 import { useEffect, useState } from "react";
 import { useForm } from "@inertiajs/react";
+import CurrencyInput from "react-currency-input-field";
 
 import SelectLegalitasStatus from "@/Components/Select/SelectLegalitasStatus";
 import SelectLegalitasJenis from "@/Components/Select/SelectLegalitasJenis";
@@ -675,16 +676,26 @@ export default function FormUMKM() {
 
                 {/* Modal */}
                 <Form.Group className="mb-3">
-                    <Form.Label className="required">Modal (Rp)</Form.Label>
-                    <Form.Control
-                        type="number"
-                        value={data.modal}
-                        onChange={(e) => setData("modal", e.target.value)}
-                        isInvalid={!!errors.modal}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                        {errors.modal}
-                    </Form.Control.Feedback>
+                    <div className="col-12 mb-3">
+                        <Form.Label className="required">Modal (Rp)</Form.Label>
+                        <CurrencyInput
+                            placeholder="Rp."
+                            prefix={"Rp. "}
+                            groupSeparator="."
+                            decimalSeparator=","
+                            allowDecimals={false}
+                            className={`form-control ${
+                                errors.modal ? `is-invalid` : ``
+                            }`}
+                            onValueChange={(value, name, values) =>
+                                setData((prevState) => ({
+                                    ...prevState,
+                                    modal: value,
+                                }))
+                            }
+                        />
+                        <div className="invalid-feedback">{errors.modal}</div>
+                    </div>
                 </Form.Group>
 
                 {/* Omset */}
@@ -692,15 +703,25 @@ export default function FormUMKM() {
                     <Form.Label className="required">
                         Omset Per Bulan (Rp)
                     </Form.Label>
-                    <Form.Control
-                        type="number"
-                        value={data.omset}
-                        onChange={(e) => setData("omset", e.target.value)}
-                        isInvalid={!!errors.omset}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                        {errors.omset}
-                    </Form.Control.Feedback>
+                    <div className="col-12 mb-3">
+                        <CurrencyInput
+                            placeholder="Rp."
+                            prefix={"Rp. "}
+                            groupSeparator="."
+                            decimalSeparator=","
+                            allowDecimals={false}
+                            className={`form-control ${
+                                errors.omset ? `is-invalid` : ``
+                            }`}
+                            onValueChange={(value, name, values) =>
+                                setData((prevState) => ({
+                                    ...prevState,
+                                    omset: value,
+                                }))
+                            }
+                        />
+                        <div className="invalid-feedback">{errors.omset}</div>
+                    </div>
                 </Form.Group>
 
                 {/* Kapasitas Produksi */}

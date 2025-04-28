@@ -42,6 +42,9 @@ class DatabaseSeeder extends Seeder
             SkorPelatihanUmkmSeeder::class,
             JenisPelatihanPetaniSeeder::class,
             SkorPelatihanPetaniSeeder::class,
+            KelompokTaniSeeder::class,
+            KelompokPelatihanPetaniSeeder::class,
+            MasaAktifKelompokTaniSeeder::class,
             JenisPelatihanKetKerjaSeeder::class,
             AlasanPelatihanKetKerjaSeeder::class,
         ]);

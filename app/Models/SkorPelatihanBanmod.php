@@ -5,15 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SkorPelatihanPetani extends Model
+class SkorPelatihanBanmod extends Model
 {
     use HasFactory;
 
-    protected $table = 'skor_pelatihan_petanis';
+    protected $table = 'skor_pelatihan_banmod';
 
     protected $fillable = [
         'kategori',
         'jawaban',
-        'skor'
+        'skor',
     ];
 }

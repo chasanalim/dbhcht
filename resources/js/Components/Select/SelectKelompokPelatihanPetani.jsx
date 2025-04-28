@@ -13,7 +13,9 @@ export default function SelectKelompokPelatihanPetani({
     const fetchData = async () => {
         setLoading(true);
         try {
-            const url = route("refer.jenispelatihanpetani.index");
+            const url = route(
+                "regpelatihanpetani.kelompokpelatihanpetani.kelompokpelatihanpetani"
+            );
             const { data } = await axios.get(url);
             setData(data);
             setLoading(false);

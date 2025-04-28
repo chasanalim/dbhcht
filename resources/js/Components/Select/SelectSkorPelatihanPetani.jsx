@@ -13,7 +13,9 @@ export default function SelectSkorPelatihanPetani({
     const fetchData = async () => {
         setLoading(true);
         try {
-            const url = route("refer.skorpelatihanpetani.index");
+            const url = route(
+                "regpelatihanpetani.skorpelatihanpetani.skorpelatihanpetani"
+            );
             const { data } = await axios.get(url);
             setData(data);
             setLoading(false);
@@ -32,7 +34,7 @@ export default function SelectSkorPelatihanPetani({
             <Select
                 options={data}
                 getOptionValue={(option) => option.id}
-                getOptionLabel={(option) => option.nama}
+                getOptionLabel={(option) => option.jawaban}
                 onChange={(item) => onChange(item)}
                 isLoading={loading}
             />

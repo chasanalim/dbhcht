@@ -1,31 +1,46 @@
-import React from "react";
+import axios from "axios";
+import React, { Fragment, useEffect, useState } from "react";
+import { Form } from "react-bootstrap";
 import Select from "react-select";
 
-const options = [
-    { value: "kurangdarisatu", label: "Kurang dari 1 Tahun" },
-    { value: "satusampaidua", label: "1 s.d. 2 Tahun" },
-    { value: "lebihdaridua", label: "Lebih dari 2 Tahun" },
-];
+export default function SelectMasaAktifKolompok({
+    onChange = (item) => {},
+    errors,
+}) {
+    const [loading, setLoading] = useState(false);
+    const [data, setData] = useState([]);
 
-export default function SelectMasaAktifKolompok({ value, onChange, errors }) {
-    const customStyles = {
-        control: (provided) => ({
-            ...provided,
-            borderColor: errors ? "#dc3545" : provided.borderColor,
-            boxShadow: "none",
-        }),
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const url = route(
+                "regpelatihanpetani.masaaktifkelompoktani.masaaktifkelompoktani"
+            );
+            const { data } = await axios.get(url);
+            setData(data);
+            setLoading(false);
+        } catch (error) {
+            console.error(error);
+            setLoading(false);
+        }
     };
 
+    useEffect(() => {
+        fetchData();
+    }, []);
+
     return (
-        <>
+        <Fragment>
             <Select
-                options={options}
-                value={options.find((opt) => opt.value === value)}
-                onChange={(opt) => onChange(opt.value)}
-                styles={customStyles}
-                className={errors ? "is-invalid" : ""}
+                options={data}
+                getOptionValue={(option) => option.id}
+                getOptionLabel={(option) => option.jawaban}
+                onChange={(item) => onChange(item)}
+                isLoading={loading}
             />
-            {errors && <div className="invalid-feedback d-block">{errors}</div>}
-        </>
+            {!!errors && (
+                <Form.Text className="text-danger">{errors}</Form.Text>
+            )}
+        </Fragment>
     );
 }
