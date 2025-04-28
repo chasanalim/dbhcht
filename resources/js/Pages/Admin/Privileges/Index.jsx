@@ -31,28 +31,31 @@ export default function Index({ title, can, flash }) {
                     data: "action",
                     width: "10%",
                     render: function (data) {
-                        return `
-                            ${
-                                can.edit
-                                    ? `
-                                <a href="${data.edit_url}"
-                                    class="btn btn-sm btn-primary me-2">
+                        let buttons = "";
+
+                        if (can.editRole) {
+                        buttons += `
+                                <button
+                                    onclick="window.location.href='${data.edit_url}'"
+                                    class="btn btn-warning btn-sm me-2"
+                                    data-bs-toggle="tooltip"
+                                    title="Edit Data">
                                     <i class="bi bi-pencil-square"></i>
-                                </a>
-                            `
-                                    : ""
-                            }
-                            ${
-                                can.delete
-                                    ? `
-                                <button onclick="deleteItem('${data.delete_url}')"
-                                        class="btn btn-sm btn-danger">
+                                </button>`;
+                        }
+
+                        if (can.deleteRole) {
+                        buttons += `
+                                <button
+                                    onclick="deleteItem('${data.delete_url}')"
+                                    class="btn btn-danger btn-sm"
+                                    data-bs-toggle="tooltip"
+                                    title="Hapus Data">
                                     <i class="bi bi-trash"></i>
-                                </button>
-                            `
-                                    : ""
-                            }
-                        `;
+                                </button>`;
+                        }
+
+                        return buttons
                     },
                 },
             ],
@@ -73,7 +76,7 @@ export default function Index({ title, can, flash }) {
                         <div className="card">
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
                                 <h5 className="mb-1">{title}</h5>
-                                {can.create && (
+                                {can.createRole && (
                                 <Link
                                     href={route("admin.privileges.create")}
                                     className="btn btn-sm btn-primary mb-1"
