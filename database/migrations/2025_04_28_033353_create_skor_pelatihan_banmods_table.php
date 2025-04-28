@@ -1,0 +1,30 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up()
+    {
+        Schema::create('skor_pelatihan_banmod', function (Blueprint $table) {
+            $table->id();
+            $table->string('kategori'); // contoh: 'ketrampilan', 'kualitas_produk', 'permasalahan_usaha', dst
+            $table->string('jawaban');
+            $table->integer('skor');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('skor_pelatihan_banmods');
+    }
+};
