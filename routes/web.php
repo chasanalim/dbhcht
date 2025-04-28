@@ -30,7 +30,9 @@ use App\Http\Controllers\PelatihanPenerimaBanmodController;
 use App\Http\Controllers\Admin\PelatihanPertanianController;
 use App\Http\Controllers\Admin\PenerimaBanmodLamaController;
 use App\Http\Controllers\Admin\PenerimaPelatihanBanmodController;
+use App\Http\Controllers\RegPelatihanPetaniController;
 use App\Http\Controllers\RegPelatihanUmkmController;
+use App\Http\Controllers\RegSkorPelatihanPetaniController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/download', [HomeController::class, 'file'])->name('download');
@@ -121,11 +123,23 @@ Route::prefix('refer')->as('refer.')->group(function () {
     Route::prefix('penyerapannaker')->as('penyerapannaker.')->group(function () {
         Route::get('/', [PenyerapanTenagaMiskinController::class, 'index'])->name('index');
     });
-    Route::prefix('jenispelatihanpetani')->as('jenispelatihanpetani.')->group(function () {
-        Route::get('/', [JenisPelatihanPetaniController::class, 'index'])->name('index');
+});
+
+Route::prefix('regpelatihanpetani')->as('regpelatihanpetani.')->group(function () {
+    Route::prefix('kelompokpelatihanpetani')->as('kelompokpelatihanpetani.')->group(function () {
+        Route::get('/', [RegPelatihanPetaniController::class, 'kelompokpelatihanpetani'])->name('kelompokpelatihanpetani');
+    });
+    Route::prefix('jenispelatihanpetani1')->as('jenispelatihanpetani1.')->group(function () {
+        Route::get('/', [RegPelatihanPetaniController::class, 'jenispelatihanpetani1'])->name('jenispelatihanpetani1');
+    });
+    Route::prefix('jenispelatihanpetani2')->as('jenispelatihanpetani2.')->group(function () {
+        Route::get('/', [RegPelatihanPetaniController::class, 'jenispelatihanpetani2'])->name('jenispelatihanpetani2');
+    });
+    Route::prefix('masaaktifkelompoktani')->as('masaaktifkelompoktani.')->group(function () {
+        Route::get('/', [RegSkorPelatihanPetaniController::class, 'masaaktifkelompoktani'])->name('masaaktifkelompoktani');
     });
     Route::prefix('skorpelatihanpetani')->as('skorpelatihanpetani.')->group(function () {
-        Route::get('/', [SkorPelatihanPetaniController::class, 'index'])->name('index');
+        Route::get('/', [RegSkorPelatihanPetaniController::class, 'skorpelatihanpetani'])->name('skorpelatihanpetani');
     });
 });
 require __DIR__ . '/auth.php';
