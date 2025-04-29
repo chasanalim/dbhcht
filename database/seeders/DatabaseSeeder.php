@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\JumlahTenagaKerja;
 use App\Models\LamaUsaha;
 use App\Models\PenerimaBanmod;
+use App\Models\SkorPelatihanBanmod;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -47,6 +48,7 @@ class DatabaseSeeder extends Seeder
             MasaAktifKelompokTaniSeeder::class,
             JenisPelatihanKetKerjaSeeder::class,
             AlasanPelatihanKetKerjaSeeder::class,
+            SkorPelatihanBanmodSeeder::class,
         ]);
     }
 }

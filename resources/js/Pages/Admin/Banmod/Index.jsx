@@ -8,7 +8,7 @@ import { Toast, Tooltip } from "bootstrap";
 // Import bootstrap JS
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
-export default function Index({ title, can, flash ,dataRoute}) {
+export default function Index({ title, can, flash, dataRoute }) {
     const tableRef = useRef();
 
     useEffect(() => {
@@ -39,31 +39,36 @@ export default function Index({ title, can, flash ,dataRoute}) {
                     width: "10%",
                     className: "text-center",
                     render: function (data) {
-                        let buttons = "";
+                        let buttons = [];
 
                         // if (can.edit) {
-                        buttons += `
-                                <button
-                                    onclick="window.location.href='${data.edit_url}'"
-                                    class="btn btn-warning btn-sm me-2"
-                                    data-bs-toggle="tooltip"
-                                    title="Edit Data">
+                        buttons.push(`
+                                <a href="${data.edit_url}" class="btn btn-sm btn-warning" title="Edit">
                                     <i class="bi bi-pencil-square"></i>
-                                </button>`;
+                                </a>
+                            `);
                         // }
 
                         // if (can.delete) {
-                        buttons += `
-                                <button
-                                    onclick="deleteItem('${data.delete_url}')"
-                                    class="btn btn-danger btn-sm"
-                                    data-bs-toggle="tooltip"
-                                    title="Hapus Data">
+                        buttons.push(`
+                                <a href="javascript:void(0)"
+                                   onclick="deleteItem('${data.delete_url}')"
+                                   class="btn btn-sm btn-danger"
+                                   title="Hapus">
                                     <i class="bi bi-trash"></i>
-                                </button>`;
+                                </a>
+                            `);
                         // }
 
-                        return buttons;
+                        buttons.push(`
+                            <a href="${data.detail_url}" class="btn btn-sm btn-info" title="Detail">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        `);
+
+                        return `<div class="btn-group">${buttons.join(
+                            ""
+                        )}</div>`;
                     },
                 },
                 {
@@ -72,55 +77,62 @@ export default function Index({ title, can, flash ,dataRoute}) {
                     orderable: true,
                     searchable: true,
                 },
-                {
-                    data: "kk",
-                    name: "kk",
-                },
+                // {
+                //     data: "kk",
+                //     name: "kk",
+                // },
                 {
                     data: "name",
                     name: "name",
                 },
+                // {
+                //     data: "tmp_lhr",
+                //     name: "tmp_lhr",
+                // },
+                // {
+                //     data: "tgl_lhr",
+                //     name: "tgl_lhr",
+                // },
                 {
-                    data: "tmp_lhr",
-                    name: "tmp_lhr",
-                },
-                {
-                    data: "tgl_lhr",
-                    name: "tgl_lhr",
+                    data: "phone_number",
+                    name: "phone_number",
                 },
                 {
                     data: "alamat",
                     name: "alamat",
                 },
                 {
-                    data: "nama_kecamatan",
-                    name: "nama_kecamatan",
-                },
-                {
-                    data: "nama_kelurahan",
-                    name: "nama_kelurahan",
+                    data: "nama_rt",
+                    name: "nama_rt",
                 },
                 {
                     data: "nama_rw",
                     name: "nama_rw",
                 },
                 {
-                    data: "nama_rt",
-                    name: "nama_rt",
+                    data: "nama_kelurahan",
+                    name: "nama_kelurahan",
                 },
                 {
-                    data: "alamat_domisili",
-                    name: "alamat_domisili",
+                    data: "nama_kecamatan",
+                    name: "nama_kecamatan",
+                },
+                // {
+                //     data: "alamat_domisili",
+                //     name: "alamat_domisili",
+                // },
+                // {
+                //     data: "alamat_usaha",
+                //     name: "alamat_usaha",
+                // },
+                {
+                    data: "kategori_usaha.nama",
+                    name: "kategori_usaha.nama",
                 },
                 {
-                    data: "alamat_usaha",
-                    name: "alamat_usaha",
+                    data: "klaster_usaha.nama",
+                    name: "klaster_usaha.nama",
                 },
-                {
-                    data: "phone_number",
-                    name: "phone_number",
-                },
-
             ],
             drawCallback: function () {
                 // Initialize tooltips
@@ -130,6 +142,10 @@ export default function Index({ title, can, flash ,dataRoute}) {
                 tooltips.forEach((tooltipNode) => {
                     new Tooltip(tooltipNode);
                 });
+                // $("[title]").tooltip({
+                //     placement: "top",
+                //     trigger: "hover",
+                // });
             },
         });
 
@@ -191,24 +207,24 @@ export default function Index({ title, can, flash ,dataRoute}) {
                                                 <th>No</th>
                                                 <th>AKSI</th>
                                                 <th>NIK</th>
-                                                <th>NO KK</th>
+                                                {/* <th>NO KK</th> */}
                                                 <th>NAMA</th>
-                                                <th>TEMPAT LAHIR</th>
-                                                <th>TGL LAHIR</th>
-                                                <th>ALAMAT</th>
-                                                <th>KECAMATAN</th>
-                                                <th>KELURAHAN</th>
-                                                <th>RW</th>
-                                                <th>RT</th>
-                                                <th>AlAMAT DOMISILI</th>
-                                                <th>ALAMAT USAHA</th>
+                                                {/* <th>TEMPAT LAHIR</th> */}
+                                                {/* <th>TGL LAHIR</th> */}
                                                 <th>NO HP</th>
+                                                <th>ALAMAT</th>
+                                                <th>RT</th>
+                                                <th>RW</th>
+                                                <th>KELURAHAN</th>
+                                                <th>KECAMATAN</th>
+                                                {/* <th>AlAMAT DOMISILI</th>
+                                                <th>ALAMAT USAHA</th> */}
                                                 {/* <th>DAYA LISTRIK</th>
-                                                <th>DISABILITAS</th>
+                                                <th>DISABILITAS</th> */}
                                                 <th>KATEGORI</th>
-                                                <th>JENIS KATEGORI</th>
+                                                {/* <th>JENIS KATEGORI</th> */}
                                                 <th>KLASTER USAHA</th>
-                                                <th>TANGGUNGAN KELUARGA</th>
+                                                {/* <th>TANGGUNGAN KELUARGA</th>
                                                 <th>LAMA USAHA</th>
                                                 <th>JUMLAH TENAGA</th>
                                                 <th>BRUTO</th>
@@ -230,7 +246,6 @@ export default function Index({ title, can, flash ,dataRoute}) {
                                                 <th>SIINAS</th>
                                                 <th>BP</th>
                                                 <th>SERTIFIKAT PELATIHAN</th> */}
-
                                             </tr>
                                         </thead>
                                     </table>

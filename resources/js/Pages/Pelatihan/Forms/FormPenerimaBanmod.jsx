@@ -1,5 +1,5 @@
 import { Form, Button, InputGroup, ListGroup } from "react-bootstrap";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useForm } from "@inertiajs/react";
 import Select from "react-select";
@@ -9,6 +9,8 @@ import SelectKelurahan from "@/Components/Select/SelectKelurahan";
 import SelectRt from "@/Components/Select/SelectRt";
 import SelectRw from "@/Components/Select/SelectRw";
 import SelectTahun from "@/Components/Select/SelectTahun";
+import SelectJenisPelatihan from "@/Components/Select/SelectPelatihanBanmod";
+import SelectSkorPelatihan from "@/Components/Select/SelectSkorPelatihanBanmod";
 
 export default function FormPenerimaBanmod() {
     const [nikStatus, setNikStatus] = useState(null);
@@ -30,6 +32,11 @@ export default function FormPenerimaBanmod() {
         rw_ktp: "",
         rt_ktp: "",
         jalan_ktp: "",
+
+        kode_kecamatan_ktp: "",
+        kode_kelurahan_ktp: "",
+        kode_rw_ktp: "",
+        kode_rt_ktp: "",
 
         // Alamat Usaha
         kecamatan_usaha: "",
@@ -388,15 +395,29 @@ export default function FormPenerimaBanmod() {
                             <Form.Label className="required">
                                 Kecamatan
                             </Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={data.kecamatan_ktp}
-                                readOnly={!editMode}
-                                onChange={(e) =>
-                                    setData("kecamatan_ktp", e.target.value)
-                                }
-                                isInvalid={!!errors.kecamatan_ktp}
-                            />
+                            {editMode ? (
+                                <SelectKecamatan
+                                    value={{
+                                        id: data.kode_kecamatan_ktp,
+                                        text: data.kecamatan_ktp,
+                                    }}
+                                    onChange={(item) =>
+                                        setData((prev) => ({
+                                            ...prev,
+                                            kode_kecamatan_ktp: item.id,
+                                            kecamatan_ktp: item.text,
+                                        }))
+                                    }
+                                    errors={errors.kecamatan_ktp}
+                                />
+                            ) : (
+                                <Form.Control
+                                    type="text"
+                                    value={data.kecamatan_ktp}
+                                    readOnly
+                                    isInvalid={!!errors.kecamatan_ktp}
+                                />
+                            )}
                             <Form.Control.Feedback type="invalid">
                                 {errors.kecamatan_ktp}
                             </Form.Control.Feedback>
@@ -405,15 +426,30 @@ export default function FormPenerimaBanmod() {
                             <Form.Label className="required">
                                 Kelurahan
                             </Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={data.kelurahan_ktp}
-                                readOnly={!editMode}
-                                onChange={(e) =>
-                                    setData("kelurahan_ktp", e.target.value)
-                                }
-                                isInvalid={!!errors.kelurahan_ktp}
-                            />
+                            {editMode ? (
+                                <SelectKelurahan
+                                    kodeKecamatan={data.kode_kecamatan_ktp}
+                                    value={{
+                                        id: data.kode_kelurahan_ktp,
+                                        text: data.kelurahan_ktp,
+                                    }}
+                                    onChange={(item) =>
+                                        setData((prev) => ({
+                                            ...prev,
+                                            kode_kelurahan_ktp: item.id,
+                                            kelurahan_ktp: item.text,
+                                        }))
+                                    }
+                                    errors={errors.kelurahan_ktp}
+                                />
+                            ) : (
+                                <Form.Control
+                                    type="text"
+                                    value={data.kelurahan_ktp}
+                                    readOnly
+                                    isInvalid={!!errors.kelurahan_ktp}
+                                />
+                            )}
                             <Form.Control.Feedback type="invalid">
                                 {errors.kelurahan_ktp}
                             </Form.Control.Feedback>
@@ -423,30 +459,61 @@ export default function FormPenerimaBanmod() {
                     <Form.Group className="row mb-3">
                         <div className="col-md-6 col-12 mb-3">
                             <Form.Label className="required">RW</Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={data.rw_ktp}
-                                readOnly={!editMode}
-                                onChange={(e) =>
-                                    setData("rw_ktp", e.target.value)
-                                }
-                                isInvalid={!!errors.rw_ktp}
-                            />
+                            {editMode ? (
+                                <SelectRw
+                                    kodeKelurahan={data.kode_kelurahan_ktp}
+                                    value={{
+                                        id: data.kode_rw_ktp,
+                                        text: data.rw_ktp,
+                                    }}
+                                    onChange={(item) =>
+                                        setData((prev) => ({
+                                            ...prev,
+                                            kode_rw_ktp: item.id,
+                                            rw_ktp: item.text,
+                                        }))
+                                    }
+                                    errors={errors.rw_ktp}
+                                />
+                            ) : (
+                                <Form.Control
+                                    type="text"
+                                    value={data.rw_ktp}
+                                    readOnly
+                                    isInvalid={!!errors.rw_ktp}
+                                />
+                            )}
                             <Form.Control.Feedback type="invalid">
                                 {errors.rw_ktp}
                             </Form.Control.Feedback>
                         </div>
                         <div className="col-md-6 col-12 mb-3">
                             <Form.Label className="required">RT</Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={data.rt_ktp}
-                                readOnly={!editMode}
-                                onChange={(e) =>
-                                    setData("rt_ktp", e.target.value)
-                                }
-                                isInvalid={!!errors.rt_ktp}
-                            />
+                            {editMode ? (
+                                <SelectRt
+                                    kodeKelurahan={data.kode_kelurahan_ktp}
+                                    kodeRw={data.rw_ktp}
+                                    value={{
+                                        id: data.kode_rt_ktp,
+                                        text: data.rt_ktp,
+                                    }}
+                                    onChange={(item) =>
+                                        setData((prev) => ({
+                                            ...prev,
+                                            kode_rt_ktp: item.id,
+                                            rt_ktp: item.text,
+                                        }))
+                                    }
+                                    errors={errors.rt_ktp}
+                                />
+                            ) : (
+                                <Form.Control
+                                    type="text"
+                                    value={data.rt_ktp}
+                                    readOnly
+                                    isInvalid={!!errors.rt_ktp}
+                                />
+                            )}
                             <Form.Control.Feedback type="invalid">
                                 {errors.rt_ktp}
                             </Form.Control.Feedback>
@@ -473,6 +540,71 @@ export default function FormPenerimaBanmod() {
                         </Form.Control.Feedback>
                     </Form.Group>
 
+                    {/* Konfirmasi Data */}
+                    {tampilKonfirmasi && (
+                        <div className="alert alert-warning mb-3">
+                            <Form.Label className="fw-bold required">
+                                Apakah data sudah sesuai dan tidak ada
+                                perubahan?
+                            </Form.Label>
+                            <div className="d-flex gap-2 mt-2">
+                                <Button
+                                    variant="success"
+                                    onClick={() => {
+                                        setEditMode(false);
+                                        setTampilKonfirmasi(false); // Hide confirmation after choice
+                                        // Show success message
+                                        setNikStatus(
+                                            "Data telah dikonfirmasi ✓"
+                                        );
+                                    }}
+                                >
+                                    <i className="fa fa-check me-1"></i> Ya,
+                                    sesuai
+                                </Button>
+                                <Button
+                                    variant="warning"
+                                    onClick={() => {
+                                        setEditMode(true);
+                                        setTampilKonfirmasi(false); // Hide confirmation
+                                        // Show edit message
+                                        setNikStatus(
+                                            "Silakan edit data yang perlu diubah"
+                                        );
+                                    }}
+                                >
+                                    <i className="fa fa-pencil me-1"></i> Tidak,
+                                    saya ingin edit
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+
+                    {editMode && (
+                        <div className="alert alert-info mb-3">
+                            <div className="d-flex justify-content-between align-items-center">
+                                <span>
+                                    <i className="fa fa-info-circle me-2"></i>
+                                    Mode edit aktif - Silakan ubah data yang
+                                    perlu dikoreksi
+                                </span>
+                                <Button
+                                    size="sm"
+                                    variant="success"
+                                    onClick={() => {
+                                        setEditMode(false);
+                                        setNikStatus(
+                                            "Perubahan data telah disimpan ✓"
+                                        );
+                                    }}
+                                >
+                                    <i className="fa fa-save me-1"></i> Selesai
+                                    Edit
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+
                     <Form.Group className="mb-3">
                         <Form.Label className="required">No HP/WA</Form.Label>
                         <Form.Control
@@ -486,30 +618,6 @@ export default function FormPenerimaBanmod() {
                             {errors.no_hp}
                         </Form.Control.Feedback>
                     </Form.Group>
-
-                    {/* Konfirmasi Data */}
-                    {tampilKonfirmasi && (
-                        <div className="alert alert-warning mb-3">
-                            <Form.Label className="fw-bold">
-                                Apakah data sudah sesuai dan tidak ada
-                                perubahan?
-                            </Form.Label>
-                            <div className="d-flex gap-2 mt-2">
-                                <Button
-                                    variant="success"
-                                    onClick={() => setEditMode(false)}
-                                >
-                                    Ya, sesuai
-                                </Button>
-                                <Button
-                                    variant="warning"
-                                    onClick={() => setEditMode(true)}
-                                >
-                                    Tidak, saya ingin edit
-                                </Button>
-                            </div>
-                        </div>
-                    )}
 
                     {/* Alamat Usaha */}
                     <div className="big-text text-muted mb-4 mt-4">
@@ -609,135 +717,68 @@ export default function FormPenerimaBanmod() {
                         <Form.Label className="required">
                             Jenis Pelatihan Industri
                         </Form.Label>
-                        <Form.Select
+                        <SelectJenisPelatihan
                             value={data.jenis_pelatihan_industri}
-                            onChange={(e) =>
+                            onChange={(item) =>
                                 setData(
                                     "jenis_pelatihan_industri",
-                                    e.target.value
+                                    item?.value || ""
                                 )
                             }
-                            isInvalid={!!errors.jenis_pelatihan_industri}
-                        >
-                            <option value="">Pilih Jenis Pelatihan</option>
-                            {[
-                                "Tenun",
-                                "Batik/Ecoprint",
-                                "Sulam/Bordir",
-                                "Rajut",
-                                "Aksesoris (Gelang, Kalung)",
-                                "Anyaman",
-                                "Kerajinan Lainnya",
-                                "Penjahitan Pakaian",
-                                "Penjahitan Tas, Dompet, dll",
-                                "Bengkel",
-                                "Makanan (Roti)",
-                                "Makanan (Kue Kering)",
-                                "Makanan (Kue Basah)",
-                                "Makanan (Catering)",
-                                "Makanan (Olahan Daging/Ikan)",
-                                "Makanan (Keripik, Krupuk, Rempeyek)",
-                                "Minuman (Jamu)",
-                                "Minuman (Kekinian)",
-                                "Fotokopi/Percetakan",
-                                "Sablon Kaos",
-                            ].map((item, i) => (
-                                <option key={i} value={item}>
-                                    {item}
-                                </option>
-                            ))}
-                        </Form.Select>
-                        <Form.Control.Feedback type="invalid">
-                            {errors.jenis_pelatihan_industri}
-                        </Form.Control.Feedback>
+                            errors={errors.jenis_pelatihan_industri}
+                        />
                     </Form.Group>
 
-                    {/* Perkembangan Section */}
+                    {/* Skor Section */}
                     {[
                         {
                             label: "Perkembangan Omzet (Pendapatan Kotor) Usaha",
                             name: "perkembangan_omzet",
+                            kategori: "perkembangan_omzet",
                         },
                         {
                             label: "Perkembangan Jumlah Tenaga Kerja",
                             name: "perkembangan_tenaga_kerja",
+                            kategori: "perkembangan_tenaga_kerja",
                         },
-                    ].map((item, i) => (
-                        <Form.Group key={i} className="mb-3">
-                            <Form.Label className="required">
-                                {item.label}
-                            </Form.Label>
-                            <Form.Select
-                                value={data[item.name]}
-                                onChange={(e) =>
-                                    setData(item.name, e.target.value)
-                                }
-                                isInvalid={!!errors[item.name]}
-                            >
-                                <option value="">Pilih Jawaban</option>
-                                <option value="meningkat">
-                                    Meningkat/Bertambah
-                                </option>
-                                <option value="tetap">Tetap</option>
-                                <option value="turun">Turun/Berkurang</option>
-                            </Form.Select>
-                            <Form.Control.Feedback type="invalid">
-                                {errors[item.name]}
-                            </Form.Control.Feedback>
-                        </Form.Group>
-                    ))}
-
-                    {/* Skor Section */}
-                    <div className="big-text text-muted mb-4">
-                        Alasan Mengikuti Pelatihan
-                        <div className="underline"></div>
-                    </div>
-
-                    {[
                         {
                             label: "Mengikuti pelatihan untuk meningkatkan keterampilan dan kemampuan",
                             name: "skor_ketrampilan",
+                            kategori: "ketrampilan",
                         },
                         {
                             label: "Mengikuti pelatihan untuk meningkatkan kualitas produk",
                             name: "skor_kualitas_produk",
+                            kategori: "kualitas_produk",
                         },
                         {
                             label: "Mengikuti pelatihan untuk mencari solusi atas permasalahan usaha",
                             name: "skor_permasalahan_usaha",
+                            kategori: "permasalahan_usaha",
                         },
                         {
                             label: "Mengikuti pelatihan untuk mengisi waktu luang",
                             name: "skor_mengisi_waktu",
+                            kategori: "mengisi_waktu",
                         },
                         {
                             label: "Mengikuti pelatihan karena diajak teman",
                             name: "skor_diajak_teman",
+                            kategori: "diajak_teman",
                         },
                     ].map((item, i) => (
                         <Form.Group key={i} className="mb-3">
                             <Form.Label className="required">
                                 {item.label}
                             </Form.Label>
-                            <Form.Select
+                            <SelectSkorPelatihan
+                                kategori={item.kategori}
                                 value={data[item.name]}
-                                onChange={(e) =>
-                                    setData(item.name, e.target.value)
+                                onChange={(selected) =>
+                                    setData(item.name, selected?.value || "")
                                 }
-                                isInvalid={!!errors[item.name]}
-                            >
-                                <option value="">Pilih Jawaban</option>
-                                <option value="sangat_setuju">
-                                    Sangat Setuju
-                                </option>
-                                <option value="setuju">Setuju</option>
-                                <option value="kurang_setuju">
-                                    Kurang Setuju
-                                </option>
-                            </Form.Select>
-                            <Form.Control.Feedback type="invalid">
-                                {errors[item.name]}
-                            </Form.Control.Feedback>
+                                errors={errors[item.name]}
+                            />
                         </Form.Group>
                     ))}
 

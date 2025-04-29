@@ -17,3 +17,8 @@
         pointer-events: none;
     }
 }
+
+// TABLE
+.table td:first-child {
+    width: 150px;
+}

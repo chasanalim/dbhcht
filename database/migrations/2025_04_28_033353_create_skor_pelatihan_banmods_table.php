@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('skor_pelatihan_banmod', function (Blueprint $table) {
             $table->id();
-            $table->string('kategori'); // contoh: 'ketrampilan', 'kualitas_produk', 'permasalahan_usaha', dst
+            $table->string('kategori');
             $table->string('jawaban');
             $table->integer('skor');
             $table->timestamps();
