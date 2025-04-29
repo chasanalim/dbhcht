@@ -23,14 +23,16 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
     }
     public function index(Request $request)
     {
-        $data = PendaftaranBanmod::all();
+        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->get();
+        // return response()->json($data);
         if ($request->wantsJson()) {
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     return [
                         'edit_url' => route('admin.banmod.edit', $row->id),
-                        'delete_url' => route('admin.banmod.destroy', $row->id)
+                        'delete_url' => route('admin.banmod.destroy', $row->id),
+                        'detail_url' => route('admin.banmod.show', $row->id)
                     ];
                 })
                 ->make(true);
@@ -47,7 +49,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
     public function buruh_pabrik_rokok(Request $request)
     {
 
-        $data = PendaftaranBanmod::where('kategori', '1')->get();
+        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->where('kategori', '1')->get();
 
         if ($request->wantsJson()) {
             return DataTables::of($data)
@@ -55,7 +57,8 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                 ->addColumn('action', function ($row) {
                     return [
                         'edit_url' => route('admin.banmod.edit', $row->id),
-                        'delete_url' => route('admin.banmod.destroy', $row->id)
+                        'delete_url' => route('admin.banmod.destroy', $row->id),
+                        'detail_url' => route('admin.banmod.show', $row->id)
                     ];
                 })
                 ->make(true);
@@ -71,14 +74,15 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
     }
     public function buruh_tani_tembakau(Request $request)
     {
-        $data = PendaftaranBanmod::where('kategori', '2')->get();
+        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->where('kategori', '2')->get();
         if ($request->wantsJson()) {
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     return [
                         'edit_url' => route('admin.banmod.edit', $row->id),
-                        'delete_url' => route('admin.banmod.destroy', $row->id)
+                        'delete_url' => route('admin.banmod.destroy', $row->id),
+                        'detail_url' => route('admin.banmod.show', $row->id)
                     ];
                 })
                 ->make(true);
@@ -94,14 +98,15 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
     }
     public function pekerja_pabrik_rokok(Request $request)
     {
-        $data = PendaftaranBanmod::where('kategori', '3')->get();
+        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->where('kategori', '3')->get();
         if ($request->wantsJson()) {
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     return [
                         'edit_url' => route('admin.banmod.edit', $row->id),
-                        'delete_url' => route('admin.banmod.destroy', $row->id)
+                        'delete_url' => route('admin.banmod.destroy', $row->id),
+                        'detail_url' => route('admin.banmod.show', $row->id)
                     ];
                 })
                 ->make(true);
@@ -117,14 +122,15 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
     }
     public function ikm(Request $request)
     {
-        $data = PendaftaranBanmod::where('kategori', '4')->get();
+        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->where('kategori', '4')->get();
         if ($request->wantsJson()) {
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     return [
                         'edit_url' => route('admin.banmod.edit', $row->id),
-                        'delete_url' => route('admin.banmod.destroy', $row->id)
+                        'delete_url' => route('admin.banmod.destroy', $row->id),
+                        'detail_url' => route('admin.banmod.show', $row->id)
                     ];
                 })
                 ->make(true);
@@ -140,14 +146,15 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
     }
     public function masyarakat_miskin(Request $request)
     {
-        $data = PendaftaranBanmod::where('kategori', '5')->get();
+        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->where('kategori', '5')->get();
         if ($request->wantsJson()) {
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     return [
                         'edit_url' => route('admin.banmod.edit', $row->id),
-                        'delete_url' => route('admin.banmod.destroy', $row->id)
+                        'delete_url' => route('admin.banmod.destroy', $row->id),
+                        'detail_url' => route('admin.banmod.show', $row->id)
                     ];
                 })
                 ->make(true);
@@ -179,7 +186,72 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
      */
     public function show(string $id)
     {
-        //
+        $data = PendaftaranBanmod::with([
+            'kategoriUsaha',
+            'klasterUsaha',
+            'tanggunganKeluarga',
+            'lamaUsaha',
+            'statusTempatTinggal',
+            'jumlahTenagaKerja',
+            'jumlahLegalitas',
+            'jumlahTeknologiDigital',
+            'penyerapanTenagaMiskin',
+            'brutoPerbulan'
+        ])->findOrFail($id);
+
+        // return response()->json($data);
+
+        return Inertia::render('Admin/Banmod/Show', [
+            'title' => 'Detail Pendaftar Bantuan Modal',
+            'data' => [
+                'id' => $data->id,
+                'nik' => $data->nik,
+                'kk' => $data->kk,
+                'name' => $data->name,
+                'tmp_lhr' => $data->tmp_lhr,
+                'tgl_lhr' => $data->tgl_lhr,
+                'alamat' => $data->alamat,
+                'jenis_kelamin' => $data->jenis_kelamin,
+                'kecamatan' => $data->nama_kecamatan,
+                'kelurahan' => $data->nama_kelurahan,
+                'rw' => $data->nama_rw,
+                'rt' => $data->nama_rt,
+                'isDomisili' => $data->isDomisili,
+                'alamat_domisili' => $data->alamat_domisili,
+                'isUsaha' => $data->isUsaha,
+                'alamat_usaha' => $data->alamat_usaha,
+                'phone_number' => $data->phone_number,
+                'daya_listrik' => $data->daya_listrik,
+                'isDisabilitas' => $data->isDisabilitas,
+                'disabilitas' => $data->disabilitas,
+                'kategori' => $data->kategoriUsaha?->nama,
+                'klaster_usaha' => $data->klasterUsaha?->nama,
+                'tanggungan_keluarga' => $data->tanggunganKeluarga?->nama,
+                'lama_usaha' => $data->lamaUsaha?->nama,
+                'jumlah_tenaga' => $data->jumlahTenagaKerja?->nama,
+                'bruto' => $data->brutoPerbulan?->nama,
+                'status_tempat_tinggal' => $data->statusTempatTinggal?->nama,
+                'aset' => $data->aset,
+                'hutang' => $data->hutang,
+                'jumlah_legalitas' => $data->jumlahLegalitas?->nama,
+                'jumlah_teknologi' => $data->jumlahTeknologiDigital?->nama,
+                'jumlah_penyerapan_naker' => $data->penyerapanTenagaMiskin?->nama,
+                'files' => [
+                    'foto' => asset('' . $data->file_foto),
+                    'ktp' => asset('' . $data->file_ktp),
+                    'kk' => asset('' . $data->file_kk),
+                    'nib' => asset('' . $data->file_nib),
+                    'sku' => asset('' . $data->file_sku),
+                    'skd' => asset('' . $data->file_skd),
+                    'produk' => asset('' . $data->file_produk),
+                    'pernyataan' => asset('' . $data->file_pernyataan),
+                    'perizinan' => $data->file_perizinan ? array_map(fn($file) => asset('' . $file), $data->file_perizinan) : [],
+                    'siinas' => asset('' . $data->file_siinas),
+                    'bp' => asset('' . $data->file_bp),
+                    'sertifikat_pelatihan' => asset('' . $data->file_sertifikat_pelatihan),
+                ]
+            ]
+        ]);
     }
 
     /**

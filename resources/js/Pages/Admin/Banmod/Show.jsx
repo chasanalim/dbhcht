@@ -1,0 +1,302 @@
+import AdminLayout from "@/Layouts/admin/AdminLayout";
+import { Head } from "@inertiajs/react";
+
+export default function Show({ title, data }) {
+    const renderFilePreview = (url, label) => {
+        if (!url) return null;
+
+        const extension = url.split(".").pop().toLowerCase();
+        const isImage = ["jpg", "jpeg", "png", "gif"].includes(extension);
+
+        return (
+            <div className="col-md-4 mb-4">
+                <div className="card h-100">
+                    <div className="card-header">
+                        <h6 className="fw-bold mb-0">{label}</h6>
+                    </div>
+                    <div className="card-body d-flex flex-column">
+                        {isImage ? (
+                            <div
+                                className="text-center mb-3"
+                                style={{ height: "200px" }}
+                            >
+                                <img
+                                    src={url}
+                                    alt={label}
+                                    className="img-fluid h-100 object-fit-cover"
+                                />
+                            </div>
+                        ) : (
+                            <div className="ratio ratio-16x9 mb-3">
+                                <embed
+                                    src={url}
+                                    type="application/pdf"
+                                    className="w-100 h-100"
+                                />
+                            </div>
+                        )}
+                        <a
+                            href={url}
+                            className="btn btn-sm btn-primary mt-auto"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <i className="bi bi-eye me-1"></i>
+                            Lihat File
+                        </a>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    return (
+        <AdminLayout>
+            <Head title={title} />
+
+            <div className="container-fluid py-4">
+                <div className="card">
+                    <div className="card-header">
+                        <h5 className="fw-bold mb-0">{title}</h5>
+                    </div>
+                    <div className="card-body">
+                        <div className="row">
+                            <div className="col-md-6">
+                                <h6 className="fw-bold">Data Pribadi</h6>
+                                <table className="table table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <td>NIK</td>
+                                            <td>: {data.nik}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>No. KK</td>
+                                            <td>: {data.kk}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Nama</td>
+                                            <td>: {data.name}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tempat Lahir</td>
+                                            <td>: {data.tmp_lhr}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tanggal Lahir</td>
+                                            <td>: {data.tgl_lhr}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Jenis Kelamin</td>
+                                            <td>
+                                                :
+                                                {data.jenis_kelamin === "L"
+                                                    ? " Laki-laki"
+                                                    : " Perempuan"}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>No. HP</td>
+                                            <td>: {data.phone_number}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h6 className="fw-bold mt-4">Alamat</h6>
+                                <table className="table table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <td>Alamat KTP</td>
+                                            <td>: {data.alamat}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>RT/RW</td>
+                                            <td>
+                                                : {data.rt}/{data.rw}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Kelurahan</td>
+                                            <td>: {data.kelurahan}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Kecamatan</td>
+                                            <td>: {data.kecamatan}</td>
+                                        </tr>
+                                        {data.isDomisili && (
+                                            <tr>
+                                                <td>Alamat Domisili</td>
+                                                <td>
+                                                    :{" "}
+                                                    {data.isDomisili === "0"
+                                                        ? " Sesuai KTP"
+                                                        : data.alamat_domisili}
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className="col-md-6">
+                                <h6 className="fw-bold">Data Usaha</h6>
+                                <table className="table table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <td>Kategori</td>
+                                            <td>: {data.kategori}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Klaster Usaha</td>
+                                            <td>: {data.klaster_usaha}</td>
+                                        </tr>
+                                        {data.isUsaha && (
+                                            <tr>
+                                                <td>Alamat Usaha</td>
+                                                <td>
+                                                    :{" "}
+                                                    {data.isUsaha === "0"
+                                                        ? " Sesuai KTP"
+                                                        : data.alamat_usaha}
+                                                </td>
+                                            </tr>
+                                        )}
+                                        {data.kategori === "5" && (
+                                            <>
+                                                <tr>
+                                                    <td>Tanggungan Keluarga</td>
+                                                    <td>
+                                                        :{" "}
+                                                        {
+                                                            data.tanggungan_keluarga
+                                                        }
+                                                    </td>
+                                                    <tr>
+                                                        <td>
+                                                            Status Tempat
+                                                            Tinggal
+                                                        </td>
+                                                        <td>
+                                                            :{" "}
+                                                            {
+                                                                data.status_tempat_tinggal
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                </tr>
+                                            </>
+                                        )}
+                                        <tr>
+                                            <td>Lama Usaha</td>
+                                            <td>: {data.lama_usaha}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Jumlah Tenaga Kerja</td>
+                                            <td>: {data.jumlah_tenaga}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Omzet per Bulan</td>
+                                            <td>: {data.bruto}</td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Aset</td>
+                                            <td>
+                                                : Rp{" "}
+                                                {Number(
+                                                    data.aset
+                                                ).toLocaleString()}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Hutang</td>
+                                            <td>
+                                                : Rp{" "}
+                                                {Number(
+                                                    data.hutang
+                                                ).toLocaleString()}
+                                            </td>
+                                        </tr>
+
+                                        {data.kategori === "4" && (
+                                            <>
+                                                <tr>
+                                                    <td>Jumlah Legalitas</td>
+                                                    <td>
+                                                        :{" "}
+                                                        {data.jumlah_legalitas}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Jumlah Teknologi</td>
+                                                    <td>
+                                                        :{" "}
+                                                        {data.jumlah_teknologi}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        Penyerapan Tenaga Kerja
+                                                    </td>
+                                                    <td>
+                                                        :{" "}
+                                                        {
+                                                            data.jumlah_penyerapan_naker
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            </>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div className="mt-4">
+                            <h6 className="fw-bold mb-3">Dokumen</h6>
+                            <div className="row">
+                                {/* Kelompok Dokumen Identitas */}
+                                {renderFilePreview(data.files.foto, "Foto")}
+                                {renderFilePreview(data.files.ktp, "KTP")}
+                                {renderFilePreview(
+                                    data.files.kk,
+                                    "Kartu Keluarga"
+                                )}
+
+                                {/* Kelompok Dokumen Usaha */}
+                                {renderFilePreview(data.files.nib, "NIB")}
+                                {renderFilePreview(data.files.sku, "SKU")}
+                                {renderFilePreview(data.files.skd, "SKD")}
+                                {renderFilePreview(
+                                    data.files.produk,
+                                    "Foto Produk"
+                                )}
+                                {renderFilePreview(
+                                    data.files.pernyataan,
+                                    "Surat Pernyataan"
+                                )}
+
+                                {/* Dokumen Perizinan */}
+                                {data.files.perizinan?.map((url, index) =>
+                                    renderFilePreview(
+                                        url,
+                                        `Perizinan ${index + 1}`
+                                    )
+                                )}
+
+                                {/* Dokumen Tambahan */}
+                                {renderFilePreview(data.files.siinas, "SIINAS")}
+                                {renderFilePreview(
+                                    data.files.bp,
+                                    "Bukti Pembayaran"
+                                )}
+                                {renderFilePreview(
+                                    data.files.sertifikat_pelatihan,
+                                    "Sertifikat Pelatihan"
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </AdminLayout>
+    );
+}

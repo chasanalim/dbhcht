@@ -15,7 +15,6 @@ use App\Http\Controllers\KategoriBanmodController;
 use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\JumlahLegalitasController;
 use App\Http\Controllers\Admin\PrivilegesController;
-use App\Http\Controllers\RegPelatihanUmkmController;
 use App\Http\Controllers\JumlahTenagaKerjaController;
 use App\Http\Controllers\Admin\LampiranFileController;
 use App\Http\Controllers\TanggunganKeluargaController;
