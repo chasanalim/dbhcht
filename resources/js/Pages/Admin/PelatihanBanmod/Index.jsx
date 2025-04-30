@@ -1,6 +1,6 @@
 import AdminLayout from "@/Layouts/admin/AdminLayout";
 import { Head, Link, router } from "@inertiajs/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import $ from "jquery";
 import "datatables.net-bs5";
 import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
@@ -8,8 +8,9 @@ import { Toast, Tooltip } from "bootstrap";
 // Import bootstrap JS
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
-export default function Index({ title, can, flash }) {
+export default function Index({ title, can, flash, pelatihan }) {
     const tableRef = useRef();
+    const [selectedCategory, setSelectedCategory] = useState("Semua Pelatihan");
 
     useEffect(() => {
         const dt = $(tableRef.current).DataTable({
@@ -17,8 +18,11 @@ export default function Index({ title, can, flash }) {
             serverSide: true,
             responsive: true,
             ajax: {
-                url: route("admin.kerja.index"),
+                url: route("admin.pelatihan-banmod.index"),
                 type: "GET",
+                data: function (d) {
+                    d.jenis_pelatihan_industri = selectedCategory;
+                },
                 headers: {
                     "X-Requested-With": "XMLHttpRequest",
                 },
@@ -67,60 +71,53 @@ export default function Index({ title, can, flash }) {
                     },
                 },
                 {
+                    data: "tahun_penerimaan",
+                    name: "tahun_penerimaan",
+                    orderable: true,
+                    searchable: true,
+                },
+                {
                     data: "nik",
                     name: "nik",
                     orderable: true,
                     searchable: true,
                 },
                 {
-                    data: "kk",
-                    name: "kk",
+                    data: "no_kk",
+                    name: "no_kk",
                 },
                 {
-                    data: "name",
-                    name: "name",
+                    data: "nama_lengkap",
+                    name: "nama_lengkap",
                 },
                 {
-                    data: "tmp_lhr",
-                    name: "tmp_lhr",
+                    data: "jalan_ktp",
+                    name: "jalan_ktp",
                 },
                 {
-                    data: "tgl_lhr",
-                    name: "tgl_lhr",
+                    data: "rt_ktp",
+                    name: "rt_ktp",
                 },
                 {
-                    data: "alamat",
-                    name: "alamat",
+                    data: "rw_ktp",
+                    name: "rw_ktp",
                 },
                 {
-                    data: "nama_kecamatan",
-                    name: "nama_kecamatan",
+                    data: "kelurahan_ktp",
+                    name: "kelurahan_ktp",
                 },
                 {
-                    data: "nama_kelurahan",
-                    name: "nama_kelurahan",
+                    data: "kecamatan_ktp",
+                    name: "kecamatan_ktp",
                 },
                 {
-                    data: "nama_rw",
-                    name: "nama_rw",
+                    data: "no_hp",
+                    name: "no_hp",
                 },
                 {
-                    data: "nama_rt",
-                    name: "nama_rt",
+                    data: "jenis_pelatihan_industri",
+                    name: "jenis_pelatihan_industri",
                 },
-                {
-                    data: "alamat_domisili",
-                    name: "alamat_domisili",
-                },
-                {
-                    data: "alamat_usaha",
-                    name: "alamat_usaha",
-                },
-                {
-                    data: "phone_number",
-                    name: "phone_number",
-                },
-
             ],
             drawCallback: function () {
                 // Initialize tooltips
@@ -155,7 +152,11 @@ export default function Index({ title, can, flash }) {
                 }
             });
         };
-    }, [flash]);
+    }, [flash, selectedCategory]);
+
+    const handleCategoryChange = (e) => {
+        setSelectedCategory(e.target.value);
+    };
 
     const deleteItem = (url) => {
         if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
@@ -180,6 +181,28 @@ export default function Index({ title, can, flash }) {
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
                                 <h5 className="my-2 fw-bold">{title} 2025</h5>
                             </div>
+                            <div className="d-flex align-items-center gap-3 justify-content-center mt-2">
+                                <div className="d-flex align-items-center">
+                                    <label className="m-2 text-sm fw-bold w-100 ">
+                                        Filter Pelatihan:
+                                    </label>
+                                    <select
+                                        className="form-select form-select-sm m-2"
+                                        style={{ minWidth: "300px" }}
+                                        value={selectedCategory}
+                                        onChange={handleCategoryChange}
+                                    >
+                                        {pelatihan.map((item) => (
+                                            <option
+                                                key={item.name}
+                                                value={item.name}
+                                            >
+                                                {item.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
                             <div className="card-body">
                                 <div className="table-responsive">
                                     <table
@@ -189,47 +212,18 @@ export default function Index({ title, can, flash }) {
                                         <thead>
                                             <tr>
                                                 <th>No</th>
+                                                <th>AKSI</th>
+                                                <th>TAHUN PENERIMAAN</th>
                                                 <th>NIK</th>
                                                 <th>NO KK</th>
                                                 <th>NAMA</th>
-                                                <th>TEMPAT LAHIR</th>
-                                                <th>TGL LAHIR</th>
                                                 <th>ALAMAT</th>
-                                                <th>KECAMATAN</th>
-                                                <th>KELURAHAN</th>
-                                                <th>RW</th>
                                                 <th>RT</th>
-                                                <th>AlAMAT DOMISILI</th>
-                                                <th>ALAMAT USAHA</th>
+                                                <th>RW</th>
+                                                <th>KELURAHAN</th>
+                                                <th>KECAMATAN</th>
                                                 <th>NO HP</th>
-                                                {/* <th>DAYA LISTRIK</th>
-                                                <th>DISABILITAS</th>
-                                                <th>KATEGORI</th>
-                                                <th>JENIS KATEGORI</th>
-                                                <th>KLASTER USAHA</th>
-                                                <th>TANGGUNGAN KELUARGA</th>
-                                                <th>LAMA USAHA</th>
-                                                <th>JUMLAH TENAGA</th>
-                                                <th>BRUTO</th>
-                                                <th>STATUS TEMPAT TINGGAL</th>
-                                                <th>ASET</th>
-                                                <th>HUTANG</th>
-                                                <th>JUMLAH LEGALITAS</th>
-                                                <th>JUMLAH TEKNOLOGI</th>
-                                                <th>JUMLAH PENYERAPAN NAKER</th>
-                                                <th>FOTO</th>
-                                                <th>KTP</th>
-                                                <th>KK</th>
-                                                <th>NIB</th>
-                                                <th>SKU</th>
-                                                <th>SKD</th>
-                                                <th>PRODUK</th>
-                                                <th>PERNYATAAN</th>
-                                                <th>PERIZINAN</th>
-                                                <th>SIINAS</th>
-                                                <th>BP</th>
-                                                <th>SERTIFIKAT PELATIHAN</th> */}
-                                                <th>AKSI</th>
+                                                <th>KETRAMPILAN</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -247,7 +241,7 @@ export default function Index({ title, can, flash }) {
                     style={{ zIndex: 5 }}
                 >
                     <div
-                        id="toast"
+                        name="toast"
                         className="toast align-items-center text-white bg-success border-0"
                         role="alert"
                         aria-live="assertive"
