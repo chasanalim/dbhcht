@@ -10,7 +10,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 export default function Index({ title, can, flash, dataRoute, categories }) {
     const tableRef = useRef();
-    const [selectedCategory, setSelectedCategory] = useState("all");
+    const [selectedCategory, setSelectedCategory] = useState("Semua Pelatihan");
 
     useEffect(() => {
         const dt = $(tableRef.current).DataTable({
@@ -113,14 +113,6 @@ export default function Index({ title, can, flash, dataRoute, categories }) {
                     name: "nama_rt",
                 },
                 {
-                    data: "alamat_domisili",
-                    name: "alamat_domisili",
-                },
-                {
-                    data: "alamat_usaha",
-                    name: "alamat_usaha",
-                },
-                {
                     data: "phone_number",
                     name: "phone_number",
                 },
@@ -218,6 +210,7 @@ export default function Index({ title, can, flash, dataRoute, categories }) {
                                         <thead>
                                             <tr>
                                                 <th>No</th>
+                                                <th>AKSI</th>
                                                 <th>NIK</th>
                                                 <th>NO KK</th>
                                                 <th>NAMA</th>
@@ -228,8 +221,6 @@ export default function Index({ title, can, flash, dataRoute, categories }) {
                                                 <th>KELURAHAN</th>
                                                 <th>RW</th>
                                                 <th>RT</th>
-                                                <th>AlAMAT DOMISILI</th>
-                                                <th>ALAMAT USAHA</th>
                                                 <th>NO HP</th>
                                                 {/* <th>DAYA LISTRIK</th>
                                                 <th>DISABILITAS</th>
@@ -258,7 +249,7 @@ export default function Index({ title, can, flash, dataRoute, categories }) {
                                                 <th>SIINAS</th>
                                                 <th>BP</th>
                                                 <th>SERTIFIKAT PELATIHAN</th> */}
-                                                <th>AKSI</th>
+
                                             </tr>
                                         </thead>
                                     </table>
