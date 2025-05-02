@@ -2,10 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\KirimPendaftar;
+use App\Models\PelatihanKerjas;
+use App\Traits\GeneralTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Inertia\Inertia;
 
 class RegPelatihanKeterampilanKerjaController extends Controller
 {
+    use GeneralTrait;
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -41,6 +48,27 @@ class RegPelatihanKeterampilanKerjaController extends Controller
             $validated['file_kk'] = '/storage/pendaftaran-pelatihan-kerja/kk/' . $request->file('file_kk')->hashName();
             $request->file('file_kk')->storeAs('/pendaftaran-pelatihan-kerja/kk', $request->file('file_kk')->hashName(), 'public');
         }
-        dd($validated);
+
+        $storedPendaftaran = PelatihanKerjas::create($validated);
+        return to_route('pelatihan.kerja.success', $storedPendaftaran->id)->with('success', 'Pendaftaran Berhasil.');
+    }
+
+
+    public function success($id)
+    {
+        $dataPendaftar = PelatihanKerjas::find($id);
+        // dd($dataPendaftar);
+
+        // Send WhatsApp message
+        $message = "Terima kasih telah mendaftar Program Pelatihan Untuk Pencari Kerja Kota Kediri. Data Anda telah kami terima dan akan diproses lebih lanjut. Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan. Jika ada pertanyaan, silakan hubungi kami melalui: " . env('APP_WA_BANMOD'); ;
+        $phoneNumber = $dataPendaftar->phone_number;
+        $this->sendWhatsappMessage($message, $phoneNumber);
+
+        return Inertia::render('Banmod/Success', [
+            'meta' => [
+                'title' => 'Pendaftaran Banmod',
+                'jenis' => 'Pelatihan Keterampilan Kerja',
+            ],
+        ]);
     }
 }

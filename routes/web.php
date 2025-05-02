@@ -105,6 +105,8 @@ Route::post('/pelatihan/umkm', [RegPelatihanUmkmController::class, 'store'])->na
 
 Route::post('/pelatihan/kerja', [RegPelatihanKeterampilanKerjaController::class, 'store'])->name('pelatihan.kerja.store');
 
+Route::get('/pelatihan/kerja/success/{id}', [RegPelatihanKeterampilanKerjaController::class, 'success'])->name('pelatihan.kerja.success');
+
 
 Route::get('/skor/{kategori}', [SkorPelatihanController::class, 'getSkorByKategori']);
 
