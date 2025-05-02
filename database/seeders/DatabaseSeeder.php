@@ -49,6 +49,7 @@ class DatabaseSeeder extends Seeder
             JenisPelatihanKetKerjaSeeder::class,
             AlasanPelatihanKetKerjaSeeder::class,
             SkorPelatihanBanmodSeeder::class,
+            RefPendidikanSeeder::class,
         ]);
     }
 }
