@@ -36,6 +36,13 @@ export default function PesertaPage({ meta }) {
                     orderable: true,
                     searchable: true,
                     className: "text-center",
+                    render: function(data) {
+                        // Take first 8 characters and last 4 characters
+                        const firstPart = data.substring(0, 6);
+                        const lastPart = data.substring(data.length - 4);
+                        // Replace middle characters with 'XXX'
+                        return `${firstPart}XXXXX${lastPart}`;
+                    }
                 },
                 {
                     data: "name",
