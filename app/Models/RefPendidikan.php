@@ -6,5 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class RefPendidikan extends Model
 {
-    //
+    protected $fillable = [
+        'nama'
+    ];
 }

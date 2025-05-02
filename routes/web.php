@@ -36,6 +36,7 @@ use App\Http\Controllers\PelatihanPenerimaBanmodController;
 use App\Http\Controllers\Admin\PelatihanPertanianController;
 use App\Http\Controllers\Admin\PenerimaBanmodLamaController;
 use App\Http\Controllers\Admin\PenerimaPelatihanBanmodController;
+use App\Http\Controllers\PendidikanController;
 use App\Http\Controllers\RegPelatihanKeterampilanKerjaController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -143,6 +144,9 @@ Route::prefix('refer')->as('refer.')->group(function () {
     });
     Route::prefix('alasanpelatihanketkerja')->as('alasanpelatihanketkerja.')->group(function () {
         Route::get('/', [AlasanPelatihanKetKerjaController::class, 'index'])->name('index');
+    });
+    Route::prefix('pendidikan')->as('pendidikan.')->group(function () {
+        Route::get('/', [PendidikanController::class, 'index'])->name('index');
     });
 });
 
