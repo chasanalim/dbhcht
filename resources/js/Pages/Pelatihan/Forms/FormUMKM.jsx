@@ -137,6 +137,7 @@ export default function FormUMKM() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        console.log(data);
         post(route("pelatihan.umkm.store"), {
             forceFormData: true,
         });

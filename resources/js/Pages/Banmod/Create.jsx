@@ -108,7 +108,7 @@ export default function BanmodPage({ meta }) {
                 )}
 
                 {/* PDF List + Preview + Remove */}
-                {!imagePreviewKey && data[fieldName]?.length > 0 &&(
+                {!imagePreviewKey && data[fieldName]?.length > 0 && (
                     <ListGroup className="mt-3">
                         {Array.isArray(data[fieldName]) ? (
                             data[fieldName].map((file, idx) => (
@@ -332,7 +332,7 @@ export default function BanmodPage({ meta }) {
                         {errorMessage && (
                             <div className="text-danger">{errorMessage}</div>
                         )}
-                        {(nikStatus && !!data.kategori) && (
+                        {nikStatus && !!data.kategori && (
                             <>
                                 <div className="text-success mb-3">
                                     {nikStatus}

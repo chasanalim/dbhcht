@@ -25,7 +25,8 @@ return new class extends Migration
             $table->string('nama_rw');
             $table->string('nama_rt');
             $table->string('alamat');
-            $table->string('alamat_domisili');
+            $table->string("isDomisili")->nullable();
+            $table->string("alamat_domisili")->nullable();
             $table->string('tmp_lhr');
             $table->date('tgl_lhr');
             $table->string('pendidikan');
