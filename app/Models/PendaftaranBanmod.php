@@ -65,6 +65,92 @@ class PendaftaranBanmod extends Model
             'disabilitas' => 'array',
         ];
     }
+
+    protected $appends = [
+        'skor',
+    ];
+
+    public function getSkorAttribute()
+    {
+        $skor = 0;
+        if ($this->kategori == 1 || $this->kategori == 2 || $this->kategori == 3) {
+            $skor += (($this->lamaUsaha->skor / 4) * 0.25);
+            $skor += (($this->jumlahTenagaKerja->skor / 4) * 0.35);
+            $skor += (($this->brutoPerbulan->skor / 4) * 0.2);
+            if ($this->aset > $this->hutang) {
+                $skor += (3 / 3 * 0.05);
+            } else if ($this->aset == $this->hutang) {
+                $skor += (2 / 3 * 0.05);
+            } else {
+                $skor += (1 / 3 * 0.05);
+            }
+
+            if ($this->isDomisili == 0 && $this->isUsaha == 0) {
+                $skor += (4 / 4 * 0.15);
+            } else if ($this->isDomisili == 0 && $this->isUsaha == 1) {
+                $skor += (3 / 4 * 0.15);
+            } else if ($this->isDomisili == 1 && $this->isUsaha == 0) {
+                $skor += (2 / 4 * 0.15);
+            } else {
+                $skor += (1 / 4 * 0.15);
+            }
+
+            if ($this->isDisabilitas == 1 || $this->kategori == 1) {
+                return ($skor * 100) + 5;
+            } else {
+                return $skor * 100;
+            }
+        } else if ($this->kategori == 4) {
+            $skor += (($this->lamaUsaha->skor / 4) * 0.1);
+            $skor += (($this->jumlahTenagaKerja->skor / 4) * 0.1);
+            $skor += (($this->brutoPerbulan->skor / 4) * 0.05);
+            if ($this->aset > $this->hutang) {
+                $skor += (3 / 3 * 0.05);
+            } else if ($this->aset == $this->hutang) {
+                $skor += (2 / 3 * 0.05);
+            } else {
+                $skor += (1 / 3 * 0.05);
+            }
+
+            $skor += (($this->jumlahLegalitas->skor / 3) * 0.1);
+            $skor += (($this->jumlahTeknologiDigital->skor / 3) * 0.1);
+            $skor += (($this->penyerapanTenagaMiskin->skor / 3) * 0.2);
+            if ($this->isDomisili == 0 && $this->isUsaha == 0) {
+                $skor += (4 / 4 * 0.05);
+            } else if ($this->isDomisili == 0 && $this->isUsaha == 1) {
+                $skor += (3 / 4 * 0.05);
+            } else if ($this->isDomisili == 1 && $this->isUsaha == 0) {
+                $skor += (2 / 4 * 0.05);
+            } else {
+                $skor += (1 / 4 * 0.05);
+            }
+            return $skor;
+        } else {
+            $skor += (($this->tanggunganKeluarga->skor / 3) * 0.2);
+            $skor += (($this->lamaUsaha->skor / 4) * 0.15);
+            if ($this->aset > $this->hutang) {
+                $skor += (3 / 3 * 0.1);
+            } else if ($this->aset == $this->hutang) {
+                $skor += (2 / 3 * 0.1);
+            } else {
+                $skor += (1 / 3 * 0.1);
+            }
+
+            $skor += (($this->statusTempatTinggal->skor / 3) * 0.2);
+
+            if ($this->isDomisili == 0 && $this->isUsaha == 0) {
+                $skor += (4 / 4 * 0.1);
+            } else if ($this->isDomisili == 0 && $this->isUsaha == 1) {
+                $skor += (3 / 4 * 0.1);
+            } else if ($this->isDomisili == 1 && $this->isUsaha == 0) {
+                $skor += (2 / 4 * 0.1);
+            } else {
+                $skor += (1 / 4 * 0.1);
+            }
+            return $skor;
+        }
+    }
+
     public function kategoriUsaha(): BelongsTo
     {
         return $this->belongsTo(KategoriBanmod::class, 'kategori');
