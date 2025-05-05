@@ -57,8 +57,26 @@ class PelatihanUmkm extends Model
     ];
 
     // Define any relationships, for example if a PelatihanUmkm has a SkorPelatihanUmkm
-    public function skor()
+    // public function skor()
+    // {
+    //     return $this->hasMany(SkorPelatihanUmkm::class, 'id', 'skor');
+    // }
+
+    public function alasan()
     {
-        return $this->hasMany(SkorPelatihanUmkm::class, 'pelatihan_umkm_id');
+        return $this->belongsTo(SkorPelatihanUmkm::class, 'id', 'alasan');
+    }
+    public function kesesuaian()
+    {
+        return $this->belongsTo(SkorPelatihanUmkm::class, 'id', 'kesesuaian');
+    }
+    public function pengalaman()
+    {
+        return $this->belongsTo(SkorPelatihanUmkm::class, 'id', 'pengalaman');
+    }
+
+    public function Refpendidikan()
+    {
+        return $this->belongsTo(RefPendidikan::class, 'pendidikan', 'id');
     }
 }

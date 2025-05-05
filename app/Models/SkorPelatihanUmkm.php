@@ -21,4 +21,6 @@ class SkorPelatihanUmkm extends Model
     {
         return $this->belongsTo(PelatihanUmkm::class);
     }
+
+    
 }
