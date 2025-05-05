@@ -265,7 +265,8 @@ export default function FormPenerimaBanmod() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post(route("banmod.store"), {
+        console.log(data);
+        post(route("pelatihan-banmod.store"), {
             forceFormData: true,
             onSuccess: () => {
                 reset();
