@@ -51,12 +51,13 @@ class HomeController extends Controller
         return redirect()->back()->with('error', 'File tidak ditemukan');
     }
 
-    public function pelatihan()
+    public function pelatihan(Request $request)
     {
         return Inertia::render('Pelatihan/FormPelatihan', [
             'meta' => [
                 'title' => 'Form Pendaftaran Pelatihan',
             ],
+            'jenis' => $request->query('jenis')
         ]);
     }
 }

@@ -17,6 +17,7 @@ const trainings = [
         ],
         duration: "3 Minggu",
         location: "Disnaker Kota Kediri",
+        jenis: "keterampilan",
         comingSoon: false,
     },
     {
@@ -28,6 +29,7 @@ const trainings = [
         requirements: [{ label: "Penerima", value: "Program Banmod DBHCHT" }],
         duration: "2 Minggu",
         location: "Balai Latihan Usaha",
+        jenis: "penerimabanmod",
         comingSoon: false,
     },
     {
@@ -39,6 +41,7 @@ const trainings = [
         requirements: [{ label: "Status", value: "Pelaku UMKM aktif" }],
         duration: "1 Minggu",
         location: "Gedung UMKM Center",
+        jenis: "umkm",
         comingSoon: false,
     },
     {
@@ -50,6 +53,7 @@ const trainings = [
         requirements: [{ label: "Pekerjaan", value: "Petani aktif" }],
         duration: "2 Minggu",
         location: "Balai Pertanian",
+        jenis: "petani",
         comingSoon: false,
     },
     {

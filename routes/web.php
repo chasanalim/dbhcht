@@ -43,6 +43,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/download', [HomeController::class, 'file'])->name('download');
 Route::get('/download/{file}', [HomeController::class, 'download'])->name('download.file');
 Route::get('/pelatihan', [HomeController::class, 'pelatihan'])->name('pelatihan');
+Route::get('/pelatihan/form', [HomeController::class, 'pelatihan'])->name('pelatihan.form');
 
 Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

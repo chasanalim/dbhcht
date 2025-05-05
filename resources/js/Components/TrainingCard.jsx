@@ -1,5 +1,6 @@
 import React from "react";
 import { Clock, MapPin, BadgeCheck } from "lucide-react";
+import { Link } from "@inertiajs/react";
 
 export default function TrainingCard({ training }) {
     return (
@@ -88,9 +89,12 @@ export default function TrainingCard({ training }) {
                             Segera Hadir
                         </button>
                     ) : (
-                        <button className="btn btn-primary w-100">
+                        <Link
+                            href={`/pelatihan/form?jenis=${training.jenis}`}
+                            className="btn btn-primary w-100"
+                        >
                             Ikuti Pelatihan
-                        </button>
+                        </Link>
                     )}
                 </div>
             </div>

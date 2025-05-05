@@ -1,4 +1,5 @@
 import { Head, usePage } from "@inertiajs/react";
+import { useEffect } from "react";
 import { Form } from "react-bootstrap";
 import Layout from "@/Layouts/Layout";
 
@@ -13,8 +14,10 @@ import FormPenerimaBanmod from "./Forms/FormPenerimaBanmod";
 import { useState } from "react";
 
 export default function FormPelatihan() {
-    const { meta } = usePage().props;
-    const [jenisPelatihan, setJenisPelatihan] = useState("");
+    const { meta, jenis } = usePage().props;
+    const [jenisPelatihan, setJenisPelatihan] = useState(jenis || "");
+
+    // const [jenisPelatihan, setJenisPelatihan] = useState("");
 
     return (
         <Layout>
