@@ -650,6 +650,7 @@ export default function FormPenerimaBanmod() {
                                 onChange={(item) =>
                                     setData((prev) => ({
                                         ...prev,
+                                        kode_kelurahan_usaha: item.id,
                                         kelurahan_usaha: item.text,
                                     }))
                                 }
@@ -666,6 +667,7 @@ export default function FormPenerimaBanmod() {
                                 onChange={(item) =>
                                     setData((prev) => ({
                                         ...prev,
+                                        kode_rw_usaha: item.id,
                                         rw_usaha: item.text,
                                     }))
                                 }
