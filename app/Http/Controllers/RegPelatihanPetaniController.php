@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\JenisPelatihanPetani;
 use App\Models\KelompokPelatihanPetani;
+use App\Models\KelompokTani;
 use App\Models\PelatihanPetani;
 use Illuminate\Http\Request;
 
@@ -85,5 +86,23 @@ class RegPelatihanPetaniController extends Controller
         PelatihanPetani::create($data);
 
         return redirect()->back()->with('success', 'Pendaftaran berhasil disimpan!');
+    }
+
+    // Fungsi untuk mengecek NIK apakah terdaftar sebagai kelompok tani
+    public function cekNIK(Request $request, $nik)
+    {
+        $data = KelompokTani::where('nik_anggota', $nik)->first();
+
+        if ($data) {
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'NIK tidak ditemukan sebagai kelompok tani.',
+            ]);
+        }
     }
 }
