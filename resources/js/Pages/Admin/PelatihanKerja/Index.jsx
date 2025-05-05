@@ -10,7 +10,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 export default function Index({ title, can, flash, dataRoute, categories }) {
     const tableRef = useRef();
-    const [selectedCategory, setSelectedCategory] = useState("Semua Pelatihan");
+    const [selectedCategory, setSelectedCategory] = useState("all");
 
     useEffect(() => {
         const dt = $(tableRef.current).DataTable({
@@ -21,7 +21,7 @@ export default function Index({ title, can, flash, dataRoute, categories }) {
                 url: route("admin.kerja.index"),
                 type: "GET",
                 data: function (d) {
-                    d.kategori = selectedCategory;
+                    d.jenis_pelatihan = selectedCategory;
                 },
                 headers: {
                     "X-Requested-With": "XMLHttpRequest",
@@ -77,12 +77,12 @@ export default function Index({ title, can, flash, dataRoute, categories }) {
                     searchable: true,
                 },
                 {
-                    data: "kk",
-                    name: "kk",
+                    data: "no_kk",
+                    name: "no_kk",
                 },
                 {
-                    data: "name",
-                    name: "name",
+                    data: "nama_lengkap",
+                    name: "nama_lengkap",
                 },
                 {
                     data: "tmp_lhr",
@@ -91,6 +91,13 @@ export default function Index({ title, can, flash, dataRoute, categories }) {
                 {
                     data: "tgl_lhr",
                     name: "tgl_lhr",
+                },
+                {
+                    data: "jenis_kelamin",
+                    name: "jenis_kelamin",
+                    render: function (data) {
+                        return data == "L" ? "Laki-laki" : "Perempuan";
+                    }
                 },
                 {
                     data: "alamat",
@@ -186,7 +193,7 @@ export default function Index({ title, can, flash, dataRoute, categories }) {
                                     </label>
                                     <select
                                         className="form-select form-select-sm m-2"
-                                        style={{ minWidth: "200px" }}
+                                        style={{ minWidth: "300px" }}
                                         value={selectedCategory}
                                         onChange={handleCategoryChange}
                                     >
@@ -195,7 +202,7 @@ export default function Index({ title, can, flash, dataRoute, categories }) {
                                                 key={category.id}
                                                 value={category.id}
                                             >
-                                                {category.name}
+                                                {category.nama}
                                             </option>
                                         ))}
                                     </select>
@@ -216,6 +223,7 @@ export default function Index({ title, can, flash, dataRoute, categories }) {
                                                 <th>NAMA</th>
                                                 <th>TEMPAT LAHIR</th>
                                                 <th>TGL LAHIR</th>
+                                                <th>JENIS KELAMIN</th>
                                                 <th>ALAMAT</th>
                                                 <th>KECAMATAN</th>
                                                 <th>KELURAHAN</th>
