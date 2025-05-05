@@ -141,13 +141,14 @@ class BanmodController extends Controller
         Mail::to(env('APP_EMAIL_BANMOD'))->send(new KirimPendaftar($dataPendaftar));
 
         // Send WhatsApp message
-        $message = "Terima kasih telah mendaftar Program Bantuan Modal UMKM Kota Kediri. Data Anda telah kami terima dan akan diproses lebih lanjut. Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan. Jika ada pertanyaan, silakan hubungi kami melalui: " . env('APP_WA_BANMOD'); ;
+        $message = "Terima kasih telah mendaftar Program Bantuan Modal Kota Kediri. Data Anda telah kami terima dan akan diproses lebih lanjut. Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan. Jika ada pertanyaan, silakan hubungi kami melalui: " . env('APP_WA_BANMOD'); ;
         $phoneNumber = $dataPendaftar->phone_number;
         $this->sendWhatsappMessage($message, $phoneNumber);
 
         return Inertia::render('Banmod/Success', [
             'meta' => [
                 'title' => 'Pendaftaran Banmod',
+                'jenis' => 'Bantuan Modal',
             ],
         ]);
     }

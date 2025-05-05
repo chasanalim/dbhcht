@@ -24,4 +24,10 @@ class KelompokTani extends Model
         'tingkat_kemampuan',
         'keterangan',
     ];
+
+
+    public function pelatihanPetani()
+    {
+        return $this->hasMany(PelatihanPetani::class, 'nama_kelompok', 'id');
+    }
 }

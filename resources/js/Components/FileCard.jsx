@@ -2,7 +2,7 @@ import React from "react";
 
 export default function FileCard({ file  }) {
     const downloadFile = () => {
-        window.location.href = `/template/download/${file.file_name}`;
+        window.location.href = `/storage/files/${file.file_name}`;
     };
 
     return (
@@ -27,10 +27,10 @@ export default function FileCard({ file  }) {
                         </div>
                         <div>
                             <h5 className="card-title fw-semibold mb-1">
-                                {file.name}
+                                {file.nama}
                             </h5>
                             <p className="card-text text-muted small">
-                                {file.description}
+                                {file.deskripsi}
                             </p>
                         </div>
                     </div>

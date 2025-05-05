@@ -265,7 +265,8 @@ export default function FormPenerimaBanmod() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post(route("banmod.store"), {
+        console.log(data);
+        post(route("pelatihan-banmod.store"), {
             forceFormData: true,
             onSuccess: () => {
                 reset();
@@ -650,6 +651,7 @@ export default function FormPenerimaBanmod() {
                                 onChange={(item) =>
                                     setData((prev) => ({
                                         ...prev,
+                                        kode_kelurahan_usaha: item.id,
                                         kelurahan_usaha: item.text,
                                     }))
                                 }
@@ -666,6 +668,7 @@ export default function FormPenerimaBanmod() {
                                 onChange={(item) =>
                                     setData((prev) => ({
                                         ...prev,
+                                        kode_rw_usaha: item.id,
                                         rw_usaha: item.text,
                                     }))
                                 }

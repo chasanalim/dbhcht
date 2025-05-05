@@ -36,8 +36,8 @@ export default function SuccessPage({ meta }) {
 
                         <div className="mb-4" style={{ color: "#718096" }}>
                             <p className="mb-3">
-                                Terima kasih telah mendaftar Program Bantuan
-                                Modal UMKM Kota Kediri. Data Anda telah kami
+                                Terima kasih telah mendaftar Program{" "}
+                                {meta.jenis} Kota Kediri. Data Anda telah kami
                                 terima dan akan diproses lebih lanjut.
                             </p>
                             <p className="mb-3">
@@ -78,21 +78,19 @@ export default function SuccessPage({ meta }) {
                         </div>
 
                         <div className="d-flex justify-content-center gap-3">
-                            <a
-                                href="/"
-                                className="btn btn-primary px-4 py-2"
-                            >
+                            <a href="/" className="btn btn-primary px-4 py-2">
                                 <i className="bi bi-house-door me-2"></i>
                                 Kembali ke Beranda
                             </a>
-
-                            <a
-                                href="/peserta"
-                                className="btn btn-primary px-4 py-2"
-                            >
-                                <i className="bi bi-person-lines-fill me-2"></i>
-                                List Pendaftar Banmod
-                            </a>
+                            {meta.jenis === "Banmod" && (
+                                <a
+                                    href="/peserta"
+                                    className="btn btn-primary px-4 py-2"
+                                >
+                                    <i className="bi bi-person-lines-fill me-2"></i>
+                                    List Pendaftar Banmod
+                                </a>
+                            )}
                         </div>
                     </Card.Body>
                 </Card>

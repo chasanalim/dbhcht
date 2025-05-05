@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
+use App\Http\Controllers\Controller;
+use App\Models\PelatihanPetani;
 use Illuminate\Routing\Controllers\HasMiddleware;
 
 class PelatihanPertanianController extends Controller implements HasMiddleware
@@ -18,8 +20,27 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
             // 'role:admin',
         ];
     }
-    public function index()
+    public function index(Request $request)
     {
+        // $query = PelatihanPetani::with('kelompokTani', 'jenisPelatihanPetani', 'kategori')->get();
+        // return response()->json($query);
+
+        if ($request->wantsJson()) {
+
+            $query = PelatihanPetani::with('kelompokTani', 'jenisPelatihanPetani', 'kategori')->get();
+
+            return DataTables::of($query)
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    return [
+                        'edit_url' => route('admin.pertanian.edit', $row->id),
+                        'delete_url' => route('admin.pertanian.destroy', $row->id),
+                        'detail_url' => route('admin.pertanian.show', $row->id)
+                    ];
+                })
+                ->make(true);
+        }
+
         return inertia('Admin/PelatihanPertanian/Index', [
             'title' => 'Pelatihan Pertanian',
             'flash' => [

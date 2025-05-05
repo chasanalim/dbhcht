@@ -1,0 +1,45 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class PelatihanKerjas extends Model
+{
+    protected $fillable = [
+        "nik",
+        "no_kk",
+        "nama_lengkap",
+        "tmp_lhr",
+        "tgl_lhr",
+        "jenis_kelamin",
+        "alamat",
+        "kode_kecamatan",
+        "nama_kecamatan",
+        "kode_kelurahan",
+        "nama_kelurahan",
+        "kode_rw",
+        "nama_rw",
+        "kode_rt",
+        "nama_rt",
+        "file_ktp",
+        "file_kk",
+        "phone_number",
+        "alasan",
+        "pendidikan",
+        "jenis_pelatihan"
+    ];
+
+    public function refPendidikan()
+    {
+        return $this->belongsTo(RefPendidikan::class, 'pendidikan', 'id');
+    }
+    public function jenisPelatihan()
+    {
+        return $this->belongsTo(JenisPelatihanKetKerja::class, 'jenis_pelatihan', 'id');
+    }
+    public function alasanPelatihan()
+    {
+        return $this->belongsTo(AlasanPelatihanKetKerja::class, 'alasan', 'id');
+    }
+}

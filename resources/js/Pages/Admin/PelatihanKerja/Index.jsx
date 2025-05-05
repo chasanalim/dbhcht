@@ -21,7 +21,7 @@ export default function Index({ title, can, flash, dataRoute, categories }) {
                 url: route("admin.kerja.index"),
                 type: "GET",
                 data: function (d) {
-                    d.kategori = selectedCategory;
+                    d.jenis_pelatihan = selectedCategory;
                 },
                 headers: {
                     "X-Requested-With": "XMLHttpRequest",
@@ -77,12 +77,12 @@ export default function Index({ title, can, flash, dataRoute, categories }) {
                     searchable: true,
                 },
                 {
-                    data: "kk",
-                    name: "kk",
+                    data: "no_kk",
+                    name: "no_kk",
                 },
                 {
-                    data: "name",
-                    name: "name",
+                    data: "nama_lengkap",
+                    name: "nama_lengkap",
                 },
                 {
                     data: "tmp_lhr",
@@ -91,6 +91,13 @@ export default function Index({ title, can, flash, dataRoute, categories }) {
                 {
                     data: "tgl_lhr",
                     name: "tgl_lhr",
+                },
+                {
+                    data: "jenis_kelamin",
+                    name: "jenis_kelamin",
+                    render: function (data) {
+                        return data == "L" ? "Laki-laki" : "Perempuan";
+                    }
                 },
                 {
                     data: "alamat",
@@ -111,14 +118,6 @@ export default function Index({ title, can, flash, dataRoute, categories }) {
                 {
                     data: "nama_rt",
                     name: "nama_rt",
-                },
-                {
-                    data: "alamat_domisili",
-                    name: "alamat_domisili",
-                },
-                {
-                    data: "alamat_usaha",
-                    name: "alamat_usaha",
                 },
                 {
                     data: "phone_number",
@@ -194,7 +193,7 @@ export default function Index({ title, can, flash, dataRoute, categories }) {
                                     </label>
                                     <select
                                         className="form-select form-select-sm m-2"
-                                        style={{ minWidth: "200px" }}
+                                        style={{ minWidth: "300px" }}
                                         value={selectedCategory}
                                         onChange={handleCategoryChange}
                                     >
@@ -203,7 +202,7 @@ export default function Index({ title, can, flash, dataRoute, categories }) {
                                                 key={category.id}
                                                 value={category.id}
                                             >
-                                                {category.name}
+                                                {category.nama}
                                             </option>
                                         ))}
                                     </select>
@@ -218,18 +217,18 @@ export default function Index({ title, can, flash, dataRoute, categories }) {
                                         <thead>
                                             <tr>
                                                 <th>No</th>
+                                                <th>AKSI</th>
                                                 <th>NIK</th>
                                                 <th>NO KK</th>
                                                 <th>NAMA</th>
                                                 <th>TEMPAT LAHIR</th>
                                                 <th>TGL LAHIR</th>
+                                                <th>JENIS KELAMIN</th>
                                                 <th>ALAMAT</th>
                                                 <th>KECAMATAN</th>
                                                 <th>KELURAHAN</th>
                                                 <th>RW</th>
                                                 <th>RT</th>
-                                                <th>AlAMAT DOMISILI</th>
-                                                <th>ALAMAT USAHA</th>
                                                 <th>NO HP</th>
                                                 {/* <th>DAYA LISTRIK</th>
                                                 <th>DISABILITAS</th>
@@ -258,7 +257,7 @@ export default function Index({ title, can, flash, dataRoute, categories }) {
                                                 <th>SIINAS</th>
                                                 <th>BP</th>
                                                 <th>SERTIFIKAT PELATIHAN</th> */}
-                                                <th>AKSI</th>
+
                                             </tr>
                                         </thead>
                                     </table>

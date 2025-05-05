@@ -17,7 +17,7 @@ export default function Index({ title, can, flash }) {
             serverSide: true,
             responsive: true,
             ajax: {
-                url: route("admin.banmod.index"),
+                url: route("admin.pertanian.index"),
                 type: "GET",
                 headers: {
                     "X-Requested-With": "XMLHttpRequest",
@@ -77,50 +77,37 @@ export default function Index({ title, can, flash }) {
                     name: "kk",
                 },
                 {
-                    data: "name",
-                    name: "name",
+                    data: "nama_lengkap",
+                    name: "nama_lengkap",
                 },
                 {
-                    data: "tmp_lhr",
-                    name: "tmp_lhr",
-                },
-                {
-                    data: "tgl_lhr",
-                    name: "tgl_lhr",
+                    data: "jenis_kelamin",
+                    name: "jenis_kelamin",
                 },
                 {
                     data: "alamat",
                     name: "alamat",
                 },
                 {
-                    data: "nama_kecamatan",
-                    name: "nama_kecamatan",
-                },
-                {
-                    data: "nama_kelurahan",
-                    name: "nama_kelurahan",
+                    data: "nama_rt",
+                    name: "nama_rt",
                 },
                 {
                     data: "nama_rw",
                     name: "nama_rw",
                 },
                 {
-                    data: "nama_rt",
-                    name: "nama_rt",
+                    data: "kode_kelurahan",
+                    name: "kode_kelurahan",
                 },
                 {
-                    data: "alamat_domisili",
-                    name: "alamat_domisili",
+                    data: "kode_kecamatan",
+                    name: "kode_kecamatan",
                 },
                 {
-                    data: "alamat_usaha",
-                    name: "alamat_usaha",
+                    data: "no_hp",
+                    name: "no_hp",
                 },
-                {
-                    data: "phone_number",
-                    name: "phone_number",
-                },
-
             ],
             drawCallback: function () {
                 // Initialize tooltips
@@ -188,19 +175,17 @@ export default function Index({ title, can, flash }) {
                                     >
                                         <thead>
                                             <tr>
-                                                <th>No</th>
+                                            <th>No</th>
+                                                <th>AKSI</th>
                                                 <th>NIK</th>
                                                 <th>NO KK</th>
                                                 <th>NAMA</th>
-                                                <th>TEMPAT LAHIR</th>
-                                                <th>TGL LAHIR</th>
+                                                <th>JENIS KELAMIN</th>
                                                 <th>ALAMAT</th>
-                                                <th>KECAMATAN</th>
-                                                <th>KELURAHAN</th>
+                                                <th>RT </th>
                                                 <th>RW</th>
-                                                <th>RT</th>
-                                                <th>AlAMAT DOMISILI</th>
-                                                <th>ALAMAT USAHA</th>
+                                                <th>KELURAHAN</th>
+                                                <th>KECAMATAN</th>
                                                 <th>NO HP</th>
                                                 {/* <th>DAYA LISTRIK</th>
                                                 <th>DISABILITAS</th>
@@ -229,7 +214,6 @@ export default function Index({ title, can, flash }) {
                                                 <th>SIINAS</th>
                                                 <th>BP</th>
                                                 <th>SERTIFIKAT PELATIHAN</th> */}
-                                                <th>AKSI</th>
                                             </tr>
                                         </thead>
                                     </table>

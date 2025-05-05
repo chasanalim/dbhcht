@@ -45,4 +45,19 @@ class PelatihanPetani extends Model
         'jenis_pelatihan_petani',
         'alasan',
     ];
+
+    public function kelompokTani()
+    {
+        return $this->belongsTo(KelompokTani::class, 'nama_kelompok', 'id');
+    }
+
+    public function kategori()
+    {
+        return $this->belongsTo(KelompokPelatihanPetani::class, 'kategori', 'id');
+    }
+
+    public function jenisPelatihanPetani()
+    {
+        return $this->belongsTo(JenisPelatihanPetani::class, 'jenis_pelatihan_petani', 'id');
+    }
 }

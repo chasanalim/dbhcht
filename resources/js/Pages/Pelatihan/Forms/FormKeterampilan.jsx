@@ -470,7 +470,7 @@ export default function FormKeterampilan() {
                         onChange={(item) =>
                             setData((prevState) => ({
                                 ...prevState,
-                                pendidikan: item,
+                                pendidikan: item.id,
                             }))
                         }
                         errors={errors.pendidikan}
