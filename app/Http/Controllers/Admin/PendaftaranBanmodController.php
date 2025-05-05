@@ -23,7 +23,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
     }
     public function index(Request $request)
     {
-        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->get();
+        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->get()->sortByDesc('skor');
         // return response()->json($data);
         if ($request->wantsJson()) {
             return DataTables::of($data)

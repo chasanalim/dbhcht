@@ -133,6 +133,10 @@ export default function Index({ title, can, flash, dataRoute }) {
                     data: "klaster_usaha.nama",
                     name: "klaster_usaha.nama",
                 },
+                {
+                    data: "skor",
+                    name: "skor",
+                },
             ],
             drawCallback: function () {
                 // Initialize tooltips
@@ -246,6 +250,7 @@ export default function Index({ title, can, flash, dataRoute }) {
                                                 <th>SIINAS</th>
                                                 <th>BP</th>
                                                 <th>SERTIFIKAT PELATIHAN</th> */}
+                                                <th>SKOR</th>
                                             </tr>
                                         </thead>
                                     </table>
