@@ -2,8 +2,70 @@ import Layout from "@/Layouts/Layout";
 import { Head, Link } from "@inertiajs/react";
 import { Col, Container, Image, Row } from "react-bootstrap";
 import React from "react";
+import TrainingCarousel from "@/Components/TrainingCarousel";
 
-export default function HomePage({ meta }) {
+const trainings = [
+    {
+        id: 1,
+        title: "Pelatihan Keterampilan untuk Pencari Kerja",
+        description:
+            "Pelatihan teknis dan soft skill untuk meningkatkan daya saing pencari kerja.",
+        image: "/assets/coworkers-business-meeting.jpg",
+        requirements: [
+            { label: "Usia", value: "Minimal 18 tahun" },
+            { label: "Status", value: "Belum bekerja" },
+        ],
+        duration: "3 Minggu",
+        location: "Disnaker Kota Kediri",
+        comingSoon: false,
+    },
+    {
+        id: 2,
+        title: "Pelatihan Keterampilan untuk Penerima Banmod",
+        description:
+            "Pelatihan lanjutan bagi penerima bantuan modal untuk mengembangkan usahanya.",
+        image: "/assets/business-people-making-pile-hands-teamwork-concept.jpg",
+        requirements: [{ label: "Penerima", value: "Program Banmod DBHCHT" }],
+        duration: "2 Minggu",
+        location: "Balai Latihan Usaha",
+        comingSoon: false,
+    },
+    {
+        id: 3,
+        title: "Pelatihan UMKM",
+        description:
+            "Peningkatan kapasitas pelaku UMKM dalam manajemen usaha dan pemasaran.",
+        image: "/assets/young-woman-arranging-her-cake-shop.jpg",
+        requirements: [{ label: "Status", value: "Pelaku UMKM aktif" }],
+        duration: "1 Minggu",
+        location: "Gedung UMKM Center",
+        comingSoon: false,
+    },
+    {
+        id: 4,
+        title: "Pelatihan Petani",
+        description:
+            "Teknik pertanian modern dan pemanfaatan alat pertanian terbaru.",
+        image: "/assets/young-asian-farmer-harvest-ripe-rice-with-sickle-rice-field.jpg",
+        requirements: [{ label: "Pekerjaan", value: "Petani aktif" }],
+        duration: "2 Minggu",
+        location: "Balai Pertanian",
+        comingSoon: false,
+    },
+    {
+        id: 5,
+        title: "Pelatihan Digital Marketing",
+        description:
+            "Pelatihan untuk memperluas pasar secara online dan memanfaatkan media sosial.",
+        image: "/assets/top-viewtop-view-manager-employee-doing-teamwork-business-office-looking-charts-laptop-display.jpg",
+        requirements: [],
+        duration: "",
+        location: "",
+        comingSoon: true,
+    },
+];
+
+export default function Index({ meta }) {
     return (
         <Layout>
             <Head title={meta.title} />
@@ -29,14 +91,17 @@ export default function HomePage({ meta }) {
                                     </div>
                                 </div>
                                 <h1 className="fw-bold">
-                                    Pendaftaran {" "}
+                                    Pendaftaran{" "}
                                     <b className="text-primary">
-                                    Pelatihan Kerja & Bantuan Modal
+                                        Pelatihan Kerja & Bantuan Modal
                                     </b>{" "}
                                     dari DBHCHT
                                 </h1>
                                 <h5 className="fst-italic-theme text-muted">
-                                    Program Pelatihan Kerja & Bantuan Modal diperuntukkan bagi masyarakat yang ingin meningkatkan keterampilan serta mendukung pengembangan usaha.
+                                    Program Pelatihan Kerja & Bantuan Modal
+                                    diperuntukkan bagi masyarakat yang ingin
+                                    meningkatkan keterampilan serta mendukung
+                                    pengembangan usaha.
                                 </h5>
 
                                 <div className="my-4 d-flex align-items-center gap-1">
@@ -67,6 +132,9 @@ export default function HomePage({ meta }) {
                     </div>
                 </Container>
             </div>
+
+            {/* Tambahkan Carousel di bawah hero */}
+            <TrainingCarousel trainings={trainings} />
         </Layout>
     );
 }
