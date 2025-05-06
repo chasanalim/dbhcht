@@ -101,7 +101,62 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
      */
     public function show(string $id)
     {
-        //
+        $data = PelatihanBanmod::findOrFail($id);
+
+        return inertia('Admin/PelatihanBanmod/Show', [
+            'title' => 'Detail Peserta Pelatihan Banmod',
+            'data' => [
+                'id' => $data->id,
+                'tahun_penerimaan' => $data->tahun_penerimaan,
+                'nik' => $data->nik,
+                'nama_lengkap' => $data->nama_lengkap,
+                'no_kk' => $data->no_kk,
+                'no_hp' => $data->no_hp,
+
+                // Alamat KTP
+                'alamat_ktp' => [
+                    'kecamatan' => $data->kecamatan_ktp,
+                    'kelurahan' => $data->kelurahan_ktp,
+                    'rw' => $data->rw_ktp,
+                    'rt' => $data->rt_ktp,
+                    'jalan' => $data->jalan_ktp,
+                ],
+
+                // Alamat Usaha
+                'alamat_usaha' => [
+                    'kecamatan' => $data->kecamatan_usaha,
+                    'kelurahan' => $data->kelurahan_usaha,
+                    'rw' => $data->rw_usaha,
+                    'rt' => $data->rt_usaha,
+                    'jalan' => $data->jalan_usaha,
+                ],
+
+                // Data Pelatihan
+                'jenis_pelatihan' => $data->jenis_pelatihan_industri,
+
+                // Data Perkembangan
+                'perkembangan' => [
+                    'omzet' => $data->perkembangan_omzet,
+                    'tenaga_kerja' => $data->perkembangan_tenaga_kerja,
+                ],
+
+                // Skor Penilaian
+                'skor' => [
+                    'ketrampilan' => $data->skor_ketrampilan,
+                    'kualitas_produk' => $data->skor_kualitas_produk,
+                    'permasalahan_usaha' => $data->skor_permasalahan_usaha,
+                    'mengisi_waktu' => $data->skor_mengisi_waktu,
+                    'diajak_teman' => $data->skor_diajak_teman,
+                ],
+
+                // Files
+                'file_ktp' => asset('storage/' . $data->file_ktp),
+                'file_kk' => asset('storage/' . $data->file_kk),
+                'file_nib' => asset('storage/' . $data->file_nib),
+
+                'komitmen' => $data->komitmen,
+            ]
+        ]);
     }
 
     /**
