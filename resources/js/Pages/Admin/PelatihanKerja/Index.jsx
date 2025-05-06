@@ -43,31 +43,36 @@ export default function Index({ title, can, flash, dataRoute, categories }) {
                     width: "10%",
                     className: "text-center",
                     render: function (data) {
-                        let buttons = "";
+                        let buttons = [];
 
                         // if (can.edit) {
-                        buttons += `
-                                <button
-                                    onclick="window.location.href='${data.edit_url}'"
-                                    class="btn btn-warning btn-sm me-2"
-                                    data-bs-toggle="tooltip"
-                                    title="Edit Data">
+                        buttons.push(`
+                                <a href="${data.edit_url}" class="btn btn-sm btn-warning" title="Edit">
                                     <i class="bi bi-pencil-square"></i>
-                                </button>`;
+                                </a>
+                            `);
                         // }
 
                         // if (can.delete) {
-                        buttons += `
-                                <button
-                                    onclick="deleteItem('${data.delete_url}')"
-                                    class="btn btn-danger btn-sm"
-                                    data-bs-toggle="tooltip"
-                                    title="Hapus Data">
+                        buttons.push(`
+                                <a href="javascript:void(0)"
+                                   onclick="deleteItem('${data.delete_url}')"
+                                   class="btn btn-sm btn-danger"
+                                   title="Hapus">
                                     <i class="bi bi-trash"></i>
-                                </button>`;
+                                </a>
+                            `);
                         // }
 
-                        return buttons;
+                        buttons.push(`
+                            <a href="${data.detail_url}" class="btn btn-sm btn-info" title="Detail">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        `);
+
+                        return `<div class="btn-group">${buttons.join(
+                            ""
+                        )}</div>`;
                     },
                 },
                 {
@@ -97,7 +102,7 @@ export default function Index({ title, can, flash, dataRoute, categories }) {
                     name: "jenis_kelamin",
                     render: function (data) {
                         return data == "L" ? "Laki-laki" : "Perempuan";
-                    }
+                    },
                 },
                 {
                     data: "alamat",
@@ -122,6 +127,14 @@ export default function Index({ title, can, flash, dataRoute, categories }) {
                 {
                     data: "phone_number",
                     name: "phone_number",
+                },
+                {
+                    data: "ref_pendidikan.nama",
+                    name: "ref_pendidikan.nama",
+                },
+                {
+                    data: "jenis_pelatihan.nama",
+                    name: "jenis_pelatihan.nama",
                 },
             ],
             drawCallback: function () {
@@ -230,34 +243,8 @@ export default function Index({ title, can, flash, dataRoute, categories }) {
                                                 <th>RW</th>
                                                 <th>RT</th>
                                                 <th>NO HP</th>
-                                                {/* <th>DAYA LISTRIK</th>
-                                                <th>DISABILITAS</th>
-                                                <th>KATEGORI</th>
-                                                <th>JENIS KATEGORI</th>
-                                                <th>KLASTER USAHA</th>
-                                                <th>TANGGUNGAN KELUARGA</th>
-                                                <th>LAMA USAHA</th>
-                                                <th>JUMLAH TENAGA</th>
-                                                <th>BRUTO</th>
-                                                <th>STATUS TEMPAT TINGGAL</th>
-                                                <th>ASET</th>
-                                                <th>HUTANG</th>
-                                                <th>JUMLAH LEGALITAS</th>
-                                                <th>JUMLAH TEKNOLOGI</th>
-                                                <th>JUMLAH PENYERAPAN NAKER</th>
-                                                <th>FOTO</th>
-                                                <th>KTP</th>
-                                                <th>KK</th>
-                                                <th>NIB</th>
-                                                <th>SKU</th>
-                                                <th>SKD</th>
-                                                <th>PRODUK</th>
-                                                <th>PERNYATAAN</th>
-                                                <th>PERIZINAN</th>
-                                                <th>SIINAS</th>
-                                                <th>BP</th>
-                                                <th>SERTIFIKAT PELATIHAN</th> */}
-
+                                                <th>PENDIDIKAN</th>
+                                                <th>PELATIHAN</th>
                                             </tr>
                                         </thead>
                                     </table>
