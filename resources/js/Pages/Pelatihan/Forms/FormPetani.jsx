@@ -28,8 +28,8 @@ export default function FormPetani() {
         jenis_kelamin: "",
         nama_lengkap: "",
         no_hp: "",
-        kode_kecamatan: "",
-        kode_kelurahan: "",
+        nama_kecamatan: "",
+        nama_kelurahan: "",
         nama_rw: "",
         nama_rt: "",
         alamat: "",
@@ -40,12 +40,12 @@ export default function FormPetani() {
         pendidikan: "",
         is_disabilitas: false,
         jenis_disabilitas: [],
-        nama_kelompok: "",
+        id_kelompok: "",
         tahun_berdiri: "",
         masa_aktif_kelompok: "",
         bidang_usaha_kelompok: "",
-        kode_kecamatan_kelompok: "",
-        kode_kelurahan_kelompok: "",
+        nama_kecamatan_kelompok: "",
+        nama_kelurahan_kelompok: "",
         nama_rw_kelompok: "",
         nama_rt_kelompok: "",
         alamat_kelompok: "",
@@ -75,6 +75,7 @@ export default function FormPetani() {
                     ...prev,
                     nama_lengkap: d.nama_anggota,
                     nama_kelompok: d.nama_kelompok,
+                    id_kelompok: d.id,
                 }));
                 setTampilKonfirmasi(true);
             } else {
@@ -354,12 +355,7 @@ export default function FormPetani() {
                         <Form.Control
                             type="text"
                             value={data.nama_lengkap || ""}
-                            onChange={(e) =>
-                                setData({
-                                    ...data,
-                                    nama_lengkap: e.target.value,
-                                })
-                            }
+                            readOnly // Supaya user tidak bisa mengubah data hasil cek NIK
                             isInvalid={!!errors.nama_lengkap}
                         />
                         <Form.Control.Feedback type="invalid">
@@ -592,24 +588,25 @@ export default function FormPetani() {
                         <div className="underline"></div>
                     </div>
 
-                    {/* Nama Usaha */}
                     <Form.Group className="mb-3">
                         <Form.Label className="required">
                             Nama Kelompok
                         </Form.Label>
                         <Form.Control
-                            value={data.nama_kelompok}
-                            onChange={(e) =>
-                                setData({
-                                    ...data,
-                                    nama_kelompok: e.target.value,
-                                })
-                            }
+                            value={data.nama_kelompok || ""}
+                            readOnly // Supaya user tidak bisa ubah manual
                             isInvalid={!!errors.nama_kelompok}
                         />
                         <Form.Control.Feedback type="invalid">
                             {errors.nama_kelompok}
                         </Form.Control.Feedback>
+
+                        {/* Hidden field untuk id_kelompok */}
+                        <input
+                            type="hidden"
+                            name="id_kelompok"
+                            value={data.id_kelompok || ""}
+                        />
                     </Form.Group>
 
                     {/* Tahun Berdiri */}

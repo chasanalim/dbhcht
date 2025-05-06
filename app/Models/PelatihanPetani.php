@@ -17,8 +17,8 @@ class PelatihanPetani extends Model
         'jenis_kelamin',
         'nama_lengkap',
         'no_hp',
-        'kode_kecamatan',
-        'kode_kelurahan',
+        'nama_kecamatan',
+        'nama_kelurahan',
         'nama_rw',
         'nama_rt',
         'alamat',
@@ -28,12 +28,12 @@ class PelatihanPetani extends Model
         'pendidikan',
         'is_disabilitas',
         'jenis_disabilitas',
-        'nama_kelompok',
+        'id_kelompok',
         'tahun_berdiri',
         'masa_aktif_kelompok',
         'bidang_usaha_kelompok',
-        'kode_kecamatan_kelompok',
-        'kode_kelurahan_kelompok',
+        'nama_kecamatan_kelompok',
+        'nama_kelurahan_kelompok',
         'nama_rw_kelompok',
         'nama_rt_kelompok',
         'alamat_kelompok',
@@ -48,7 +48,7 @@ class PelatihanPetani extends Model
 
     public function kelompokTani()
     {
-        return $this->belongsTo(KelompokTani::class, 'nama_kelompok', 'id');
+        return $this->belongsTo(KelompokTani::class, 'id_kelompok', 'id');
     }
 
     public function kategori()
