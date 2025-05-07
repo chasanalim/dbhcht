@@ -157,9 +157,132 @@ export default function Show({ title, data }) {
                                                         ? " Sesuai KTP"
                                                         : data.alamat_usaha}
                                                 </td>
+                                                {(data.kategori_id === "1" ||
+                                                    data.kategori_id === "2" ||
+                                                    data.kategori_id ===
+                                                        "3") && (
+                                                    <>
+                                                        <td className="text-danger text-bold">
+                                                            Skor :{" "}
+                                                            {data.isDomisili ===
+                                                                "0" &&
+                                                            data.isUsaha === "0"
+                                                                ? 4
+                                                                : data.isDomisili ===
+                                                                      "0" &&
+                                                                  data.isUsaha ===
+                                                                      "1"
+                                                                ? 3
+                                                                : data.isDomisili ===
+                                                                      "1" &&
+                                                                  data.isUsaha ===
+                                                                      "0"
+                                                                ? 2
+                                                                : 1}
+                                                        </td>
+                                                        <td className="text-danger text-bold">
+                                                            NA :{" "}
+                                                            {data.isDomisili ===
+                                                                "0" &&
+                                                            data.isUsaha === "0"
+                                                                ? (4 / 4) * 15
+                                                                : data.isDomisili ===
+                                                                      "0" &&
+                                                                  data.isUsaha ===
+                                                                      "1"
+                                                                ? (3 / 4) * 15
+                                                                : data.isDomisili ===
+                                                                      "1" &&
+                                                                  data.isUsaha ===
+                                                                      "0"
+                                                                ? (2 / 4) * 15
+                                                                : (1 / 4) * 15}
+                                                        </td>
+                                                    </>
+                                                )}
+                                                {data.kategori_id === "4" && (
+                                                    <>
+                                                        <td className="text-danger text-bold">
+                                                            Skor :{" "}
+                                                            {data.isDomisili ===
+                                                                "0" &&
+                                                            data.isUsaha === "0"
+                                                                ? 4
+                                                                : data.isDomisili ===
+                                                                      "0" &&
+                                                                  data.isUsaha ===
+                                                                      "1"
+                                                                ? 3
+                                                                : data.isDomisili ===
+                                                                      "1" &&
+                                                                  data.isUsaha ===
+                                                                      "0"
+                                                                ? 2
+                                                                : 1}
+                                                        </td>
+                                                        <td className="text-danger text-bold">
+                                                            NA :{" "}
+                                                            {data.isDomisili ===
+                                                                "0" &&
+                                                            data.isUsaha === "0"
+                                                                ? (4 / 4) * 5
+                                                                : data.isDomisili ===
+                                                                      "0" &&
+                                                                  data.isUsaha ===
+                                                                      "1"
+                                                                ? (3 / 4) * 5
+                                                                : data.isDomisili ===
+                                                                      "1" &&
+                                                                  data.isUsaha ===
+                                                                      "0"
+                                                                ? (2 / 4) * 5
+                                                                : (1 / 4) * 5}
+                                                        </td>
+                                                    </>
+                                                )}
+                                                {data.kategori_id === "5" && (
+                                                    <>
+                                                        <td className="text-danger text-bold">
+                                                            Skor :{" "}
+                                                            {data.isDomisili ===
+                                                                "0" &&
+                                                            data.isUsaha === "0"
+                                                                ? 4
+                                                                : data.isDomisili ===
+                                                                      "0" &&
+                                                                  data.isUsaha ===
+                                                                      "1"
+                                                                ? 3
+                                                                : data.isDomisili ===
+                                                                      "1" &&
+                                                                  data.isUsaha ===
+                                                                      "0"
+                                                                ? 2
+                                                                : 1}
+                                                        </td>
+                                                        <td className="text-danger text-bold">
+                                                            NA :{" "}
+                                                            {data.isDomisili ===
+                                                                "0" &&
+                                                            data.isUsaha === "0"
+                                                                ? (4 / 4) * 10
+                                                                : data.isDomisili ===
+                                                                      "0" &&
+                                                                  data.isUsaha ===
+                                                                      "1"
+                                                                ? (3 / 4) * 10
+                                                                : data.isDomisili ===
+                                                                      "1" &&
+                                                                  data.isUsaha ===
+                                                                      "0"
+                                                                ? (2 / 4) * 10
+                                                                : (1 / 4) * 10}
+                                                        </td>
+                                                    </>
+                                                )}
                                             </tr>
                                         )}
-                                        {data.kategori === "5" && (
+                                        {data.kategori_id === "5" && (
                                             <>
                                                 <tr>
                                                     <td>Tanggungan Keluarga</td>
@@ -169,33 +292,174 @@ export default function Show({ title, data }) {
                                                             data.tanggungan_keluarga
                                                         }
                                                     </td>
-                                                    <tr>
-                                                        <td>
-                                                            Status Tempat
-                                                            Tinggal
-                                                        </td>
-                                                        <td>
-                                                            :{" "}
-                                                            {
-                                                                data.status_tempat_tinggal
-                                                            }
-                                                        </td>
-                                                    </tr>
+                                                    <td className="text-danger text-bold">
+                                                        Skor :{" "}
+                                                        {
+                                                            data.skor_tanggungan_keluarga
+                                                        }
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA :{" "}
+                                                        {parseFloat(
+                                                            (data.skor_tanggungan_keluarga /
+                                                                3) *
+                                                                20
+                                                        ).toFixed(2)}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        Status Tempat Tinggal
+                                                    </td>
+                                                    <td>
+                                                        :{" "}
+                                                        {
+                                                            data.status_tempat_tinggal
+                                                        }
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        Skor :{" "}
+                                                        {
+                                                            data.skor_status_tempat_tinggal
+                                                        }
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA :{" "}
+                                                        {parseFloat(
+                                                            (data.skor_status_tempat_tinggal /
+                                                                3) *
+                                                                20
+                                                        ).toFixed(2)}
+                                                    </td>
                                                 </tr>
                                             </>
                                         )}
                                         <tr>
                                             <td>Lama Usaha</td>
                                             <td>: {data.lama_usaha}</td>
+                                            {(data.kategori_id === "1" ||
+                                                data.kategori_id === "2" ||
+                                                data.kategori_id === "3") && (
+                                                <>
+                                                    <td className="text-danger text-bold">
+                                                        Skor :{" "}
+                                                        {data.skor_lama_usaha}
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA :{" "}
+                                                        {(data.skor_lama_usaha /
+                                                            4) *
+                                                            25}
+                                                    </td>
+                                                </>
+                                            )}
+                                            {data.kategori_id === "4" && (
+                                                <>
+                                                    <td className="text-danger text-bold">
+                                                        Skor :{" "}
+                                                        {data.skor_lama_usaha}
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA :{" "}
+                                                        {(data.skor_lama_usaha /
+                                                            4) *
+                                                            15}
+                                                    </td>
+                                                </>
+                                            )}
+                                            {data.kategori_id === "5" && (
+                                                <>
+                                                    <td className="text-danger text-bold">
+                                                        Skor :{" "}
+                                                        {data.skor_lama_usaha}
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA :{" "}
+                                                        {(data.skor_lama_usaha /
+                                                            4) *
+                                                            15}
+                                                    </td>
+                                                </>
+                                            )}
                                         </tr>
-                                        <tr>
-                                            <td>Jumlah Tenaga Kerja</td>
-                                            <td>: {data.jumlah_tenaga}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Omzet per Bulan</td>
-                                            <td>: {data.bruto}</td>
-                                        </tr>
+                                        {data.kategori_id !== "5" && (
+                                            <tr>
+                                                <td>Jumlah Tenaga Kerja</td>
+                                                <td>: {data.jumlah_tenaga}</td>
+                                                {(data.kategori_id === "1" ||
+                                                    data.kategori_id === "2" ||
+                                                    data.kategori_id ===
+                                                        "3") && (
+                                                    <>
+                                                        <td className="text-danger text-bold">
+                                                            Skor :{" "}
+                                                            {
+                                                                data.skor_jumlah_tenaga
+                                                            }
+                                                        </td>
+                                                        <td className="text-danger text-bold">
+                                                            NA :{" "}
+                                                            {(data.skor_jumlah_tenaga /
+                                                                4) *
+                                                                35}
+                                                        </td>
+                                                    </>
+                                                )}
+                                                {data.kategori_id === "4" && (
+                                                    <>
+                                                        <td className="text-danger text-bold">
+                                                            Skor :{" "}
+                                                            {
+                                                                data.skor_jumlah_tenaga
+                                                            }
+                                                        </td>
+                                                        <td className="text-danger text-bold">
+                                                            NA :{" "}
+                                                            {(data.skor_jumlah_tenaga /
+                                                                4) *
+                                                                10}
+                                                        </td>
+                                                    </>
+                                                )}
+                                            </tr>
+                                        )}
+                                        {data.kategori_id !== "5" && (
+                                            <tr>
+                                                <td>Omzet per Bulan</td>
+                                                <td>: {data.bruto}</td>
+                                                {(data.kategori_id === "1" ||
+                                                    data.kategori_id === "2" ||
+                                                    data.kategori_id ===
+                                                        "3") && (
+                                                    <>
+                                                        <td className="text-danger text-bold">
+                                                            Skor :{" "}
+                                                            {data.skor_bruto}
+                                                        </td>
+                                                        <td className="text-danger text-bold">
+                                                            NA :{" "}
+                                                            {(data.skor_bruto /
+                                                                4) *
+                                                                20}
+                                                        </td>
+                                                    </>
+                                                )}
+                                                {data.kategori_id === "4" && (
+                                                    <>
+                                                        <td className="text-danger text-bold">
+                                                            Skor :{" "}
+                                                            {data.skor_bruto}
+                                                        </td>
+                                                        <td className="text-danger text-bold">
+                                                            NA :{" "}
+                                                            {(data.skor_bruto /
+                                                                4) *
+                                                                5}
+                                                        </td>
+                                                    </>
+                                                )}
+                                            </tr>
+                                        )}
 
                                         <tr>
                                             <td>Aset</td>
@@ -205,6 +469,122 @@ export default function Show({ title, data }) {
                                                     data.aset
                                                 ).toLocaleString()}
                                             </td>
+                                            {(data.kategori_id === "1" ||
+                                                data.kategori_id === "2" ||
+                                                data.kategori_id === "3") && (
+                                                <>
+                                                    <td className="text-danger text-bold">
+                                                        Skor :{" "}
+                                                        {Number(data.aset) >
+                                                        Number(data.hutang)
+                                                            ? 3
+                                                            : Number(
+                                                                  data.aset
+                                                              ) ===
+                                                              Number(
+                                                                  data.hutang
+                                                              )
+                                                            ? 2
+                                                            : 1}
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA :{" "}
+                                                        {Number(data.aset) >
+                                                        Number(data.hutang)
+                                                            ? (3 / 3) * 5
+                                                            : Number(
+                                                                  data.aset
+                                                              ) ===
+                                                              Number(
+                                                                  data.hutang
+                                                              )
+                                                            ? parseFloat(
+                                                                  (2 / 3) * 5
+                                                              ).toFixed(2)
+                                                            : parseFloat(
+                                                                  (1 / 3) * 5
+                                                              ).toFixed(2)}
+                                                    </td>
+                                                </>
+                                            )}
+                                            {data.kategori_id === "4" && (
+                                                <>
+                                                    <td className="text-danger text-bold">
+                                                        Skor :{" "}
+                                                        {Number(data.aset) >
+                                                        Number(data.hutang)
+                                                            ? 3
+                                                            : Number(
+                                                                  data.aset
+                                                              ) ===
+                                                              Number(
+                                                                  data.hutang
+                                                              )
+                                                            ? 2
+                                                            : 1}
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA :{" "}
+                                                        {Number(data.aset) >
+                                                        Number(data.hutang)
+                                                            ? (3 / 3) * 5
+                                                            : Number(
+                                                                  data.aset
+                                                              ) ===
+                                                              Number(
+                                                                  data.hutang
+                                                              )
+                                                            ? parseFloat(
+                                                                  (2 / 3) * 5
+                                                              ).toFixed(2)
+                                                            : parseFloat(
+                                                                  (1 / 3) * 5
+                                                              ).toFixed(2)}
+                                                    </td>
+                                                </>
+                                            )}
+                                            {data.kategori_id === "5" && (
+                                                <>
+                                                    <td className="text-danger text-bold">
+                                                        Skor :{" "}
+                                                        {Number(data.aset) >
+                                                        Number(data.hutang)
+                                                            ? 3
+                                                            : Number(
+                                                                  data.aset
+                                                              ) ===
+                                                              Number(
+                                                                  data.hutang
+                                                              )
+                                                            ? 2
+                                                            : 1}
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA :{" "}
+                                                        {Math.round(
+                                                            Number(data.aset) >
+                                                                Number(
+                                                                    data.hutang
+                                                                )
+                                                                ? (3 / 3) * 10
+                                                                : Number(
+                                                                      data.aset
+                                                                  ) ===
+                                                                  Number(
+                                                                      data.hutang
+                                                                  )
+                                                                ? parseFloat(
+                                                                      (2 / 3) *
+                                                                          10
+                                                                  ).toFixed(2)
+                                                                : parseFloat(
+                                                                      (1 / 3) *
+                                                                          10
+                                                                  ).toFixed(2)
+                                                        )}
+                                                    </td>
+                                                </>
+                                            )}
                                         </tr>
                                         <tr>
                                             <td>Hutang</td>
@@ -216,7 +596,7 @@ export default function Show({ title, data }) {
                                             </td>
                                         </tr>
 
-                                        {data.kategori === "4" && (
+                                        {data.kategori_id === "4" && (
                                             <>
                                                 <tr>
                                                     <td>Jumlah Legalitas</td>
@@ -224,12 +604,36 @@ export default function Show({ title, data }) {
                                                         :{" "}
                                                         {data.jumlah_legalitas}
                                                     </td>
+                                                    <td className="text-danger text-bold">
+                                                        Skor :{" "}
+                                                        {data.skor_legalitas}
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA :{" "}
+                                                        {parseFloat(
+                                                            (data.skor_legalitas /
+                                                                3) *
+                                                                10
+                                                        ).toFixed(2)}
+                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <td>Jumlah Teknologi</td>
                                                     <td>
                                                         :{" "}
                                                         {data.jumlah_teknologi}
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        Skor :{" "}
+                                                        {data.skor_teknologi}
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA :{" "}
+                                                        {parseFloat(
+                                                            (data.skor_teknologi /
+                                                                3) *
+                                                                10
+                                                        ).toFixed(2)}
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -242,9 +646,33 @@ export default function Show({ title, data }) {
                                                             data.jumlah_penyerapan_naker
                                                         }
                                                     </td>
+                                                    <td className="text-danger text-bold">
+                                                        Skor :{" "}
+                                                        {
+                                                            data.skor_penyerapan_naker
+                                                        }
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA :{" "}
+                                                        {parseFloat(
+                                                            (data.skor_penyerapan_naker /
+                                                                3) *
+                                                                10
+                                                        ).toFixed(2)}
+                                                    </td>
                                                 </tr>
                                             </>
                                         )}
+                                    </tbody>
+                                </table>
+
+                                <h6 className="fw-bold">SKORING</h6>
+                                <table className="table table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <td>Skor Sementara</td>
+                                            <td>: {data.skor}</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>

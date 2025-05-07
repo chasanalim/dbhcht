@@ -124,7 +124,7 @@ class PendaftaranBanmod extends Model
             } else {
                 $skor += (1 / 4 * 0.05);
             }
-            return $skor;
+            return $skor * 100;
         } else {
             $skor += (($this->tanggunganKeluarga->skor / 3) * 0.2);
             $skor += (($this->lamaUsaha->skor / 4) * 0.15);
@@ -147,7 +147,7 @@ class PendaftaranBanmod extends Model
             } else {
                 $skor += (1 / 4 * 0.1);
             }
-            return $skor;
+            return $skor * 100;
         }
     }
 

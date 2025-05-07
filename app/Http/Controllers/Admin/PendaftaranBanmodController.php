@@ -49,7 +49,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
     public function buruh_pabrik_rokok(Request $request)
     {
 
-        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->where('kategori', '1')->get();
+        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->where('kategori', '1')->get()->sortByDesc('skor');
 
         if ($request->wantsJson()) {
             return DataTables::of($data)
@@ -74,7 +74,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
     }
     public function buruh_tani_tembakau(Request $request)
     {
-        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->where('kategori', '2')->get();
+        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->where('kategori', '2')->get()->sortByDesc('skor');
         if ($request->wantsJson()) {
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -98,7 +98,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
     }
     public function pekerja_pabrik_rokok(Request $request)
     {
-        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->where('kategori', '3')->get();
+        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->where('kategori', '3')->get()->sortByDesc('skor');
         if ($request->wantsJson()) {
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -122,7 +122,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
     }
     public function ikm(Request $request)
     {
-        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->where('kategori', '4')->get();
+        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->where('kategori', '4')->get()->sortByDesc('skor');
         if ($request->wantsJson()) {
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -146,7 +146,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
     }
     public function masyarakat_miskin(Request $request)
     {
-        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->where('kategori', '5')->get();
+        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->where('kategori', '5')->get()->sortByDesc('skor');
         if ($request->wantsJson()) {
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -224,18 +224,28 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                 'daya_listrik' => $data->daya_listrik,
                 'isDisabilitas' => $data->isDisabilitas,
                 'disabilitas' => $data->disabilitas,
+                'kategori_id' => $data->kategori,
                 'kategori' => $data->kategoriUsaha?->nama,
                 'klaster_usaha' => $data->klasterUsaha?->nama,
                 'tanggungan_keluarga' => $data->tanggunganKeluarga?->nama,
+                'skor_tanggungan_keluarga' => $data->tanggunganKeluarga?->skor,
                 'lama_usaha' => $data->lamaUsaha?->nama,
+                'skor_lama_usaha' => $data->lamaUsaha?->skor,
                 'jumlah_tenaga' => $data->jumlahTenagaKerja?->nama,
+                'skor_jumlah_tenaga' => $data->jumlahTenagaKerja?->skor,
                 'bruto' => $data->brutoPerbulan?->nama,
+                'skor_bruto' => $data->brutoPerbulan?->skor,
                 'status_tempat_tinggal' => $data->statusTempatTinggal?->nama,
+                'skor_status_tempat_tinggal' => $data->statusTempatTinggal?->skor,
                 'aset' => $data->aset,
                 'hutang' => $data->hutang,
+                'skor' => $data->skor,
                 'jumlah_legalitas' => $data->jumlahLegalitas?->nama,
+                'skor_legalitas' => $data->jumlahLegalitas?->skor,
                 'jumlah_teknologi' => $data->jumlahTeknologiDigital?->nama,
+                'skor_teknologi' => $data->jumlahTeknologiDigital?->skor,
                 'jumlah_penyerapan_naker' => $data->penyerapanTenagaMiskin?->nama,
+                'skor_penyerapan_naker' => $data->penyerapanTenagaMiskin?->skor,
                 'files' => [
                     'foto' => asset('' . $data->file_foto),
                     'ktp' => asset('' . $data->file_ktp),
