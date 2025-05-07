@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\PrivilegesController;
 use App\Http\Controllers\RegPelatihanUmkmController;
 use App\Http\Controllers\JumlahTenagaKerjaController;
 use App\Http\Controllers\Admin\LampiranFileController;
+use App\Http\Controllers\Admin\MasterKelompokTaniController;
 use App\Http\Controllers\RegPelatihanPetaniController;
 use App\Http\Controllers\TanggunganKeluargaController;
 use App\Http\Controllers\Admin\PelatihanUMKMController;
@@ -69,6 +70,7 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::resource('user', UserAdminController::class);
     Route::resource('banmodlama', PenerimaBanmodLamaController::class);
     Route::resource('banmodwirausaha', PenerimaPelatihanBanmodController::class);
+    Route::resource('kelompoktani', MasterKelompokTaniController::class);
     Route::resource('privileges', PrivilegesController::class);
 });
 

@@ -136,6 +136,10 @@ export default function Index({ title, can, flash, dataRoute }) {
                 {
                     data: "skor",
                     name: "skor",
+                    className: "text-center",
+                    render: function (data) {
+                        return `<span class="badge bg-success p-2">${parseFloat(data).toFixed(1)}</span>`;
+                    }
                 },
             ],
             drawCallback: function () {
