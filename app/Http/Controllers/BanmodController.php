@@ -45,7 +45,7 @@ class BanmodController extends Controller
             "isDomisili" => ['nullable', 'boolean'],
             "alamat_domisili" => ['nullable', 'required_if:isDomisili,true', 'string'],
             "isUsaha" => ['nullable', 'boolean'],
-            "alamat_usaha" => ['nullable', 'required_if:isDomisili,true', 'string'],
+            "alamat_usaha" => ['nullable', 'required_if:isUsaha,true', 'string'],
             "phone_number" => ['required', 'numeric', 'digits_between:10,15'],
             "daya_listrik" => ['required', 'string'],
             "isDisabilitas" => ['nullable', 'boolean'],
