@@ -80,7 +80,7 @@ export default function FormUMKM() {
             .then((res) => {
                 setSkorAlasanOptions(
                     res.map((i) => ({
-                        value: i.skor,
+                        value: i.id,
                         label: i.jawaban,
                     }))
                 );
@@ -91,7 +91,7 @@ export default function FormUMKM() {
             .then((res) => {
                 setSkorKesesuaianOptions(
                     res.map((i) => ({
-                        value: i.skor,
+                        value: i.id,
                         label: i.jawaban,
                     }))
                 );
@@ -102,7 +102,7 @@ export default function FormUMKM() {
             .then((res) => {
                 setSkorPengalamanOptions(
                     res.map((i) => ({
-                        value: i.skor,
+                        value: i.id,
                         label: i.jawaban,
                     }))
                 );
@@ -473,7 +473,12 @@ export default function FormUMKM() {
                     </Form.Label>
                     <SelectPendidikan
                         value={data.pendidikan}
-                        onChange={(val) => setData("pendidikan", val)}
+                        onChange={(item) =>
+                            setData({
+                                ...data,
+                                pendidikan: item.nama,
+                            })
+                        }
                         errors={errors.pendidikan}
                     />
                 </Form.Group>
