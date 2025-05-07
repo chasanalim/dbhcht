@@ -2,10 +2,10 @@ import React from "react";
 import Select from "react-select";
 
 const options = [
-    { value: "pertanian", label: "Pertanian" },
-    { value: "perikanan", label: "Perikanan" },
-    { value: "peternakan", label: "Peternakan" },
-    { value: "kelompokwanitatani", label: "Kelompok Wanita Tani" },
+    { value: "Pertanian", label: "Pertanian" },
+    { value: "Perikanan", label: "Perikanan" },
+    { value: "Peternakan", label: "Peternakan" },
+    { value: "Kelompok Wanita Tani", label: "Kelompok Wanita Tani" },
 ];
 
 export default function SelectBidangUsahaKelompok({ value, onChange, errors }) {

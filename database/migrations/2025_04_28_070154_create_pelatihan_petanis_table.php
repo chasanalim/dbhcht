@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('jenis_kelamin');
             $table->string('nama_lengkap');
             $table->string('no_hp');
-            $table->string('kode_kecamatan');
-            $table->string('kode_kelurahan');
+            $table->string('nama_kecamatan');
+            $table->string('nama_kelurahan');
             $table->string('nama_rw');
             $table->string('nama_rt');
             $table->string('alamat');
@@ -34,12 +34,12 @@ return new class extends Migration
             $table->json('jenis_disabilitas')->nullable();
 
             // B. Profil Kelompok
-            $table->string('nama_kelompok');
+            $table->string('id_kelompok');
             $table->string('tahun_berdiri');
             $table->string('masa_aktif_kelompok');
             $table->string('bidang_usaha_kelompok');
-            $table->string('kode_kecamatan_kelompok');
-            $table->string('kode_kelurahan_kelompok');
+            $table->string('nama_kecamatan_kelompok');
+            $table->string('nama_kelurahan_kelompok');
             $table->string('nama_rw_kelompok');
             $table->string('nama_rt_kelompok');
             $table->string('alamat_kelompok');

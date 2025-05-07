@@ -25,8 +25,10 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
     }
     public function index(Request $request)
     {
+        // $query = PelatihanKerjas::with('refPendidikan', 'jenisPelatihan', 'alasanPelatihan')->get();
+        // return response()->json($query);
         if ($request->wantsJson()) {
-            $query = PelatihanKerjas::query();
+            $query = PelatihanKerjas::with('refPendidikan', 'jenisPelatihan', 'alasanPelatihan');
 
             if ($request->has('jenis_pelatihan') && $request->jenis_pelatihan !== 'all') {
                 $query->where('jenis_pelatihan', $request->jenis_pelatihan);
@@ -43,7 +45,7 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
                 })
                 ->make(true);
         }
-        $categories= JenisPelatihanKetKerja::all();
+        $categories = JenisPelatihanKetKerja::all()->prepend(['id' => 'all', 'nama' => 'Semua pelatihan']);
 
 
         // return response()->json($categories);
@@ -76,9 +78,60 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
     /**
      * Display the specified resource.
      */
+    /**
+     * Display the specified resource.
+     */
     public function show(string $id)
     {
-        //
+        $data = PelatihanKerjas::with(['refPendidikan', 'jenisPelatihan', 'alasanPelatihan'])
+            ->findOrFail($id);
+
+        return Inertia::render('Admin/PelatihanKerja/Show', [
+            'title' => 'Detail Peserta Pelatihan Pencari Kerja',
+            'data' => [
+                'id' => $data->id,
+                'nik' => $data->nik,
+                'no_kk' => $data->no_kk,
+                'nama_lengkap' => $data->nama_lengkap,
+                'tmp_lhr' => $data->tmp_lhr,
+                'tgl_lhr' => $data->tgl_lhr,
+                'jenis_kelamin' => $data->jenis_kelamin,
+                'alamat' => $data->alamat,
+                'kecamatan' => [
+                    'kode' => $data->kode_kecamatan,
+                    'nama' => $data->nama_kecamatan,
+                ],
+                'kelurahan' => [
+                    'kode' => $data->kode_kelurahan,
+                    'nama' => $data->nama_kelurahan,
+                ],
+                'rw' => [
+                    'kode' => $data->kode_rw,
+                    'nama' => $data->nama_rw,
+                ],
+                'rt' => [
+                    'kode' => $data->kode_rt,
+                    'nama' => $data->nama_rt,
+                ],
+                'phone_number' => $data->phone_number,
+                'pendidikan' => [
+                    'id' => $data->refPendidikan->id,
+                    'nama' => $data->refPendidikan->nama,
+                ],
+                'jenis_pelatihan' => [
+                    'id' => $data->jenisPelatihan->id,
+                    'nama' => $data->jenisPelatihan->nama,
+                ],
+                'alasan_pelatihan' => [
+                    'id' => $data->alasanPelatihan->id,
+                    'nama' => $data->alasanPelatihan->nama,
+                ],
+                'file_ktp' => asset('' . $data->file_ktp),
+                'file_kk' => asset('' . $data->file_kk),
+                'created_at' => $data->created_at->format('d/m/Y H:i'),
+                'updated_at' => $data->updated_at->format('d/m/Y H:i'),
+            ],
+        ]);
     }
 
     /**

@@ -43,31 +43,36 @@ export default function Index({ title, can, flash, pelatihan }) {
                     width: "10%",
                     className: "text-center",
                     render: function (data) {
-                        let buttons = "";
+                        let buttons = [];
 
                         // if (can.edit) {
-                        buttons += `
-                                <button
-                                    onclick="window.location.href='${data.edit_url}'"
-                                    class="btn btn-warning btn-sm me-2"
-                                    data-bs-toggle="tooltip"
-                                    title="Edit Data">
+                        buttons.push(`
+                                <a href="${data.edit_url}" class="btn btn-sm btn-warning" title="Edit">
                                     <i class="bi bi-pencil-square"></i>
-                                </button>`;
+                                </a>
+                            `);
                         // }
 
                         // if (can.delete) {
-                        buttons += `
-                                <button
-                                    onclick="deleteItem('${data.delete_url}')"
-                                    class="btn btn-danger btn-sm"
-                                    data-bs-toggle="tooltip"
-                                    title="Hapus Data">
+                        buttons.push(`
+                                <a href="javascript:void(0)"
+                                   onclick="deleteItem('${data.delete_url}')"
+                                   class="btn btn-sm btn-danger"
+                                   title="Hapus">
                                     <i class="bi bi-trash"></i>
-                                </button>`;
+                                </a>
+                            `);
                         // }
 
-                        return buttons;
+                        buttons.push(`
+                            <a href="${data.detail_url}" class="btn btn-sm btn-info" title="Detail">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        `);
+
+                        return `<div class="btn-group">${buttons.join(
+                            ""
+                        )}</div>`;
                     },
                 },
                 {
