@@ -28,6 +28,6 @@ class KelompokTani extends Model
 
     public function pelatihanPetani()
     {
-        return $this->hasMany(PelatihanPetani::class, 'nama_kelompok', 'id');
+        return $this->hasMany(PelatihanPetani::class, 'id_kelompok', 'id');
     }
 }
