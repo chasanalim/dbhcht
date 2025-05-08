@@ -119,6 +119,9 @@ class HandleInertiaRequests extends Middleware
                 'viewMasterBanmod' => $request->user()->can('view-master-banmod'),
                 'editMasterBanmod' => $request->user()->can('edit-master-banmod'),
 
+                'viewMasterPertanian' => $request->user()->can('view-master-pertanian'),
+                'editMasterPertanian' => $request->user()->can('edit-master-pertanian'),
+
                 'viewUser' => $request->user()->can('view-user'),
                 'createUser' => $request->user()->can('add-user'),
                 'editUser' => $request->user()->can('edit-user'),

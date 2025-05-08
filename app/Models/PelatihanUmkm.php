@@ -56,23 +56,37 @@ class PelatihanUmkm extends Model
         'komitmen',
     ];
 
+    protected $appends = [
+        'skor',
+    ];
+
+    public function getSkorAttribute()
+    {
+        $skor = 0;
+        $skor +=$this->alasanPelatihan->skor;
+        $skor +=$this->kesesuaianPelatihan->skor;
+        $skor +=$this->pengalamanPelatihan->skor;
+        return $skor / 9 * 100;
+    }
+
+
     // Define any relationships, for example if a PelatihanUmkm has a SkorPelatihanUmkm
     // public function skor()
     // {
     //     return $this->hasMany(SkorPelatihanUmkm::class, 'id', 'skor');
     // }
 
-    public function alasan()
+    public function alasanPelatihan()
     {
-        return $this->belongsTo(SkorPelatihanUmkm::class, 'id', 'alasan');
+        return $this->belongsTo(SkorPelatihanUmkm::class, 'alasan', 'id');
     }
-    public function kesesuaian()
+    public function kesesuaianPelatihan()
     {
-        return $this->belongsTo(SkorPelatihanUmkm::class, 'id', 'kesesuaian');
+        return $this->belongsTo(SkorPelatihanUmkm::class, 'kesesuaian', 'id');
     }
-    public function pengalaman()
+    public function pengalamanPelatihan()
     {
-        return $this->belongsTo(SkorPelatihanUmkm::class, 'id', 'pengalaman');
+        return $this->belongsTo(SkorPelatihanUmkm::class, 'pengalaman', 'id');
     }
 
     public function Refpendidikan()

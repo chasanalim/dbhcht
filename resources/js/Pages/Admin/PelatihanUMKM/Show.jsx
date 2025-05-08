@@ -61,7 +61,7 @@ export default function Show({ title, data }) {
                     </div>
                     <div className="card-body">
                         <div className="row">
-                            <div className="col-md-6">
+                            <div className="col-md-7">
                                 <h6 className="fw-bold">Data Pribadi</h6>
                                 <table className="table table-sm">
                                     <tbody>
@@ -123,6 +123,87 @@ export default function Show({ title, data }) {
                                     </tbody>
                                 </table>
 
+                                <h6 className="fw-bold mt-4">Data Pelatihan</h6>
+                                <table className="table table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <td style={{ width: "200px" }}>
+                                                Prioritas 1
+                                            </td>
+                                            <td>: {data.prioritas_1}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Prioritas 2</td>
+                                            <td>: {data.prioritas_2}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Prioritas 3</td>
+                                            <td>: {data.prioritas_3}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Alasan</td>
+                                            <td width={"50%"}>
+                                                : {data.alasan}
+                                            </td>
+                                            <td className="text-danger text-bold">
+                                                {" "}
+                                                Skor : {data.skor_alasan}
+                                            </td>
+                                            <td className="text-danger text-bold">
+                                                NA :{" "}
+                                                {parseFloat(
+                                                    (data.skor_alasan / 3) *
+                                                        33.33
+                                                ).toFixed(2)}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Kesesuaian</td>
+                                            <td width={"50%"}>
+                                                : {data.kesesuaian}
+                                            </td>
+                                            <td className="text-danger text-bold">
+                                                {" "}
+                                                Skor : {data.skor_kesesuaian}
+                                            </td>
+                                            <td className="text-danger text-bold">
+                                                NA :{" "}
+                                                {parseFloat(
+                                                    (data.skor_kesesuaian / 3) *
+                                                        33.33
+                                                ).toFixed(2)}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Pengalaman</td>
+                                            <td width={"50%"}>
+                                                : {data.pengalaman}
+                                            </td>
+                                            <td className="text-danger text-bold">
+                                                {" "}
+                                                Skor : {data.skor_pengalaman}
+                                            </td>
+                                            <td className="text-danger text-bold">
+                                                NA :{" "}
+                                                {parseFloat(
+                                                    (data.skor_pengalaman / 3) *
+                                                        33.33
+                                                ).toFixed(2)}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Komitmen</td>
+                                            <td>
+                                                :{" "}
+                                                {data.komitmen === "1"
+                                                    ? "Ya"
+                                                    : "Tidak"}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className="col-md-5">
                                 <h6 className="fw-bold mt-4">Alamat</h6>
                                 <table className="table table-sm">
                                     <tbody>
@@ -148,8 +229,6 @@ export default function Show({ title, data }) {
                                         </tr>
                                     </tbody>
                                 </table>
-                            </div>
-                            <div className="col-md-6">
                                 <h6 className="fw-bold">Data Usaha</h6>
                                 <table className="table table-sm">
                                     <tbody>
@@ -185,25 +264,7 @@ export default function Show({ title, data }) {
                                                                 ""
                                                             ) // Remove brackets and quotes
                                                             .split(",")
-                                                            .map(
-                                                                (
-                                                                    item,
-                                                                    index
-                                                                ) => (
-                                                                    <div
-                                                                        key={
-                                                                            index
-                                                                        }
-                                                                    >
-                                                                        {" "}
-                                                                        {" "}
-                                                                        {index +
-                                                                            1}
-                                                                        .{" "}
-                                                                        {item.trim()}
-                                                                    </div>
-                                                                )
-                                                            )}
+                                                            .join(", ")}
                                                     </>
                                                 )}
                                             </td>
@@ -236,39 +297,17 @@ export default function Show({ title, data }) {
                                         </tr>
                                     </tbody>
                                 </table>
-
-                                <h6 className="fw-bold mt-4">Data Pelatihan</h6>
+                                <h6 className="fw-bold">SKORING</h6>
                                 <table className="table table-sm">
                                     <tbody>
                                         <tr>
-                                            <td style={{ width: "200px" }}>
-                                                Prioritas 1
+                                            <td>Skor Sementara </td>
+                                            <td>
+                                                {" "}
+                                                : {parseFloat(data.skor).toFixed(
+                                                    2
+                                                )}
                                             </td>
-                                            <td>: {data.prioritas_1}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Prioritas 2</td>
-                                            <td>: {data.prioritas_2}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Prioritas 3</td>
-                                            <td>: {data.prioritas_3}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Alasan</td>
-                                            <td>: {data.alasan}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Kesesuaian</td>
-                                            <td>: {data.kesesuaian}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Pengalaman</td>
-                                            <td>: {data.pengalaman}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Komitmen</td>
-                                            <td>: {data.komitmen === "1" ? "Ya" : "Tidak"}</td>
                                         </tr>
                                     </tbody>
                                 </table>

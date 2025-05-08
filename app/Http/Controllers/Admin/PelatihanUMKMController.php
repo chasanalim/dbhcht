@@ -107,7 +107,7 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
      */
     public function show(string $id)
     {
-        $data = PelatihanUmkm::with('Refpendidikan')->findOrFail($id);
+        $data = PelatihanUmkm::with(['Refpendidikan', 'alasanPelatihan', 'kesesuaianPelatihan', 'pengalamanPelatihan'])->findOrFail($id);
         // return response()->json($data);
         return Inertia::render('Admin/PelatihanUMKM/Show', [
             'title' => 'Detail Peserta Pelatihan UMKM',
@@ -120,7 +120,7 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
                 'tgl_lahir' => $data->tgl_lahir,
                 'jenis_kelamin' => $data->jenis_kelamin,
                 'no_hp' => $data->no_hp,
-                'pendidikan' => $data->Refpendidikan->nama,
+                'pendidikan' => $data->pendidikan,
                 'is_disabilitas' => $data->is_disabilitas,
                 'jenis_disabilitas' => $data->jenis_disabilitas,
 
@@ -152,9 +152,13 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
                 'prioritas_1' => $data->prioritas_1,
                 'prioritas_2' => $data->prioritas_2,
                 'prioritas_3' => $data->prioritas_3,
-                'alasan' => $data->alasan,
-                'kesesuaian' => $data->kesesuaian,
-                'pengalaman' => $data->pengalaman,
+                'alasan' => $data->alasanPelatihan?->jawaban,
+                'skor_alasan' => $data->alasanPelatihan?->skor,
+                'kesesuaian' => $data->kesesuaianPelatihan?->jawaban,
+                'skor_kesesuaian' => $data->kesesuaianPelatihan?->skor,
+                'pengalaman' => $data->pengalamanPelatihan?->jawaban,
+                'skor_pengalaman' => $data->pengalamanPelatihan?->skor,
+                'skor' => $data->skor,
                 'komitmen' => $data->komitmen,
 
                 // Files

@@ -212,6 +212,14 @@ export default function Index({ title, can, flash, pelatihan }) {
                     data: "prioritas_3",
                     name: "prioritas_3",
                 },
+                {
+                    data: "skor",
+                    name: "skor",
+                    className: "text-center",
+                    render: function (data) {
+                        return `<span class="badge bg-success p-2">${parseFloat(data).toFixed(1)}</span>`;
+                    }
+                },
             ],
             drawCallback: function () {
                 // Initialize tooltips
@@ -372,6 +380,7 @@ export default function Index({ title, can, flash, pelatihan }) {
                                                 <th>PRIORITAS 1</th>
                                                 <th>PRIORITAS 2</th>
                                                 <th>PRIORITAS 3</th>
+                                                <th>SKOR</th>
                                                 {/* <th>DAYA LISTRIK</th>
                                                 <th>DISABILITAS</th>
                                                 <th>KATEGORI</th>
