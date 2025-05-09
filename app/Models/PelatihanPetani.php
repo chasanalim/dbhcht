@@ -46,12 +46,25 @@ class PelatihanPetani extends Model
         'alasan',
     ];
 
+    protected $appends = [
+        'skor',
+    ];
+
+    public function getSkorAttribute()
+    {
+        $skor = 0;
+        $skor += $this->masaAktifKelompok->skor;
+        $skor += $this->alasanPelatihan->skor;
+        return $skor / 6 * 100;
+    }
+
+
     public function kelompokTani()
     {
         return $this->belongsTo(KelompokTani::class, 'id_kelompok', 'id');
     }
 
-    public function kategori()
+    public function kategoriKelompok()
     {
         return $this->belongsTo(KelompokPelatihanPetani::class, 'kategori', 'id');
     }
@@ -59,5 +72,15 @@ class PelatihanPetani extends Model
     public function jenisPelatihanPetani()
     {
         return $this->belongsTo(JenisPelatihanPetani::class, 'jenis_pelatihan_petani', 'id');
+    }
+
+    public function alasanPelatihan()
+    {
+        return $this->belongsTo(SkorPelatihanPetani::class, 'alasan', 'id');
+    }
+
+    public function masaAktifKelompok()
+    {
+        return $this->belongsTo(MasaAktifKelompokTani::class, 'masa_aktif_kelompok', 'id');
     }
 }

@@ -10,6 +10,8 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 
 class PelatihanPertanianController extends Controller implements HasMiddleware
 {
+
+
     /**
      * Display a listing of the resource.
      */
@@ -22,12 +24,12 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
     }
     public function index(Request $request)
     {
-        // $query = PelatihanPetani::with('kelompokTani', 'jenisPelatihanPetani', 'kategori')->get();
+        $query = PelatihanPetani::with('kelompokTani', 'jenisPelatihanPetani', 'kategoriKelompok')->get();
         // return response()->json($query);
 
         if ($request->wantsJson()) {
 
-            $query = PelatihanPetani::with('kelompokTani', 'jenisPelatihanPetani', 'kategori')->get();
+            $query = PelatihanPetani::with('kelompokTani', 'jenisPelatihanPetani', 'kategoriKelompok')->get();
 
             return DataTables::of($query)
                 ->addIndexColumn()
@@ -68,9 +70,73 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
     /**
      * Display the specified resource.
      */
+
     public function show(string $id)
     {
-        //
+        $data = PelatihanPetani::with(['kelompokTani', 'kategoriKelompok', 'jenisPelatihanPetani', 'alasanPelatihan','masaAktifKelompok'])
+            ->findOrFail($id);
+
+        // return response()->json($data);
+        return inertia('Admin/PelatihanPertanian/Show', [
+            'title' => 'Detail Peserta Pelatihan Pertanian',
+            'data' => [
+                'id' => $data->id,
+                'nik' => $data->nik,
+                'kk' => $data->kk,
+                'nama_lengkap' => $data->nama_lengkap,
+                'jenis_kelamin' => $data->jenis_kelamin,
+                'no_hp' => $data->no_hp,
+                'tmp_lhr' => $data->tmp_lhr,
+                'tgl_lhr' => $data->tgl_lhr,
+                'pendidikan' => $data->pendidikan,
+
+                // Data Alamat
+                'alamat' => $data->alamat,
+                'isDomisili' => $data->isDomisili,
+                'alamat_domisili' => $data->alamat_domisili,
+                'nama_kecamatan' => $data->nama_kecamatan,
+                'nama_kelurahan' => $data->nama_kelurahan,
+                'nama_rw' => $data->nama_rw,
+                'nama_rt' => $data->nama_rt,
+
+                // Data Disabilitas
+                'is_disabilitas' => $data->is_disabilitas,
+                'jenis_disabilitas' => $data->jenis_disabilitas,
+
+                // Data Kelompok Tani
+                'kelompok_tani' => [
+                    'id' => $data->kelompokTani->id,
+                    'nama' => $data->kelompokTani->nama_kelompok,
+                    'tahun_berdiri' => $data->tahun_berdiri,
+                    'masa_aktif' => $data->masaAktifKelompok->jawaban,
+                    'bidang_usaha' => $data->bidang_usaha_kelompok,
+                    'alamat' => $data->alamat_kelompok,
+                    'kecamatan' => $data->nama_kecamatan_kelompok,
+                    'kelurahan' => $data->nama_kelurahan_kelompok,
+                    'rw' => $data->nama_rw_kelompok,
+                    'rt' => $data->nama_rt_kelompok,
+                ],
+
+                // Data Pelatihan
+                'kategori' => [
+                    'id' => $data->kategoriKelompok->id,
+                    'nama' => $data->kategoriKelompok->nama,
+                ],
+
+                'jenis_pelatihan' => [
+                    'id' => $data->jenisPelatihanPetani->id,
+                    'nama' => $data->jenisPelatihanPetani->nama,
+                ],
+                'alasan' => $data->alasanPelatihan->jawaban,
+
+                // Files
+                'file_foto' => asset('storage/' . $data->file_foto),
+                'file_ktp' => asset('storage/' . $data->file_ktp),
+                'file_pengukuhan' => asset('storage/' . $data->file_pengukuhan_penyuluh_swadaya),
+                'file_rekomendasi' => asset('storage/' . $data->file_rekomendasi_kelompok),
+
+            ]
+        ]);
     }
 
     /**
