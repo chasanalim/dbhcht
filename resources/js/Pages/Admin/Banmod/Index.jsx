@@ -1,6 +1,6 @@
 import AdminLayout from "@/Layouts/admin/AdminLayout";
 import { Head, Link, router } from "@inertiajs/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import $, { data } from "jquery";
 import "datatables.net-bs5";
 import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
@@ -10,7 +10,10 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 export default function Index({ title, can, flash, dataRoute }) {
     const tableRef = useRef();
-
+    const [verificationFilter, setVerificationFilter] = useState("all");
+    const handleVerificationFilterChange = (e) => {
+        setVerificationFilter(e.target.value);
+    };
     useEffect(() => {
         const dt = $(tableRef.current).DataTable({
             processing: true,
@@ -19,6 +22,9 @@ export default function Index({ title, can, flash, dataRoute }) {
             ajax: {
                 url: dataRoute,
                 type: "GET",
+                data: function (d) {
+                    d.verification_status = verificationFilter;
+                },
                 headers: {
                     "X-Requested-With": "XMLHttpRequest",
                 },
@@ -41,24 +47,24 @@ export default function Index({ title, can, flash, dataRoute }) {
                     render: function (data) {
                         let buttons = [];
 
-                        // if (can.edit) {
-                        buttons.push(`
-                                <a href="${data.edit_url}" class="btn btn-sm btn-warning" title="Edit">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-                            `);
-                        // }
+                        // // if (can.edit) {
+                        // buttons.push(`
+                        //         <a href="${data.edit_url}" class="btn btn-sm btn-warning" title="Edit">
+                        //             <i class="bi bi-pencil-square"></i>
+                        //         </a>
+                        //     `);
+                        // // }
 
-                        // if (can.delete) {
-                        buttons.push(`
-                                <a href="javascript:void(0)"
-                                   onclick="deleteItem('${data.delete_url}')"
-                                   class="btn btn-sm btn-danger"
-                                   title="Hapus">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                            `);
-                        // }
+                        // // if (can.delete) {
+                        // buttons.push(`
+                        //         <a href="javascript:void(0)"
+                        //            onclick="deleteItem('${data.delete_url}')"
+                        //            class="btn btn-sm btn-danger"
+                        //            title="Hapus">
+                        //             <i class="bi bi-trash"></i>
+                        //         </a>
+                        //     `);
+                        // // }
 
                         buttons.push(`
                             <a href="${data.detail_url}" class="btn btn-sm btn-info" title="Detail">
@@ -138,8 +144,27 @@ export default function Index({ title, can, flash, dataRoute }) {
                     name: "skor",
                     className: "text-center",
                     render: function (data) {
-                        return `<span class="badge bg-success p-2">${parseFloat(data).toFixed(1)}</span>`;
-                    }
+                        return `<span class="badge bg-success p-2">${parseFloat(
+                            data
+                        ).toFixed(2)}</span>`;
+                    },
+                },
+                {
+                    data: "verifikasi_dokumen",
+                    name: "verifikasi_dokumen",
+                    className: "text-center",
+                    searchable: true,
+                    render: function (data) {
+                        const allVerified = data?.all_verified || false;
+                        const allApproved = data?.all_approved || false;
+
+                        if (allVerified && allApproved) {
+                            return `<span class="badge bg-success">Terverifikasi</span>`;
+                        } else if (allVerified && !allApproved) {
+                            return `<span class="badge bg-danger">Tidak Memenuhi Syarat</span>`;
+                        }
+                        return `<span class="badge bg-warning">Belum diverifikasi</span>`;
+                    },
                 },
             ],
             drawCallback: function () {
@@ -179,7 +204,7 @@ export default function Index({ title, can, flash, dataRoute }) {
                 }
             });
         };
-    }, [flash]);
+    }, [flash, verificationFilter]);
 
     const deleteItem = (url) => {
         if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
@@ -204,6 +229,35 @@ export default function Index({ title, can, flash, dataRoute }) {
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
                                 <h5 className="my-2 fw-bold">{title}</h5>
                             </div>
+                            <div className="d-flex justify-content-center mt-3">
+                                <div className="col-12 col-xl-3">
+                                    <div className="d-flex align-items-center">
+                                        <label className="form-label fw-bold ms-2 w-100">
+                                            Status Verifikasi:
+                                        </label>
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={verificationFilter}
+                                            onChange={
+                                                handleVerificationFilterChange
+                                            }
+                                        >
+                                            <option value="all">
+                                                Semua Status
+                                            </option>
+                                            <option value="verified">
+                                                Terverifikasi
+                                            </option>
+                                            <option value="rejected">
+                                                Tidak Memenuhi Syarat
+                                            </option>
+                                            <option value="pending">
+                                                Belum diverifikasi
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                             <div className="card-body">
                                 <div className="table-responsive">
                                     <table
@@ -215,46 +269,17 @@ export default function Index({ title, can, flash, dataRoute }) {
                                                 <th>No</th>
                                                 <th>AKSI</th>
                                                 <th>NIK</th>
-                                                {/* <th>NO KK</th> */}
                                                 <th>NAMA</th>
-                                                {/* <th>TEMPAT LAHIR</th> */}
-                                                {/* <th>TGL LAHIR</th> */}
                                                 <th>NO HP</th>
                                                 <th>ALAMAT</th>
                                                 <th>RT</th>
                                                 <th>RW</th>
                                                 <th>KELURAHAN</th>
                                                 <th>KECAMATAN</th>
-                                                {/* <th>AlAMAT DOMISILI</th>
-                                                <th>ALAMAT USAHA</th> */}
-                                                {/* <th>DAYA LISTRIK</th>
-                                                <th>DISABILITAS</th> */}
                                                 <th>KATEGORI</th>
-                                                {/* <th>JENIS KATEGORI</th> */}
                                                 <th>KLASTER USAHA</th>
-                                                {/* <th>TANGGUNGAN KELUARGA</th>
-                                                <th>LAMA USAHA</th>
-                                                <th>JUMLAH TENAGA</th>
-                                                <th>BRUTO</th>
-                                                <th>STATUS TEMPAT TINGGAL</th>
-                                                <th>ASET</th>
-                                                <th>HUTANG</th>
-                                                <th>JUMLAH LEGALITAS</th>
-                                                <th>JUMLAH TEKNOLOGI</th>
-                                                <th>JUMLAH PENYERAPAN NAKER</th>
-                                                <th>FOTO</th>
-                                                <th>KTP</th>
-                                                <th>KK</th>
-                                                <th>NIB</th>
-                                                <th>SKU</th>
-                                                <th>SKD</th>
-                                                <th>PRODUK</th>
-                                                <th>PERNYATAAN</th>
-                                                <th>PERIZINAN</th>
-                                                <th>SIINAS</th>
-                                                <th>BP</th>
-                                                <th>SERTIFIKAT PELATIHAN</th> */}
                                                 <th>SKOR</th>
+                                                <th>VERIFIKASI DOKUMEN</th>
                                             </tr>
                                         </thead>
                                     </table>

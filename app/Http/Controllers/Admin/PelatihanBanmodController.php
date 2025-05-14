@@ -6,11 +6,31 @@ use Illuminate\Http\Request;
 use App\Models\PelatihanBanmod;
 use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
+use App\Traits\HasVerifikasiDokumen;
 use Illuminate\Routing\Controllers\HasMiddleware;
 
 
 class PelatihanBanmodController extends Controller implements HasMiddleware
 {
+
+    use HasVerifikasiDokumen;
+
+    public function getVerificationType(): string
+    {
+        return 'PELATIHAN_BANMOD';
+    }
+
+    /**
+     * Get available document types for this model
+     */
+    public static function getDocumentTypes(): array
+    {
+        return [
+            'ktp' => 'KTP',
+            'kk' => 'Kartu Keluarga',
+            'nib' => 'NIB',
+        ];
+    }
     /**
      * Display a listing of the resource.
      */
@@ -25,17 +45,39 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
 
     public function index(Request $request)
     {
-        // $query = PelatihanBanmod::get();
-        // return response()->json($query);
         if ($request->wantsJson()) {
 
-            $query = PelatihanBanmod::query();
+            $query = PelatihanBanmod::with(['documentVerifications']);
 
             if ($request->has('jenis_pelatihan_industri') && $request->jenis_pelatihan_industri !== 'Semua Pelatihan') {
                 $query->where('jenis_pelatihan_industri', $request->jenis_pelatihan_industri);
             }
 
-            return DataTables::of($query)
+            $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor');
+
+            if ($request->has('verification_status')) {
+                $status = $request->verification_status;
+                $data = $data->filter(function ($item) use ($status) {
+                    $verifications = $item->documentVerifications;
+                    $requiredDocs = ['ktp', 'kk', 'nib'];
+                    $allVerified = count($verifications) === count($requiredDocs);
+                    $allApproved = $verifications->every(function ($verification) {
+                        return $verification->status === 1;
+                    });
+                    switch ($status) {
+                        case 'verified':
+                            return $allVerified && $allApproved;
+                        case 'rejected':
+                            return $allVerified && !$allApproved;
+                        case 'pending':
+                            return !$allVerified;
+                        default:
+                            return true;
+                    }
+                });
+            }
+
+            return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     return [
@@ -44,6 +86,21 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
                         'detail_url' => route('admin.pelatihan-banmod.show', $row->id)
                     ];
                 })
+                ->addColumn('verifikasi_dokumen', function ($row) {
+                    $requiredDocs = ['ktp', 'kk', 'nib'];
+                    $verifications = $row->documentVerifications;
+
+                    $allVerified = count($verifications) === count($requiredDocs);
+                    $allApproved = $verifications->every(function ($verification) {
+                        return $verification->status === 1;
+                    });
+
+                    return [
+                        'all_verified' => $allVerified,
+                        'all_approved' => $allApproved
+                    ];
+                })
+                ->rawColumns(['action', 'verifikasi_dokumen'])
                 ->make(true);
         }
 
@@ -101,7 +158,20 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
      */
     public function show(string $id)
     {
-        $data = PelatihanBanmod::findOrFail($id);
+        $data = PelatihanBanmod::with(['documentVerifications'])->findOrFail($id);
+        $verifiedDocuments = $data->documentVerifications
+            ->groupBy('document_type')
+            ->map(function ($verifications) {
+                $verification = $verifications->first();
+                return [
+                    'verified' => true,
+                    'status' => $verification->status,
+                    'verified_by' => $verification->verifier->name,
+                    'verified_at' => $verification->verified_at->format('d/m/Y H:i'),
+                    'notes' => $verification->notes
+                ];
+            })
+            ->toArray();
 
         return inertia('Admin/PelatihanBanmod/Show', [
             'title' => 'Detail Peserta Pelatihan Banmod',
@@ -149,12 +219,24 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
                     'diajak_teman' => $data->skor_diajak_teman,
                 ],
 
-                // Files
-                'file_ktp' => asset('storage/' . $data->file_ktp),
-                'file_kk' => asset('storage/' . $data->file_kk),
-                'file_nib' => asset('storage/' . $data->file_nib),
-
+                'skor_total' => $data->skor,
                 'komitmen' => $data->komitmen,
+                'files' => [
+                    'ktp' => [
+                        'url' => asset('storage/' . $data->file_ktp),
+                        'verification' => $verifiedDocuments['ktp'] ?? null
+                    ],
+                    'kk' => [
+                        'url' => asset('storage/' . $data->file_kk),
+                        'verification' => $verifiedDocuments['kk'] ?? null
+                    ],
+                    'nib' => [
+                        'url' => asset('storage/' . $data->file_nib),
+                        'verification' => $verifiedDocuments['nib'] ?? null
+                    ],
+                ],
+                'documentTypes' => PelatihanBanmod::getDocumentTypes(),
+
             ]
         ]);
     }

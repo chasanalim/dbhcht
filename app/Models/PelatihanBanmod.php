@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\HasVerifikasiDokumen;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PelatihanBanmod extends Model
 {
-    use HasFactory;
+    use HasFactory,
+        HasVerifikasiDokumen;
 
     protected $table = 'pelatihan_banmod';
 
@@ -46,4 +48,48 @@ class PelatihanBanmod extends Model
 
         'komitmen',
     ];
+
+    protected $appends = [
+        'skor',
+    ];
+
+    public function getSkorAttribute()
+    {
+        $skor = 0;
+        $skor += $this->skor_ketrampilan;
+        $skor += $this->skor_kualitas_produk;
+        $skor += $this->skor_permasalahan_usaha;
+        $skor += $this->skor_mengisi_waktu;
+        $skor += $this->skor_diajak_teman;
+        if ($this->perkembangan_omzet == 'Meningkat') {
+            $skor += 3;
+        } else if ($this->perkembangan_omzet == 'Tetap') {
+            $skor += 2;
+        } else if ($this->perkembangan_omzet == 'Menurun') {
+            $skor += 1;
+        }
+        if ($this->perkembangan_tenaga_kerja == 'Meningkat') {
+            $skor += 3;
+        } else if ($this->perkembangan_tenaga_kerja == 'Tetap') {
+            $skor += 2;
+        } else if ($this->perkembangan_tenaga_kerja == 'Menurun') {
+            $skor += 1;
+        }
+        return $skor / 21 * 100;
+    }
+
+
+    public function getVerificationType(): string
+    {
+        return 'PELATIHAN_BANMOD';
+    }
+
+    public static function getDocumentTypes(): array
+    {
+        return [
+            'ktp' => 'KTP',
+            'kk' => 'Kartu Keluarga',
+            'nib' => 'NIB',
+        ];
+    }
 }

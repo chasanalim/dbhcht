@@ -1,51 +1,314 @@
 import AdminLayout from "@/Layouts/admin/AdminLayout";
-import { Head } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
+import { useEffect, useState } from "react";
 
-export default function Show({ title, data }) {
-    const renderFilePreview = (url, label) => {
-        if (!url) return null;
+export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
+    const [showModal, setShowModal] = useState(false);
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const [activeFile, setActiveFile] = useState(null);
+    const [rejectNote, setRejectNote] = useState("");
+    const [showRejectForm, setShowRejectForm] = useState(false);
 
-        const extension = url.split(".").pop().toLowerCase();
+    const DOCUMENT_TYPES = {
+        PENDAFTARAN_BANMOD: [
+            { key: "foto", label: "Pas Foto" },
+            { key: "ktp", label: "KTP" },
+            { key: "kk", label: "Kartu Keluarga" },
+            { key: "nib", label: "NIB" },
+            { key: "sku", label: "SKU" },
+            { key: "skd", label: "Surat Keterangan Domisili" },
+            { key: "produk", label: "Foto Produk" },
+            { key: "pernyataan", label: "Surat Pernyataan Komitmen" },
+            { key: "siinas", label: "SIINAS" },
+            { key: "bp", label: "Businness Plan" },
+            { key: "sertifikat_pelatihan", label: "Sertifikat Pelatihan" },
+            { key: "perizinan", label: "Perizinan" },
+        ],
+    };
+
+    const handleVerification = async (fileType) => {
+        router.post(
+            route("admin.verify-document"),
+            {
+                training_type: type,
+                id: data.id,
+                document_type: fileType,
+                status: 1,
+                notes: "Dokumen telah diverifikasi",
+            },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setShowModal(false);
+                    // Refresh the page to get updated verification status
+                    router.reload();
+                },
+            }
+        );
+    };
+
+    useEffect(() => {
+        const html = document.documentElement;
+        if (showModal) {
+            html.style.overflow = "hidden";
+            const scrollbarWidth = window.innerWidth - html.clientWidth;
+            html.style.paddingRight = `${scrollbarWidth}px`;
+        } else {
+            html.style.overflow = "";
+            html.style.paddingRight = "";
+        }
+
+        return () => {
+            html.style.overflow = "";
+            html.style.paddingRight = "";
+        };
+    }, [showModal]);
+
+    const handleTolak = async (fileType) => {
+        router.post(
+            route("admin.tolak-document"),
+            {
+                training_type: type,
+                id: data.id,
+                document_type: fileType,
+                status: 0,
+                notes: rejectNote,
+            },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setShowModal(false);
+                    setShowRejectForm(false);
+                    setRejectNote("");
+                    router.reload();
+                },
+            }
+        );
+    };
+
+    const renderFilePreview = (fileData, label, fileType) => {
+        // Handle empty or invalid data
+        if (!fileData) return null;
+
+        // Handle multiple files (perizinan)
+        if (Array.isArray(fileData)) {
+            return (
+                <div className="row g-3">
+                    {fileData.map((file, index) => (
+                        <div key={index} className="col-12">
+                            <div className="card h-100">
+                                <div className="card-header d-flex justify-content-between align-items-center">
+                                    <h6 className="fw-bold mb-0">{`${label} ${
+                                        index + 1
+                                    }`}</h6>
+                                    {file.verification && (
+                                        <div className="d-flex align-items-center">
+                                            <i
+                                                className={`bi ${
+                                                    file.verification.status ===
+                                                    1
+                                                        ? "bi-check-circle-fill text-success"
+                                                        : "bi-x-circle-fill text-danger"
+                                                } me-2`}
+                                            ></i>
+                                            <small className="text-muted">
+                                                {file.verification.status === 1
+                                                    ? "Diverifikasi"
+                                                    : "Ditolak"}{" "}
+                                                oleh{" "}
+                                                {file.verification.verified_by}
+                                            </small>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="card-body d-flex flex-column">
+                                    {file.url.match(
+                                        /\.(jpg|jpeg|png|gif)$/i
+                                    ) ? (
+                                        <div
+                                            className="text-center mb-3"
+                                            style={{ height: "200px" }}
+                                        >
+                                            <img
+                                                src={file.url}
+                                                alt={`${label} ${index + 1}`}
+                                                className="img-fluid h-100 object-fit-cover"
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div className="ratio ratio-16x9 mb-3">
+                                            <embed
+                                                src={file.url}
+                                                type="application/pdf"
+                                                className="w-100 h-100"
+                                            />
+                                        </div>
+                                    )}
+                                    <div className="mt-auto">
+                                        <button
+                                            className={`btn btn-sm ${
+                                                file.verification
+                                                    ? file.verification
+                                                          .status === 1
+                                                        ? "btn-success"
+                                                        : "btn-danger"
+                                                    : "btn-primary"
+                                            } w-100`}
+                                            onClick={() => {
+                                                setActiveFile({
+                                                    url: file.url,
+                                                    label: `${label} ${
+                                                        index + 1
+                                                    }`,
+                                                    fileType,
+                                                    verification:
+                                                        file.verification,
+                                                });
+                                                setShowModal(true);
+                                            }}
+                                        >
+                                            <i
+                                                className={`bi ${
+                                                    file.verification
+                                                        ? file.verification
+                                                              .status === 1
+                                                            ? "bi-check-circle"
+                                                            : "bi-x-circle"
+                                                        : "bi-eye"
+                                                } me-1`}
+                                            ></i>
+                                            {file.verification
+                                                ? file.verification.status === 1
+                                                    ? "Terverifikasi"
+                                                    : "Ditolak"
+                                                : "Lihat & Verifikasi"}
+                                        </button>
+                                    </div>
+                                    {file.verification?.status === 0 && (
+                                        <div className="mt-2">
+                                            <small className="text-muted">
+                                                Catatan:{" "}
+                                                {file.verification.notes}
+                                            </small>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
+        // Handle single file
+        const extension = fileData.url.split(".").pop().toLowerCase();
         const isImage = ["jpg", "jpeg", "png", "gif"].includes(extension);
+        const isVerified = fileData.verification?.verified;
+        const status = fileData.verification?.status;
 
         return (
-            <div className="col-md-4 mb-4">
-                <div className="card h-100">
-                    <div className="card-header">
-                        <h6 className="fw-bold mb-0">{label}</h6>
-                    </div>
-                    <div className="card-body d-flex flex-column">
-                        {isImage ? (
-                            <div
-                                className="text-center mb-3"
-                                style={{ height: "200px" }}
-                            >
-                                <img
-                                    src={url}
-                                    alt={label}
-                                    className="img-fluid h-100 object-fit-cover"
-                                />
-                            </div>
-                        ) : (
-                            <div className="ratio ratio-16x9 mb-3">
-                                <embed
-                                    src={url}
-                                    type="application/pdf"
-                                    className="w-100 h-100"
-                                />
-                            </div>
-                        )}
-                        <a
-                            href={url}
-                            className="btn btn-sm btn-primary mt-auto"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <i className="bi bi-eye me-1"></i>
-                            Lihat File
-                        </a>
-                    </div>
+            <div className="card h-100">
+                <div className="card-header d-flex justify-content-between align-items-center">
+                    <h6 className="fw-bold mb-0">{label}</h6>
+                    {isVerified && (
+                        <div className="d-flex align-items-center">
+                            <i
+                                className={`bi ${
+                                    status === 1
+                                        ? "bi-check-circle-fill text-success"
+                                        : "bi-x-circle-fill text-danger"
+                                } me-2`}
+                            ></i>
+                            <small className="text-muted">
+                                {status === 1 ? "Diverifikasi" : "Ditolak"} oleh{" "}
+                                {fileData.verification.verified_by}
+                            </small>
+                        </div>
+                    )}
                 </div>
+                <div className="card-body d-flex flex-column">
+                    {isImage ? (
+                        <div
+                            className="text-center mb-3"
+                            style={{ height: "200px" }}
+                        >
+                            <img
+                                src={fileData.url}
+                                alt={label}
+                                className="img-fluid h-100 object-fit-cover"
+                            />
+                        </div>
+                    ) : (
+                        <div className="ratio ratio-16x9 mb-3">
+                            <embed
+                                src={fileData.url}
+                                type="application/pdf"
+                                className="w-100 h-100"
+                            />
+                        </div>
+                    )}
+                    <div className="mt-auto">
+                        <button
+                            className={`btn btn-sm ${
+                                isVerified
+                                    ? status === 1
+                                        ? "btn-success"
+                                        : "btn-danger"
+                                    : "btn-primary"
+                            } w-100`}
+                            onClick={() => {
+                                setActiveFile({
+                                    url: fileData.url,
+                                    label,
+                                    fileType,
+                                    verification: fileData.verification,
+                                });
+                                setShowModal(true);
+                            }}
+                        >
+                            <i
+                                className={`bi ${
+                                    isVerified
+                                        ? status === 1
+                                            ? "bi-check-circle"
+                                            : "bi-x-circle"
+                                        : "bi-eye"
+                                } me-1`}
+                            ></i>
+                            {isVerified
+                                ? status === 1
+                                    ? "Terverifikasi"
+                                    : "Ditolak"
+                                : "Lihat & Verifikasi"}
+                        </button>
+                    </div>
+                    {isVerified && status === 0 && (
+                        <div className="mt-2">
+                            <small className="text-muted">
+                                Catatan: {fileData.verification.notes}
+                            </small>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    };
+
+    const renderDocuments = () => {
+        if (!data.files || Object.keys(data.files).length === 0) {
+            return <p>Tidak ada dokumen tersedia.</p>;
+        }
+
+        return (
+            <div className="row row-cols-1 row-cols-md-3 g-4">
+                {Object.entries(data.documentTypes).map(([key, label]) => {
+                    const fileData = data.files[key];
+                    return fileData ? (
+                        <div key={key} className="col">
+                            {renderFilePreview(fileData, label, key)}
+                        </div>
+                    ) : null;
+                })}
             </div>
         );
     };
@@ -678,49 +941,177 @@ export default function Show({ title, data }) {
                             </div>
                         </div>
 
+                        {showModal && activeFile && (
+                            <div className="modal-wrapper">
+                                <div
+                                    className="modal-overlay"
+                                    onClick={() => setShowModal(false)}
+                                ></div>
+                                <div
+                                    className={`modal-container ${
+                                        isFullscreen ? "is-fullscreen" : ""
+                                    }`}
+                                >
+                                    <div className="modal-content">
+                                        <div
+                                            className="modal fade show d-block"
+                                            style={{
+                                                backgroundColor:
+                                                    "rgba(0,0,0,0.5)",
+                                            }}
+                                        >
+                                            <div className="modal-dialog modal-xl modal-dialog-centered">
+                                                <div className="modal-content">
+                                                    <div className="modal-header">
+                                                        <h5 className="modal-title">
+                                                            {activeFile.label}
+                                                        </h5>
+                                                        <button
+                                                            type="button"
+                                                            className="btn-close"
+                                                            onClick={() =>
+                                                                setShowModal(
+                                                                    false
+                                                                )
+                                                            }
+                                                        ></button>
+                                                    </div>
+                                                    <div className="modal-body">
+                                                        {activeFile.url.match(
+                                                            /\.(jpg|jpeg|png|gif)$/i
+                                                        ) ? (
+                                                            <img
+                                                                src={
+                                                                    activeFile.url
+                                                                }
+                                                                className="img-fluid"
+                                                                alt={
+                                                                    activeFile.label
+                                                                }
+                                                            />
+                                                        ) : (
+                                                            <embed
+                                                                src={
+                                                                    activeFile.url
+                                                                }
+                                                                type="application/pdf"
+                                                                width="100%"
+                                                                height="500px"
+                                                            />
+                                                        )}
+                                                    </div>
+                                                    <div className="modal-footer flex-column align-items-stretch">
+                                                        {showRejectForm && (
+                                                            <div className="w-100 mb-3">
+                                                                <div className="form-group">
+                                                                    <label className="form-label">
+                                                                        Alasan
+                                                                        Penolakan:
+                                                                    </label>
+                                                                    <textarea
+                                                                        className="form-control"
+                                                                        value={
+                                                                            rejectNote
+                                                                        }
+                                                                        onChange={(
+                                                                            e
+                                                                        ) =>
+                                                                            setRejectNote(
+                                                                                e
+                                                                                    .target
+                                                                                    .value
+                                                                            )
+                                                                        }
+                                                                        rows="3"
+                                                                        placeholder="Tuliskan alasan penolakan dokumen..."
+                                                                    ></textarea>
+                                                                </div>
+                                                                <div className="d-flex justify-content-end gap-2 mt-2">
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-secondary"
+                                                                        onClick={() => {
+                                                                            setShowRejectForm(
+                                                                                false
+                                                                            );
+                                                                            setRejectNote(
+                                                                                ""
+                                                                            );
+                                                                        }}
+                                                                    >
+                                                                        Batal
+                                                                    </button>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-danger"
+                                                                        onClick={() =>
+                                                                            handleTolak(
+                                                                                activeFile.fileType
+                                                                            )
+                                                                        }
+                                                                        disabled={
+                                                                            !rejectNote.trim()
+                                                                        }
+                                                                    >
+                                                                        Konfirmasi
+                                                                        Penolakan
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                        <div className="w-100 d-flex justify-content-end gap-2">
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-secondary"
+                                                                onClick={() =>
+                                                                    setShowModal(
+                                                                        false
+                                                                    )
+                                                                }
+                                                            >
+                                                                Tutup
+                                                            </button>
+                                                            {!activeFile.verification && (
+                                                                <>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-danger"
+                                                                        onClick={() =>
+                                                                            setShowRejectForm(
+                                                                                true
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        Tolak
+                                                                        Dokumen
+                                                                    </button>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-primary"
+                                                                        onClick={() =>
+                                                                            handleVerification(
+                                                                                activeFile.fileType
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        Verifikasi
+                                                                        Dokumen
+                                                                    </button>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         <div className="mt-4">
                             <h6 className="fw-bold mb-3">Dokumen</h6>
-                            <div className="row">
-                                {/* Kelompok Dokumen Identitas */}
-                                {renderFilePreview(data.files.foto, "Foto")}
-                                {renderFilePreview(data.files.ktp, "KTP")}
-                                {renderFilePreview(
-                                    data.files.kk,
-                                    "Kartu Keluarga"
-                                )}
-
-                                {/* Kelompok Dokumen Usaha */}
-                                {renderFilePreview(data.files.nib, "NIB")}
-                                {renderFilePreview(data.files.sku, "SKU")}
-                                {renderFilePreview(data.files.skd, "SKD")}
-                                {renderFilePreview(
-                                    data.files.produk,
-                                    "Foto Produk"
-                                )}
-                                {renderFilePreview(
-                                    data.files.pernyataan,
-                                    "Surat Pernyataan"
-                                )}
-
-                                {/* Dokumen Perizinan */}
-                                {data.files.perizinan?.map((url, index) =>
-                                    renderFilePreview(
-                                        url,
-                                        `Perizinan ${index + 1}`
-                                    )
-                                )}
-
-                                {/* Dokumen Tambahan */}
-                                {renderFilePreview(data.files.siinas, "SIINAS")}
-                                {renderFilePreview(
-                                    data.files.bp,
-                                    "Bukti Pembayaran"
-                                )}
-                                {renderFilePreview(
-                                    data.files.sertifikat_pelatihan,
-                                    "Sertifikat Pelatihan"
-                                )}
-                            </div>
+                            {renderDocuments()}
                         </div>
                     </div>
                 </div>
