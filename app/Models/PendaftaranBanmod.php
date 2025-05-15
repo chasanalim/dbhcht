@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\HasVerifikasiDokumen;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PendaftaranBanmod extends Model
 {
+    use HasFactory, HasVerifikasiDokumen;
+
     protected $fillable = [
         "nik",
         "kk",
@@ -56,6 +60,10 @@ class PendaftaranBanmod extends Model
         "file_siinas",
         "file_bp",
         "file_sertifikat_pelatihan",
+    ];
+
+    protected $casts = [
+        'file_perizinan' => 'array'
     ];
 
     protected function casts(): array
@@ -124,7 +132,7 @@ class PendaftaranBanmod extends Model
             } else {
                 $skor += (1 / 4 * 0.05);
             }
-            return $skor * 100;
+            return $skor;
         } else {
             $skor += (($this->tanggunganKeluarga->skor / 3) * 0.2);
             $skor += (($this->lamaUsaha->skor / 4) * 0.15);
@@ -147,7 +155,7 @@ class PendaftaranBanmod extends Model
             } else {
                 $skor += (1 / 4 * 0.1);
             }
-            return $skor * 100;
+            return $skor;
         }
     }
 
@@ -190,5 +198,122 @@ class PendaftaranBanmod extends Model
     public function brutoPerbulan(): BelongsTo
     {
         return $this->belongsTo(Bruto::class, 'bruto');
+    }
+
+    public function getVerificationType(): string
+    {
+        return 'PENDAFTARAN_BANMOD';
+    }
+
+
+    public static function getDocumentTypes(int $kategori = null): array
+    {
+        $baseDocuments = [
+            'foto' => 'Pas Foto',
+            'ktp' => 'KTP',
+            'kk' => 'Kartu Keluarga',
+            'nib' => 'NIB',
+            'sku' => 'SKU',
+            'skd' => 'SKD',
+            'produk' => 'Produk',
+            'pernyataan' => 'Surat Pernyataan'
+        ];
+
+        $additionalDocuments = [
+            // Kategori 1,2,3 - Dokumen dasar
+            1 => $baseDocuments,
+            2 => $baseDocuments,
+            3 => $baseDocuments,
+
+            // Kategori 4 - IKM (tambah perizinan, siinas, bp)
+            4 => array_merge($baseDocuments, [
+                'perizinan' => 'Perizinan',
+                'siinas' => 'SIINAS',
+                'bp' => 'Bussiness Plan'
+            ]),
+
+            // Kategori 5 - Masyarakat Miskin (tambah sertifikat)
+            5 => array_merge($baseDocuments, [
+                'sertifikat_pelatihan' => 'Sertifikat Pelatihan'
+            ]),
+
+            // Default - Semua dokumen
+            null => [
+                'foto' => 'Pas Foto',
+                'ktp' => 'KTP',
+                'kk' => 'Kartu Keluarga',
+                'nib' => 'NIB',
+                'sku' => 'SKU',
+                'skd' => 'SKD',
+                'produk' => 'Produk',
+                'pernyataan' => 'Surat Pernyataan',
+                'perizinan' => 'Perizinan',
+                'siinas' => 'SIINAS',
+                'bp' => 'Bussiness Plan',
+                'sertifikat_pelatihan' => 'Sertifikat Pelatihan'
+            ]
+        ];
+
+        return $additionalDocuments[$kategori] ?? $additionalDocuments[null];
+    }
+
+    public static function getRequiredDocuments(int $kategori = null): array
+    {
+        $baseDocuments = ['foto', 'ktp', 'kk', 'nib', 'sku', 'skd', 'produk', 'pernyataan'];
+
+        $additionalDocuments = [
+            // Kategori 1 - Buruh Pabrik Rokok
+            1 => $baseDocuments,
+
+            // Kategori 2 - Buruh Tani Tembakau
+            2 => $baseDocuments,
+
+            // Kategori 3 - Pekerja Pabrik Rokok
+            3 => $baseDocuments,
+
+            // Kategori 4 - IKM
+            4 => array_merge($baseDocuments, [
+                'siinas',
+                'bp',
+                'perizinan',
+            ]),
+
+            // Kategori 5 - Masyarakat Miskin
+            5 => array_merge($baseDocuments, [
+                'sertifikat_pelatihan'
+            ]),
+
+
+            // Default - Semua dokumen
+            null => [
+                'foto',
+                'ktp',
+                'kk',
+                'nib',
+                'sku',
+                'skd',
+                'produk',
+                'perizinan',
+                'siinas',
+                'bp',
+                'sertifikat_pelatihan',
+                'pernyataan'
+            ]
+        ];
+
+        return $additionalDocuments[$kategori] ?? $additionalDocuments[null];
+    }
+
+    public static function getKategoriName($kategori)
+    {
+        $categories = [
+            1 => 'Buruh Pabrik Rokok',
+            2 => 'Buruh Tani Tembakau',
+            3 => 'Pekerja Pabrik Rokok',
+            4 => 'IKM',
+            5 => 'Masyarakat Miskin'
+        ];
+
+        return $categories[$kategori] ?? 'Semua Kategori';
     }
 }

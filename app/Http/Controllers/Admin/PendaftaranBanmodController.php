@@ -7,10 +7,38 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Models\PendaftaranBanmod;
 use App\Http\Controllers\Controller;
+use App\Traits\HasVerifikasiDokumen;
 use Illuminate\Routing\Controllers\HasMiddleware;
 
 class PendaftaranBanmodController extends Controller implements HasMiddleware
 {
+    use HasVerifikasiDokumen;
+
+    public function getVerificationType(): string
+    {
+        return 'PENDAFTARAN_BANMOD';
+    }
+
+    /**
+     * Get available document types for this model
+     */
+    public static function getDocumentTypes(): array
+    {
+        return [
+            'foto' => 'Pas Foto',
+            'ktp' => 'KTP',
+            'kk' => 'Kartu Keluarga',
+            'nib' => 'NIB',
+            'sku' => 'SKU',
+            'skd' => 'SKD',
+            'produk' => 'Produk',
+            'pernyataan' => 'Surat Pernyataan',
+            'perizinan' => 'Perizinan',
+            'siinas' => 'SIINAS',
+            'bp' => 'BP',
+            'sertifikat_pelatihan' => 'Sertifikat Pelatihan',
+        ];
+    }
     /**
      * Display a listing of the resource.
      */
@@ -23,9 +51,32 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
     }
     public function index(Request $request)
     {
-        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->get()->sortByDesc('skor');
-        // return response()->json($data);
         if ($request->wantsJson()) {
+            $query = PendaftaranBanmod::with(['documentVerifications', 'klasterUsaha', 'kategoriUsaha']);
+            $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor');
+            if ($request->has('verification_status')) {
+                $status = $request->verification_status;
+                $data = $data->filter(function ($item) use ($status) {
+                    $verifications = $item->documentVerifications;
+                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($item->kategori);
+
+                    $allVerified = count($verifications) === count($requiredDocs);
+                    $allApproved = $verifications->every(function ($verification) {
+                        return $verification->status === 1;
+                    });
+
+                    switch ($status) {
+                        case 'verified':
+                            return $allVerified && $allApproved;
+                        case 'rejected':
+                            return $allVerified && !$allApproved;
+                        case 'pending':
+                            return !$allVerified;
+                        default:
+                            return true;
+                    }
+                });
+            }
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
@@ -35,6 +86,21 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                         'detail_url' => route('admin.banmod.show', $row->id)
                     ];
                 })
+                ->addColumn('verifikasi_dokumen', function ($row) {
+                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($row->kategori);
+                    $verifications = $row->documentVerifications;
+
+                    $allVerified = count($verifications) === count($requiredDocs);
+                    $allApproved = $verifications->every(function ($verification) {
+                        return $verification->status === 1;
+                    });
+
+                    return [
+                        'all_verified' => $allVerified,
+                        'all_approved' => $allApproved
+                    ];
+                })
+                ->rawColumns(['action', 'verifikasi_dokumen'])
                 ->make(true);
         }
         return Inertia::render('Admin/Banmod/Index', [
@@ -42,16 +108,39 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
             'flash' => [
                 'message' => session('message')
             ],
-            'dataRoute' => route('admin.banmod.index')
+            'dataRoute' => route('admin.banmod.index'),
         ]);
     }
 
     public function buruh_pabrik_rokok(Request $request)
     {
-
-        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->where('kategori', '1')->get()->sortByDesc('skor');
-
         if ($request->wantsJson()) {
+            $query = PendaftaranBanmod::with(['documentVerifications', 'klasterUsaha', 'kategoriUsaha'])->where('kategori', '1');
+            $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor');
+
+            // return response()->json($data);
+            if ($request->has('verification_status')) {
+                $status = $request->verification_status;
+                $data = $data->filter(function ($item) use ($status) {
+                    $verifications = $item->documentVerifications;
+                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments(1);
+                    $allVerified = count($verifications) === count($requiredDocs);
+                    $allApproved = $verifications->every(function ($verification) {
+                        return $verification->status === 1;
+                    });
+
+                    switch ($status) {
+                        case 'verified':
+                            return $allVerified && $allApproved;
+                        case 'rejected':
+                            return $allVerified && !$allApproved;
+                        case 'pending':
+                            return !$allVerified;
+                        default:
+                            return true;
+                    }
+                });
+            }
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
@@ -61,21 +150,66 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                         'detail_url' => route('admin.banmod.show', $row->id)
                     ];
                 })
+                ->addColumn('verifikasi_dokumen', function ($row) {
+                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($row->kategori);
+                    $verifications = $row->documentVerifications;
+
+                    $allVerified = count($verifications) === count($requiredDocs);
+                    $allApproved = $verifications->every(function ($verification) {
+                        return $verification->status === 1;
+                    });
+
+                    return [
+                        'all_verified' => $allVerified,
+                        'all_approved' => $allApproved,
+                        'debug' => [
+                            'kategori' => $row->kategori,
+                            'required_docs' => $requiredDocs,
+                            'verifications' => $verifications,
+                            'verifications_count' => count($verifications),
+                            'required_docs_count' => count($requiredDocs),
+                            'verification_statuses' => $verifications->pluck('status')->toArray()
+                        ]
+                    ];
+                })
+                ->rawColumns(['action', 'verifikasi_dokumen'])
                 ->make(true);
         }
-
         return Inertia::render('Admin/Banmod/Index', [
             'title' => 'Daftar Peserta Bantuan Modal - Buruh Pabrik Rokok',
             'flash' => [
                 'message' => session('message')
             ],
-            'dataRoute' => route('admin.banmod.buruh-pabrik-rokok')
+            'dataRoute' => route('admin.banmod.buruh-pabrik-rokok'),
         ]);
     }
     public function buruh_tani_tembakau(Request $request)
     {
-        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->where('kategori', '2')->get()->sortByDesc('skor');
         if ($request->wantsJson()) {
+            $query = PendaftaranBanmod::with(['documentVerifications', 'klasterUsaha', 'kategoriUsaha'])->where('kategori', '2');
+            $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor');
+            if ($request->has('verification_status')) {
+                $status = $request->verification_status;
+                $data = $data->filter(function ($item) use ($status) {
+                    $verifications = $item->documentVerifications;
+                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($item->kategori);
+                    $allVerified = count($verifications) === count($requiredDocs);
+                    $allApproved = $verifications->every(function ($verification) {
+                        return $verification->status === 1;
+                    });
+
+                    switch ($status) {
+                        case 'verified':
+                            return $allVerified && $allApproved;
+                        case 'rejected':
+                            return $allVerified && !$allApproved;
+                        case 'pending':
+                            return !$allVerified;
+                        default:
+                            return true;
+                    }
+                });
+            }
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
@@ -85,21 +219,57 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                         'detail_url' => route('admin.banmod.show', $row->id)
                     ];
                 })
+                ->addColumn('verifikasi_dokumen', function ($row) {
+                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($row->kategori);
+                    $verifications = $row->documentVerifications;
+                    $allVerified = count($verifications) === count($requiredDocs);
+                    $allApproved = $verifications->every(function ($verification) {
+                        return $verification->status === 1;
+                    });
+
+                    return [
+                        'all_verified' => $allVerified,
+                        'all_approved' => $allApproved
+                    ];
+                })
+                ->rawColumns(['action', 'verifikasi_dokumen'])
                 ->make(true);
         }
-
         return Inertia::render('Admin/Banmod/Index', [
-            'title' => 'Pendaftar Bantuan Modal',
+            'title' => 'Daftar Peserta Bantuan Modal - Buruh Tani Tembakau',
             'flash' => [
                 'message' => session('message')
             ],
-            'dataRoute' => route('admin.banmod.buruh-tani-tembakau')
+            'dataRoute' => route('admin.banmod.buruh-tani-tembakau'),
         ]);
     }
     public function pekerja_pabrik_rokok(Request $request)
     {
-        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->where('kategori', '3')->get()->sortByDesc('skor');
         if ($request->wantsJson()) {
+            $query = PendaftaranBanmod::with(['documentVerifications', 'klasterUsaha', 'kategoriUsaha'])->where('kategori', '3');
+            $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor');
+            if ($request->has('verification_status')) {
+                $status = $request->verification_status;
+                $data = $data->filter(function ($item) use ($status) {
+                    $verifications = $item->documentVerifications;
+                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($item->kategori);
+                    $allVerified = count($verifications) === count($requiredDocs);
+                    $allApproved = $verifications->every(function ($verification) {
+                        return $verification->status === 1;
+                    });
+
+                    switch ($status) {
+                        case 'verified':
+                            return $allVerified && $allApproved;
+                        case 'rejected':
+                            return $allVerified && !$allApproved;
+                        case 'pending':
+                            return !$allVerified;
+                        default:
+                            return true;
+                    }
+                });
+            }
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
@@ -109,21 +279,57 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                         'detail_url' => route('admin.banmod.show', $row->id)
                     ];
                 })
+                ->addColumn('verifikasi_dokumen', function ($row) {
+                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($row->kategori);
+                    $verifications = $row->documentVerifications;
+                    $allVerified = count($verifications) === count($requiredDocs);
+                    $allApproved = $verifications->every(function ($verification) {
+                        return $verification->status === 1;
+                    });
+
+                    return [
+                        'all_verified' => $allVerified,
+                        'all_approved' => $allApproved
+                    ];
+                })
+                ->rawColumns(['action', 'verifikasi_dokumen'])
                 ->make(true);
         }
-
         return Inertia::render('Admin/Banmod/Index', [
             'title' => 'Daftar Peserta Bantuan Modal - Pekerja Pabrik Rokok',
             'flash' => [
                 'message' => session('message')
             ],
-            'dataRoute' => route('admin.banmod.pekerja-pabrik-rokok')
+            'dataRoute' => route('admin.banmod.pekerja-pabrik-rokok'),
         ]);
     }
     public function ikm(Request $request)
     {
-        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->where('kategori', '4')->get()->sortByDesc('skor');
         if ($request->wantsJson()) {
+            $query = PendaftaranBanmod::with(['documentVerifications', 'klasterUsaha', 'kategoriUsaha'])->where('kategori', '4');
+            $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor');
+            if ($request->has('verification_status')) {
+                $status = $request->verification_status;
+                $data = $data->filter(function ($item) use ($status) {
+                    $verifications = $item->documentVerifications;
+                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($item->kategori);
+                    $allVerified = count($verifications) === count($requiredDocs);
+                    $allApproved = $verifications->every(function ($verification) {
+                        return $verification->status === 1;
+                    });
+
+                    switch ($status) {
+                        case 'verified':
+                            return $allVerified && $allApproved;
+                        case 'rejected':
+                            return $allVerified && !$allApproved;
+                        case 'pending':
+                            return !$allVerified;
+                        default:
+                            return true;
+                    }
+                });
+            }
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
@@ -133,21 +339,57 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                         'detail_url' => route('admin.banmod.show', $row->id)
                     ];
                 })
+                ->addColumn('verifikasi_dokumen', function ($row) {
+                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($row->kategori);
+                    $verifications = $row->documentVerifications;
+                    $allVerified = count($verifications) === count($requiredDocs);
+                    $allApproved = $verifications->every(function ($verification) {
+                        return $verification->status === 1;
+                    });
+
+                    return [
+                        'all_verified' => $allVerified,
+                        'all_approved' => $allApproved
+                    ];
+                })
+                ->rawColumns(['action', 'verifikasi_dokumen'])
                 ->make(true);
         }
-
         return Inertia::render('Admin/Banmod/Index', [
-            'title' => 'Daftar Peserta Bantuan Modal - Industri Kecil dan Menengah',
+            'title' => 'Daftar Peserta Bantuan Modal - IKM',
             'flash' => [
                 'message' => session('message')
             ],
-            'dataRoute' => route('admin.banmod.ikm')
+            'dataRoute' => route('admin.banmod.ikm'),
         ]);
     }
     public function masyarakat_miskin(Request $request)
     {
-        $data = PendaftaranBanmod::with('klasterUsaha', 'kategoriUsaha')->where('kategori', '5')->get()->sortByDesc('skor');
         if ($request->wantsJson()) {
+            $query = PendaftaranBanmod::with(['documentVerifications', 'klasterUsaha', 'kategoriUsaha'])->where('kategori', '5');
+            $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor');
+            if ($request->has('verification_status')) {
+                $status = $request->verification_status;
+                $data = $data->filter(function ($item) use ($status) {
+                    $verifications = $item->documentVerifications;
+                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($item->kategori);
+                    $allVerified = count($verifications) === count($requiredDocs);
+                    $allApproved = $verifications->every(function ($verification) {
+                        return $verification->status === 1;
+                    });
+
+                    switch ($status) {
+                        case 'verified':
+                            return $allVerified && $allApproved;
+                        case 'rejected':
+                            return $allVerified && !$allApproved;
+                        case 'pending':
+                            return !$allVerified;
+                        default:
+                            return true;
+                    }
+                });
+            }
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
@@ -157,15 +399,29 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                         'detail_url' => route('admin.banmod.show', $row->id)
                     ];
                 })
+                ->addColumn('verifikasi_dokumen', function ($row) {
+                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($row->kategori);
+                    $verifications = $row->documentVerifications;
+                    $allVerified = count($verifications) === count($requiredDocs);
+                    $allApproved = $verifications->every(function ($verification) {
+                        return $verification->status === 1;
+                    });
+
+                    return [
+                        'all_verified' => $allVerified,
+                        'all_approved' => $allApproved
+                    ];
+                })
+                ->rawColumns(['action', 'verifikasi_dokumen'])
                 ->make(true);
         }
-
         return Inertia::render('Admin/Banmod/Index', [
             'title' => 'Daftar Peserta Bantuan Modal - Masyarakat Miskin',
             'flash' => [
                 'message' => session('message')
             ],
-            'dataRoute' => route('admin.banmod.masyarakat-miskin')
+            'dataRoute' => route('admin.banmod.masyarakat-miskin'),
+
         ]);
     }
 
@@ -196,9 +452,81 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
             'jumlahLegalitas',
             'jumlahTeknologiDigital',
             'penyerapanTenagaMiskin',
-            'brutoPerbulan'
+            'brutoPerbulan',
+            'documentVerifications.verifier'
         ])->findOrFail($id);
 
+        $verifiedDocuments = $data->documentVerifications
+            ->groupBy('document_type')
+            ->map(function ($verifications) {
+                $verification = $verifications->first();
+                return [
+                    'verified' => true,
+                    'status' => $verification->status,
+                    'verified_by' => $verification->verifier->name,
+                    'verified_at' => $verification->verified_at->format('d/m/Y H:i'),
+                    'notes' => $verification->notes
+                ];
+            })
+            ->toArray();
+
+        // Get required documents for this category
+        $requiredDocs = PendaftaranBanmod::getDocumentTypes($data->kategori);
+
+        // Initialize files array
+        $files = [];
+
+        // Add single files only if they exist
+        $singleFiles = [
+            'foto' => $data->file_foto,
+            'ktp' => $data->file_ktp,
+            'kk' => $data->file_kk,
+            'nib' => $data->file_nib,
+            'sku' => $data->file_sku,
+            'skd' => $data->file_skd,
+            'produk' => $data->file_produk,
+            'pernyataan' => $data->file_pernyataan,
+            'siinas' => $data->file_siinas,
+            'bp' => $data->file_bp,
+            'sertifikat_pelatihan' => $data->file_sertifikat_pelatihan,
+        ];
+
+        foreach ($singleFiles as $type => $file) {
+            if (!empty($file) && isset($requiredDocs[$type])) {
+                $files[$type] = [
+                    'url' => asset($file),
+                    'verification' => $verifiedDocuments[$type] ?? null
+                ];
+            }
+        }
+
+        // Perbaiki handling multiple perizinan files
+        if (!empty($data->file_perizinan) && isset($requiredDocs['perizinan'])) {
+            $perizinanArray = [];
+
+            // Handle jika string JSON
+            if (is_string($data->file_perizinan)) {
+                $decoded = json_decode($data->file_perizinan, true);
+                $perizinanArray = is_array($decoded) ? $decoded : [$data->file_perizinan];
+            }
+            // Handle jika array
+            else if (is_array($data->file_perizinan)) {
+                $perizinanArray = $data->file_perizinan;
+            }
+            // Handle jika single string
+            else {
+                $perizinanArray = [$data->file_perizinan];
+            }
+
+            if (!empty($perizinanArray)) {
+                $files['perizinan'] = array_map(function ($file) use ($verifiedDocuments) {
+                    return [
+                        'url' => asset($file),
+                        'verification' => $verifiedDocuments['perizinan'] ?? null
+                    ];
+                }, $perizinanArray);
+            }
+        }
         // return response()->json($data);
 
         return Inertia::render('Admin/Banmod/Show', [
@@ -246,21 +574,14 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                 'skor_teknologi' => $data->jumlahTeknologiDigital?->skor,
                 'jumlah_penyerapan_naker' => $data->penyerapanTenagaMiskin?->nama,
                 'skor_penyerapan_naker' => $data->penyerapanTenagaMiskin?->skor,
-                'files' => [
-                    'foto' => asset('' . $data->file_foto),
-                    'ktp' => asset('' . $data->file_ktp),
-                    'kk' => asset('' . $data->file_kk),
-                    'nib' => asset('' . $data->file_nib),
-                    'sku' => asset('' . $data->file_sku),
-                    'skd' => asset('' . $data->file_skd),
-                    'produk' => asset('' . $data->file_produk),
-                    'pernyataan' => asset('' . $data->file_pernyataan),
-                    'perizinan' => $data->file_perizinan ? array_map(fn($file) => asset('' . $file), $data->file_perizinan) : [],
-                    'siinas' => asset('' . $data->file_siinas),
-                    'bp' => asset('' . $data->file_bp),
-                    'sertifikat_pelatihan' => asset('' . $data->file_sertifikat_pelatihan),
-                ]
+
+                'files' => $files,
+                'documentTypes' => array_intersect_key(
+                    PendaftaranBanmod::getDocumentTypes($data->kategori),
+                    $files
+                )
             ]
+
         ]);
     }
 

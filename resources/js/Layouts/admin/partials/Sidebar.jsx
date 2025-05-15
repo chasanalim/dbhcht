@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-// import "bootstrap/dist/css/bootstrap.min.css";
-// import "bootstrap/dist/js/bootstrap.bundle.min.js";
+
 import { Link, usePage } from "@inertiajs/react";
 import NavLink from "@/Components/NavLink";
 import { Nav, NavDropdown } from "react-bootstrap";
@@ -348,7 +347,7 @@ export default function Sidebar() {
                             </>
                         )}
 
-                        {(can.viewMasterLampiranFile ||
+                        {(can.viewMasterLampiranFile || can.viewMasterPertanian ||
                             can.viewMasterBanmod) && (
                             <>
                                 <li>
@@ -424,6 +423,31 @@ export default function Sidebar() {
                                         <i className="bi bi-person-fill-lock fs-5"></i>
                                         <span className="text-white mt-1 ms-2">
                                             Penerima Pelatihan Banmod
+                                        </span>
+                                    </NavLink>
+                                </li>
+                            </>
+                        )}
+
+                        {can.viewMasterPertanian && (
+                            <>
+                                <li>
+                                    <NavLink
+                                        href={route("admin.kelompoktani.index")}
+                                        active={route().current(
+                                            "admin.kelompoktani.index"
+                                        )}
+                                        className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                            route().current(
+                                                "admin.kelompoktani.index"
+                                            )
+                                                ? "active"
+                                                : ""
+                                        }`}
+                                    >
+                                        <i className="bi bi-person-fill-lock fs-5"></i>
+                                        <span className="text-white mt-1 ms-2">
+                                            Master Kelompok Tani
                                         </span>
                                     </NavLink>
                                 </li>

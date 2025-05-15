@@ -3,7 +3,7 @@ import React from "react";
 // import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import Navigation from "./partials/Navigation";
 import { Head, usePage } from "@inertiajs/react";
-import Sidebar from "./partials/Sidebar";
+import Sidebar  from "./partials/Sidebar";
 
 export default function AdminLayout({ children }) {
     const { auth } = usePage().props;
