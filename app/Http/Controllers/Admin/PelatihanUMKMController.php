@@ -7,10 +7,33 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
 use App\Models\PelatihanUmkm;
+use App\Traits\HasVerifikasiDokumen;
 use Illuminate\Routing\Controllers\HasMiddleware;
+
+use function Pest\Laravel\get;
 
 class PelatihanUMKMController extends Controller implements HasMiddleware
 {
+    use HasVerifikasiDokumen;
+
+    public function getVerificationType(): string
+    {
+        return 'PELATIHAN_UMKM';
+    }
+
+    /**
+     * Get available document types for this model
+     */
+    public static function getDocumentTypes(): array
+    {
+        return [
+            'foto' => 'Pas Foto',
+            'ktp' => 'KTP',
+            'kk' => 'Kartu Keluarga',
+            'pernyataan' => 'Surat Pernyataan'
+        ];
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -25,7 +48,7 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
     public function index(Request $request)
     {
         if ($request->wantsJson()) {
-            $query = PelatihanUmkm::query();
+            $query = PelatihanUmkm::with(['documentVerifications']);
 
             // Check prioritas_1
             if ($request->has('prioritas_1') && $request->prioritas_1 !== 'Semua Pelatihan') {
@@ -44,9 +67,32 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
             ) {
                 $query->where('prioritas_3', $request->prioritas_3);
             }
+            $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor');
 
+            if ($request->has('verification_status')) {
+                $status = $request->verification_status;
+                $data = $data->filter(function ($item) use ($status) {
+                    $verifications = $item->documentVerifications;
+                    $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan'];
+                    $allVerified = count($verifications) === count($requiredDocs);
+                    $allApproved = $verifications->every(function ($verification) {
+                        return $verification->status === 1;
+                    });
 
-            return DataTables::of($query)
+                    switch ($status) {
+                        case 'verified':
+                            return $allVerified && $allApproved;
+                        case 'rejected':
+                            return $allVerified && !$allApproved;
+                        case 'pending':
+                            return !$allVerified;
+                        default:
+                            return true;
+                    }
+                });
+            }
+
+            return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     return [
@@ -55,6 +101,21 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
                         'detail_url' => route('admin.umkm.show', $row->id)
                     ];
                 })
+                ->addColumn('verifikasi_dokumen', function ($row) {
+                    $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan'];
+                    $verifications = $row->documentVerifications;
+
+                    $allVerified = count($verifications) === count($requiredDocs);
+                    $allApproved = $verifications->every(function ($verification) {
+                        return $verification->status === 1;
+                    });
+
+                    return [
+                        'all_verified' => $allVerified,
+                        'all_approved' => $allApproved
+                    ];
+                })
+                ->rawColumns(['action', 'verifikasi_dokumen'])
                 ->make(true);
         }
         $pelatihan = [
@@ -107,8 +168,21 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
      */
     public function show(string $id)
     {
-        $data = PelatihanUmkm::with(['Refpendidikan', 'alasanPelatihan', 'kesesuaianPelatihan', 'pengalamanPelatihan'])->findOrFail($id);
+        $data = PelatihanUmkm::with(['alasanPelatihan', 'kesesuaianPelatihan', 'pengalamanPelatihan', 'documentVerifications.verifier'])->findOrFail($id);
         // return response()->json($data);
+        $verifiedDocuments = $data->documentVerifications
+            ->groupBy('document_type')
+            ->map(function ($verifications) {
+                $verification = $verifications->first();
+                return [
+                    'verified' => true,
+                    'status' => $verification->status,
+                    'verified_by' => $verification->verifier->name,
+                    'verified_at' => $verification->verified_at->format('d/m/Y H:i'),
+                    'notes' => $verification->notes
+                ];
+            })
+            ->toArray();
         return Inertia::render('Admin/PelatihanUMKM/Show', [
             'title' => 'Detail Peserta Pelatihan UMKM',
             'data' => [
@@ -163,11 +237,24 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
 
                 // Files
                 'files' => [
-                    'foto' => asset('storage/' . $data->file_foto),
-                    'ktp' => asset('storage/' . $data->file_ktp),
-                    'kk' => asset('storage/' . $data->file_kk),
-                    'pernyataan' => asset('storage/' . $data->file_pernyataan),
-                ]
+                    'foto' => [
+                        'url' => asset('storage/' . $data->file_foto),
+                        'verification' => $verifiedDocuments['foto'] ?? null
+                    ],
+                    'ktp' => [
+                        'url' => asset('storage/' . $data->file_ktp),
+                        'verification' => $verifiedDocuments['ktp'] ?? null
+                    ],
+                    'kk' => [
+                        'url' => asset('storage/' . $data->file_kk),
+                        'verification' => $verifiedDocuments['kk'] ?? null
+                    ],
+                    'pernyataan' => [
+                        'url' => asset('storage/' . $data->file_pernyataan),
+                        'verification' => $verifiedDocuments['pernyataan'] ?? null
+                    ],
+                ],
+                'documentTypes' => PelatihanUmkm::getDocumentTypes()
             ]
         ]);
     }

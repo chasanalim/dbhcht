@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\HasVerifikasiDokumen;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PelatihanUmkm extends Model
 {
-    use HasFactory;
+    use HasFactory,HasVerifikasiDokumen;
 
     protected $table = 'pelatihan_umkm';
 
@@ -63,9 +64,9 @@ class PelatihanUmkm extends Model
     public function getSkorAttribute()
     {
         $skor = 0;
-        $skor +=$this->alasanPelatihan->skor;
-        $skor +=$this->kesesuaianPelatihan->skor;
-        $skor +=$this->pengalamanPelatihan->skor;
+        $skor += $this->alasanPelatihan->skor;
+        $skor += $this->kesesuaianPelatihan->skor;
+        $skor += $this->pengalamanPelatihan->skor;
         return $skor / 9 * 100;
     }
 
@@ -92,5 +93,20 @@ class PelatihanUmkm extends Model
     public function Refpendidikan()
     {
         return $this->belongsTo(RefPendidikan::class, 'pendidikan', 'id');
+    }
+
+    public function getVerificationType(): string
+    {
+        return 'PELATIHAN_UMKM';
+    }
+
+    public static function getDocumentTypes(): array
+    {
+        return [
+            'foto' => 'Pas Foto',
+            'ktp' => 'KTP',
+            'kk' => 'Kartu Keluarga',
+            'pernyataan' => 'Surat Pernyataan'
+        ];
     }
 }
