@@ -8,11 +8,29 @@ use App\Models\PelatihanKerjas;
 use Yajra\DataTables\DataTables;
 use App\Models\PendaftaranBanmod;
 use App\Http\Controllers\Controller;
+use App\Traits\HasVerifikasiDokumen;
 use App\Models\JenisPelatihanKetKerja;
 use Illuminate\Routing\Controllers\HasMiddleware;
 
 class PelatihanKerjaController extends Controller implements HasMiddleware
 {
+    use HasVerifikasiDokumen;
+
+    public function getVerificationType(): string
+    {
+        return 'PELATIHAN_KERJA';
+    }
+
+    /**
+     * Get available document types for this model
+     */
+    public static function getDocumentTypes(): array
+    {
+        return [
+            'ktp' => 'KTP',
+            'kk' => 'Kartu Keluarga',
+        ];
+    }
     /**
      * Display a listing of the resource.
      */
@@ -25,16 +43,37 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
     }
     public function index(Request $request)
     {
-        // $query = PelatihanKerjas::with('refPendidikan', 'jenisPelatihan', 'alasanPelatihan')->get();
-        // return response()->json($query);
+
         if ($request->wantsJson()) {
-            $query = PelatihanKerjas::with('refPendidikan', 'jenisPelatihan', 'alasanPelatihan');
+            $query = PelatihanKerjas::with(['refPendidikan', 'jenisPelatihan', 'alasanPelatihan', 'documentVerifications']);
 
             if ($request->has('jenis_pelatihan') && $request->jenis_pelatihan !== 'all') {
                 $query->where('jenis_pelatihan', $request->jenis_pelatihan);
             }
+            $data = $query->orderBy('created_at', 'asc')->get();
 
-            return DataTables::of($query)
+            if ($request->has('verification_status')) {
+                $status = $request->verification_status;
+                $data = $data->filter(function ($item) use ($status) {
+                    $verifications = $item->documentVerifications;
+                    $requiredDocs = ['ktp', 'kk'];
+                    $allVerified = count($verifications) === count($requiredDocs);
+                    $allApproved = $verifications->every(function ($verification) {
+                        return $verification->status === 1;
+                    });
+                    switch ($status) {
+                        case 'verified':
+                            return $allVerified && $allApproved;
+                        case 'rejected':
+                            return $allVerified && !$allApproved;
+                        case 'pending':
+                            return !$allVerified;
+                        default:
+                            return true;
+                    }
+                });
+            }
+            return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     return [
@@ -43,6 +82,21 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
                         'detail_url' => route('admin.kerja.show', $row->id)
                     ];
                 })
+                ->addColumn('verifikasi_dokumen', function ($row) {
+                    $requiredDocs = ['ktp', 'kk'];
+                    $verifications = $row->documentVerifications;
+
+                    $allVerified = count($verifications) === count($requiredDocs);
+                    $allApproved = $verifications->every(function ($verification) {
+                        return $verification->status === 1;
+                    });
+
+                    return [
+                        'all_verified' => $allVerified,
+                        'all_approved' => $allApproved
+                    ];
+                })
+                ->rawColumns(['action', 'verifikasi_dokumen'])
                 ->make(true);
         }
         $categories = JenisPelatihanKetKerja::all()->prepend(['id' => 'all', 'nama' => 'Semua pelatihan']);
@@ -54,7 +108,7 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
             'flash' => [
                 'message' => session('message')
             ],
-            'dataRoute' => route('admin.banmod.index'),
+
             'categories' => $categories,
         ]);
     }
@@ -83,8 +137,21 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
      */
     public function show(string $id)
     {
-        $data = PelatihanKerjas::with(['refPendidikan', 'jenisPelatihan', 'alasanPelatihan'])
+        $data = PelatihanKerjas::with(['refPendidikan', 'jenisPelatihan', 'alasanPelatihan', 'documentVerifications.verifier'])
             ->findOrFail($id);
+        $verifiedDocuments = $data->documentVerifications
+            ->groupBy('document_type')
+            ->map(function ($verifications) {
+                $verification = $verifications->first();
+                return [
+                    'verified' => true,
+                    'status' => $verification->status,
+                    'verified_by' => $verification->verifier->name,
+                    'verified_at' => $verification->verified_at->format('d/m/Y H:i'),
+                    'notes' => $verification->notes
+                ];
+            })
+            ->toArray();
 
         return Inertia::render('Admin/PelatihanKerja/Show', [
             'title' => 'Detail Peserta Pelatihan Pencari Kerja',
@@ -126,10 +193,17 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
                     'id' => $data->alasanPelatihan->id,
                     'nama' => $data->alasanPelatihan->nama,
                 ],
-                'file_ktp' => asset('' . $data->file_ktp),
-                'file_kk' => asset('' . $data->file_kk),
-                'created_at' => $data->created_at->format('d/m/Y H:i'),
-                'updated_at' => $data->updated_at->format('d/m/Y H:i'),
+                'files' => [
+                    'ktp' => [
+                        'url' => asset('' . $data->file_ktp),
+                        'verification' => $verifiedDocuments['ktp'] ?? null
+                    ],
+                    'kk' => [
+                        'url' => asset('' . $data->file_kk),
+                        'verification' => $verifiedDocuments['kk'] ?? null
+                    ],
+                ],
+                'documentTypes' => PelatihanKerjas::getDocumentTypes()
             ],
         ]);
     }

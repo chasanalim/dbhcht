@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Traits\HasVerifikasiDokumen;
 use Illuminate\Database\Eloquent\Model;
 
 class PelatihanKerjas extends Model
 {
+    use HasVerifikasiDokumen;
     protected $fillable = [
         "nik",
         "no_kk",
@@ -41,5 +43,18 @@ class PelatihanKerjas extends Model
     public function alasanPelatihan()
     {
         return $this->belongsTo(AlasanPelatihanKetKerja::class, 'alasan', 'id');
+    }
+
+    public function getVerificationType(): string
+    {
+        return 'PELATIHAN_KERJA';
+    }
+
+    public static function getDocumentTypes(): array
+    {
+        return [
+            'ktp' => 'KTP',
+            'kk' => 'Kartu Keluarga',
+        ];
     }
 }
