@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\HasVerifikasiDokumen;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PelatihanPetani extends Model
 {
-    use HasFactory;
+    use HasFactory,
+        HasVerifikasiDokumen;
 
     protected $table = 'pelatihan_petanis';
 
@@ -82,5 +84,20 @@ class PelatihanPetani extends Model
     public function masaAktifKelompok()
     {
         return $this->belongsTo(MasaAktifKelompokTani::class, 'masa_aktif_kelompok', 'id');
+    }
+
+    public function getVerificationType(): string
+    {
+        return 'PELATIHAN_PERTANIAN';
+    }
+
+    public static function getDocumentTypes(): array
+    {
+        return [
+            'foto' => 'Pas Foto',
+            'ktp' => 'KTP',
+            'pengukuhan_penyuluh_swadaya' => 'SK Pengukuhan Penyuluh Swadaya',
+            'rekomendasi_kelompok' => 'Surat Rekomendasi Kelompok',
+        ];
     }
 }

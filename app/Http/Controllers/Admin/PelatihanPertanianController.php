@@ -3,15 +3,35 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
+use App\Models\PelatihanPetani;
 use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
-use App\Models\PelatihanPetani;
+use App\Models\JenisPelatihanPetani;
+use App\Traits\HasVerifikasiDokumen;
 use Illuminate\Routing\Controllers\HasMiddleware;
 
 class PelatihanPertanianController extends Controller implements HasMiddleware
 {
 
+    use HasVerifikasiDokumen;
 
+    public function getVerificationType(): string
+    {
+        return 'PELATIHAN_PERTANIAN';
+    }
+
+    /**
+     * Get available document types for this model
+     */
+    public static function getDocumentTypes(): array
+    {
+        return [
+            'foto' => 'Pas Foto',
+            'ktp' => 'KTP',
+            'pengukuhan_penyuluh_swadaya' => 'SK Pengukuhan Penyuluh Swadaya',
+            'rekomendasi_kelompok' => 'Surat Rekomendasi Kelompok Tani',
+        ];
+    }
     /**
      * Display a listing of the resource.
      */
@@ -24,14 +44,37 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
     }
     public function index(Request $request)
     {
-        $query = PelatihanPetani::with('kelompokTani', 'jenisPelatihanPetani', 'kategoriKelompok')->get();
-        // return response()->json($query);
 
         if ($request->wantsJson()) {
 
-            $query = PelatihanPetani::with('kelompokTani', 'jenisPelatihanPetani', 'kategoriKelompok')->get();
+            $query = PelatihanPetani::with('kelompokTani', 'jenisPelatihanPetani', 'kategoriKelompok', 'alasanPelatihan', 'masaAktifKelompok', 'documentVerifications');
+            if ($request->has('jenis_pelatihan_petani') && $request->jenis_pelatihan_petani !== 'all') {
+                $query->where('jenis_pelatihan_petani', $request->jenis_pelatihan_petani);
+            }
+            $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor');
+            if ($request->has('verification_status')) {
+                $status = $request->verification_status;
+                $data = $data->filter(function ($item) use ($status) {
+                    $verifications = $item->documentVerifications;
+                    $requiredDocs = ['ktp', 'kk', 'pengukuhan_penyuluh_swadaya', 'rekomendasi_kelompok'];
+                    $allVerified = count($verifications) === count($requiredDocs);
+                    $allApproved = $verifications->every(function ($verification) {
+                        return $verification->status === 1;
+                    });
+                    switch ($status) {
+                        case 'verified':
+                            return $allVerified && $allApproved;
+                        case 'rejected':
+                            return $allVerified && !$allApproved;
+                        case 'pending':
+                            return !$allVerified;
+                        default:
+                            return true;
+                    }
+                });
+            }
 
-            return DataTables::of($query)
+            return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     return [
@@ -40,14 +83,31 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
                         'detail_url' => route('admin.pertanian.show', $row->id)
                     ];
                 })
+                ->addColumn('verifikasi_dokumen', function ($row) {
+                    $requiredDocs = ['ktp', 'kk', 'pengukuhan_penyuluh_swadaya', 'rekomendasi_kelompok'];
+                    $verifications = $row->documentVerifications;
+
+                    $allVerified = count($verifications) === count($requiredDocs);
+                    $allApproved = $verifications->every(function ($verification) {
+                        return $verification->status === 1;
+                    });
+
+                    return [
+                        'all_verified' => $allVerified,
+                        'all_approved' => $allApproved
+                    ];
+                })
+                ->rawColumns(['action', 'verifikasi_dokumen'])
                 ->make(true);
         }
+        $categories = JenisPelatihanPetani::all()->prepend(['id' => 'all', 'nama' => 'Semua pelatihan']);
 
         return inertia('Admin/PelatihanPertanian/Index', [
             'title' => 'Pelatihan Pertanian',
             'flash' => [
                 'message' => session('message')
             ],
+            'categories' => $categories,
         ]);
     }
 
@@ -73,8 +133,22 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
 
     public function show(string $id)
     {
-        $data = PelatihanPetani::with(['kelompokTani', 'kategoriKelompok', 'jenisPelatihanPetani', 'alasanPelatihan','masaAktifKelompok'])
+        $data = PelatihanPetani::with(['kelompokTani', 'kategoriKelompok', 'jenisPelatihanPetani', 'alasanPelatihan', 'masaAktifKelompok', 'documentVerifications'])
             ->findOrFail($id);
+
+        $verifiedDocuments = $data->documentVerifications
+            ->groupBy('document_type')
+            ->map(function ($verifications) {
+                $verification = $verifications->first();
+                return [
+                    'verified' => true,
+                    'status' => $verification->status,
+                    'verified_by' => $verification->verifier->name,
+                    'verified_at' => $verification->verified_at->format('d/m/Y H:i'),
+                    'notes' => $verification->notes
+                ];
+            })
+            ->toArray();
 
         // return response()->json($data);
         return inertia('Admin/PelatihanPertanian/Show', [
@@ -109,6 +183,7 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
                     'nama' => $data->kelompokTani->nama_kelompok,
                     'tahun_berdiri' => $data->tahun_berdiri,
                     'masa_aktif' => $data->masaAktifKelompok->jawaban,
+                    'skor_masa_aktif' => $data->masaAktifKelompok->skor,
                     'bidang_usaha' => $data->bidang_usaha_kelompok,
                     'alamat' => $data->alamat_kelompok,
                     'kecamatan' => $data->nama_kecamatan_kelompok,
@@ -127,14 +202,29 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
                     'id' => $data->jenisPelatihanPetani->id,
                     'nama' => $data->jenisPelatihanPetani->nama,
                 ],
-                'alasan' => $data->alasanPelatihan->jawaban,
+                'skor' => $data->skor,
+                'alasan' => $data->alasanPelatihan?->jawaban,
+                'skor_alasan' => $data->alasanPelatihan?->skor,
 
-                // Files
-                'file_foto' => asset('storage/' . $data->file_foto),
-                'file_ktp' => asset('storage/' . $data->file_ktp),
-                'file_pengukuhan' => asset('storage/' . $data->file_pengukuhan_penyuluh_swadaya),
-                'file_rekomendasi' => asset('storage/' . $data->file_rekomendasi_kelompok),
-
+                'files' => [
+                    'ktp' => [
+                        'url' => asset('storage/' . $data->file_ktp),
+                        'verification' => $verifiedDocuments['ktp'] ?? null
+                    ],
+                    'foto' => [
+                        'url' => asset('storage/' . $data->file_foto),
+                        'verification' => $verifiedDocuments['foto'] ?? null
+                    ],
+                    'pengukuhan_penyuluh_swadaya' => [
+                        'url' => asset('storage/' . $data->file_pengukuhan_penyuluh_swadaya),
+                        'verification' => $verifiedDocuments['pengukuhan_penyuluh_swadaya'] ?? null
+                    ],
+                    'rekomendasi_kelompok' => [
+                        'url' => asset('storage/' . $data->file_rekomendasi_kelompok),
+                        'verification' => $verifiedDocuments['rekomendasi_kelompok'] ?? null
+                    ],
+                ],
+                'documentTypes' => PelatihanPetani::getDocumentTypes()
             ]
         ]);
     }
