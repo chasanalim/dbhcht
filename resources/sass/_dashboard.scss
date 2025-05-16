@@ -22,3 +22,81 @@
 .table td:first-child {
     width: 150px;
 }
+
+// Modal Fullscreen
+.modal-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+}
+
+.modal-container {
+    position: relative;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    background: white;
+    border-radius: 8px;
+    z-index: 10000;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-container.is-fullscreen {
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    max-height: none;
+    border-radius: 0;
+    margin: 0;
+    animation: zoom-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.is-fullscreen .modal-body {
+    height: calc(100vh - 130px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.is-fullscreen img {
+    max-height: calc(100vh - 130px);
+    object-fit: contain;
+}
+
+body.modal-open {
+    overflow: hidden;
+    padding-right: 17px; /* Prevent layout shift */
+}
+
+/* Fix for sidebar */
+.modal-open .sidebar {
+    padding-right: 17px;
+    width: calc(var(--sidebar-width) + 17px);
+}
+
+@keyframes zoom-in {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
