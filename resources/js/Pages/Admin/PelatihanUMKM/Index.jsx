@@ -22,6 +22,8 @@ export default function Index({ title, can, flash, pelatihan }) {
         prioritas_2: false,
         prioritas_3: false,
     });
+
+    const [verificationFilter, setVerificationFilter] = useState("all");
     const handlePelatihan1Change = (e) => {
         const value = e.target.value;
         setSelectedPelatihan1(value);
@@ -88,6 +90,10 @@ export default function Index({ title, can, flash, pelatihan }) {
         }
     };
 
+    const handleVerificationFilterChange = (e) => {
+        setVerificationFilter(e.target.value);
+    };
+
     useEffect(() => {
         const dt = $(tableRef.current).DataTable({
             processing: true,
@@ -100,6 +106,7 @@ export default function Index({ title, can, flash, pelatihan }) {
                     d.prioritas_1 = selectedPelatihan1;
                     d.prioritas_2 = selectedPelatihan2;
                     d.prioritas_3 = selectedPelatihan3;
+                    d.verification_status = verificationFilter;
                 },
                 headers: {
                     "X-Requested-With": "XMLHttpRequest",
@@ -124,22 +131,22 @@ export default function Index({ title, can, flash, pelatihan }) {
                         let buttons = [];
 
                         // if (can.edit) {
-                        buttons.push(`
-                                <a href="${data.edit_url}" class="btn btn-sm btn-warning" title="Edit">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-                            `);
+                        // buttons.push(`
+                        //         <a href="${data.edit_url}" class="btn btn-sm btn-warning" title="Edit">
+                        //             <i class="bi bi-pencil-square"></i>
+                        //         </a>
+                        //     `);
                         // }
 
                         // if (can.delete) {
-                        buttons.push(`
-                                <a href="javascript:void(0)"
-                                   onclick="deleteItem('${data.delete_url}')"
-                                   class="btn btn-sm btn-danger"
-                                   title="Hapus">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                            `);
+                        // buttons.push(`
+                        //         <a href="javascript:void(0)"
+                        //            onclick="deleteItem('${data.delete_url}')"
+                        //            class="btn btn-sm btn-danger"
+                        //            title="Hapus">
+                        //             <i class="bi bi-trash"></i>
+                        //         </a>
+                        //     `);
                         // }
 
                         buttons.push(`
@@ -217,8 +224,27 @@ export default function Index({ title, can, flash, pelatihan }) {
                     name: "skor",
                     className: "text-center",
                     render: function (data) {
-                        return `<span class="badge bg-success p-2">${parseFloat(data).toFixed(1)}</span>`;
-                    }
+                        return `<span class="badge bg-success p-2">${parseFloat(
+                            data
+                        ).toFixed(2)}</span>`;
+                    },
+                },
+                {
+                    data: "verifikasi_dokumen",
+                    name: "verifikasi_dokumen",
+                    className: "text-center",
+                    searchable: true,
+                    render: function (data) {
+                        const allVerified = data?.all_verified || false;
+                        const allApproved = data?.all_approved || false;
+
+                        if (allVerified && allApproved) {
+                            return `<span class="badge bg-success">Terverifikasi</span>`;
+                        } else if (allVerified && !allApproved) {
+                            return `<span class="badge bg-danger">Tidak Memenuhi Syarat</span>`;
+                        }
+                        return `<span class="badge bg-warning">Belum diverifikasi</span>`;
+                    },
                 },
             ],
             drawCallback: function () {
@@ -254,7 +280,24 @@ export default function Index({ title, can, flash, pelatihan }) {
                 }
             });
         };
-    }, [flash, selectedPelatihan1, selectedPelatihan2, selectedPelatihan3]);
+    }, [
+        flash,
+        selectedPelatihan1,
+        selectedPelatihan2,
+        selectedPelatihan3,
+        verificationFilter,
+    ]);
+
+    const handleExport = (type) => {
+        const url = route("admin.export.umkm", {
+            verification_status: verificationFilter,
+            prioritas_1: selectedPelatihan1,
+            prioritas_2: selectedPelatihan2,
+            prioritas_3: selectedPelatihan3,
+            ext: type,
+        });
+        window.open(url, "_blank");
+    };
 
     const deleteItem = (url) => {
         if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
@@ -279,81 +322,137 @@ export default function Index({ title, can, flash, pelatihan }) {
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
                                 <h5 className="my-2 fw-bold">{title} 2025</h5>
                             </div>
-                            <div className="d-flex align-items-center gap-3 justify-content-center mt-2">
-                                <div className="d-flex align-items-center">
-                                    <label className="m-2 text-sm fw-bold w-100">
-                                        Prioritas 1:
-                                    </label>
-                                    <select
-                                        className={`form-select form-select-sm m-2 ${
-                                            disabledFilters.prioritas_1
-                                                ? "bg-light"
-                                                : ""
-                                        }`}
-                                        style={{ minWidth: "350px" }}
-                                        value={selectedPelatihan1}
-                                        onChange={handlePelatihan1Change}
-                                        disabled={disabledFilters.prioritas_1}
-                                    >
-                                        {pelatihan.map((item) => (
-                                            <option
-                                                key={item.name}
-                                                value={item.name}
-                                            >
-                                                {item.name}
-                                            </option>
-                                        ))}
-                                    </select>
+
+                            <div className="row g-3 p-3">
+                                <div className="col-12 col-md-6 col-xl-3">
+                                    <div className="d-flex flex-column">
+                                        <label className="form-label fw-bold">
+                                            Prioritas 1:
+                                        </label>
+                                        <select
+                                            className={`form-select form-select-sm ${
+                                                disabledFilters.prioritas_1
+                                                    ? "bg-light"
+                                                    : ""
+                                            }`}
+                                            value={selectedPelatihan1}
+                                            onChange={handlePelatihan1Change}
+                                            disabled={
+                                                disabledFilters.prioritas_1
+                                            }
+                                        >
+                                            {pelatihan.map((item) => (
+                                                <option
+                                                    key={item.name}
+                                                    value={item.name}
+                                                >
+                                                    {item.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 </div>
-                                <div className="d-flex align-items-center">
-                                    <label className="m-2 text-sm fw-bold w-100">
-                                        Prioritas 2:
-                                    </label>
-                                    <select
-                                        className={`form-select form-select-sm m-2 ${
-                                            disabledFilters.prioritas_2
-                                                ? "bg-light"
-                                                : ""
-                                        }`}
-                                        style={{ minWidth: "350px" }}
-                                        value={selectedPelatihan2}
-                                        onChange={handlePelatihan2Change}
-                                        disabled={disabledFilters.prioritas_2}
-                                    >
-                                        {pelatihan.map((item) => (
-                                            <option
-                                                key={item.name}
-                                                value={item.name}
-                                            >
-                                                {item.name}
-                                            </option>
-                                        ))}
-                                    </select>
+
+                                <div className="col-12 col-md-6 col-xl-3">
+                                    <div className="d-flex flex-column">
+                                        <label className="form-label fw-bold">
+                                            Prioritas 2:
+                                        </label>
+                                        <select
+                                            className={`form-select form-select-sm ${
+                                                disabledFilters.prioritas_2
+                                                    ? "bg-light"
+                                                    : ""
+                                            }`}
+                                            value={selectedPelatihan2}
+                                            onChange={handlePelatihan2Change}
+                                            disabled={
+                                                disabledFilters.prioritas_2
+                                            }
+                                        >
+                                            {pelatihan.map((item) => (
+                                                <option
+                                                    key={item.name}
+                                                    value={item.name}
+                                                >
+                                                    {item.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 </div>
-                                <div className="d-flex align-items-center">
-                                    <label className="m-2 text-sm fw-bold w-100">
-                                        Prioritas 3:
-                                    </label>
-                                    <select
-                                        className={`form-select form-select-sm m-2 ${
-                                            disabledFilters.prioritas_3
-                                                ? "bg-light"
-                                                : ""
-                                        }`}
-                                        style={{ minWidth: "350px" }}
-                                        value={selectedPelatihan3}
-                                        onChange={handlePelatihan3Change}
-                                        disabled={disabledFilters.prioritas_3}
-                                    >
-                                        {pelatihan.map((item) => (
-                                            <option
-                                                key={item.name}
-                                                value={item.name}
-                                            >
-                                                {item.name}
+
+                                <div className="col-12 col-md-6 col-xl-3">
+                                    <div className="d-flex flex-column">
+                                        <label className="form-label fw-bold">
+                                            Prioritas 3:
+                                        </label>
+                                        <select
+                                            className={`form-select form-select-sm ${
+                                                disabledFilters.prioritas_3
+                                                    ? "bg-light"
+                                                    : ""
+                                            }`}
+                                            value={selectedPelatihan3}
+                                            onChange={handlePelatihan3Change}
+                                            disabled={
+                                                disabledFilters.prioritas_3
+                                            }
+                                        >
+                                            {pelatihan.map((item) => (
+                                                <option
+                                                    key={item.name}
+                                                    value={item.name}
+                                                >
+                                                    {item.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="col-12 col-md-6 col-xl-3">
+                                    <div className="d-flex flex-column">
+                                        <label className="form-label fw-bold">
+                                            Status Verifikasi:
+                                        </label>
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={verificationFilter}
+                                            onChange={
+                                                handleVerificationFilterChange
+                                            }
+                                        >
+                                            <option value="all">
+                                                Semua Status
                                             </option>
-                                        ))}
-                                    </select>
+                                            <option value="verified">
+                                                Terverifikasi
+                                            </option>
+                                            <option value="rejected">
+                                                Tidak Memenuhi Syarat
+                                            </option>
+                                            <option value="pending">
+                                                Belum diverifikasi
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="col-auto ms-auto">
+                                    <button
+                                        className="btn btn-sm btn-success me-2"
+                                        onClick={() => handleExport("excel")}
+                                    >
+                                        <i className="bi bi-file-excel me-1"></i>{" "}
+                                        Export Excel
+                                    </button>
+                                    <button
+                                        className="btn btn-sm btn-danger me-2"
+                                        onClick={() => handleExport("pdf")}
+                                    >
+                                        <i className="bi bi-file-pdf me-1"></i>{" "}
+                                        Export PDF
+                                    </button>
                                 </div>
                             </div>
                             <div className="card-body">
@@ -373,41 +472,13 @@ export default function Index({ title, can, flash, pelatihan }) {
                                                 <th>TGL LAHIR</th>
                                                 <th>ALAMAT</th>
                                                 <th>KECAMATAN</th>
-                                                {/* <th>KELURAHAN</th>
-                                                <th>RW</th>
-                                                <th>RT</th> */}
+
                                                 <th>NO HP</th>
                                                 <th>PRIORITAS 1</th>
                                                 <th>PRIORITAS 2</th>
                                                 <th>PRIORITAS 3</th>
                                                 <th>SKOR</th>
-                                                {/* <th>DAYA LISTRIK</th>
-                                                <th>DISABILITAS</th>
-                                                <th>KATEGORI</th>
-                                                <th>JENIS KATEGORI</th>
-                                                <th>KLASTER USAHA</th>
-                                                <th>TANGGUNGAN KELUARGA</th>
-                                                <th>LAMA USAHA</th>
-                                                <th>JUMLAH TENAGA</th>
-                                                <th>BRUTO</th>
-                                                <th>STATUS TEMPAT TINGGAL</th>
-                                                <th>ASET</th>
-                                                <th>HUTANG</th>
-                                                <th>JUMLAH LEGALITAS</th>
-                                                <th>JUMLAH TEKNOLOGI</th>
-                                                <th>JUMLAH PENYERAPAN NAKER</th>
-                                                <th>FOTO</th>
-                                                <th>KTP</th>
-                                                <th>KK</th>
-                                                <th>NIB</th>
-                                                <th>SKU</th>
-                                                <th>SKD</th>
-                                                <th>PRODUK</th>
-                                                <th>PERNYATAAN</th>
-                                                <th>PERIZINAN</th>
-                                                <th>SIINAS</th>
-                                                <th>BP</th>
-                                                <th>SERTIFIKAT PELATIHAN</th> */}
+                                                <th>VERIFIKASI DOKUMEN</th>
                                             </tr>
                                         </thead>
                                     </table>
