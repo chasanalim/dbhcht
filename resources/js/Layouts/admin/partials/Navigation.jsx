@@ -18,12 +18,28 @@ export default function Navbar(props) {
         switch (true) {
             case currentRoute.startsWith("admin.downloads"):
                 return "Panduan Lampiran File";
-            case currentRoute.startsWith("admin.users"):
-                return "Users";
             case currentRoute.startsWith("admin.dashboard"):
                 return "Dashboard";
-            case currentRoute.startsWith("admin.banmod-lama"):
-                return "Penerima Banmod Lama";
+            case currentRoute.startsWith("admin.banmod"):
+                return "Daftar Peserta Penerima Bantuan Modal";
+            case currentRoute.startsWith("admin.umkm"):
+                return "Daftar Peserta Pelatihan UMKM";
+            case currentRoute.startsWith("admin.kerja"):
+                return "Daftar Peserta Pelatihan Pencari Kerja";
+            case currentRoute.startsWith("admin.pelatihan-banmod"):
+                return "Daftar Peserta Pelatihan Bantuan Modal";
+            case currentRoute.startsWith("admin.pertanian"):
+                return "Daftar Peserta Pelatihan Pertanian";
+            case currentRoute.startsWith("admin.banmodlama"):
+                return "Master Penerima Banmod Lama";
+            case currentRoute.startsWith("admin.banmodwirausaha"):
+                return "Master Penerima Pelatihan Banmod";
+            case currentRoute.startsWith("admin.kelompoktani"):
+                return "Master Kelompok Tani";
+            case currentRoute.startsWith("admin.user"):
+                return "Manajemen User";
+            case currentRoute.startsWith("admin.privileges"):
+                return "User Privileges";
             default:
                 return "";
         }
@@ -31,7 +47,7 @@ export default function Navbar(props) {
 
     return (
         <header>
-            <nav className="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+            <nav className="navbar navbar-dark navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
                 <div className="container-fluid">
                     <button
                         onClick={activesidebar}
@@ -48,7 +64,6 @@ export default function Navbar(props) {
                         <NavDropdown
                             className="nav-dropdown-dark"
                             align="end"
-                            style={{ color: "black" }}
                             title={
                                 <>
                                     <i className="bi bi-person me-2"></i>
