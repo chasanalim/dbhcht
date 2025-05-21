@@ -1,16 +1,24 @@
-import AdminLayout from "@/Layouts/admin/AdminLayout";
 import { Head, Link, router } from "@inertiajs/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import $ from "jquery";
 import "datatables.net-bs5";
 import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
 import { Toast, Tooltip } from "bootstrap";
 // Import bootstrap JS
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import AdminLayout from "@/Layouts/admin/AdminLayout";
 
-export default function Index({ title, can, flash }) {
+export default function Index({ title, can, flash, categories }) {
     const tableRef = useRef();
+    const [selectedCategory, setSelectedCategory] = useState("all");
+    const [verificationFilter, setVerificationFilter] = useState("all");
 
+    const handleCategoryChange = (e) => {
+        setSelectedCategory(e.target.value);
+    };
+    const handleVerificationFilterChange = (e) => {
+        setVerificationFilter(e.target.value);
+    };
     useEffect(() => {
         const dt = $(tableRef.current).DataTable({
             processing: true,
@@ -19,6 +27,10 @@ export default function Index({ title, can, flash }) {
             ajax: {
                 url: route("admin.pertanian.index"),
                 type: "GET",
+                data: function (d) {
+                    d.jenis_pelatihan_petani = selectedCategory;
+                    d.verification_status = verificationFilter;
+                },
                 headers: {
                     "X-Requested-With": "XMLHttpRequest",
                 },
@@ -39,31 +51,36 @@ export default function Index({ title, can, flash }) {
                     width: "10%",
                     className: "text-center",
                     render: function (data) {
-                        let buttons = "";
+                        let buttons = [];
 
                         // if (can.edit) {
-                        buttons += `
-                                <button
-                                    onclick="window.location.href='${data.edit_url}'"
-                                    class="btn btn-warning btn-sm me-2"
-                                    data-bs-toggle="tooltip"
-                                    title="Edit Data">
-                                    <i class="bi bi-pencil-square"></i>
-                                </button>`;
+                        // buttons.push(`
+                        //         <a href="${data.edit_url}" class="btn btn-sm btn-warning" title="Edit">
+                        //             <i class="bi bi-pencil-square"></i>
+                        //         </a>
+                        //     `);
+                        // // }
+
+                        // // if (can.delete) {
+                        // buttons.push(`
+                        //         <a href="javascript:void(0)"
+                        //            onclick="deleteItem('${data.delete_url}')"
+                        //            class="btn btn-sm btn-danger"
+                        //            title="Hapus">
+                        //             <i class="bi bi-trash"></i>
+                        //         </a>
+                        //     `);
                         // }
 
-                        // if (can.delete) {
-                        buttons += `
-                                <button
-                                    onclick="deleteItem('${data.delete_url}')"
-                                    class="btn btn-danger btn-sm"
-                                    data-bs-toggle="tooltip"
-                                    title="Hapus Data">
-                                    <i class="bi bi-trash"></i>
-                                </button>`;
-                        // }
+                        buttons.push(`
+                            <a href="${data.detail_url}" class="btn btn-sm btn-info" title="Detail">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        `);
 
-                        return buttons;
+                        return `<div class="btn-group">${buttons.join(
+                            ""
+                        )}</div>`;
                     },
                 },
                 {
@@ -83,6 +100,9 @@ export default function Index({ title, can, flash }) {
                 {
                     data: "jenis_kelamin",
                     name: "jenis_kelamin",
+                    render: function (data) {
+                        return data === "P" ? "PEREMPUAN" : "LAKI-LAKI";
+                    }
                 },
                 {
                     data: "alamat",
@@ -97,16 +117,46 @@ export default function Index({ title, can, flash }) {
                     name: "nama_rw",
                 },
                 {
-                    data: "kode_kelurahan",
-                    name: "kode_kelurahan",
+                    data: "nama_kelurahan",
+                    name: "nama_kelurahan",
                 },
                 {
-                    data: "kode_kecamatan",
-                    name: "kode_kecamatan",
+                    data: "nama_kecamatan",
+                    name: "nama_kecamatan",
                 },
                 {
                     data: "no_hp",
                     name: "no_hp",
+                },
+                {
+                    data: "jenis_pelatihan_petani.nama",
+                    name: "jenis_pelatihan_petani.nama",
+                },
+                {
+                    data: "skor",
+                    name: "skor",
+                    render: function (data) {
+                        return `<span class="badge bg-success">${parseFloat(
+                            data
+                        ).toFixed(2)}</span>`;
+                    },
+                },
+                {
+                    data: "verifikasi_dokumen",
+                    name: "verifikasi_dokumen",
+                    className: "text-center",
+                    searchable: true,
+                    render: function (data) {
+                        const allVerified = data?.all_verified || false;
+                        const allApproved = data?.all_approved || false;
+
+                        if (allVerified && allApproved) {
+                            return `<span class="badge bg-success">Terverifikasi</span>`;
+                        } else if (allVerified && !allApproved) {
+                            return `<span class="badge bg-danger">Tidak Memenuhi Syarat</span>`;
+                        }
+                        return `<span class="badge bg-warning">Belum diverifikasi</span>`;
+                    },
                 },
             ],
             drawCallback: function () {
@@ -142,19 +192,16 @@ export default function Index({ title, can, flash }) {
                 }
             });
         };
-    }, [flash]);
+    }, [flash, selectedCategory, verificationFilter]);
 
-    const deleteItem = (url) => {
-        if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
-            router.delete(url, {
-                onSuccess: () => {
-                    $(tableRef.current).DataTable().ajax.reload();
-                },
-            });
-        }
+    const handleExport = (type) => {
+        const url = route("admin.export.pertanian", {
+            verification_status: verificationFilter,
+            jenis_pelatihan_industri: selectedCategory,
+            ext: type,
+        });
+        window.open(url, "_blank");
     };
-
-    window.deleteItem = deleteItem;
 
     return (
         <AdminLayout>
@@ -167,6 +214,73 @@ export default function Index({ title, can, flash }) {
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
                                 <h5 className="my-2 fw-bold">{title} 2025</h5>
                             </div>
+                            <div className="row g-3 p-3">
+                                <div className="col-12 col-md-6 col-xl-3">
+                                    <div className="d-flex flex-column">
+                                        <label className="form-label fw-bold">
+                                            Filter Pelatihan:
+                                        </label>
+                                        <select
+                                            className="form-select form-select-sm"
+                                            style={{ minWidth: "300px" }}
+                                            value={selectedCategory}
+                                            onChange={handleCategoryChange}
+                                        >
+                                            {categories.map((category) => (
+                                                <option
+                                                    key={category.id}
+                                                    value={category.id}
+                                                >
+                                                    {category.nama}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="col-12 col-md-6 col-xl-3">
+                                    <div className="d-flex flex-column">
+                                        <label className="form-label fw-bold">
+                                            Status Verifikasi:
+                                        </label>
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={verificationFilter}
+                                            onChange={
+                                                handleVerificationFilterChange
+                                            }
+                                        >
+                                            <option value="all">
+                                                Semua Status
+                                            </option>
+                                            <option value="verified">
+                                                Terverifikasi
+                                            </option>
+                                            <option value="rejected">
+                                                Tidak Memenuhi Syarat
+                                            </option>
+                                            <option value="pending">
+                                                Belum diverifikasi
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="col-auto ms-auto">
+                                    <button
+                                        className="btn btn-sm btn-success me-2"
+                                        onClick={() => handleExport("excel")}
+                                    >
+                                        <i className="bi bi-file-excel me-1"></i>{" "}
+                                        Export Excel
+                                    </button>
+                                    <button
+                                        className="btn btn-sm btn-danger me-2"
+                                        onClick={() => handleExport("pdf")}
+                                    >
+                                        <i className="bi bi-file-pdf me-1"></i>{" "}
+                                        Export PDF
+                                    </button>
+                                </div>
+                            </div>
                             <div className="card-body">
                                 <div className="table-responsive">
                                     <table
@@ -175,7 +289,7 @@ export default function Index({ title, can, flash }) {
                                     >
                                         <thead>
                                             <tr>
-                                            <th>No</th>
+                                                <th>No</th>
                                                 <th>AKSI</th>
                                                 <th>NIK</th>
                                                 <th>NO KK</th>
@@ -187,33 +301,9 @@ export default function Index({ title, can, flash }) {
                                                 <th>KELURAHAN</th>
                                                 <th>KECAMATAN</th>
                                                 <th>NO HP</th>
-                                                {/* <th>DAYA LISTRIK</th>
-                                                <th>DISABILITAS</th>
-                                                <th>KATEGORI</th>
-                                                <th>JENIS KATEGORI</th>
-                                                <th>KLASTER USAHA</th>
-                                                <th>TANGGUNGAN KELUARGA</th>
-                                                <th>LAMA USAHA</th>
-                                                <th>JUMLAH TENAGA</th>
-                                                <th>BRUTO</th>
-                                                <th>STATUS TEMPAT TINGGAL</th>
-                                                <th>ASET</th>
-                                                <th>HUTANG</th>
-                                                <th>JUMLAH LEGALITAS</th>
-                                                <th>JUMLAH TEKNOLOGI</th>
-                                                <th>JUMLAH PENYERAPAN NAKER</th>
-                                                <th>FOTO</th>
-                                                <th>KTP</th>
-                                                <th>KK</th>
-                                                <th>NIB</th>
-                                                <th>SKU</th>
-                                                <th>SKD</th>
-                                                <th>PRODUK</th>
-                                                <th>PERNYATAAN</th>
-                                                <th>PERIZINAN</th>
-                                                <th>SIINAS</th>
-                                                <th>BP</th>
-                                                <th>SERTIFIKAT PELATIHAN</th> */}
+                                                <th>PELATIHAN</th>
+                                                <th>SKOR</th>
+                                                <th>VERIFIKASI DOKUMEN</th>
                                             </tr>
                                         </thead>
                                     </table>

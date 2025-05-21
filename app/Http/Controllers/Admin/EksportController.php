@@ -34,12 +34,13 @@ class EksportController extends Controller
             $query = $this->applyVerificationFilterBanmod($query, $status);
         }
 
-        $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor');
+        $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor')->values() // Reset keys after sorting
+            ->map(function ($item, $index) {
+                $item->row_num = $index + 1; // Add row number
+                return $item;
+            });
 
-        // return response()->json([
-        //     'data' => $data,
-        //     'message' => 'Data successfully retrieved'
-        // ]);
+        // return response()->json([$data]);
 
         // Handle export type
         if ($request->ext === 'excel') {
@@ -166,7 +167,12 @@ class EksportController extends Controller
             $query = $this->applyVerificationFilterUmkm($query, $status);
         }
 
-        $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor');
+        $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor')->values() // Reset keys after sorting
+            ->map(function ($item, $index) {
+                $item->row_num = $index + 1; // Add row number
+                return $item;
+            });
+
 
         // Handle export type
         if ($request->ext === 'excel') {
@@ -242,7 +248,12 @@ class EksportController extends Controller
             $query = $this->applyVerificationFilterKerja($query, $status);
         }
 
-        $data = $query->orderBy('created_at', 'asc')->get();
+        $data = $query->orderBy('created_at', 'asc')->get()->values() // Reset keys after sorting
+            ->map(function ($item, $index) {
+                $item->row_num = $index + 1; // Add row number
+                return $item;
+            });
+
 
         // return response()->json($data);
         // Handle export type
@@ -318,7 +329,12 @@ class EksportController extends Controller
             $query = $this->applyVerificationFilterPelatihanBanmod($query, $status);
         }
 
-        $data = $query->orderBy('created_at', 'asc')->get();
+        $data = $query->orderBy('created_at', 'asc')->get()->values() // Reset keys after sorting
+            ->map(function ($item, $index) {
+                $item->row_num = $index + 1; // Add row number
+                return $item;
+            });
+
 
         // return response()->json($data);
         // Handle export type
@@ -393,7 +409,12 @@ class EksportController extends Controller
             $query = $this->applyVerificationFilterPertanian($query, $status);
         }
 
-        $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor');
+        $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor')->values() // Reset keys after sorting
+            ->map(function ($item, $index) {
+                $item->row_num = $index + 1; // Add row number
+                return $item;
+            });
+
 
         // return response()->json($data);
         // Handle export type
