@@ -94,6 +94,10 @@ export default function Index({ title, can, flash, categories }) {
                     name: "kk",
                 },
                 {
+                    data: "kelompok_tani.nama_kelompok",
+                    name: "kelompok_tani.nama_kelompok",
+                },
+                {
                     data: "nama_lengkap",
                     name: "nama_lengkap",
                 },
@@ -293,6 +297,7 @@ export default function Index({ title, can, flash, categories }) {
                                                 <th>AKSI</th>
                                                 <th>NIK</th>
                                                 <th>NO KK</th>
+                                                <th>KELOMPOK TANI</th>
                                                 <th>NAMA</th>
                                                 <th>JENIS KELAMIN</th>
                                                 <th>ALAMAT</th>

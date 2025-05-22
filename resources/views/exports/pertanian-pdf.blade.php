@@ -77,16 +77,17 @@
         <thead>
             <tr>
                 <th width="3%">NO</th>
-                <th width="10%">KELOMPOK TANI</th>
-                <th width="10%">NAMA KETUA</th>
-                <th width="12%">ALAMAT</th>
-                <th width="3%">RT</th>
-                <th width="3%">RW</th>
+                <th width="7%">NIK</th>
+                <th width="7%">KELOMPOK TANI</th>
+                <th width="10%">NAMA</th>
+                <th width="10%">ALAMAT</th>
+                <th width="2%">RT</th>
+                <th width="2%">RW</th>
                 <th width="7%">KELURAHAN</th>
                 <th width="7%">KECAMATAN</th>
                 <th width="7%">NO HP</th>
-                <th width="8%">JENIS PELATIHAN</th>
                 <th width="7%">KATEGORI</th>
+                <th width="8%">JENIS PELATIHAN</th>
                 <th width="5%">SKOR</th>
                 <th width="8%">VERIFIKASI DOKUMEN</th>
             </tr>
@@ -95,8 +96,9 @@
             @foreach ($data as $index => $item)
                 <tr>
                     <td class="center">{{ $item->row_num }}</td>
+                    <td>{{ $item->nik}}</td>
                     <td>{{ $item->kelompokTani?->nama_kelompok }}</td>
-                    <td>{{ $item->kelompokTani?->nama_ketua }}</td>
+                    <td>{{ $item->nama_lengkap }}</td>
                     <td>{{ $item->alamat }}</td>
                     <td class="center">{{ $item->nama_rt }}</td>
                     <td class="center">{{ $item->nama_rw }}</td>

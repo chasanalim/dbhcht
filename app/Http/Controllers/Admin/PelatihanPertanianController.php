@@ -44,7 +44,6 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
     }
     public function index(Request $request)
     {
-
         if ($request->wantsJson()) {
 
             $query = PelatihanPetani::with('kelompokTani', 'jenisPelatihanPetani', 'kategoriKelompok', 'alasanPelatihan', 'masaAktifKelompok', 'documentVerifications');
