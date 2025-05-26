@@ -94,7 +94,7 @@
         <tbody>
             @foreach ($data as $index => $item)
                 <tr>
-                    <td class="center">{{ $index + 1 }}</td>
+                    <td class="center">{{ $item->row_num }}</td>
                     <td>{{ $item->nik }}</td>
                     <td>{{ $item->name }}</td>
                     <td>{{ $item->phone_number }}</td>

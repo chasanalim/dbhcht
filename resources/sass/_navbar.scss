@@ -88,3 +88,15 @@
         // ...rest of the existing styles...
     }
 }
+
+.navbar-dark {
+    .nav-link {
+        color: #2e2e2e !important; // Changed from white to dark color
+
+        i {
+            color: #2c2c2c  !important; // Changed from white to dark color
+        }
+
+        // ...rest of the existing styles...
+    }
+}

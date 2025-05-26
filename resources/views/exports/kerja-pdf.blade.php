@@ -91,14 +91,13 @@
                 <th width="7%">PENDIDIKAN</th>
                 <th width="7%">JENIS PELATIHAN</th>
                 <th width="7%">ALASAN PELATIHAN</th>
-                <th width="5%">SKOR</th>
                 <th width="8%">VERIFIKASI DOKUMEN</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($data as $index => $item)
             <tr>
-                <td class="center">{{ $index + 1 }}</td>
+                <td class="center">{{ $item->row_num }}</td>
                 <td>{{ $item->nik }}</td>
                 <td>{{ $item->no_kk }}</td>
                 <td>{{ $item->nama_lengkap }}</td>
@@ -113,7 +112,6 @@
                 <td>{{ $item->refPendidikan?->nama }}</td>
                 <td>{{ $item->jenisPelatihan?->nama }}</td>
                 <td>{{ $item->alasanPelatihan?->nama }}</td>
-                <td class="numeric">{{ number_format($item->skor, 2) }}</td>
                 <td class="center">
                     @php
                     $verifications = $item->documentVerifications;

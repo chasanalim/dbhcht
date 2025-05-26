@@ -310,7 +310,7 @@ class PendaftaranBanmod extends Model
             1 => 'Buruh Pabrik Rokok',
             2 => 'Buruh Tani Tembakau',
             3 => 'Pekerja Pabrik Rokok',
-            4 => 'IKM',
+            4 => 'Industri Kecil Menengah (IKM)',
             5 => 'Masyarakat Miskin'
         ];
 
