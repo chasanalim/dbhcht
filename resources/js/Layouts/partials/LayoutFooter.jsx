@@ -47,18 +47,15 @@ export default function LayoutFooter() {
                                 <span className="fw-bold">
                                     Banmod - Pelatihan DBHCHT
                                 </span>{" "}
-                                Lorem ipsum dolor sit amet, consectetur
-                                adipiscing elit. Quisque non hendrerit diam. Sed
-                                tristique vehicula magna, ac lobortis turpis
-                                varius ut. Etiam vel vestibulum arcu. Nulla
-                                sollicitudin sed ipsum ac vehicula. Suspendisse
-                                neque lorem, pretium a luctus eget, fermentum
-                                eget ligula. Quisque a augue tortor. Sed
-                                suscipit, velit a porta pretium, nisi quam
-                                dignissim nisi, quis cursus mi ex ac turpis.
-                                Praesent nec malesuada mi. Donec a risus
-                                condimentum est vehicula congue vel at sapien.
-                                Etiam pellentesque mollis elementum.
+                                Bantuan Modal dari Dana Bagi Hasil Cukai Hasil
+                                Tembakau (DBH CHT) adalah salah satu bentuk
+                                pemanfaatan dana yang berasal dari pungutan
+                                cukai atas hasil tembakau (seperti rokok) yang
+                                dibagikan kepada pemerintah daerah. Dana ini
+                                digunakan untuk mendukung berbagai program yang
+                                berhubungan dengan dampak dari konsumsi hasil
+                                tembakau dan pemberdayaan masyarakat, salah
+                                satunya dalam bentuk bantuan modal usaha serta pelatihan ketrampilan.
                             </p>
                         </Col>
 
