@@ -206,6 +206,25 @@ export default function Index({ title, can, flash, dataRoute }) {
         };
     }, [flash, verificationFilter]);
 
+    const handleExport = (type) => {
+        const url = route("admin.export.banmod", {
+            verification_status: verificationFilter,
+            kategori: title.includes("IKM")
+                ? 4
+                : title.includes("Buruh Pabrik Rokok")
+                ? 1
+                : title.includes("Buruh Tani Tembakau")
+                ? 2
+                : title.includes("Pekerja Pabrik Rokok")
+                ? 3
+                : title.includes("Masyarakat Miskin")
+                ? 5
+                : null,
+            ext: type,
+        });
+        window.open(url, "_blank");
+    };
+
     const deleteItem = (url) => {
         if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
             router.delete(url, {
@@ -257,7 +276,24 @@ export default function Index({ title, can, flash, dataRoute }) {
                                         </select>
                                     </div>
                                 </div>
+                                <div className="col-auto ms-auto">
+                                    <button
+                                        className="btn btn-sm btn-success me-2"
+                                        onClick={() => handleExport("excel")}
+                                    >
+                                        <i className="bi bi-file-excel me-1"></i>{" "}
+                                        Export Excel
+                                    </button>
+                                    <button
+                                        className="btn btn-sm btn-danger me-2"
+                                        onClick={() => handleExport("pdf")}
+                                    >
+                                        <i className="bi bi-file-pdf me-1"></i>{" "}
+                                        Export PDF
+                                    </button>
+                                </div>
                             </div>
+
                             <div className="card-body">
                                 <div className="table-responsive">
                                     <table
