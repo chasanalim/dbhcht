@@ -1,0 +1,160 @@
+<?php
+
+namespace App\Ekports;
+
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+
+class PelBanmodExport implements FromCollection, WithHeadings, WithStyles
+{
+    protected $data;
+
+    public function __construct($data)
+    {
+        $this->data = $data;
+    }
+
+    public function collection()
+    {
+        return $this->data->map(function ($item) {
+            return [
+                'no' => $item->row_num,
+                'tahun_penerimaan' => $item->tahun_penerimaan,
+                'nik' => $item->nik,
+                'no_kk' => $item->no_kk,
+                'nama' => $item->nama_lengkap,
+                'alamat' => $item->jalan_ktp,
+                'rt' => $item->rt_ktp,
+                'rw' => $item->rw_ktp,
+                'kelurahan' => $item->kelurahan_ktp,
+                'kecamatan' => $item->kecamatan_ktp,
+                'no_hp' => $item->no_hp,
+                'ketrampilan' => $item->jenis_pelatihan_industri,
+                'skor' => number_format($item->skor, 2),
+                'verifikasi' => $this->getVerificationStatus($item)
+            ];
+        });
+    }
+
+    public function headings(): array
+    {
+        return [
+            ['DAFTAR PESERTA PELATIHAN BANTUAN MODAL KOTA KEDIRI'],
+            ['TAHUN ANGGARAN 2025'],
+            [''],
+            [
+                'NO',
+                'TAHUN PENERIMAAN',
+                'NIK',
+                'NO KK',
+                'NAMA',
+                'ALAMAT',
+                'RT',
+                'RW',
+                'KELURAHAN',
+                'KECAMATAN',
+                'NO HP',
+                'KETRAMPILAN',
+                'SKOR',
+                'STATUS VERIFIKASI'
+            ]
+        ];
+    }
+
+    private function getVerificationStatus($item)
+    {
+        $verifications = $item->documentVerifications;
+        $requiredDocs = ['ktp', 'kk', 'pernyataan'];
+        $allVerified = count($verifications) === count($requiredDocs);
+        $allApproved = $verifications->every(fn($v) => $v->status === 1);
+
+        if ($allVerified && $allApproved) return 'Terverifikasi';
+        if ($allVerified && !$allApproved) return 'Tidak Memenuhi Syarat';
+        return 'Belum diverifikasi';
+    }
+
+    public function styles(Worksheet $sheet)
+    {
+        $lastColumn = 'N'; // Column for STATUS VERIFIKASI
+        $lastRow = $sheet->getHighestRow();
+
+        // Merge title cells
+        $sheet->mergeCells("A1:{$lastColumn}1");
+        $sheet->mergeCells("A2:{$lastColumn}2");
+
+        // Title styles
+        $sheet->getStyle('A1:A2')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 14
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER
+            ]
+        ]);
+
+        // Headers style
+        $sheet->getStyle("A4:{$lastColumn}4")->applyFromArray([
+            'font' => [
+                'bold' => true
+            ],
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN
+                ]
+            ],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => [
+                    'rgb' => 'E2EFDA'
+                ]
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER
+            ]
+        ]);
+
+        // Data styles
+        $sheet->getStyle("A5:{$lastColumn}{$lastRow}")->applyFromArray([
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN
+                ]
+            ],
+            'alignment' => [
+                'vertical' => Alignment::VERTICAL_CENTER
+            ]
+        ]);
+
+        // Set column widths
+        $sheet->getColumnDimension('A')->setWidth(5);   // NO
+        $sheet->getColumnDimension('B')->setWidth(15);  // TAHUN PENERIMAAN
+        $sheet->getColumnDimension('C')->setWidth(20);  // NIK
+        $sheet->getColumnDimension('D')->setWidth(20);  // NO KK
+        $sheet->getColumnDimension('E')->setWidth(30);  // NAMA
+        $sheet->getColumnDimension('F')->setWidth(35);  // ALAMAT
+        $sheet->getColumnDimension('G')->setWidth(5);   // RT
+        $sheet->getColumnDimension('H')->setWidth(5);   // RW
+        $sheet->getColumnDimension('I')->setWidth(15);  // KELURAHAN
+        $sheet->getColumnDimension('J')->setWidth(15);  // KECAMATAN
+        $sheet->getColumnDimension('K')->setWidth(15);  // NO HP
+        $sheet->getColumnDimension('L')->setWidth(25);  // KETRAMPILAN
+        $sheet->getColumnDimension('M')->setWidth(10);  // SKOR
+        $sheet->getColumnDimension('N')->setWidth(20);  // STATUS VERIFIKASI
+
+        // Center specific columns
+        $sheet->getStyle('A5:A' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // NO
+        $sheet->getStyle('B5:B' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // TAHUN
+        $sheet->getStyle('G5:H' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // RT/RW
+        $sheet->getStyle('M5:N' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // SKOR & STATUS
+
+        return $sheet;
+    }
+}
