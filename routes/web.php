@@ -104,7 +104,10 @@ Route::prefix('pelatihan/banmod')->group(function () {
 
 Route::get('/skor-pelatihan/{kategori}', [SkorPelatihanBanmodController::class, 'getSkor'])->name('skor-pelatihan');
 
-Route::post('/pelatihan/umkm', [RegPelatihanUmkmController::class, 'store'])->name('pelatihan.umkm.store');
+Route::prefix('pelatihan/umkm')->group(function () {
+    Route::post('/', [RegPelatihanUmkmController::class, 'store'])->name('pelatihan.umkm.store');
+    Route::get('/success/{id}', [RegPelatihanUmkmController::class, 'success'])->name('pelatihan.umkm.success');
+});
 
 Route::prefix('/pelatihan/petani')->group(function () {
     Route::post('/', [RegPelatihanPetaniController::class, 'store'])->name('pelatihan.petani.store');

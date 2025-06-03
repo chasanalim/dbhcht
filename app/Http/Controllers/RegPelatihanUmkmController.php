@@ -4,11 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\PelatihanUmkm;
 use App\Models\SkorPelatihanUmkm;
+use App\Traits\GeneralTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use Inertia\Inertia;
+use App\Mail\KirimPendaftar;
 
 class RegPelatihanUmkmController extends Controller
 {
+    use GeneralTrait;
+
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -62,12 +67,36 @@ class RegPelatihanUmkmController extends Controller
         $data['file_kk'] = $request->file('file_kk')->store('umkm/kk');
         $data['file_pernyataan'] = $request->file('file_pernyataan')->store('umkm/pernyataan');
 
-        // Format array ke string json (jika dibutuhkan)
+        // Format array ke string json
         $data['jenis_disabilitas'] = json_encode($data['jenis_disabilitas'] ?? []);
         $data['legalitas_jenis'] = json_encode($data['legalitas_jenis'] ?? []);
 
-        PelatihanUmkm::create($data);
+        // Create and get the stored data
+        $storedPendaftaran = PelatihanUmkm::create($data);
 
-        return redirect()->back()->with('success', 'Pendaftaran berhasil disimpan!');
+        // Send WhatsApp notification
+        $message = "Terima kasih telah mendaftar Program Pelatihan UMKM Kota Kediri. Data Anda telah kami terima dan akan diproses lebih lanjut. Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan.";
+        $phoneNumber = $data['no_hp'];
+        $this->sendWhatsappMessage($message, $phoneNumber);
+
+        return to_route('pelatihan.umkm.success', $storedPendaftaran->id)
+            ->with('success', 'Pendaftaran berhasil disimpan!');
+    }
+
+    public function success($id)
+    {
+        $dataPendaftar = PelatihanUmkm::find($id);
+
+        // Send WhatsApp message
+        $message = "Terima kasih telah mendaftar Program Bantuan Modal Kota Kediri. Data Anda telah kami terima dan akan diproses lebih lanjut. Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan. Jika ada pertanyaan, silakan hubungi kami melalui: " . env('APP_WA_BANMOD');;
+        $phoneNumber = $dataPendaftar->phone_number;
+        $this->sendWhatsappMessage($message, $phoneNumber);
+
+        return Inertia::render('Pelatihan/Success', [
+            'meta' => [
+                'title' => 'Pendaftaran Pelatihan UMKM',
+                'jenis' => 'Pelatihan UMKM',
+            ],
+        ]);
     }
 }
