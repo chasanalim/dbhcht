@@ -35,6 +35,7 @@ export default function Index({ title, can, flash, dataRoute }) {
                     name: "DT_RowIndex",
                     orderable: false,
                     searchable: false,
+                    width: "2%",
                     className: "text-center",
                 },
                 {
@@ -42,7 +43,7 @@ export default function Index({ title, can, flash, dataRoute }) {
                     name: "action",
                     orderable: false,
                     searchable: false,
-                    width: "10%",
+                    width: "3%",
                     className: "text-center",
                     render: function (data) {
                         let buttons = [];
