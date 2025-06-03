@@ -35,33 +35,25 @@ export default function PesertaPage({ meta }) {
                     name: "nik",
                     orderable: true,
                     searchable: true,
-                    className: "text-center",
                     render: function(data) {
                         // Take first 8 characters and last 4 characters
                         const firstPart = data.substring(0, 6);
                         const lastPart = data.substring(data.length - 4);
                         // Replace middle characters with 'XXX'
-                        return `${firstPart}XXXXX${lastPart}`;
+                        return `XX${firstPart}XXXXX${lastPart}`;
                     }
                 },
                 {
                     data: "name",
                     name: "name",
-                    className: "text-center",
                 },
                 {
                     data: "alamat",
                     name: "alamat",
-                    className: "text-center",
                 },
                 {
-                    data: "nama_kecamatan",
-                    name: "nama_kecamatan",
-                    className: "text-center",
-                },
-                {
-                    data: "nama_kelurahan",
-                    name: "nama_kelurahan",
+                    data: "nama_rt",
+                    name: "nama_rt",
                     className: "text-center",
                 },
                 {
@@ -70,8 +62,13 @@ export default function PesertaPage({ meta }) {
                     className: "text-center",
                 },
                 {
-                    data: "nama_rt",
-                    name: "nama_rt",
+                    data: "nama_kelurahan",
+                    name: "nama_kelurahan",
+                    className: "text-center",
+                },
+                {
+                    data: "nama_kecamatan",
+                    name: "nama_kecamatan",
                     className: "text-center",
                 },
             ],
@@ -103,10 +100,10 @@ export default function PesertaPage({ meta }) {
                                                     <th>NIK</th>
                                                     <th>NAMA</th>
                                                     <th>ALAMAT</th>
-                                                    <th>KECAMATAN</th>
-                                                    <th>KELURAHAN</th>
-                                                    <th>RW</th>
                                                     <th>RT</th>
+                                                    <th>RW</th>
+                                                    <th>KELURAHAN</th>
+                                                    <th>KECAMATAN</th>
                                                 </tr>
                                             </thead>
                                         </table>

@@ -33,6 +33,41 @@ export default function Index({ title, can, flash }) {
                     className: "text-center",
                 },
                 {
+                    data: "action",
+                    name: "action",
+                    orderable: false,
+                    searchable: false,
+                    width: "10%",
+                    className: "text-center",
+                    render: function (data) {
+                        let buttons = "";
+
+                        // if (can.edit) {
+                        buttons += `
+                                <button
+                                    onclick="window.location.href='${data.edit_url}'"
+                                    class="btn btn-warning btn-sm me-2"
+                                    data-bs-toggle="tooltip"
+                                    title="Edit Data">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>`;
+                        // }
+
+                        // if (can.delete) {
+                        buttons += `
+                                <button
+                                    onclick="deleteItem('${data.delete_url}')"
+                                    class="btn btn-danger btn-sm"
+                                    data-bs-toggle="tooltip"
+                                    title="Hapus Data">
+                                    <i class="bi bi-trash"></i>
+                                </button>`;
+                        // }
+
+                        return buttons;
+                    },
+                },
+                {
                     data: "nama",
                     name: "nama",
                     orderable: true,
@@ -77,41 +112,7 @@ export default function Index({ title, can, flash }) {
                             : '<span class="badge bg-success">Pelatihan Pertanian</span>';
                     },
                 },
-                {
-                    data: "action",
-                    name: "action",
-                    orderable: false,
-                    searchable: false,
-                    width: "20%",
-                    className: "text-center",
-                    render: function (data) {
-                        let buttons = "";
 
-                        // if (can.edit) {
-                        buttons += `
-                                <button
-                                    onclick="window.location.href='${data.edit_url}'"
-                                    class="btn btn-warning btn-sm me-2"
-                                    data-bs-toggle="tooltip"
-                                    title="Edit Data">
-                                    <i class="bi bi-pencil-square"></i>
-                                </button>`;
-                        // }
-
-                        // if (can.delete) {
-                        buttons += `
-                                <button
-                                    onclick="deleteItem('${data.delete_url}')"
-                                    class="btn btn-danger btn-sm"
-                                    data-bs-toggle="tooltip"
-                                    title="Hapus Data">
-                                    <i class="bi bi-trash"></i>
-                                </button>`;
-                        // }
-
-                        return buttons;
-                    },
-                },
             ],
             drawCallback: function () {
                 // Initialize tooltips
@@ -189,11 +190,11 @@ export default function Index({ title, can, flash }) {
                                         <thead>
                                             <tr>
                                                 <th>No</th>
+                                                <th>Aksi</th>
                                                 <th>Nama File</th>
                                                 <th>Deskripsi</th>
                                                 <th>File</th>
                                                 <th>Kategori</th>
-                                                <th>Aksi</th>
                                             </tr>
                                         </thead>
                                     </table>

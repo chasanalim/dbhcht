@@ -48,7 +48,7 @@ export default function Index({ title, can, flash, pelatihan }) {
                     name: "action",
                     orderable: false,
                     searchable: false,
-                    width: "10%",
+                    width: "3%",
                     className: "text-center",
                     render: function (data) {
                         let buttons = [];
