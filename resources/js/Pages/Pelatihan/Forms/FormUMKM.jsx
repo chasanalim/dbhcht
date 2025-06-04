@@ -109,6 +109,22 @@ export default function FormUMKM() {
             });
     }, []);
 
+    useEffect(() => {
+        const handleBeforeUnload = (event) => {
+            if (Object.values(data).some((val) => val)) {
+                event.preventDefault();
+                event.returnValue = "";
+                return "";
+            }
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+    }, [data]);
+
     let fileIndex = 1;
 
     const handleUploadFoto = (e, field_name, preview_name) => {
@@ -126,6 +142,14 @@ export default function FormUMKM() {
         reader.readAsDataURL(file);
     };
 
+    const formatFileSize = (bytes) => {
+        if (bytes === 0) return "0 Bytes";
+        const k = 1024;
+        const sizes = ["Bytes", "KB", "MB", "GB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+    };
+
     const handleUploadFile = (e, field_name, multiple) => {
         const files = Array.prototype.slice.call(e.target.files);
 
@@ -135,12 +159,20 @@ export default function FormUMKM() {
         }));
     };
 
-    const handleSubmit = (event) => {
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log(data);
-        post(route("pelatihan.umkm.store"), {
-            forceFormData: true,
-        });
+        setIsSubmitting(true);
+        try {
+            await post(route("pelatihan.umkm.store"), {
+                forceFormData: true,
+            });
+        } catch (error) {
+            console.error("Error:", error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleRemoveFile = (field, index) => {
@@ -223,13 +255,13 @@ export default function FormUMKM() {
                                     className="d-flex justify-content-between align-items-center"
                                 >
                                     <span>
-                                        📄 {file.name}{" "}
+                                        📄 {file.name} (
+                                        {formatFileSize(file.size)})
                                         <a
                                             href={URL.createObjectURL(file)}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="ms-2 text-decoration-underline"
-                                            style={{ fontSize: "12px" }}
                                         >
                                             Preview
                                         </a>
@@ -912,14 +944,22 @@ export default function FormUMKM() {
                 <div className="card-footer d-flex justify-content-center mt-4 gap-2">
                     <Button
                         type="submit"
-                        disabled={!data.komitmen}
-                        className={!data.komitmen ? "opacity-50" : ""}
+                        disabled={!data.komitmen || isSubmitting}
+                        className={
+                            !data.komitmen || isSubmitting ? "opacity-50" : ""
+                        }
                     >
-                        Simpan{" "}
-                        <i
-                            className="fa fa-paper-plane ms-1"
-                            aria-hidden="true"
-                        ></i>
+                        {isSubmitting ? (
+                            <>
+                                Loading...{" "}
+                                <span className="spinner-border spinner-border-sm" />
+                            </>
+                        ) : (
+                            <>
+                                Simpan{" "}
+                                <i className="fa fa-paper-plane ms-1"></i>
+                            </>
+                        )}
                     </Button>
                 </div>
             </Form>

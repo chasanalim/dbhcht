@@ -7,33 +7,38 @@ use App\Models\SkorPelatihanUmkm;
 use App\Traits\GeneralTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use App\Mail\KirimPendaftar;
+use Illuminate\Validation\ValidationException;
 
 class RegPelatihanUmkmController extends Controller
 {
     use GeneralTrait;
 
-    public function store(Request $request)
+    protected function getValidationRules()
     {
-        $data = $request->validate([
-            'nik' => 'required|numeric|digits:16|unique:pelatihan_umkm,nik',
-            'no_kk' => 'required|numeric|digits:16',
+        return [
+            'nik' => 'required|numeric|digits:16|unique:pelatihan_umkm,nik|regex:/^[3-9][0-9]{15}$/',
+            'no_kk' => 'required|numeric|digits:16|regex:/^[0-9]{16}$/',
             'nama_lengkap' => 'required|string|max:255',
             'tempat_lahir' => 'required|string|max:100',
-            'tgl_lahir' => 'required|date',
-            'jenis_kelamin' => 'required|string',
-            'no_hp' => 'required|string|min:11|max:14',
+            'tgl_lahir' => 'required|date|before:today|after:1900-01-01',
+            'jenis_kelamin' => 'required|string|in:L,P',
+            'no_hp' => ['required', 'string', 'regex:/^(62)[0-9]{9,12}$/', 'min:11', 'max:14'],
             'pendidikan' => 'required|string',
-            'is_disabilitas' => 'required',
+            'is_disabilitas' => 'required|boolean',
             'jenis_disabilitas' => 'nullable|array',
+            'jenis_disabilitas.*' => 'required|string',
             'jalan' => 'required|string|max:255',
             'kecamatan' => 'required|string',
             'kelurahan' => 'required|string',
             'rw' => 'required|string',
             'rt' => 'required|string',
             'nama_usaha' => 'required|string|max:255',
-            'tahun_berdiri' => 'required|string',
+            'tahun_berdiri' => 'required|numeric|min:1900|max:' . date('Y'),
             'bidang_usaha' => 'required|string',
             'alamat_usaha' => 'required|string',
             'kec_usaha' => 'required|string',
@@ -41,62 +46,124 @@ class RegPelatihanUmkmController extends Controller
             'rw_usaha' => 'required|string',
             'rt_usaha' => 'required|string',
             'nib' => 'required|string',
-            'legalitas_status' => 'required|string',
+            'legalitas_status' => 'required',
             'legalitas_jenis' => 'nullable|array',
-            'modal' => 'required|numeric',
-            'omset' => 'required|numeric',
+            'legalitas_jenis.*' => 'required|string',
+            'modal' => 'required|numeric|min:0',
+            'omset' => 'required|numeric|min:0',
             'kapasitas_satuan' => 'required|string',
-            'kapasitas_jumlah' => 'required|numeric',
+            'kapasitas_jumlah' => 'required|numeric|min:1',
             'jangkauan' => 'required|string',
-            'prioritas_1' => 'required|string',
-            'prioritas_2' => 'required|string',
-            'prioritas_3' => 'required|string',
+            'prioritas_1' => 'required|string|different:prioritas_2,prioritas_3',
+            'prioritas_2' => 'required|string|different:prioritas_1,prioritas_3',
+            'prioritas_3' => 'required|string|different:prioritas_1,prioritas_2',
             'alasan' => 'required|integer',
             'kesesuaian' => 'required|integer',
             'pengalaman' => 'required|integer',
-            'komitmen' => 'required|boolean',
+            'komitmen' => 'required|boolean|accepted',
             'file_foto' => 'required|file|mimes:jpg,jpeg,png|max:2048',
             'file_ktp' => 'required|file|mimes:jpg,jpeg,png|max:2048',
-            'file_kk' => 'required|file',
+            'file_kk' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'file_pernyataan' => 'required|file|mimes:pdf|max:2048',
-        ]);
+        ];
+    }
 
-        // Simpan file upload
-        $data['file_foto'] = $request->file('file_foto')->store('umkm/foto');
-        $data['file_ktp'] = $request->file('file_ktp')->store('umkm/ktp');
-        $data['file_kk'] = $request->file('file_kk')->store('umkm/kk');
-        $data['file_pernyataan'] = $request->file('file_pernyataan')->store('umkm/pernyataan');
+    public function store(Request $request)
+    {
+        try {
+            // Validate request
+            $data = $request->validate($this->getValidationRules());
 
-        // Format array ke string json
-        $data['jenis_disabilitas'] = json_encode($data['jenis_disabilitas'] ?? []);
-        $data['legalitas_jenis'] = json_encode($data['legalitas_jenis'] ?? []);
+            DB::beginTransaction();
 
-        // Create and get the stored data
-        $storedPendaftaran = PelatihanUmkm::create($data);
+            try {
+                // Handle file uploads
+                $uploadedFiles = $this->handleFileUploads($request);
+                $data = array_merge($data, $uploadedFiles);
 
-        // Send WhatsApp notification
-        $message = "Terima kasih telah mendaftar Program Pelatihan UMKM Kota Kediri. Data Anda telah kami terima dan akan diproses lebih lanjut. Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan.";
-        $phoneNumber = $data['no_hp'];
+                // Format arrays to JSON
+                $data['jenis_disabilitas'] = json_encode($data['jenis_disabilitas'] ?? []);
+                $data['legalitas_jenis'] = json_encode($data['legalitas_jenis'] ?? []);
+
+                // Create record
+                $storedPendaftaran = PelatihanUmkm::create($data);
+
+                // Send notifications
+                $this->sendNotifications($data['no_hp']);
+
+                DB::commit();
+
+                return to_route('pelatihan.umkm.success', $storedPendaftaran->id)
+                    ->with('success', 'Pendaftaran berhasil disimpan!');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                // Clean up any uploaded files if transaction failed
+                $this->cleanupUploadedFiles($uploadedFiles ?? []);
+                throw $e;
+            }
+        } catch (ValidationException $e) {
+            return back()
+                ->withInput()
+                ->withErrors($e->errors());
+        } catch (\Exception $e) {
+            Log::error('Registration Error: ' . $e->getMessage());
+            return back()
+                ->withInput()
+                ->withErrors(['error' => 'Terjadi kesalahan sistem: ' . $e->getMessage()]);
+        }
+    }
+
+    protected function handleFileUploads(Request $request)
+    {
+        $uploadedFiles = [];
+        $fileFields = ['file_foto', 'file_ktp', 'file_kk', 'file_pernyataan'];
+
+        foreach ($fileFields as $field) {
+            if ($request->hasFile($field)) {
+                $uploadedFiles[$field] = $request->file($field)->store('umkm/' . str_replace('file_', '', $field));
+            }
+        }
+
+        return $uploadedFiles;
+    }
+    protected function cleanupUploadedFiles(array $files)
+    {
+        foreach ($files as $path) {
+            Storage::delete($path);
+        }
+    }
+
+    protected function sendNotifications($phoneNumber)
+    {
+        $message = "Terima kasih telah mendaftar Program Pelatihan UMKM Kota Kediri. "
+            . "Data Anda telah kami terima dan akan diproses lebih lanjut. "
+            . "Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan.";
+
         $this->sendWhatsappMessage($message, $phoneNumber);
-
-        return to_route('pelatihan.umkm.success', $storedPendaftaran->id)
-            ->with('success', 'Pendaftaran berhasil disimpan!');
     }
 
     public function success($id)
     {
-        $dataPendaftar = PelatihanUmkm::find($id);
+        try {
+            $dataPendaftar = PelatihanUmkm::findOrFail($id);
 
-        // Send WhatsApp message
-        $message = "Terima kasih telah mendaftar Program Bantuan Modal Kota Kediri. Data Anda telah kami terima dan akan diproses lebih lanjut. Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan. Jika ada pertanyaan, silakan hubungi kami melalui: " . env('APP_WA_BANMOD');;
-        $phoneNumber = $dataPendaftar->phone_number;
-        $this->sendWhatsappMessage($message, $phoneNumber);
+            $message = "Terima kasih telah mendaftar Program Pelatihan UMKM Kota Kediri. "
+                . "Data Anda telah kami terima dan akan diproses lebih lanjut. "
+                . "Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan. "
+                . "Jika ada pertanyaan, silakan hubungi kami melalui: " . env('APP_WA_PELATIHAN');
 
-        return Inertia::render('Pelatihan/Success', [
-            'meta' => [
-                'title' => 'Pendaftaran Pelatihan UMKM',
-                'jenis' => 'Pelatihan UMKM',
-            ],
-        ]);
+            $this->sendWhatsappMessage($message, $dataPendaftar->no_hp);
+
+            return Inertia::render('Pelatihan/Success', [
+                'meta' => [
+                    'title' => 'Pendaftaran Pelatihan UMKM',
+                    'jenis' => 'Pelatihan UMKM',
+                ],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Success Page Error: ' . $e->getMessage());
+            return redirect()->route('pelatihan.umkm.index')
+                ->withErrors(['error' => 'Halaman tidak dapat diakses.']);
+        }
     }
 }
