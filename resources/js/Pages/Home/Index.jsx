@@ -73,68 +73,192 @@ export default function Index({ meta }) {
     return (
         <Layout>
             <Head title={meta.title} />
-            <div className="d-flex flex-column align-items-center justify-content-center landing">
-                <Container>
-                    <div className="py-4">
-                        <Row className="align-items-center">
-                            <Col md={6}>
-                                <div className="mb-5 d-flex align-items-center gap-3">
-                                    <div>
-                                        <Image
-                                            src="/assets/logo.png"
-                                            height={75}
-                                        />
-                                    </div>
-                                    <div>
-                                        <h5 className="my-0 fw-bolder">
-                                            PEMERINTAH
-                                        </h5>
-                                        <h5 className="my-0 text-primary">
-                                            KOTA KEDIRI
-                                        </h5>
-                                    </div>
-                                </div>
-                                <h1 className="fw-bold">
-                                    Pendaftaran{" "}
-                                    <b className="text-primary">
-                                        Pelatihan Kerja & Bantuan Modal
-                                    </b>{" "}
-                                    dari DBHCHT
-                                </h1>
-                                <h5 className="fst-italic-theme text-muted">
-                                    Program Pelatihan Kerja & Bantuan Modal
-                                    diperuntukkan bagi masyarakat yang ingin
-                                    meningkatkan keterampilan serta mendukung
-                                    pengembangan usaha.
-                                </h5>
-
-                                <div className="my-4 d-flex align-items-center gap-1">
-                                    <Link
-                                        href={route("pelatihan")}
-                                        className="btn bg-primary btn-primary"
-                                        role="button"
-                                    >
-                                        Daftar Pelatihan Kerja
-                                    </Link>
-                                    <Link
-                                        href={route("banmod")}
-                                        className="btn btn-warning"
-                                    >
-                                        Daftar Bantuan Modal
-                                    </Link>
-                                </div>
-                            </Col>
-                            <Col md={6}>
-                                <div>
-                                    <Image
-                                        src="/assets/hero-banner.png"
-                                        className="img-fluid"
-                                    />
-                                </div>
-                            </Col>
-                        </Row>
+            <style>
+                {`
+@media (max-width: 768px) {
+  .hero-main {
+    flex-direction: column !important;
+    padding: 28px 10px !important;
+    gap: 24px !important;
+    border-radius: 1.1rem !important;
+  }
+  .hero-left {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+  .hero-title {
+    font-size: 2rem !important;
+  }
+  .hero-btns {
+    flex-direction: column !important;
+    gap: 0.8rem !important;
+  }
+  .hero-img {
+    max-height: 180px !important;
+    border-radius: 1rem !important;
+    margin-top: 12px !important;
+  }
+}
+`}
+            </style>
+            <div
+                style={{
+                    minHeight: "92vh",
+                    width: "100%",
+                    background:
+                        "linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "48px 0",
+                }}
+            >
+                <div
+                    className="hero-main"
+                    style={{
+                        width: "100%",
+                        maxWidth: 1600,
+                        background: "#fff",
+                        borderRadius: "1.25rem",
+                        boxShadow: "0 8px 32px 0 rgba(31,38,135,0.08)",
+                        padding: "156px 64px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "56px",
+                    }}
+                >
+                    {/* Kiri: Teks */}
+                    <div
+                        className="hero-left"
+                        style={{ flex: 1, minWidth: 340 }}
+                    >
+                        <div
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 16,
+                                marginBottom: 24,
+                            }}
+                        >
+                            <Image
+                                src="/assets/logo.png"
+                                height={48}
+                                style={{
+                                    background: "none",
+                                    boxShadow: "none",
+                                    marginBottom: 0,
+                                }}
+                            />
+                            <span
+                                style={{
+                                    fontWeight: 700,
+                                    fontSize: "1.2rem",
+                                    color: "#22223b",
+                                    letterSpacing: "1px",
+                                }}
+                            >
+                                Kota Kediri
+                            </span>
+                        </div>
+                        <h1
+                            className="hero-title"
+                            style={{
+                                fontWeight: 900,
+                                fontSize: "2.8rem",
+                                lineHeight: 1.1,
+                                marginBottom: "1.2rem",
+                                color: "#22223b",
+                                letterSpacing: "-1px",
+                            }}
+                        >
+                            Pendaftaran{" "}
+                            <span style={{ color: "#4f8cff" }}>
+                                Pelatihan Kerja
+                            </span>{" "}
+                            &<br />
+                            <span style={{ color: "#ffb700" }}>
+                                Bantuan Modal
+                            </span>{" "}
+                            <span style={{ color: "#22223b" }}>DBHCHT</span>
+                        </h1>
+                        <p
+                            style={{
+                                color: "#6c757d",
+                                fontSize: "1.15rem",
+                                marginBottom: "2.2rem",
+                                fontWeight: 400,
+                                maxWidth: 480,
+                            }}
+                        >
+                            Program untuk masyarakat yang ingin meningkatkan
+                            keterampilan dan mengembangkan usaha.
+                        </p>
+                        <div
+                            className="hero-btns"
+                            style={{ display: "flex", gap: "1.2rem" }}
+                        >
+                            <Link
+                                href={route("pelatihan")}
+                                className="btn"
+                                style={{
+                                    background:
+                                        "linear-gradient(90deg,#4f8cff 60%,#6ea8fe 100%)",
+                                    color: "#fff",
+                                    borderRadius: "2rem",
+                                    padding: "0.95rem 2.5rem",
+                                    fontWeight: 700,
+                                    fontSize: "1.15rem",
+                                    boxShadow: "0 2px 16px #4f8cff22",
+                                    border: "none",
+                                    transition: "transform 0.15s",
+                                }}
+                            >
+                                <i className="bi bi-lightning-charge"></i>{" "}
+                                Daftar Pelatihan
+                            </Link>
+                            <Link
+                                href={route("banmod")}
+                                className="btn"
+                                style={{
+                                    background:
+                                        "linear-gradient(90deg,#ffb700 60%,#ffe082 100%)",
+                                    color: "#22223b",
+                                    borderRadius: "2rem",
+                                    padding: "0.95rem 2.5rem",
+                                    fontWeight: 700,
+                                    fontSize: "1.15rem",
+                                    boxShadow: "0 2px 16px #ffb70022",
+                                    border: "none",
+                                    transition: "transform 0.15s",
+                                }}
+                            >
+                                <i className="bi bi-cash-stack"></i> Daftar
+                                Banmod
+                            </Link>
+                        </div>
                     </div>
-                </Container>
+                    {/* Kanan: Gambar */}
+                    <div
+                        style={{
+                            flex: 1,
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}
+                    >
+                        <Image
+                            src="/assets/hero-banner.png"
+                            className="img-fluid hero-img"
+                            style={{
+                                borderRadius: "1.25rem",
+                                maxHeight: 340,
+                                objectFit: "cover",
+                                background: "#f8fafc",
+                                boxShadow: "0 4px 24px 0 rgba(31,38,135,0.08)",
+                            }}
+                        />
+                    </div>
+                </div>
             </div>
 
             {/* Tambahkan Carousel di bawah hero */}

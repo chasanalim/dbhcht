@@ -1,92 +1,173 @@
 import React from "react";
-import { Col, Container, Row, Image } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 export default function LayoutFooter() {
     return (
-        <footer className="py-0">
-            <div className="position-relative text-white text-align-center bg-secondary">
-                <Container>
-                    <Row className="text-white py-5">
-                        <Col md={4}>
-                            <h5 className="fw-bold">Hubungi Kami</h5>
-                            <div className="underline2 d-none d-md-block"></div>
-                            <ul className="py-3 small">
-                                <li>
-                                    <i className="bi bi-geo-alt-fill me-2"></i>
-                                    Jl. Basuki Rahmat No.15, Pocanan, Kota
-                                    Kediri Kecamatan, Kota Kediri, Jawa Timur
-                                    64129
-                                </li>
-                                <li>
-                                    <i className="bi bi-telephone-fill me-2"></i>
-                                    (0354) 682955
-                                </li>
-                            </ul>
-                            <Row className="justify-content-start align-items-start">
-                                <Col>
-                                    <i className="bi bi-instagram fs-4"></i>
-                                </Col>
-                                <Col>
-                                    <i className="bi bi-facebook fs-4"></i>
-                                </Col>
-                                <Col>
-                                    <i className="bi bi-twitter fs-4"></i>
-                                </Col>
-                                <Col>
-                                    <i className="bi bi-youtube fs-4"></i>
-                                </Col>
-                            </Row>
-                        </Col>
-                        <Col md={6}>
-                            <h5 className="fw-bold">
-                                Tentang Banmod - Pelatihan DBHCHT
-                            </h5>
-                            <div className="underline2 d-none d-md-block"></div>
-                            <p className="py-3 small text-white">
-                                <span className="fw-bold">
-                                    Banmod - Pelatihan DBHCHT
-                                </span>{" "}
-                                Bantuan Modal dari Dana Bagi Hasil Cukai Hasil
-                                Tembakau (DBH CHT) adalah salah satu bentuk
-                                pemanfaatan dana yang berasal dari pungutan
-                                cukai atas hasil tembakau (seperti rokok) yang
-                                dibagikan kepada pemerintah daerah. Dana ini
-                                digunakan untuk mendukung berbagai program yang
-                                berhubungan dengan dampak dari konsumsi hasil
-                                tembakau dan pemberdayaan masyarakat, salah
-                                satunya dalam bentuk bantuan modal usaha serta pelatihan ketrampilan.
-                            </p>
-                        </Col>
-
-                        <Col md={2}>
-                            <h5 className="fw-bold">Statistik Kunjungan</h5>
-                            <div className="underline2 d-none d-md-block"></div>
-                            <div className="statistik d-flex flex-column align-items-center w-100 mt-4 rounded py-3">
-                                <span className="small px-3 py-1 rounded bg-primary mb-1">
-                                    <i className="bi bi-bar-chart-fill"></i>
-                                </span>
-                                <span style={{ fontSize: "11px" }}>
-                                    Total View
-                                </span>
-                                <span className="fs-3">12345</span>
-                                <span
-                                    className="small px-3 py-1 rounded bg-primary w-75 text-center"
-                                    style={{ fontSize: "11px" }}
-                                >
-                                    <i className="online bi bi-circle-fill small text-success"></i>{" "}
-                                    10 Online
-                                </span>
-                            </div>
-                        </Col>
-                    </Row>
-                    <hr />
-                    <p className="text-center pb-3 text-white">
-                        Copyright &copy; {new Date().getFullYear()} - Pemerintah
-                        Kota Kediri.
-                    </p>
-                </Container>
-            </div>
+        <footer
+            style={{
+                background: "linear-gradient(90deg,#4f8cff 60%,#6ea8fe 100%)",
+                color: "#fff",
+                padding: "0",
+            }}
+        >
+            <Container fluid style={{ padding: "0" }}>
+                <Row
+                    className="py-5"
+                    style={{
+                        maxWidth: 1600,
+                        margin: "0 auto",
+                        padding: "0 0px",
+                        display: "flex",
+                        // gap: 24,
+                    }}
+                >
+                    <Col md={4} className="mb-4 mb-md-0">
+                        <h5 className="fw-bold mb-3" style={{ color: "#fff" }}>
+                            Hubungi Kami
+                        </h5>
+                        <ul
+                            className="py-2 small"
+                            style={{
+                                color: "#e0e7ff",
+                                listStyle: "none",
+                                paddingLeft: 0,
+                            }}
+                        >
+                            <li className="mb-2">
+                                <i
+                                    className="bi bi-geo-alt-fill me-2"
+                                    style={{ color: "#ffb700" }}
+                                ></i>
+                                Jl. Basuki Rahmat No.15, Pocanan, Kota Kediri
+                                Kecamatan, Kota Kediri, Jawa Timur 64129
+                            </li>
+                            <li>
+                                <i
+                                    className="bi bi-telephone-fill me-2"
+                                    style={{ color: "#ffb700" }}
+                                ></i>
+                                (0354) 682955
+                            </li>
+                        </ul>
+                        <div className="d-flex gap-3 mt-3">
+                            <a
+                                href="#"
+                                className="fs-4"
+                                style={{
+                                    color: "#ffb700",
+                                    transition: "color 0.2s",
+                                }}
+                            >
+                                <i className="bi bi-instagram"></i>
+                            </a>
+                            <a
+                                href="#"
+                                className="fs-4"
+                                style={{
+                                    color: "#ffb700",
+                                    transition: "color 0.2s",
+                                }}
+                            >
+                                <i className="bi bi-facebook"></i>
+                            </a>
+                            <a
+                                href="#"
+                                className="fs-4"
+                                style={{
+                                    color: "#ffb700",
+                                    transition: "color 0.2s",
+                                }}
+                            >
+                                <i className="bi bi-twitter"></i>
+                            </a>
+                            <a
+                                href="#"
+                                className="fs-4"
+                                style={{
+                                    color: "#ffb700",
+                                    transition: "color 0.2s",
+                                }}
+                            >
+                                <i className="bi bi-youtube"></i>
+                            </a>
+                        </div>
+                    </Col>
+                    <Col md={4} className="mb-4 mb-md-0">
+                        <h5 className="fw-bold mb-3" style={{ color: "#fff" }}>
+                            Tentang Banmod - Pelatihan DBHCHT
+                        </h5>
+                        <p className="small" style={{ color: "#e0e7ff" }}>
+                            <span className="fw-bold" style={{ color: "#fff" }}>
+                                Banmod - Pelatihan DBHCHT
+                            </span>{" "}
+                            Bantuan Modal dari Dana Bagi Hasil Cukai Hasil
+                            Tembakau (DBH CHT) adalah salah satu bentuk
+                            pemanfaatan dana yang berasal dari pungutan cukai
+                            atas hasil tembakau (seperti rokok) yang dibagikan
+                            kepada pemerintah daerah. Dana ini digunakan untuk
+                            mendukung berbagai program yang berhubungan dengan
+                            dampak dari konsumsi hasil tembakau dan pemberdayaan
+                            masyarakat, salah satunya dalam bentuk bantuan modal
+                            usaha serta pelatihan ketrampilan.
+                        </p>
+                    </Col>
+                    <Col md={4} className="mb-4 mb-md-0">
+                        <h5 className="fw-bold mb-3" style={{ color: "#fff" }}>
+                            Statistik Kunjungan
+                        </h5>
+                        <div
+                            className="d-flex flex-column align-items-center w-100 rounded"
+                            style={{
+                                background: "rgba(255,255,255,0.08)",
+                                boxShadow: "0 2px 16px #4f8cff22",
+                                padding: "1.5rem 1rem",
+                                marginTop: 16,
+                            }}
+                        >
+                            <span
+                                className="small px-3 py-1 rounded mb-1"
+                                style={{
+                                    background: "#ffb700",
+                                    color: "#22223b",
+                                }}
+                            >
+                                <i className="bi bi-bar-chart-fill"></i>
+                            </span>
+                            <span
+                                style={{ fontSize: "11px", color: "#e0e7ff" }}
+                            >
+                                Total View
+                            </span>
+                            <span
+                                className="fs-3 fw-bold"
+                                style={{ color: "#fff" }}
+                            >
+                                12345
+                            </span>
+                            <span
+                                className="small px-3 py-1 rounded w-75 text-center"
+                                style={{
+                                    background: "#ffb700",
+                                    color: "#22223b",
+                                    fontSize: "11px",
+                                }}
+                            >
+                                <i className="online bi bi-circle-fill small text-success"></i>{" "}
+                                10 Online
+                            </span>
+                        </div>
+                    </Col>
+                </Row>
+                <hr style={{ borderColor: "#fff", opacity: 0.2 }} />
+                <p
+                    className="text-center pb-3"
+                    style={{ color: "#e0e7ff", fontWeight: 500 }}
+                >
+                    Copyright &copy; {new Date().getFullYear()} - Pemerintah
+                    Kota Kediri.
+                </p>
+            </Container>
         </footer>
     );
 }
