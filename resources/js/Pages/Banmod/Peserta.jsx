@@ -35,32 +35,16 @@ export default function PesertaPage({ meta }) {
                     name: "nik",
                     orderable: true,
                     searchable: true,
-                    render: function(data) {
-                        // Take first 8 characters and last 4 characters
+                    render: function (data) {
                         const firstPart = data.substring(0, 6);
                         const lastPart = data.substring(data.length - 4);
-                        // Replace middle characters with 'XXX'
                         return `XX${firstPart}XXXXX${lastPart}`;
-                    }
+                    },
                 },
-                {
-                    data: "name",
-                    name: "name",
-                },
-                {
-                    data: "alamat",
-                    name: "alamat",
-                },
-                {
-                    data: "nama_rt",
-                    name: "nama_rt",
-                    className: "text-center",
-                },
-                {
-                    data: "nama_rw",
-                    name: "nama_rw",
-                    className: "text-center",
-                },
+                { data: "name", name: "name" },
+                { data: "alamat", name: "alamat" },
+                { data: "nama_rt", name: "nama_rt", className: "text-center" },
+                { data: "nama_rw", name: "nama_rw", className: "text-center" },
                 {
                     data: "nama_kelurahan",
                     name: "nama_kelurahan",
@@ -79,31 +63,92 @@ export default function PesertaPage({ meta }) {
         <Layout>
             <Head title={meta.title} />
             <Container className="py-5">
+                <style>
+                    {`
+        .table thead th,
+        .table thead td {
+            color:rgb(79, 140, 255) !important;
+            background: #f8fafc !important;
+            font-weight: bold;
+            border-bottom: 2px solid #e0e7ff;
+            letter-spacing: 0.5px;
+        }
+        `}
+                </style>
                 <div className="container-fluid py-4">
                     <div className="row">
                         <div className="col-12">
-                            <div className="card">
-                                <div className="card-header pb-0 d-flex justify-content-between align-items-center">
-                                    <h5 className="my-2 fw-bold">
+                            <div
+                                className="card border-0 shadow-sm"
+                                style={{
+                                    borderRadius: "1.5rem",
+                                    boxShadow: "0 2px 16px #4f8cff11",
+                                    background: "#fff",
+                                }}
+                            >
+                                <div
+                                    className="card-header pb-0 d-flex justify-content-between align-items-center"
+                                    style={{
+                                        borderRadius: "1.5rem 1.5rem 0 0",
+                                        background:
+                                            "linear-gradient(90deg,#4f8cff 60%,#6ea8fe 100%)",
+                                        color: "#fff",
+                                        border: "none",
+                                        minHeight: 70,
+                                    }}
+                                >
+                                    <h5
+                                        className="my-2 fw-bold"
+                                        style={{ color: "#fff" }}
+                                    >
                                         {meta.title} 2025
                                     </h5>
                                 </div>
-                                <div className="card-body">
+                                <div
+                                    className="card-body"
+                                    style={{
+                                        borderRadius: "0 0 1.5rem 1.5rem",
+                                    }}
+                                >
                                     <div className="table-responsive">
                                         <table
                                             ref={tableRef}
-                                            className="table table-sm table-striped table-hover"
+                                            className="table table-sm table-hover align-middle"
+                                            style={{
+                                                borderRadius: "1rem",
+                                                overflow: "hidden",
+                                            }}
                                         >
                                             <thead>
-                                                <tr>
-                                                    <th>No</th>
-                                                    <th>NIK</th>
-                                                    <th>NAMA</th>
-                                                    <th>ALAMAT</th>
-                                                    <th>RT</th>
-                                                    <th>RW</th>
-                                                    <th>KELURAHAN</th>
-                                                    <th>KECAMATAN</th>
+                                                <tr
+                                                    style={{
+                                                        background: "#f8fafc",
+                                                    }}
+                                                >
+                                                    <th className="fw-bold text-primary">
+                                                        No
+                                                    </th>
+                                                    <th className="fw-bold text-primary">
+                                                        NIK
+                                                    </th>
+                                                    <th className="fw-bold text-primary">
+                                                        NAMA
+                                                    </th>
+                                                    <th className="fw-bold text-primary">
+                                                        ALAMAT
+                                                    </th>
+                                                    <th className="fw-bold text-primary">
+                                                        RT
+                                                    </th>
+                                                    <th className="fw-bold text-primary">
+                                                        RW
+                                                    </th>
+                                                    <th className="fw-bold text-primary">
+                                                        KELURAHAN
+                                                    </th>
+                                                    <th className="fw-bold text-primary">
+                                                        KECAMATAN
+                                                    </th>
                                                 </tr>
                                             </thead>
                                         </table>
@@ -122,10 +167,16 @@ export default function PesertaPage({ meta }) {
                     >
                         <div
                             id="toast"
-                            className="toast align-items-center text-white bg-success border-0"
+                            className="toast align-items-center text-white bg-success border-0 shadow-lg"
                             role="alert"
                             aria-live="assertive"
                             aria-atomic="true"
+                            style={{
+                                borderRadius: "1rem",
+                                minWidth: 280,
+                                fontWeight: 500,
+                                fontSize: "1rem",
+                            }}
                         >
                             <div className="d-flex">
                                 <div className="toast-body">
