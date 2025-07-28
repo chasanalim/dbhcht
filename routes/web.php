@@ -114,6 +114,7 @@ Route::prefix('pelatihan/umkm')->group(function () {
 
 Route::prefix('/pelatihan/petani')->group(function () {
     Route::post('/', [RegPelatihanPetaniController::class, 'store'])->name('pelatihan.petani.store');
+    Route::get('/success/{id}', [RegPelatihanPetaniController::class, 'success'])->name('pelatihan.petani.success');
     Route::post('/cek-nik', [RegPelatihanPetaniController::class, 'cekNIK'])->name('pelatihan.petani.cekNIK.post');
     Route::get('/cek-nik/{nik}', [RegPelatihanPetaniController::class, 'cekNIK'])->name('pelatihan.petani.cekNIK.get');
 });

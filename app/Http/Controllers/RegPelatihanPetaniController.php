@@ -7,6 +7,8 @@ use App\Models\KelompokPelatihanPetani;
 use App\Models\KelompokTani;
 use App\Models\PelatihanPetani;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
 
 class RegPelatihanPetaniController extends Controller
 {
@@ -83,9 +85,13 @@ class RegPelatihanPetaniController extends Controller
         // Format array ke string json (jika dibutuhkan)
         $data['jenis_disabilitas'] = json_encode($data['jenis_disabilitas'] ?? []);
 
-        PelatihanPetani::create($data);
+        $storedPetani = PelatihanPetani::create($data);
+        // PelatihanPetani::create($data);
 
-        return redirect()->back()->with('success', 'Pendaftaran berhasil disimpan!');
+        // return redirect()->back()->with('success', 'Pendaftaran berhasil disimpan!');
+
+        return to_route('pelatihan.petani.success', $storedPetani->id)
+            ->with('success', 'Pendaftaran berhasil disimpan!');
     }
 
     // Fungsi untuk mengecek NIK apakah terdaftar sebagai kelompok tani
@@ -103,6 +109,52 @@ class RegPelatihanPetaniController extends Controller
                 'success' => false,
                 'message' => 'NIK tidak ditemukan sebagai kelompok tani.',
             ]);
+        }
+    }
+
+    protected function sendNotifications($phoneNumber)
+    {
+        $message = "Terima kasih telah mendaftar Program Pelatihan Petani Kota Kediri. "
+            . "Data Anda telah kami terima dan akan diproses lebih lanjut. "
+            . "Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan.";
+
+        $this->sendWhatsappMessage($message, $phoneNumber);
+    }
+
+    /**
+     * Send WhatsApp message to the given phone number.
+     * You should implement the actual sending logic here.
+     */
+    protected function sendWhatsappMessage($message, $phoneNumber)
+    {
+        // Example: Log the message instead of sending
+        Log::info("WhatsApp message to {$phoneNumber}: {$message}");
+
+        // TODO: Integrate with WhatsApp API provider here
+    }
+
+    public function success($id)
+    {
+        try {
+            $dataPendaftar = PelatihanPetani::findOrFail($id);
+
+            $message = "Terima kasih telah mendaftar Program Pelatihan UMKM Kota Kediri. "
+                . "Data Anda telah kami terima dan akan diproses lebih lanjut. "
+                . "Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan. "
+                . "Jika ada pertanyaan, silakan hubungi kami melalui: " . env('APP_WA_PELATIHAN');
+
+            $this->sendWhatsappMessage($message, $dataPendaftar->no_hp);
+
+            return Inertia::render('Pelatihan/Success', [
+                'meta' => [
+                    'title' => 'Pendaftaran Pelatihan UMKM',
+                    'jenis' => 'Pelatihan UMKM',
+                ],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Success Page Error: ' . $e->getMessage());
+            return redirect()->route('pelatihan.umkm.index')
+                ->withErrors(['error' => 'Halaman tidak dapat diakses.']);
         }
     }
 }
