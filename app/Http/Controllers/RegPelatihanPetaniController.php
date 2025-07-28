@@ -138,7 +138,7 @@ class RegPelatihanPetaniController extends Controller
         try {
             $dataPendaftar = PelatihanPetani::findOrFail($id);
 
-            $message = "Terima kasih telah mendaftar Program Pelatihan UMKM Kota Kediri. "
+            $message = "Terima kasih telah mendaftar Program Pelatihan Petani Kota Kediri. "
                 . "Data Anda telah kami terima dan akan diproses lebih lanjut. "
                 . "Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan. "
                 . "Jika ada pertanyaan, silakan hubungi kami melalui: " . env('APP_WA_PELATIHAN');
@@ -147,13 +147,13 @@ class RegPelatihanPetaniController extends Controller
 
             return Inertia::render('Pelatihan/Success', [
                 'meta' => [
-                    'title' => 'Pendaftaran Pelatihan UMKM',
-                    'jenis' => 'Pelatihan UMKM',
+                    'title' => 'Pendaftaran Pelatihan Petani',
+                    'jenis' => 'Pelatihan Petani',
                 ],
             ]);
         } catch (\Exception $e) {
             Log::error('Success Page Error: ' . $e->getMessage());
-            return redirect()->route('pelatihan.umkm.index')
+            return redirect()->route('pelatihan.petani.index')
                 ->withErrors(['error' => 'Halaman tidak dapat diakses.']);
         }
     }
