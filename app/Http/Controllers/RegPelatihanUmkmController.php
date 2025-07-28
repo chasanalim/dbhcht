@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use App\Mail\KirimPendaftar;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Str;
+
 
 class RegPelatihanUmkmController extends Controller
 {
@@ -71,24 +73,25 @@ class RegPelatihanUmkmController extends Controller
     public function store(Request $request)
     {
         try {
-            // Validate request
+            if (Str::startsWith($request->no_hp, '08')) {
+                $request->merge([
+                    'no_hp' => '62' . substr($request->no_hp, 1)
+                ]);
+            }
+
             $data = $request->validate($this->getValidationRules());
 
             DB::beginTransaction();
 
             try {
-                // Handle file uploads
                 $uploadedFiles = $this->handleFileUploads($request);
                 $data = array_merge($data, $uploadedFiles);
 
-                // Format arrays to JSON
-                $data['jenis_disabilitas'] = json_encode($data['jenis_disabilitas'] ?? []);
-                $data['legalitas_jenis'] = json_encode($data['legalitas_jenis'] ?? []);
+                $data['jenis_disabilitas'] = $data['jenis_disabilitas'] ?? [];
+                $data['legalitas_jenis'] = $data['legalitas_jenis'] ?? [];
 
-                // Create record
                 $storedPendaftaran = PelatihanUmkm::create($data);
 
-                // Send notifications
                 $this->sendNotifications($data['no_hp']);
 
                 DB::commit();
@@ -97,7 +100,6 @@ class RegPelatihanUmkmController extends Controller
                     ->with('success', 'Pendaftaran berhasil disimpan!');
             } catch (\Exception $e) {
                 DB::rollBack();
-                // Clean up any uploaded files if transaction failed
                 $this->cleanupUploadedFiles($uploadedFiles ?? []);
                 throw $e;
             }
@@ -112,6 +114,7 @@ class RegPelatihanUmkmController extends Controller
                 ->withErrors(['error' => 'Terjadi kesalahan sistem: ' . $e->getMessage()]);
         }
     }
+
 
     protected function handleFileUploads(Request $request)
     {

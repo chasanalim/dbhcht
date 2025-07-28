@@ -75,38 +75,21 @@ export default function FormUMKM() {
     const [skorPengalamanOptions, setSkorPengalamanOptions] = useState([]);
 
     useEffect(() => {
-        fetch("/skor/alasan")
-            .then((res) => res.json())
-            .then((res) => {
-                setSkorAlasanOptions(
-                    res.map((i) => ({
-                        value: i.id,
-                        label: i.jawaban,
-                    }))
-                );
-            });
-
-        fetch("/skor/kesesuaian")
-            .then((res) => res.json())
-            .then((res) => {
-                setSkorKesesuaianOptions(
-                    res.map((i) => ({
-                        value: i.id,
-                        label: i.jawaban,
-                    }))
-                );
-            });
-
-        fetch("/skor/pengalaman")
-            .then((res) => res.json())
-            .then((res) => {
-                setSkorPengalamanOptions(
-                    res.map((i) => ({
-                        value: i.id,
-                        label: i.jawaban,
-                    }))
-                );
-            });
+        Promise.all([
+            fetch("/skor/alasan").then((res) => res.json()),
+            fetch("/skor/kesesuaian").then((res) => res.json()),
+            fetch("/skor/pengalaman").then((res) => res.json()),
+        ]).then(([alasan, kesesuaian, pengalaman]) => {
+            setSkorAlasanOptions(
+                alasan.map((i) => ({ value: i.id, label: i.jawaban }))
+            );
+            setSkorKesesuaianOptions(
+                kesesuaian.map((i) => ({ value: i.id, label: i.jawaban }))
+            );
+            setSkorPengalamanOptions(
+                pengalaman.map((i) => ({ value: i.id, label: i.jawaban }))
+            );
+        });
     }, []);
 
     useEffect(() => {
@@ -125,11 +108,27 @@ export default function FormUMKM() {
         };
     }, [data]);
 
-    let fileIndex = 1;
+    useEffect(() => {
+        const saved = localStorage.getItem("form_umkm_data");
+        if (saved) {
+            setData(JSON.parse(saved));
+        }
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem("form_umkm_data", JSON.stringify(data));
+    }, [data]);
 
     const handleUploadFoto = (e, field_name, preview_name) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (file.size > 2 * 1024 * 1024) {
+            alert("Ukuran file maksimal 2MB. File terlalu besar: " + file.name);
+            return;
+        }
+
         let reader = new FileReader();
-        let file = e.target.files[0];
 
         reader.onloadend = () => {
             setData((prevState) => ({
@@ -151,7 +150,17 @@ export default function FormUMKM() {
     };
 
     const handleUploadFile = (e, field_name, multiple) => {
-        const files = Array.prototype.slice.call(e.target.files);
+        const rawFiles = e.target.files;
+        if (!rawFiles || rawFiles.length === 0) return;
+
+        const files = Array.from(rawFiles);
+
+        if (files[0].size > 2 * 1024 * 1024) {
+            alert(
+                "Ukuran file maksimal 2MB. File terlalu besar: " + files[0].name
+            );
+            return;
+        }
 
         setData((prevState) => ({
             ...prevState,
@@ -196,9 +205,10 @@ export default function FormUMKM() {
         fieldName,
         accept = ".pdf",
         multiple = false,
-        imagePreviewKey = null
+        imagePreviewKey = null,
+        index = 1
     ) => {
-        const indexLabel = `${fileIndex++}.`;
+        const indexLabel = `${index}.`;
 
         return (
             <Form.Group className="mb-4" key={fieldName}>
@@ -313,6 +323,11 @@ export default function FormUMKM() {
     return (
         <>
             <Form onSubmit={handleSubmit} encType="multipart/form-data">
+                {/* Tambahan: tampilkan error umum jika ada */}
+                {errors.error && (
+                    <div className="alert alert-danger">{errors.error}</div>
+                )}
+
                 <div className="big-text text-muted mb-4">
                     Data Peserta
                     <div className="underline"></div>
@@ -378,7 +393,13 @@ export default function FormUMKM() {
                     <Form.Control
                         type="text"
                         value={data.no_hp || ""}
-                        onChange={(e) => setData("no_hp", e.target.value)}
+                        onChange={(e) => {
+                            let input = e.target.value;
+                            if (input.startsWith("08")) {
+                                input = "62" + input.slice(1);
+                            }
+                            setData("no_hp", input);
+                        }}
                         isInvalid={!!errors.no_hp}
                         placeholder="628XXXXXXXXXX"
                     />
@@ -530,10 +551,12 @@ export default function FormUMKM() {
                     {data.is_disabilitas && (
                         <div className="col-md-12 col-12 mb-3">
                             <SelectDisabilitas
-                                onChange={(item) =>
+                                onChange={(selected) =>
                                     setData((prevState) => ({
                                         ...prevState,
-                                        jenis_disabilitas: item,
+                                        jenis_disabilitas: selected.map(
+                                            (opt) => opt.value
+                                        ),
                                     }))
                                 }
                                 errors={errors.jenis_disabilitas}
@@ -804,7 +827,7 @@ export default function FormUMKM() {
                 </Form.Group>
 
                 <div className="big-text text-muted mb-4">
-                    Upload Berkas
+                    Upload Berkas Max 2MB
                     <div className="underline"></div>
                 </div>
 

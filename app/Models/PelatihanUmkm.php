@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PelatihanUmkm extends Model
 {
-    use HasFactory,HasVerifikasiDokumen;
+    use HasFactory, HasVerifikasiDokumen;
 
     protected $table = 'pelatihan_umkm';
 
@@ -57,6 +57,11 @@ class PelatihanUmkm extends Model
         'komitmen',
     ];
 
+    protected $casts = [
+        'jenis_disabilitas' => 'array',
+        'legalitas_jenis' => 'array',
+    ];
+
     protected $appends = [
         'skor',
     ];
@@ -70,21 +75,16 @@ class PelatihanUmkm extends Model
         return $skor / 9 * 100;
     }
 
-
-    // Define any relationships, for example if a PelatihanUmkm has a SkorPelatihanUmkm
-    // public function skor()
-    // {
-    //     return $this->hasMany(SkorPelatihanUmkm::class, 'id', 'skor');
-    // }
-
     public function alasanPelatihan()
     {
         return $this->belongsTo(SkorPelatihanUmkm::class, 'alasan', 'id');
     }
+
     public function kesesuaianPelatihan()
     {
         return $this->belongsTo(SkorPelatihanUmkm::class, 'kesesuaian', 'id');
     }
+
     public function pengalamanPelatihan()
     {
         return $this->belongsTo(SkorPelatihanUmkm::class, 'pengalaman', 'id');
