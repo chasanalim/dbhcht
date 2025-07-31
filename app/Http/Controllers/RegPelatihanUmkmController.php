@@ -23,12 +23,12 @@ class RegPelatihanUmkmController extends Controller
     protected function getValidationRules()
     {
         return [
-            'nik' => 'required|numeric|digits:16|unique:pelatihan_umkm,nik|regex:/^[3-9][0-9]{15}$/',
-            'no_kk' => 'required|numeric|digits:16|regex:/^[0-9]{16}$/',
+            'nik' => 'required|numeric|digits:16',
+            'no_kk' => 'required|numeric|digits:16',
             'nama_lengkap' => 'required|string|max:255',
             'tempat_lahir' => 'required|string|max:100',
             'tgl_lahir' => 'required|date|before:today|after:1900-01-01',
-            'jenis_kelamin' => 'required|string|in:L,P',
+            'jenis_kelamin' => 'required|string',
             'no_hp' => ['required', 'string', 'regex:/^(62)[0-9]{9,12}$/', 'min:11', 'max:14'],
             'pendidikan' => 'required|string',
             'is_disabilitas' => 'required|boolean',
