@@ -177,6 +177,9 @@ export default function FormUMKM() {
             await post(route("pelatihan.umkm.store"), {
                 forceFormData: true,
             });
+
+            reset(); // reset state form
+            localStorage.removeItem("form_umkm_data");
         } catch (error) {
             console.error("Error:", error);
         } finally {
@@ -322,7 +325,11 @@ export default function FormUMKM() {
 
     return (
         <>
-            <Form onSubmit={handleSubmit} encType="multipart/form-data">
+            <Form
+                onSubmit={handleSubmit}
+                autoComplete="off"
+                encType="multipart/form-data"
+            >
                 {/* Tambahan: tampilkan error umum jika ada */}
                 {errors.error && (
                     <div className="alert alert-danger">{errors.error}</div>
