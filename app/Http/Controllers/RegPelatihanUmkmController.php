@@ -92,7 +92,7 @@ class RegPelatihanUmkmController extends Controller
 
                 $storedPendaftaran = PelatihanUmkm::create($data);
 
-                $this->sendNotifications($data['no_hp']);
+                // $this->sendNotifications($data['no_hp']);
 
                 DB::commit();
 

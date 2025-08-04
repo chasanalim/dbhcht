@@ -108,12 +108,12 @@ export default function FormUMKM() {
         };
     }, [data]);
 
-    useEffect(() => {
-        const saved = localStorage.getItem("form_umkm_data");
-        if (saved) {
-            setData(JSON.parse(saved));
-        }
-    }, []);
+    // useEffect(() => {
+    //     const saved = localStorage.getItem("form_umkm_data");
+    //     if (saved) {
+    //         setData(JSON.parse(saved));
+    //     }
+    // }, []);
 
     useEffect(() => {
         localStorage.setItem("form_umkm_data", JSON.stringify(data));
@@ -173,12 +173,11 @@ export default function FormUMKM() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         setIsSubmitting(true);
+        console.log(data);
         try {
             await post(route("pelatihan.umkm.store"), {
                 forceFormData: true,
             });
-
-            reset(); // reset state form
             localStorage.removeItem("form_umkm_data");
         } catch (error) {
             console.error("Error:", error);
@@ -203,14 +202,14 @@ export default function FormUMKM() {
         }));
     };
 
-    const renderFileUpload = (
+    const renderFileUpload = ({
         label,
         fieldName,
         accept = ".pdf",
         multiple = false,
         imagePreviewKey = null,
-        index = 1
-    ) => {
+        index = 1,
+    }) => {
         const indexLabel = `${index}.`;
 
         return (
@@ -838,27 +837,35 @@ export default function FormUMKM() {
                     <div className="underline"></div>
                 </div>
 
-                {renderFileUpload(
-                    "Foto Profil",
-                    "file_foto",
-                    ".png,.jpg,.jpeg",
-                    false,
-                    "imagePreviewFotoProfil"
-                )}
-                {renderFileUpload(
-                    "Foto KTP",
-                    "file_ktp",
-                    ".png,.jpg,.jpeg",
-                    false,
-                    "imagePreviewKTP"
-                )}
-                {renderFileUpload("Kartu Keluarga (KK)", "file_kk")}
+                {renderFileUpload({
+                    label: "Foto Profil",
+                    fieldName: "file_foto",
+                    accept: ".png,.jpg,.jpeg",
+                    imagePreviewKey: "imagePreviewFotoProfil",
+                    index: 1,
+                })}
 
-                {renderFileUpload(
-                    "Surat Pernyataan Komitmen (PDF)",
-                    "file_pernyataan",
-                    ".pdf"
-                )}
+                {renderFileUpload({
+                    label: "Foto KTP",
+                    fieldName: "file_ktp",
+                    accept: ".png,.jpg,.jpeg",
+                    imagePreviewKey: "imagePreviewKTP",
+                    index: 2,
+                })}
+
+                {renderFileUpload({
+                    label: "Kartu Keluarga (KK)",
+                    fieldName: "file_kk",
+                    accept: ".pdf",
+                    index: 3,
+                })}
+
+                {renderFileUpload({
+                    label: "Surat Pernyataan Komitmen (PDF)",
+                    fieldName: "file_pernyataan",
+                    accept: ".pdf",
+                    index: 4,
+                })}
 
                 <hr />
 
