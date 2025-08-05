@@ -10,9 +10,10 @@ const trainings = [
         title: "Pelatihan Keterampilan untuk Pencari Kerja",
         description:
             "Pelatihan teknis dan soft skill untuk meningkatkan daya saing pencari kerja.",
-        image: "/assets/coworkers-business-meeting.jpg",
+        image: "https://cdn.antaranews.com/cache/1200x800/2024/01/28/17064193727897.jpeg",
         requirements: [
-            { label: "Usia", value: "Minimal 18 tahun" },
+            { label: "Usia Min", value: "18 tahun" },
+            { label: "Usia Maks", value: "45 tahun" },
             { label: "Status", value: "Belum bekerja" },
         ],
         duration: "3 Minggu",
@@ -25,7 +26,7 @@ const trainings = [
         title: "Pelatihan Keterampilan untuk Penerima Banmod",
         description:
             "Pelatihan lanjutan bagi penerima bantuan modal untuk mengembangkan usahanya.",
-        image: "/assets/business-people-making-pile-hands-teamwork-concept.jpg",
+        image: "https://mcc.or.id/wp-content/uploads/2025/02/n209-3.webp",
         requirements: [{ label: "Penerima", value: "Program Banmod DBHCHT" }],
         duration: "2 Minggu",
         location: "Balai Latihan Usaha",
@@ -37,7 +38,7 @@ const trainings = [
         title: "Pelatihan UMKM",
         description:
             "Peningkatan kapasitas pelaku UMKM dalam manajemen usaha dan pemasaran.",
-        image: "/assets/young-woman-arranging-her-cake-shop.jpg",
+        image: "https://uny.ac.id/sites/default/files/styles/large/public/2024-09/proses%20membuat.jpg?itok=4BsuWSUJ",
         requirements: [{ label: "Status", value: "Pelaku UMKM aktif" }],
         duration: "1 Minggu",
         location: "Gedung UMKM Center",
@@ -49,24 +50,24 @@ const trainings = [
         title: "Pelatihan Petani",
         description:
             "Teknik pertanian modern dan pemanfaatan alat pertanian terbaru.",
-        image: "/assets/young-asian-farmer-harvest-ripe-rice-with-sickle-rice-field.jpg",
+        image: "https://dokar.kendalkab.go.id/upload/berita/1688524912IMG_20230704_163951.jpg",
         requirements: [{ label: "Pekerjaan", value: "Petani aktif" }],
         duration: "2 Minggu",
         location: "Balai Pertanian",
         jenis: "petani",
         comingSoon: false,
     },
-    {
-        id: 5,
-        title: "Pelatihan Digital Marketing",
-        description:
-            "Pelatihan untuk memperluas pasar secara online dan memanfaatkan media sosial.",
-        image: "/assets/top-viewtop-view-manager-employee-doing-teamwork-business-office-looking-charts-laptop-display.jpg",
-        requirements: [],
-        duration: "",
-        location: "",
-        comingSoon: true,
-    },
+    // {
+    //     id: 5,
+    //     title: "Pelatihan Digital Marketing",
+    //     description:
+    //         "Pelatihan untuk memperluas pasar secara online dan memanfaatkan media sosial.",
+    //     image: "/assets/top-viewtop-view-manager-employee-doing-teamwork-business-office-looking-charts-laptop-display.jpg",
+    //     requirements: [],
+    //     duration: "",
+    //     location: "",
+    //     comingSoon: true,
+    // },
 ];
 
 export default function Index({ meta }) {

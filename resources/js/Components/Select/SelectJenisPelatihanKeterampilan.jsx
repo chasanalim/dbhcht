@@ -32,10 +32,11 @@ export default function SelectJenisPelatihanKeterampilan({
     };
 
     useEffect(() => {
+        console.log("Trigger fetch with:", pendidikan_min, usia_max);
         if (!!pendidikan_min && !!usia_max) {
             fetchData();
         }
-    }, [pendidikan_min , usia_max]);
+    }, [pendidikan_min, usia_max]);
 
     return (
         <Fragment>
