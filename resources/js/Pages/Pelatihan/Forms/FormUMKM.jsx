@@ -966,7 +966,7 @@ export default function FormUMKM() {
                 <Form.Group className="mt-4 mb-3">
                     <Form.Check
                         type="checkbox"
-                        label="Saya menyatakan data yang saya masukkan benar dan bersedia mengikuti pelatihan sampai selesai"
+                        label="Saya menyatakan bahwa data yang saya isi adalah benar dan dapat dipertanggungjawabkan serta menyetujui penggunaannya oleh penyelenggara untuk keperluan verifikasi dan pelaksanaan program sesuai kebijakan privasi yang berlaku."
                         checked={data.komitmen}
                         onChange={(e) => setData("komitmen", e.target.checked)}
                         isInvalid={!!errors.komitmen}

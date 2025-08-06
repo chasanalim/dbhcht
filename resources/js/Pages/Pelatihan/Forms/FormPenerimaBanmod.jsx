@@ -811,7 +811,7 @@ export default function FormPenerimaBanmod() {
                         <Form.Check
                             type="checkbox"
                             id="komitmen"
-                            label="DENGAN INI MENYATAKAN BAHWA DATA YANG SAYA MASUKKAN ADALAH BENAR DAN SAYA BERSEDIA MENGIKUTI PELATIHAN SAMPAI SELESAI. APABILA SAYA MELANGGAR MAKA BERSEDIA MENERIMA SANKSI YANG DIBERIKAN"
+                            label="Saya menyatakan bahwa data yang saya isi adalah benar dan dapat dipertanggungjawabkan serta menyetujui penggunaannya oleh penyelenggara untuk keperluan verifikasi dan pelaksanaan program sesuai kebijakan privasi yang berlaku."
                             checked={data.komitmen}
                             onChange={(e) =>
                                 setData("komitmen", e.target.checked)
