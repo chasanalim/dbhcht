@@ -17,6 +17,7 @@ class DashboardController extends Controller
 {
     public function dashboard()
     {
+        // return response()->json($this->getBanmodSummary());
         return Inertia::render('Admin/Dashboard/Dashboard', [
             // Banmod Data
             'banmod' => [

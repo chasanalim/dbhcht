@@ -10,16 +10,18 @@ use App\Http\Controllers\BrutoController;
 use App\Http\Controllers\BanmodController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LamaUsahaController;
+use App\Http\Controllers\PendidikanController;
 use App\Http\Controllers\KlasterUsahaController;
+use App\Http\Controllers\Admin\EksportController;
 use App\Http\Controllers\SkorPelatihanController;
 use App\Http\Controllers\KategoriBanmodController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\JumlahLegalitasController;
 use App\Http\Controllers\Admin\PrivilegesController;
 use App\Http\Controllers\RegPelatihanUmkmController;
 use App\Http\Controllers\JumlahTenagaKerjaController;
 use App\Http\Controllers\Admin\LampiranFileController;
-use App\Http\Controllers\Admin\MasterKelompokTaniController;
 use App\Http\Controllers\RegPelatihanPetaniController;
 use App\Http\Controllers\TanggunganKeluargaController;
 use App\Http\Controllers\Admin\PelatihanUMKMController;
@@ -27,17 +29,19 @@ use App\Http\Controllers\SkorPelatihanBanmodController;
 use App\Http\Controllers\StatusTempatTinggalController;
 use App\Http\Controllers\Admin\PelatihanKerjaController;
 use App\Http\Controllers\Admin\PelatihanBanmodController;
+use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Http\Controllers\JenisPelatihanKetKerjaController;
 use App\Http\Controllers\JumlahTeknologiDigitalController;
 use App\Http\Controllers\PenyerapanTenagaMiskinController;
 use App\Http\Controllers\RegSkorPelatihanPetaniController;
 use App\Http\Controllers\Admin\PendaftaranBanmodController;
+use App\Http\Controllers\Admin\VerifikasiDokumenController;
 use App\Http\Controllers\AlasanPelatihanKetKerjaController;
 use App\Http\Controllers\PelatihanPenerimaBanmodController;
+use App\Http\Controllers\Admin\MasterKelompokTaniController;
 use App\Http\Controllers\Admin\PelatihanPertanianController;
 use App\Http\Controllers\Admin\PenerimaBanmodLamaController;
 use App\Http\Controllers\Admin\PenerimaPelatihanBanmodController;
-use App\Http\Controllers\PendidikanController;
 use App\Http\Controllers\RegPelatihanKeterampilanKerjaController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -51,10 +55,9 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/dashboard', function () {
-        return Inertia::render('Admin/Dashboard/Dashboard');
-    })->name('dashboard');
 
+
+    Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 
     Route::resource('downloads', LampiranFileController::class);
     Route::get('banmod/buruh-pabrik-rokok', [PendaftaranBanmodController::class, 'buruh_pabrik_rokok'])->name('banmod.buruh-pabrik-rokok');
@@ -63,6 +66,7 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::get('banmod/ikm', [PendaftaranBanmodController::class, 'ikm'])->name('banmod.ikm');
     Route::get('banmod/masyarakat-miskin', [PendaftaranBanmodController::class, 'masyarakat_miskin'])->name('banmod.masyarakat-miskin');
     Route::resource('banmod', PendaftaranBanmodController::class);
+
     Route::resource('umkm', PelatihanUMKMController::class);
     Route::resource('pertanian', PelatihanPertanianController::class);
     Route::resource('pelatihan-banmod', PelatihanBanmodController::class);
@@ -72,6 +76,22 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::resource('banmodwirausaha', PenerimaPelatihanBanmodController::class);
     Route::resource('kelompoktani', MasterKelompokTaniController::class);
     Route::resource('privileges', PrivilegesController::class);
+    Route::post('admin/verify-document', [VerifikasiDokumenController::class, 'verify'])
+        ->name('verify-document');
+    Route::post('admin/tolak-document', [VerifikasiDokumenController::class, 'tolak'])
+        ->name('tolak-document');
+
+    // EKSPORT EXCELL
+    Route::get('export/banmod', [EksportController::class, 'exportBanmod'])
+        ->name('export.banmod');
+    Route::get('export/umkm', [EksportController::class, 'exportUmkm'])
+        ->name('export.umkm');
+    Route::get('export/kerja', [EksportController::class, 'exportKerja'])
+        ->name('export.kerja');
+    Route::get('export/pelatihanbanmod', [EksportController::class, 'exportPelatihanBanmod'])
+        ->name('export.pelatihanbanmod');
+    Route::get('export/pertanian', [EksportController::class, 'exportPertanian'])
+        ->name('export.pertanian');
 });
 
 Route::prefix('users')->as('users.')->group(function () {
