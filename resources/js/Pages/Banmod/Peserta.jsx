@@ -42,7 +42,7 @@ export default function PesertaPage({ meta }) {
                     },
                 },
                 { data: "name", name: "name" },
-                { data: "alamat", name: "alamat" },
+                // { data: "alamat", name: "alamat" },
                 { data: "nama_rt", name: "nama_rt", className: "text-center" },
                 { data: "nama_rw", name: "nama_rw", className: "text-center" },
                 {
@@ -134,9 +134,9 @@ export default function PesertaPage({ meta }) {
                                                     <th className="fw-bold text-primary">
                                                         NAMA
                                                     </th>
-                                                    <th className="fw-bold text-primary">
+                                                    {/* <th className="fw-bold text-primary">
                                                         ALAMAT
-                                                    </th>
+                                                    </th> */}
                                                     <th className="fw-bold text-primary">
                                                         RT
                                                     </th>

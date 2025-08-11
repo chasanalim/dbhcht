@@ -196,7 +196,15 @@ export default function Show({ title, data, type = "PELATIHAN_BANMOD" }) {
     return (
         <AdminLayout>
             <Head title={title} />
-
+<div>
+                    <button
+                        onClick={() => window.history.back()}
+                        className="btn btn-secondary ms-2 mb-2"
+                    >
+                        <i className="bi bi-reply me-1"></i>
+                        <span>Kembali</span>
+                    </button>
+                </div>
             <div className="container-fluid py-4">
                 <div className="card">
                     <div className="card-header">
@@ -271,9 +279,9 @@ export default function Show({ title, data, type = "PELATIHAN_BANMOD" }) {
                                             <td>
                                                 {" "}
                                                 :{" "}
-                                                {parseFloat(data.skor_total).toFixed(
-                                                    2
-                                                )}
+                                                {parseFloat(
+                                                    data.skor_total
+                                                ).toFixed(2)}
                                             </td>
                                         </tr>
                                     </tbody>
@@ -327,21 +335,30 @@ export default function Show({ title, data, type = "PELATIHAN_BANMOD" }) {
                                             <td>: {data.perkembangan.omzet}</td>
                                             <td className="text-danger text-bold">
                                                 Skor :{" "}
-                                                {data.perkembangan.omzet === "meningkat"
+                                                {data.perkembangan.omzet ===
+                                                "meningkat"
                                                     ? 3
-                                                    : data.perkembangan.omzet === "tetap"
+                                                    : data.perkembangan
+                                                          .omzet === "tetap"
                                                     ? 2
                                                     : 1}
                                             </td>
                                             <td className="text-danger text-bold">
                                                 NA :{" "}
-                                                {data.perkembangan.omzet === "meningkat"
-                                                    ? parseFloat(3/3 * 14.3).toFixed(2)
-                                                    : data.perkembangan.omzet === "tetap"
-                                                    ? parseFloat(2/3 * 14.3).toFixed(2)
-                                                    : parseFloat(1/3 * 14.3).toFixed(2)}
+                                                {data.perkembangan.omzet ===
+                                                "meningkat"
+                                                    ? parseFloat(
+                                                          (3 / 3) * 14.3
+                                                      ).toFixed(2)
+                                                    : data.perkembangan
+                                                          .omzet === "tetap"
+                                                    ? parseFloat(
+                                                          (2 / 3) * 14.3
+                                                      ).toFixed(2)
+                                                    : parseFloat(
+                                                          (1 / 3) * 14.3
+                                                      ).toFixed(2)}
                                             </td>
-
                                         </tr>
                                         <tr>
                                             <td>Tenaga Kerja</td>
@@ -351,19 +368,29 @@ export default function Show({ title, data, type = "PELATIHAN_BANMOD" }) {
                                             </td>
                                             <td className="text-danger text-bold">
                                                 Skor :{" "}
-                                                {data.perkembangan.omzet === "bertambah"
+                                                {data.perkembangan.omzet ===
+                                                "bertambah"
                                                     ? 3
-                                                    : data.perkembangan.omzet === "tetap"
+                                                    : data.perkembangan
+                                                          .omzet === "tetap"
                                                     ? 2
                                                     : 1}
                                             </td>
                                             <td className="text-danger text-bold">
                                                 NA :{" "}
-                                                {data.perkembangan.omzet === "bertambah"
-                                                    ? parseFloat(3/3 * 14.3).toFixed(2)
-                                                    : data.perkembangan.omzet === "tetap"
-                                                    ? parseFloat(2/3 * 14.3).toFixed(2)
-                                                    : parseFloat(1/3 * 14.3).toFixed(2)}
+                                                {data.perkembangan.omzet ===
+                                                "bertambah"
+                                                    ? parseFloat(
+                                                          (3 / 3) * 14.3
+                                                      ).toFixed(2)
+                                                    : data.perkembangan
+                                                          .omzet === "tetap"
+                                                    ? parseFloat(
+                                                          (2 / 3) * 14.3
+                                                      ).toFixed(2)
+                                                    : parseFloat(
+                                                          (1 / 3) * 14.3
+                                                      ).toFixed(2)}
                                             </td>
                                         </tr>
                                     </tbody>
@@ -380,7 +407,8 @@ export default function Show({ title, data, type = "PELATIHAN_BANMOD" }) {
                                                 :{" "}
                                                 {data.skor.ketrampilan === 1
                                                     ? "Kurang Setuju"
-                                                    : data.skor.ketrampilan === 2
+                                                    : data.skor.ketrampilan ===
+                                                      2
                                                     ? "Setuju"
                                                     : "Sangat Setuju"}
                                             </td>
@@ -388,7 +416,12 @@ export default function Show({ title, data, type = "PELATIHAN_BANMOD" }) {
                                                 Skor : {data.skor.ketrampilan}
                                             </td>
                                             <td className="text-danger text-bold">
-                                                NA : {parseFloat(data.skor.ketrampilan/3 * 14.3).toFixed(2)}
+                                                NA :{" "}
+                                                {parseFloat(
+                                                    (data.skor.ketrampilan /
+                                                        3) *
+                                                        14.3
+                                                ).toFixed(2)}
                                             </td>
                                         </tr>
                                         <tr>
@@ -397,32 +430,49 @@ export default function Show({ title, data, type = "PELATIHAN_BANMOD" }) {
                                                 :{" "}
                                                 {data.skor.kualitas_produk === 1
                                                     ? "Kurang Setuju"
-                                                    : data.skor.kualitas_produk === 2
+                                                    : data.skor
+                                                          .kualitas_produk === 2
                                                     ? "Setuju"
                                                     : "Sangat Setuju"}
                                             </td>
                                             <td className="text-danger text-bold">
-                                                Skor : {data.skor.kualitas_produk}
+                                                Skor :{" "}
+                                                {data.skor.kualitas_produk}
                                             </td>
                                             <td className="text-danger text-bold">
-                                                NA : {parseFloat(data.skor.kualitas_produk/3 * 14.3).toFixed(2)}
+                                                NA :{" "}
+                                                {parseFloat(
+                                                    (data.skor.kualitas_produk /
+                                                        3) *
+                                                        14.3
+                                                ).toFixed(2)}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>Permasalahan Usaha</td>
                                             <td>
                                                 :{" "}
-                                                {data.skor.permasalahan_usaha === 1
+                                                {data.skor
+                                                    .permasalahan_usaha === 1
                                                     ? "Kurang Setuju"
-                                                    : data.skor.permasalahan_usaha === 2
+                                                    : data.skor
+                                                          .permasalahan_usaha ===
+                                                      2
                                                     ? "Setuju"
                                                     : "Sangat Setuju"}
                                             </td>
                                             <td className="text-danger text-bold">
-                                                Skor : {data.skor.permasalahan_usaha}
+                                                Skor :{" "}
+                                                {data.skor.permasalahan_usaha}
                                             </td>
                                             <td className="text-danger text-bold">
-                                                NA : {parseFloat(data.skor.permasalahan_usaha/3 * 14.3).toFixed(2)}
+                                                NA :{" "}
+                                                {parseFloat(
+                                                    (data.skor
+                                                        .permasalahan_usaha /
+                                                        3) *
+                                                        14.3
+                                                ).toFixed(2)}
                                             </td>
                                         </tr>
                                         <tr>
@@ -431,7 +481,8 @@ export default function Show({ title, data, type = "PELATIHAN_BANMOD" }) {
                                                 :{" "}
                                                 {data.skor.mengisi_waktu === 1
                                                     ? "Kurang Setuju"
-                                                    : data.skor.mengisi_waktu === 2
+                                                    : data.skor
+                                                          .mengisi_waktu === 2
                                                     ? "Setuju"
                                                     : "Sangat Setuju"}
                                             </td>
@@ -439,7 +490,12 @@ export default function Show({ title, data, type = "PELATIHAN_BANMOD" }) {
                                                 Skor : {data.skor.mengisi_waktu}
                                             </td>
                                             <td className="text-danger text-bold">
-                                                NA : {parseFloat(data.skor.mengisi_waktu/3 * 14.3).toFixed(2)}
+                                                NA :{" "}
+                                                {parseFloat(
+                                                    (data.skor.mengisi_waktu /
+                                                        3) *
+                                                        14.3
+                                                ).toFixed(2)}
                                             </td>
                                         </tr>
                                         <tr>
@@ -448,7 +504,8 @@ export default function Show({ title, data, type = "PELATIHAN_BANMOD" }) {
                                                 :{" "}
                                                 {data.skor.diajak_teman === 1
                                                     ? "Kurang Setuju"
-                                                    : data.skor.diajak_teman === 2
+                                                    : data.skor.diajak_teman ===
+                                                      2
                                                     ? "Setuju"
                                                     : "Sangat Setuju"}
                                             </td>
@@ -456,7 +513,12 @@ export default function Show({ title, data, type = "PELATIHAN_BANMOD" }) {
                                                 Skor : {data.skor.diajak_teman}
                                             </td>
                                             <td className="text-danger text-bold">
-                                                NA : {parseFloat(data.skor.diajak_teman/3 * 14.3).toFixed(2)}
+                                                NA :{" "}
+                                                {parseFloat(
+                                                    (data.skor.diajak_teman /
+                                                        3) *
+                                                        14.3
+                                                ).toFixed(2)}
                                             </td>
                                         </tr>
                                     </tbody>
@@ -487,7 +549,13 @@ export default function Show({ title, data, type = "PELATIHAN_BANMOD" }) {
                                                 <div className="modal-content">
                                                     <div className="modal-header">
                                                         <h5 className="modal-title">
-                                                            {activeFile.label}
+                                                            {activeFile.label ===
+                                                            "KTP"
+                                                                ? `${activeFile.label} | NIK : ${data.nik}`
+                                                                : activeFile.label ===
+                                                                  "Kartu Keluarga"
+                                                                ? `${activeFile.label} | NO KK : ${data.no_kk}`
+                                                                : activeFile.label}
                                                         </h5>
                                                         <button
                                                             type="button"

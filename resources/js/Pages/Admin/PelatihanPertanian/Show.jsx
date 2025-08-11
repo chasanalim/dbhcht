@@ -205,6 +205,15 @@ export default function Show({ title, data, type = "PELATIHAN_PERTANIAN" }) {
             <Head title={title} />
 
             <div className="container-fluid py-4">
+                <div>
+                    <button
+                        onClick={() => window.history.back()}
+                        className="btn btn-secondary ms-2 mb-2"
+                    >
+                        <i className="bi bi-reply me-1"></i>
+                        <span>Kembali</span>
+                    </button>
+                </div>
                 <div className="card">
                     <div className="card-header">
                         <h5 className="fw-bold mb-0">{title}</h5>
@@ -463,7 +472,13 @@ export default function Show({ title, data, type = "PELATIHAN_PERTANIAN" }) {
                                                 <div className="modal-content">
                                                     <div className="modal-header">
                                                         <h5 className="modal-title">
-                                                            {activeFile.label}
+                                                            {activeFile.label ===
+                                                            "KTP"
+                                                                ? `${activeFile.label} | NIK : ${data.nik}`
+                                                                : activeFile.label ===
+                                                                  "Kartu Keluarga"
+                                                                ? `${activeFile.label} | NO KK : ${data.no_kk}`
+                                                                : activeFile.label}
                                                         </h5>
                                                         <button
                                                             type="button"

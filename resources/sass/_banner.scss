@@ -1,9 +1,15 @@
-.landing{
-    background-image: url('../../public/assets/bg-hero.png');
+.landing {
+    background-image: url("../../public/assets/bg-hero.png");
     background-repeat: no-repeat;
     background-size: 1200px;
     min-height: 95vh;
 }
+
+.object-fit-cover {
+    object-fit: cover;
+    object-position: center;
+}
+
 @media (min-width: 1600px) {
     .landing {
         background-size: 1600px;
@@ -17,7 +23,7 @@
 }
 
 @include media-breakpoint-down(md) {
-    .landing{
+    .landing {
         min-height: auto;
     }
 }
