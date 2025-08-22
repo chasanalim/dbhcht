@@ -29,7 +29,8 @@ class PelatihanKerjas extends Model
         "phone_number",
         "alasan",
         "pendidikan",
-        "jenis_pelatihan"
+        "jenis_pelatihan",
+        'status'
     ];
 
     public function refPendidikan()

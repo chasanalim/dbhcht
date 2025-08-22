@@ -61,6 +61,7 @@ return new class extends Migration {
             $table->string('kesesuaian');
             $table->string('pengalaman');
             $table->string('komitmen');
+            $table->integer('status')->default(0); // 0: Menunggu, 1: lolos, 2: Gagal , 3: Blacklist
 
             $table->timestamps();
         });
