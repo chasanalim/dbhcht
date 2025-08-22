@@ -50,6 +50,8 @@ return new class extends Migration
             // Komitmen
             $table->boolean('komitmen')->default(0);
 
+            $table->integer('status')->default(0); // 0: Menunggu, 1: lolos, 2: Gagal
+
             $table->timestamps();
         });
     }

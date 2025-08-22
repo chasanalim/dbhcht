@@ -47,6 +47,7 @@ class PelatihanBanmod extends Model
         'file_nib',
 
         'komitmen',
+        'status',
     ];
 
     protected $appends = [
@@ -56,11 +57,11 @@ class PelatihanBanmod extends Model
     public function getSkorAttribute()
     {
         $skor = 0;
-        $skor += $this->skor_ketrampilan;
-        $skor += $this->skor_kualitas_produk;
-        $skor += $this->skor_permasalahan_usaha;
-        $skor += $this->skor_mengisi_waktu;
-        $skor += $this->skor_diajak_teman;
+        $skor += $this->skor_ketrampilan ?? 0;
+        $skor += $this->skor_kualitas_produk ?? 0;
+        $skor += $this->skor_permasalahan_usaha ?? 0;
+        $skor += $this->skor_mengisi_waktu ?? 0;
+        $skor += $this->skor_diajak_teman ?? 0;
         if ($this->perkembangan_omzet == 'Meningkat') {
             $skor += 3;
         } else if ($this->perkembangan_omzet == 'Tetap') {
@@ -74,6 +75,10 @@ class PelatihanBanmod extends Model
             $skor += 2;
         } else if ($this->perkembangan_tenaga_kerja == 'Menurun') {
             $skor += 1;
+        }
+
+        if ($skor === 0) {
+            return 0;
         }
         return $skor / 21 * 100;
     }

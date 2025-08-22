@@ -46,6 +46,7 @@ class PelatihanPetani extends Model
         'kategori',
         'jenis_pelatihan_petani',
         'alasan',
+        'status',
     ];
 
     protected $appends = [
@@ -55,8 +56,12 @@ class PelatihanPetani extends Model
     public function getSkorAttribute()
     {
         $skor = 0;
-        $skor += $this->masaAktifKelompok->skor;
-        $skor += $this->alasanPelatihan->skor;
+        $skor += $this->masaAktifKelompok->skor ?? 0;
+        $skor += $this->alasanPelatihan->skor ?? 0;
+
+        if ($skor === 0) {
+            return 0;
+        }
         return $skor / 6 * 100;
     }
 

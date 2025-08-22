@@ -70,9 +70,13 @@ class PelatihanUmkm extends Model
     public function getSkorAttribute()
     {
         $skor = 0;
-        $skor += $this->alasanPelatihan->skor;
-        $skor += $this->kesesuaianPelatihan->skor;
-        $skor += $this->pengalamanPelatihan->skor;
+        $skor += $this->alasanPelatihan->skor ?? 0;
+        $skor += $this->kesesuaianPelatihan->skor ?? 0;
+        $skor += $this->pengalamanPelatihan->skor ?? 0;
+
+        if ($skor === 0) {
+            return 0;
+        }
         return $skor / 9 * 100;
     }
 
