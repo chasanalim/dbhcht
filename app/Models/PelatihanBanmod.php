@@ -97,6 +97,7 @@ class PelatihanBanmod extends Model
             'kk' => 'Kartu Keluarga',
             'nib' => 'NIB',
             'domisili' => 'Surat Keterangan Domisili',
+            'skd' => 'Surat Keterangan Domisili',
         ];
     }
 }

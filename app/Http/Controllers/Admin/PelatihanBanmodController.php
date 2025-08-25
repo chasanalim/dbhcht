@@ -29,6 +29,8 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
             'ktp' => 'KTP',
             'kk' => 'Kartu Keluarga',
             'nib' => 'NIB',
+            'skd' => 'Surat Keterangan Domisili',
+
         ];
     }
     /**
@@ -52,14 +54,16 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
             if ($request->has('jenis_pelatihan_industri') && $request->jenis_pelatihan_industri !== 'Semua Pelatihan') {
                 $query->where('jenis_pelatihan_industri', $request->jenis_pelatihan_industri);
             }
-
+            if ($request->has('status') && $request->status !== 'all') {
+                $query->where('status', $request->status);
+            }
             $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor');
 
             if ($request->has('verification_status')) {
                 $status = $request->verification_status;
                 $data = $data->filter(function ($item) use ($status) {
                     $verifications = $item->documentVerifications;
-                    $requiredDocs = ['ktp', 'kk', 'nib'];
+                    $requiredDocs = ['ktp', 'kk', 'nib','skd'];
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
                         return $verification->status === 1;
@@ -83,11 +87,12 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
                     return [
                         'edit_url' => route('admin.pelatihan-banmod.edit', $row->id),
                         'delete_url' => route('admin.pelatihan-banmod.destroy', $row->id),
-                        'detail_url' => route('admin.pelatihan-banmod.show', $row->id)
+                        'detail_url' => route('admin.pelatihan-banmod.show', $row->id),
+                        'status_url' => route('admin.pelatihan-banmod.status', $row->id)
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
-                    $requiredDocs = ['ktp', 'kk', 'nib'];
+                    $requiredDocs = ['ktp', 'kk', 'nib','skd'];
                     $verifications = $row->documentVerifications;
 
                     $allVerified = count($verifications) === count($requiredDocs);
@@ -234,6 +239,10 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
                         'url' => asset('storage/' . $data->file_nib),
                         'verification' => $verifiedDocuments['nib'] ?? null
                     ],
+                    'skd' => [
+                        'url' => asset('storage/' . $data->file_domisili),
+                        'verification' => $verifiedDocuments['skd'] ?? null
+                    ],
                 ],
                 'documentTypes' => PelatihanBanmod::getDocumentTypes(),
 
@@ -255,6 +264,30 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
     public function update(Request $request, string $id)
     {
         //
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $data = PelatihanBanmod::findOrFail($id);
+
+        // Validate if document is verified
+        $verifications = $data->documentVerifications;
+        $requiredDocs = ['ktp', 'kk', 'nib','skd'];
+        $allVerified = count($verifications) === count($requiredDocs);
+        $allApproved = $verifications->every(fn($v) => $v->status === 1);
+
+        if (!$allVerified || !$allApproved) {
+            return response()->json([
+                'message' => 'Dokumen belum terverifikasi lengkap'
+            ], 422);
+        }
+
+        $data->status = $request->status;
+        $data->save();
+
+        return redirect()->back()->with([
+            'message' => 'Status berhasil diperbarui'
+        ]);
     }
 
     /**

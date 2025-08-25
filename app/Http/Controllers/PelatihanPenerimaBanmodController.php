@@ -116,11 +116,13 @@ class PelatihanPenerimaBanmodController extends Controller
                     'skor_mengisi_waktu' => $validated['skor_mengisi_waktu'],
                     'skor_diajak_teman' => $validated['skor_diajak_teman'],
 
-                    // Files 
+                    // Files
                     'file_ktp' => $file_ktp ?? null,
                     'file_kk' => $file_kk ?? null,
                     'file_nib' => $file_nib ?? null,
-                    'file_domisili' => $file_domisili ?? null
+                    'file_domisili' => $file_domisili ?? null,
+                    'status' => 0, // Menunggu
+
                 ]);
 
                 // Send WhatsApp notification
