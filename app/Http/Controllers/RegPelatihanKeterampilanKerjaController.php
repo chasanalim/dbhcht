@@ -55,6 +55,7 @@ class RegPelatihanKeterampilanKerjaController extends Controller
             $validated['file_domisili'] = '/storage/pendaftaran-pelatihan-kerja/domisili/' . $request->file('file_domisili')->hashName();
             $request->file('file_domisili')->storeAs('/pendaftaran-pelatihan-kerja/domisili', $request->file('file_domisili')->hashName(), 'public');
         }
+        $validated['status'] = 0; // Default status is 'Menunggu'
 
         $storedPendaftaran = PelatihanKerjas::create($validated);
         return to_route('pelatihan.kerja.success', $storedPendaftaran->id)->with('success', 'Pendaftaran Berhasil.');

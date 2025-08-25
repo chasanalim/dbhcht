@@ -57,6 +57,7 @@ class PelatihanKerjas extends Model
         return [
             'ktp' => 'KTP',
             'kk' => 'Kartu Keluarga',
+            'skd' => 'Surat Keterangan Domisili',
         ];
     }
 }

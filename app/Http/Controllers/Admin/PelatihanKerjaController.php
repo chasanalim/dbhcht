@@ -29,6 +29,7 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
         return [
             'ktp' => 'KTP',
             'kk' => 'Kartu Keluarga',
+            'skd' => 'Surat Keterangan Domisili',
         ];
     }
     /**
@@ -50,13 +51,16 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
             if ($request->has('jenis_pelatihan') && $request->jenis_pelatihan !== 'all') {
                 $query->where('jenis_pelatihan', $request->jenis_pelatihan);
             }
+            if ($request->has('status') && $request->status !== 'all') {
+                $query->where('status', $request->status);
+            }
             $data = $query->orderBy('created_at', 'asc')->get();
 
             if ($request->has('verification_status')) {
                 $status = $request->verification_status;
                 $data = $data->filter(function ($item) use ($status) {
                     $verifications = $item->documentVerifications;
-                    $requiredDocs = ['ktp', 'kk'];
+                    $requiredDocs = ['ktp', 'kk', 'skd'];
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
                         return $verification->status === 1;
@@ -79,11 +83,12 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
                     return [
                         'edit_url' => route('admin.kerja.edit', $row->id),
                         'delete_url' => route('admin.kerja.destroy', $row->id),
-                        'detail_url' => route('admin.kerja.show', $row->id)
+                        'detail_url' => route('admin.kerja.show', $row->id),
+                        'status_url' => route('admin.kerja.status', $row->id)
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
-                    $requiredDocs = ['ktp', 'kk'];
+                    $requiredDocs = ['ktp', 'kk','skd'];
                     $verifications = $row->documentVerifications;
 
                     $allVerified = count($verifications) === count($requiredDocs);
@@ -202,6 +207,10 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
                         'url' => asset('' . $data->file_kk),
                         'verification' => $verifiedDocuments['kk'] ?? null
                     ],
+                    'skd' => [
+                        'url' => asset('' . $data->file_domisili),
+                        'verification' => $verifiedDocuments['skd'] ?? null
+                    ],
                 ],
                 'documentTypes' => PelatihanKerjas::getDocumentTypes()
             ],
@@ -222,6 +231,30 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
     public function update(Request $request, string $id)
     {
         //
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $data = PelatihanKerjas::findOrFail($id);
+
+        // Validate if document is verified
+        $verifications = $data->documentVerifications;
+        $requiredDocs = ['ktp', 'kk','skd'];
+        $allVerified = count($verifications) === count($requiredDocs);
+        $allApproved = $verifications->every(fn($v) => $v->status === 1);
+
+        if (!$allVerified || !$allApproved) {
+            return response()->json([
+                'message' => 'Dokumen belum terverifikasi lengkap'
+            ], 422);
+        }
+
+        $data->status = $request->status;
+        $data->save();
+
+        return response()->json([
+            'message' => 'Status berhasil diperbarui'
+        ]);
     }
 
     /**
