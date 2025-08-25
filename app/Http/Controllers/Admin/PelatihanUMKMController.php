@@ -30,7 +30,8 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
             'foto' => 'Pas Foto',
             'ktp' => 'KTP',
             'kk' => 'Kartu Keluarga',
-            'pernyataan' => 'Surat Pernyataan'
+            'pernyataan' => 'Surat Pernyataan',
+            'skd' => 'Surat Keterangan Domisili',
         ];
     }
 
@@ -67,13 +68,16 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
             ) {
                 $query->where('prioritas_3', $request->prioritas_3);
             }
+            if ($request->has('status') && $request->status !== 'all') {
+                $query->where('status', $request->status);
+            }
             $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor');
 
             if ($request->has('verification_status')) {
                 $status = $request->verification_status;
                 $data = $data->filter(function ($item) use ($status) {
                     $verifications = $item->documentVerifications;
-                    $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan'];
+                    $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan', 'skd'];
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
                         return $verification->status === 1;
@@ -98,11 +102,12 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
                     return [
                         'edit_url' => route('admin.umkm.edit', $row->id),
                         'delete_url' => route('admin.umkm.destroy', $row->id),
-                        'detail_url' => route('admin.umkm.show', $row->id)
+                        'detail_url' => route('admin.umkm.show', $row->id),
+                        'status_url' => route('admin.umkm.status', $row->id)
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
-                    $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan'];
+                    $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan', 'skd'];
                     $verifications = $row->documentVerifications;
 
                     $allVerified = count($verifications) === count($requiredDocs);
@@ -253,6 +258,10 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
                         'url' => asset('storage/' . $data->file_pernyataan),
                         'verification' => $verifiedDocuments['pernyataan'] ?? null
                     ],
+                    'skd' => [
+                        'url' => asset('storage/' . $data->file_domisili),
+                        'verification' => $verifiedDocuments['skd'] ?? null
+                    ],
                 ],
                 'documentTypes' => PelatihanUmkm::getDocumentTypes()
             ]
@@ -273,6 +282,41 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
     public function update(Request $request, string $id)
     {
         //
+    }
+
+    /**
+     * Update the status of the specified resource.
+     */
+    public function updateStatus(Request $request, $id)
+    {
+        $data = PelatihanUmkm::findOrFail($id);
+
+        // Validate if document is verified
+        $verifications = $data->documentVerifications;
+        $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan', 'skd'];
+        $allVerified = count($verifications) === count($requiredDocs);
+        $allApproved = $verifications->every(fn($v) => $v->status === 1);
+
+        if (!$allVerified || !$allApproved) {
+            return response()->json([
+                'message' => 'Dokumen belum terverifikasi lengkap'
+            ], 422);
+        }
+
+        $data->status = $request->status;
+        $data->save();
+
+        // Tambahkan pesan sesuai status
+        $statusMessage = match($request->status) {
+            1 => 'Peserta berhasil diloloskan',
+            2 => 'Peserta telah digagalkan',
+            3 => 'Peserta telah dimasukkan ke blacklist',
+            default => 'Status berhasil diperbarui'
+        };
+
+        return response()->json([
+            'message' => $statusMessage
+        ]);
     }
 
     /**

@@ -112,7 +112,8 @@ class PelatihanUmkm extends Model
             'foto' => 'Pas Foto',
             'ktp' => 'KTP',
             'kk' => 'Kartu Keluarga',
-            'pernyataan' => 'Surat Pernyataan'
+            'pernyataan' => 'Surat Pernyataan',
+            'skd' => 'Surat Keterangan Domisili',
         ];
     }
 }

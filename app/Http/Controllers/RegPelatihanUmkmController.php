@@ -84,6 +84,8 @@ class RegPelatihanUmkmController extends Controller
 
             DB::beginTransaction();
 
+            $data['status'] = 0; // Menunggu
+            
             try {
                 $uploadedFiles = $this->handleFileUploads($request);
                 $data = array_merge($data, $uploadedFiles);
