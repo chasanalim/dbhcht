@@ -5,12 +5,13 @@ namespace App\Http\Controllers\Admin;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Models\PelatihanUmkm;
+use App\Models\PelatihanBanmod;
 use App\Models\PelatihanKerjas;
 use App\Models\PelatihanPetani;
+use Yajra\DataTables\DataTables;
 use App\Models\PendaftaranBanmod;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\PelatihanBanmod;
 use App\Traits\HasVerifikasiDokumen;
 
 class DashboardController extends Controller
@@ -681,21 +682,23 @@ class DashboardController extends Controller
         $result = DB::table($tableName . ' as m')
             ->select(DB::raw('
             CASE
-                WHEN vd.total_docs = ' . $requiredDocs . ' AND vd.verified_docs = ' . $requiredDocs . ' THEN "Terverifikasi"
-                WHEN vd.total_docs = ' . $requiredDocs . ' AND vd.verified_docs < ' . $requiredDocs . ' THEN "Ditolak"
-                WHEN vd.total_docs IS NULL THEN "Belum Diverifikasi"
+                WHEN verification_status.status = "complete" THEN "Terverifikasi"
+                WHEN verification_status.status = "incomplete" THEN "Ditolak"
+                WHEN verification_status.status IS NULL THEN "Belum Diverifikasi"
             END as status,
             COUNT(*) as total
         '))
             ->leftJoin(DB::raw('(
             SELECT
                 pelatihan_id,
-                COUNT(*) as total_docs,
-                SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) as verified_docs
+                CASE
+                    WHEN COUNT(*) = ' . $requiredDocs . ' AND SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) = ' . $requiredDocs . ' THEN "complete"
+                    WHEN COUNT(*) = ' . $requiredDocs . ' AND SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) < ' . $requiredDocs . ' THEN "incomplete"
+                END as status
             FROM verifikasi_dokumen
             WHERE pelatihan_type = ?
             GROUP BY pelatihan_id
-        ) as vd'), 'm.id', '=', 'vd.pelatihan_id')
+        ) as verification_status'), 'm.id', '=', 'verification_status.pelatihan_id')
             ->setBindings([$modelClass])
             ->groupBy('status')
             ->get();
@@ -738,5 +741,82 @@ class DashboardController extends Controller
                 ];
             })
             ->values();
+    }
+
+
+    public function blacklist(Request $request)
+    {
+        if ($request->wantsJson()) {
+            $data = collect();
+
+            // Get PelatihanUmkm data
+            $umkmData = PelatihanUmkm::where('status', 3)
+                ->select([
+                    'nik',
+                    'no_kk',
+                    'nama_lengkap as nama',
+                    'jalan as alamat',
+                    'kelurahan',
+                    'kecamatan',
+                    'status',
+                    DB::raw("'Pelatihan UMKM' as jenis_pelatihan")
+                ]);
+
+            // Get PelatihanBanmod data
+            $banmodData = PelatihanBanmod::where('status', 3)
+                ->select([
+                    'nik',
+                    'no_kk',
+                    'nama_lengkap as nama',
+                    'jalan_ktp as alamat',
+                    'kelurahan_ktp as kelurahan',
+                    'kecamatan_ktp as kecamatan',
+                    'status',
+                    DB::raw("'Pelatihan Penerima Banmod' as jenis_pelatihan")
+                ]);
+
+            // Get PelatihanKerjas data
+            $kerjaData = PelatihanKerjas::where('status', 3)
+                ->select([
+                    'nik',
+                    'no_kk',
+                    'nama_lengkap as nama',
+                    'alamat',
+                    'nama_kelurahan as kelurahan',
+                    'nama_kecamatan as kecamatan',
+                    'status',
+                    DB::raw("'Pelatihan Pencari Kerja' as jenis_pelatihan")
+                ]);
+
+            // Get PelatihanPetani data
+            $petaniData = PelatihanPetani::where('status', 3)
+                ->select([
+                    'nik',
+                    'kk as no_kk',
+                    'nama_lengkap as nama',
+                    'alamat',
+                    'nama_kelurahan as kelurahan',
+                    'nama_kecamatan as kecamatan',
+                    'status',
+                    DB::raw("'Pelatihan Pertanian' as jenis_pelatihan")
+                ]);
+
+            // Union all queries
+            $data = $umkmData
+                ->union($banmodData)
+                ->union($kerjaData)
+                ->union($petaniData);
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->make(true);
+        }
+
+        return Inertia::render('Admin/Blacklist/Index', [
+            'title' => 'Peserta Blacklist',
+            'flash' => [
+                'message' => session('message')
+            ],
+        ]);
     }
 }
