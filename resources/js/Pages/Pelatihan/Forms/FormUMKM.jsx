@@ -58,6 +58,7 @@ export default function FormUMKM() {
         file_ktp: null,
         file_kk: null,
         file_pernyataan: null,
+        file_domisili: null,
 
         prioritas_1: "",
         prioritas_2: "",
@@ -865,6 +866,13 @@ export default function FormUMKM() {
                     fieldName: "file_pernyataan",
                     accept: ".pdf",
                     index: 4,
+                })}
+
+                {renderFileUpload({
+                    label: "Surat Keterangan Domisili",
+                    fieldName: "file_domisili",
+                    accept: ".pdf",
+                    index: 5,
                 })}
 
                 <hr />

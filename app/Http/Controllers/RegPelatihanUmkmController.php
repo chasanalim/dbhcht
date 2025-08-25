@@ -67,6 +67,7 @@ class RegPelatihanUmkmController extends Controller
             'file_ktp' => 'required|file|mimes:jpg,jpeg,png|max:2048',
             'file_kk' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'file_pernyataan' => 'required|file|mimes:pdf|max:2048',
+            'file_domisili' => 'required|file|mimes:pdf|max:2048',
         ];
     }
 
@@ -119,7 +120,7 @@ class RegPelatihanUmkmController extends Controller
     protected function handleFileUploads(Request $request)
     {
         $uploadedFiles = [];
-        $fileFields = ['file_foto', 'file_ktp', 'file_kk', 'file_pernyataan'];
+        $fileFields = ['file_foto', 'file_ktp', 'file_kk', 'file_pernyataan', 'file_domisili'];
 
         foreach ($fileFields as $field) {
             if ($request->hasFile($field)) {

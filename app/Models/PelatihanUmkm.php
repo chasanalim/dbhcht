@@ -48,6 +48,7 @@ class PelatihanUmkm extends Model
         'file_ktp',
         'file_kk',
         'file_pernyataan',
+        'file_domisili',
         'prioritas_1',
         'prioritas_2',
         'prioritas_3',

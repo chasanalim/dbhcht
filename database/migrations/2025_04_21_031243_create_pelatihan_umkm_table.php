@@ -50,6 +50,7 @@ return new class extends Migration {
             $table->string('file_ktp');
             $table->string('file_kk');
             $table->string('file_pernyataan');
+            $table->string('file_domisili');
 
             // D. Prioritas Pelatihan
             $table->string('prioritas_1');
