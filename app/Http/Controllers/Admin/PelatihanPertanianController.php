@@ -30,6 +30,7 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
             'ktp' => 'KTP',
             'pengukuhan_penyuluh_swadaya' => 'SK Pengukuhan Penyuluh Swadaya',
             'rekomendasi_kelompok' => 'Surat Rekomendasi Kelompok Tani',
+            'skd' => 'Surat Keterangan Domisili',
         ];
     }
     /**
@@ -50,12 +51,15 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
             if ($request->has('jenis_pelatihan_petani') && $request->jenis_pelatihan_petani !== 'all') {
                 $query->where('jenis_pelatihan_petani', $request->jenis_pelatihan_petani);
             }
+            if ($request->has('status') && $request->status !== 'all') {
+                $query->where('status', $request->status);
+            }
             $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor');
             if ($request->has('verification_status')) {
                 $status = $request->verification_status;
                 $data = $data->filter(function ($item) use ($status) {
                     $verifications = $item->documentVerifications;
-                    $requiredDocs = ['ktp', 'kk', 'pengukuhan_penyuluh_swadaya', 'rekomendasi_kelompok'];
+                    $requiredDocs = ['ktp', 'kk', 'pengukuhan_penyuluh_swadaya', 'rekomendasi_kelompok', 'skd'];
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
                         return $verification->status === 1;
@@ -79,11 +83,12 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
                     return [
                         'edit_url' => route('admin.pertanian.edit', $row->id),
                         'delete_url' => route('admin.pertanian.destroy', $row->id),
-                        'detail_url' => route('admin.pertanian.show', $row->id)
+                        'detail_url' => route('admin.pertanian.show', $row->id),
+                        'status_url' => route('admin.pertanian.status', $row->id)
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
-                    $requiredDocs = ['ktp', 'kk', 'pengukuhan_penyuluh_swadaya', 'rekomendasi_kelompok'];
+                    $requiredDocs = ['ktp', 'kk', 'pengukuhan_penyuluh_swadaya', 'rekomendasi_kelompok', 'skd'];
                     $verifications = $row->documentVerifications;
 
                     $allVerified = count($verifications) === count($requiredDocs);
@@ -222,6 +227,10 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
                         'url' => asset('storage/' . $data->file_rekomendasi_kelompok),
                         'verification' => $verifiedDocuments['rekomendasi_kelompok'] ?? null
                     ],
+                    'skd' => [
+                        'url' => asset('storage/' . $data->file_domisili),
+                        'verification' => $verifiedDocuments['skd'] ?? null
+                    ],
                 ],
                 'documentTypes' => PelatihanPetani::getDocumentTypes()
             ]
@@ -244,6 +253,30 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
         //
     }
 
+
+    public function updateStatus(Request $request, $id)
+    {
+        $data = PelatihanPetani::findOrFail($id);
+
+        // Validate if document is verified
+        $verifications = $data->documentVerifications;
+        $requiredDocs = ['ktp', 'kk', 'pengukuhan_penyuluh_swadaya', 'rekomendasi_kelompok','skd'];
+        $allVerified = count($verifications) === count($requiredDocs);
+        $allApproved = $verifications->every(fn($v) => $v->status === 1);
+
+        if (!$allVerified || !$allApproved) {
+            return response()->json([
+                'message' => 'Dokumen belum terverifikasi lengkap'
+            ], 422);
+        }
+
+        $data->status = $request->status;
+        $data->save();
+
+        return response()->json([
+            'message' => 'Status berhasil diperbarui'
+        ]);
+    }
     /**
      * Remove the specified resource from storage.
      */

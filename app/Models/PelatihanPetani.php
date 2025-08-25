@@ -43,6 +43,7 @@ class PelatihanPetani extends Model
         'file_ktp',
         'file_pengukuhan_penyuluh_swadaya',
         'file_rekomendasi_kelompok',
+        'file_domisili',
         'kategori',
         'jenis_pelatihan_petani',
         'alasan',
@@ -103,6 +104,7 @@ class PelatihanPetani extends Model
             'ktp' => 'KTP',
             'pengukuhan_penyuluh_swadaya' => 'SK Pengukuhan Penyuluh Swadaya',
             'rekomendasi_kelompok' => 'Surat Rekomendasi Kelompok',
+            'skd' => 'Surat Keterangan Domisili',
         ];
     }
 }

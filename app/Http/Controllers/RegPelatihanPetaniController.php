@@ -84,6 +84,7 @@ class RegPelatihanPetaniController extends Controller
 
         // Format array ke string json (jika dibutuhkan)
         $data['jenis_disabilitas'] = json_encode($data['jenis_disabilitas'] ?? []);
+        $data['status'] = 0; // Default status is 'Menunggu'
 
         $storedPetani = PelatihanPetani::create($data);
         // PelatihanPetani::create($data);
