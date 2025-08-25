@@ -61,6 +61,7 @@ export default function FormPenerimaBanmod() {
         file_ktp: null,
         file_kk: null,
         file_nib: null,
+        file_domisili: null,
 
         komitmen: false,
     });
@@ -800,6 +801,11 @@ export default function FormPenerimaBanmod() {
                     )}
                     {renderFileUpload("Kartu Keluarga (KK)", "file_kk", ".pdf")}
                     {renderFileUpload("NIB", "file_nib", ".pdf")}
+                    {renderFileUpload(
+                        "Surat Keterangan Domisili",
+                        "file_domisili",
+                        ".pdf"
+                    )}
 
                     {/* Komitmen Section */}
                     <div className="big-text text-muted mb-4">

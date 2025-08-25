@@ -46,6 +46,7 @@ return new class extends Migration
             $table->string('file_ktp');
             $table->string('file_kk');
             $table->string('file_nib');
+            $table->string('file_domisili');
 
             // Komitmen
             $table->boolean('komitmen')->default(0);

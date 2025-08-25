@@ -62,6 +62,7 @@ class PelatihanPenerimaBanmodController extends Controller
                 'file_ktp' => 'required|file|mimes:jpg,jpeg,png',
                 'file_kk' => 'required|file|mimes:pdf',
                 'file_nib' => 'required|file|mimes:pdf',
+                'file_domisili' => 'required|file|mimes:pdf',
 
                 'komitmen' => 'required|accepted'
             ]);
@@ -78,6 +79,9 @@ class PelatihanPenerimaBanmodController extends Controller
                 }
                 if ($request->hasFile('file_nib')) {
                     $file_nib = $request->file('file_nib')->store('pelatihan-banmod/nib');
+                }
+                if ($request->hasFile('file_domisili')) {
+                    $file_domisili = $request->file('file_domisili')->store('pelatihan-banmod/domisili');
                 }
 
                 // Create record
@@ -115,7 +119,8 @@ class PelatihanPenerimaBanmodController extends Controller
                     // Files 
                     'file_ktp' => $file_ktp ?? null,
                     'file_kk' => $file_kk ?? null,
-                    'file_nib' => $file_nib ?? null
+                    'file_nib' => $file_nib ?? null,
+                    'file_domisili' => $file_domisili ?? null
                 ]);
 
                 // Send WhatsApp notification

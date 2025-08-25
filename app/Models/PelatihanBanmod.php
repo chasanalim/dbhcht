@@ -45,6 +45,7 @@ class PelatihanBanmod extends Model
         'file_ktp',
         'file_kk',
         'file_nib',
+        'file_domisili',
 
         'komitmen',
         'status',
@@ -95,6 +96,7 @@ class PelatihanBanmod extends Model
             'ktp' => 'KTP',
             'kk' => 'Kartu Keluarga',
             'nib' => 'NIB',
+            'domisili' => 'Surat Keterangan Domisili',
         ];
     }
 }
