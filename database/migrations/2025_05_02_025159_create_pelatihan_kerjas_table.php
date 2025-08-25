@@ -30,6 +30,7 @@ return new class extends Migration
             $table->string('nama_rt');
             $table->string('file_ktp');
             $table->string('file_kk');
+            $table->string('file_domisili');
             $table->string('phone_number');
             $table->string('alasan');
             $table->string('pendidikan');

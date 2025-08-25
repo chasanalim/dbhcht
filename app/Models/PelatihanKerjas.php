@@ -26,6 +26,7 @@ class PelatihanKerjas extends Model
         "nama_rt",
         "file_ktp",
         "file_kk",
+        "file_domisili",
         "phone_number",
         "alasan",
         "pendidikan",

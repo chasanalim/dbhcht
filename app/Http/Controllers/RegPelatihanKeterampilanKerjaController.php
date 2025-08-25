@@ -38,15 +38,22 @@ class RegPelatihanKeterampilanKerjaController extends Controller
             "pendidikan" => ['required', 'string'],
             "jenis_pelatihan" => ['required', 'string'],
             "file_ktp" => ['required', 'image'],
-            "file_kk" => ['required', 'file']
+            "file_kk" => ['required', 'file'],
+            "file_domisili" => ['required', 'file'],
         ]);
         if ($request->hasFile('file_ktp')) {
             $validated['file_ktp'] = '/storage/pendaftaran-pelatihan-kerja/ktp/' . $request->file('file_ktp')->hashName();
             $request->file('file_ktp')->storeAs('/pendaftaran-pelatihan-kerja/ktp', $request->file('file_ktp')->hashName(), 'public');
         }
+
         if ($request->hasFile('file_kk')) {
             $validated['file_kk'] = '/storage/pendaftaran-pelatihan-kerja/kk/' . $request->file('file_kk')->hashName();
             $request->file('file_kk')->storeAs('/pendaftaran-pelatihan-kerja/kk', $request->file('file_kk')->hashName(), 'public');
+        }
+
+        if ($request->hasFile('file_domisili')) {
+            $validated['file_domisili'] = '/storage/pendaftaran-pelatihan-kerja/domisili/' . $request->file('file_domisili')->hashName();
+            $request->file('file_domisili')->storeAs('/pendaftaran-pelatihan-kerja/domisili', $request->file('file_domisili')->hashName(), 'public');
         }
 
         $storedPendaftaran = PelatihanKerjas::create($validated);
@@ -60,7 +67,7 @@ class RegPelatihanKeterampilanKerjaController extends Controller
         // dd($dataPendaftar);
 
         // Send WhatsApp message
-        $message = "Terima kasih telah mendaftar Program Pelatihan Untuk Pencari Kerja Kota Kediri. Data Anda telah kami terima dan akan diproses lebih lanjut. Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan. Jika ada pertanyaan, silakan hubungi kami melalui: " . env('APP_WA_BANMOD'); ;
+        $message = "Terima kasih telah mendaftar Program Pelatihan Untuk Pencari Kerja Kota Kediri. Data Anda telah kami terima dan akan diproses lebih lanjut. Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan. Jika ada pertanyaan, silakan hubungi kami melalui: " . env('APP_WA_BANMOD');;
         $phoneNumber = $dataPendaftar->phone_number;
         $this->sendWhatsappMessage($message, $phoneNumber);
 

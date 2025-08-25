@@ -36,6 +36,7 @@ export default function FormKeterampilan() {
         jenis_pelatihan: "",
         file_ktp: [],
         file_kk: [],
+        file_domisili: [],
     });
     let fileIndex = 1;
 
@@ -527,6 +528,12 @@ export default function FormKeterampilan() {
                     "file_kk",
                     ".pdf",
                     false // Set multiple to false
+                )}
+                {renderFileUpload(
+                    "Surat Keterangan Domisili",
+                    "file_domisili",
+                    ".pdf",
+                    false
                 )}
 
                 <div className="big-text text-muted mb-4">
