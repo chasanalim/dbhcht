@@ -68,9 +68,18 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::resource('banmod', PendaftaranBanmodController::class);
 
     Route::resource('umkm', PelatihanUMKMController::class);
+    Route::post('umkm/{id}/status', [PelatihanUMKMController::class, 'updateStatus'])
+    ->name('umkm.status');
     Route::resource('pertanian', PelatihanPertanianController::class);
+    Route::post('pertanian/{id}/status', [PelatihanPertanianController::class, 'updateStatus'])
+    ->name('pertanian.status');
     Route::resource('pelatihan-banmod', PelatihanBanmodController::class);
+    Route::post('pelatihan-banmod/{id}/status', [PelatihanBanmodController::class, 'updateStatus'])
+    ->name('pelatihan-banmod.status');
     Route::resource('kerja', PelatihanKerjaController::class);
+    Route::post('kerja/{id}/status', [PelatihanKerjaController::class, 'updateStatus'])
+    ->name('kerja.status');
+    Route::get('blacklist', [DashboardController::class, 'blacklist'])->name('blacklist');
     Route::resource('user', UserAdminController::class);
     Route::resource('banmodlama', PenerimaBanmodLamaController::class);
     Route::resource('banmodwirausaha', PenerimaPelatihanBanmodController::class);
@@ -92,6 +101,8 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
         ->name('export.pelatihanbanmod');
     Route::get('export/pertanian', [EksportController::class, 'exportPertanian'])
         ->name('export.pertanian');
+    Route::get('export/blacklist', [EksportController::class, 'exportBlacklist'])
+        ->name('export.blacklist');
 });
 
 Route::prefix('users')->as('users.')->group(function () {
