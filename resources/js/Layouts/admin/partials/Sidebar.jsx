@@ -346,8 +346,33 @@ export default function Sidebar() {
                                 </li>
                             </>
                         )}
-
-                        {(can.viewMasterLampiranFile || can.viewMasterPertanian ||
+                        <>
+                            <li>
+                                <h6 className="text-uppercase mt-3 menu">
+                                    DAFTAR HITAM
+                                </h6>
+                            </li>
+                            <li>
+                                <NavLink
+                                    href={route("admin.blacklist")}
+                                    active={route().current(
+                                        "admin.blacklist"
+                                    )}
+                                    className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                        route().current("admin.blacklist")
+                                            ? "active"
+                                            : ""
+                                    }`}
+                                >
+                                    <i className="bi bi-person-fill-slash fs-5"></i>
+                                    <span className="text-white mt-1 ms-2">
+                                        Peserta Blacklist
+                                    </span>
+                                </NavLink>
+                            </li>
+                        </>
+                        {(can.viewMasterLampiranFile ||
+                            can.viewMasterPertanian ||
                             can.viewMasterBanmod) && (
                             <>
                                 <li>

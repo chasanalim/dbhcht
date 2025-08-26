@@ -11,6 +11,7 @@ use App\Models\PelatihanUmkm;
 use App\Models\PelatihanBanmod;
 use App\Models\PelatihanKerjas;
 use App\Models\PelatihanPetani;
+use App\Ekports\BlacklistExport;
 use App\Ekports\PelBanmodExport;
 use App\Ekports\PertanianExport;
 use App\Models\PendaftaranBanmod;
@@ -160,7 +161,9 @@ class EksportController extends Controller
         ) {
             $query->where('prioritas_3', $request->prioritas_3);
         }
-
+        if ($request->has('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
         // Apply verification status filter
         if ($request->has('verification_status') && $request->verification_status !== 'all') {
             $status = $request->verification_status;
@@ -241,7 +244,9 @@ class EksportController extends Controller
         if ($request->has('jenis_pelatihan') && $request->jenis_pelatihan !== 'all') {
             $query->where('jenis_pelatihan', $request->jenis_pelatihan);
         }
-
+        if ($request->has('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
         // Apply verification status filter
         if ($request->has('verification_status') && $request->verification_status !== 'all') {
             $status = $request->verification_status;
@@ -322,7 +327,9 @@ class EksportController extends Controller
         if ($request->has('jenis_pelatihan_industri') && $request->jenis_pelatihan_industri !== 'Semua Pelatihan') {
             $query->where('jenis_pelatihan_industri', $request->jenis_pelatihan_industri);
         }
-
+        if ($request->has('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
         // Apply verification status filter
         if ($request->has('verification_status') && $request->verification_status !== 'all') {
             $status = $request->verification_status;
@@ -402,7 +409,9 @@ class EksportController extends Controller
         if ($request->has('jenis_pelatihan_petani') && $request->jenis_pelatihan_petani !== 'all') {
             $query->where('jenis_pelatihan_petani', $request->jenis_pelatihan_petani);
         }
-
+        if ($request->has('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
         // Apply verification status filter
         if ($request->has('verification_status') && $request->verification_status !== 'all') {
             $status = $request->verification_status;
@@ -474,5 +483,31 @@ class EksportController extends Controller
             default:
                 return $query;
         }
+    }
+
+    public function exportBlacklist(Request $request)
+    {
+        $query = PelatihanKerjas::with(['refPendidikan', 'jenisPelatihan', 'alasanPelatihan', 'documentVerifications']);
+
+        $data = $query->orderBy('created_at', 'asc')->get()->values() // Reset keys after sorting
+            ->map(function ($item, $index) {
+                $item->row_num = $index + 1; // Add row number
+                return $item;
+            });
+
+
+        // return response()->json($data);
+        // Handle export type
+        if ($request->ext === 'excel') {
+            return Excel::download(new BlacklistExport($data), 'Blacklist.xlsx');
+        }
+
+        $pdf = app(PDF::class);
+        $pdf->setPaper('a4', 'landscape');
+        $pdf->loadView('exports.blacklist-pdf', [
+            'data' => $data,
+        ]);
+
+        return $pdf->stream('rekap-blacklist.pdf');
     }
 }
