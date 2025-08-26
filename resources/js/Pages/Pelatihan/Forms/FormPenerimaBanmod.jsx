@@ -74,6 +74,8 @@ export default function FormPenerimaBanmod() {
             const response = await axios.get(
                 `/pelatihan/banmod/cek-nik/${data.nik}`
             );
+
+            // Handle success response
             if (response.data.success) {
                 const d = response.data.data;
                 setDataPenerima(d);
@@ -90,13 +92,21 @@ export default function FormPenerimaBanmod() {
                 }));
                 setTampilKonfirmasi(true);
             } else {
-                setErrorMessage(
-                    "NIK tidak ditemukan atau Anda bukan penerima bantuan."
-                );
+                setErrorMessage(response.data.message);
                 setDataPenerima(null);
             }
         } catch (error) {
-            setErrorMessage("Terjadi kesalahan saat cek NIK.");
+            // Handle error response
+            if (error.response?.status === 403) {
+                setErrorMessage(error.response.data.message);
+                setDataPenerima(null);
+            } else if (error.response?.status === 404) {
+                setErrorMessage("NIK tidak ditemukan sebagai penerima bantuan modal.");
+                setDataPenerima(null);
+            } else {
+                setErrorMessage("Terjadi kesalahan saat cek NIK.");
+                console.error("Error checking NIK:", error);
+            }
         }
     };
 

@@ -15,6 +15,7 @@ export default function Show({ title, data, type = "PELATIHAN_UMKM" }) {
             { key: "ktp", label: "KTP" },
             { key: "kk", label: "Kartu Keluarga" },
             { key: "pernyataan", label: "Surat Pernyataan" },
+            { key: "skd", label: "Surat Keterangan Domisili" },
         ],
     };
 

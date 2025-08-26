@@ -13,6 +13,7 @@ export default function Show({ title, data, type = "PELATIHAN_KERJA" }) {
         PELATIHAN_KERJA: [
             { key: "ktp", label: "KTP" },
             { key: "kk", label: "Kartu Keluarga" },
+            { key: "skd", label: "Surat Keterangan Domisili" },
         ],
     };
 

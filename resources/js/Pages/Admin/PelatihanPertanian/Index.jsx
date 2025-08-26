@@ -12,6 +12,8 @@ export default function Index({ title, can, flash, categories }) {
     const tableRef = useRef();
     const [selectedCategory, setSelectedCategory] = useState("all");
     const [verificationFilter, setVerificationFilter] = useState("all");
+    const [selectedStatus, setSelectedStatus] = useState("all");
+
 
     const handleCategoryChange = (e) => {
         setSelectedCategory(e.target.value);
@@ -19,6 +21,11 @@ export default function Index({ title, can, flash, categories }) {
     const handleVerificationFilterChange = (e) => {
         setVerificationFilter(e.target.value);
     };
+
+    const handleStatusChange = (e) => {
+        setSelectedStatus(e.target.value);
+    };
+
     useEffect(() => {
         const dt = $(tableRef.current).DataTable({
             processing: true,
@@ -30,6 +37,8 @@ export default function Index({ title, can, flash, categories }) {
                 data: function (d) {
                     d.jenis_pelatihan_petani = selectedCategory;
                     d.verification_status = verificationFilter;
+                    d.status = selectedStatus;
+
                 },
                 headers: {
                     "X-Requested-With": "XMLHttpRequest",
@@ -50,33 +59,66 @@ export default function Index({ title, can, flash, categories }) {
                     searchable: false,
                     width: "10%",
                     className: "text-center",
-                    render: function (data) {
+                    render: function (data, type, row) {
                         let buttons = [];
 
-                        // if (can.edit) {
-                        // buttons.push(`
-                        //         <a href="${data.edit_url}" class="btn btn-sm btn-warning" title="Edit">
-                        //             <i class="bi bi-pencil-square"></i>
-                        //         </a>
-                        //     `);
-                        // // }
-
-                        // // if (can.delete) {
-                        // buttons.push(`
-                        //         <a href="javascript:void(0)"
-                        //            onclick="deleteItem('${data.delete_url}')"
-                        //            class="btn btn-sm btn-danger"
-                        //            title="Hapus">
-                        //             <i class="bi bi-trash"></i>
-                        //         </a>
-                        //     `);
-                        // }
-
+                        // Add view button
                         buttons.push(`
-                            <a href="${data.detail_url}" class="btn btn-sm btn-info" title="Detail">
+                            <a href="${data.detail_url}" class="btn btn-sm btn-info me-1" title="Detail">
                                 <i class="bi bi-eye"></i>
                             </a>
                         `);
+
+                        // Add status buttons if document is verified
+                        if (row.status == 0) {
+                            // If status is 0, show both Lolos and Gagal buttons
+                            if (
+                                row.verifikasi_dokumen.all_verified &&
+                                row.verifikasi_dokumen.all_approved
+                            ) {
+                                buttons.push(`
+                                    <button onclick="updateStatus('${data.status_url}', 1)" class="btn btn-sm btn-success me-1" title="Lolos">
+                                        <i class="bi bi-check-lg"></i>
+                                    </button>
+                                `);
+
+                                buttons.push(`
+                                    <button onclick="updateStatus('${data.status_url}', 2)" class="btn btn-sm btn-danger" title="Gagal">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                `);
+                            }
+                        } else if (row.status == 1) {
+                            // If status is 1, hide the Lolos button, only show the Gagal button
+                            if (
+                                row.verifikasi_dokumen.all_verified &&
+                                row.verifikasi_dokumen.all_approved
+                            ) {
+                                // buttons.push(`
+                                //     <button onclick="updateStatus('${data.status_url}', 2)" class="btn btn-sm btn-danger me-1" title="Gagal">
+                                //         <i class="bi bi-x-lg"></i>
+                                //     </button>
+                                // `);
+                                buttons.push(`
+                                    <button onclick="updateStatus('${data.status_url}', 3)" class="btn btn-sm btn-dark" title="Blacklist">
+                                        <i class="bi bi-file-x"></i>
+                                    </button>
+                                `);
+                            }
+                        }
+                        // else if (row.status == 2) {
+                        //     // If status is 2, hide the Gagal button, only show the Lolos button
+                        //     if (
+                        //         row.verifikasi_dokumen.all_verified &&
+                        //         row.verifikasi_dokumen.all_approved
+                        //     ) {
+                        //         buttons.push(`
+                        //             <button onclick="updateStatus('${data.status_url}', 1)" class="btn btn-sm btn-success me-1" title="Lolos">
+                        //                 <i class="bi bi-check-lg"></i>
+                        //             </button>
+                        //         `);
+                        //     }
+                        // }
 
                         return `<div class="btn-group">${buttons.join(
                             ""
@@ -162,6 +204,23 @@ export default function Index({ title, can, flash, categories }) {
                         return `<span class="badge bg-warning">Belum diverifikasi</span>`;
                     },
                 },
+                {
+                    data: "status",
+                    name: "status",
+                    className: "text-center",
+                    searchable: true,
+                    render: function (data) {
+                        if (data === 0) {
+                            return `<span class="badge bg-warning">-</span>`;
+                        } else if (data === 1) {
+                            return `<span class="badge bg-success">Lolos</span>`;
+                        } else if (data === 2) {
+                            return `<span class="badge bg-danger">Tidak Lolos</span>`;
+                        } else if (data === 3) {
+                            return `<span class="badge bg-black">Blacklist</span>`;
+                        }
+                    },
+                },
             ],
             drawCallback: function () {
                 // Initialize tooltips
@@ -196,16 +255,57 @@ export default function Index({ title, can, flash, categories }) {
                 }
             });
         };
-    }, [flash, selectedCategory, verificationFilter]);
+    }, [flash, selectedCategory, verificationFilter, selectedStatus]);
 
     const handleExport = (type) => {
         const url = route("admin.export.pertanian", {
             verification_status: verificationFilter,
             jenis_pelatihan_industri: selectedCategory,
+            status: selectedStatus,
             ext: type,
         });
         window.open(url, "_blank");
     };
+
+    const updateStatus = async (url, status) => {
+        if (
+            confirm(
+                `Apakah anda yakin ingin ${
+                    status === 1 ? "meloloskan" :
+                    status === 2 ? "menggagalkan" : "membuat blacklist"
+                } peserta ini?`
+            )
+        ) {
+            try {
+                const response = await axios.post(url, {
+                    status: status,
+                });
+
+                // Tampilkan toast message
+                const toastEl = document.getElementById("toast");
+                const toastBody = toastEl.querySelector('.toast-body');
+                toastBody.textContent = response.data.message;
+                const toast = new Toast(toastEl);
+                toast.show();
+
+                // Reload data table
+                $(tableRef.current).DataTable().ajax.reload();
+            } catch (error) {
+                console.error("Error updating status:", error);
+                // Tampilkan pesan error jika ada
+                if (error.response?.data?.message) {
+                    const toastEl = document.getElementById("toast");
+                    const toastBody = toastEl.querySelector('.toast-body');
+                    toastBody.textContent = error.response.data.message;
+                    const toast = new Toast(toastEl);
+                    toast.show();
+                }
+            }
+        }
+    };
+
+    // Add to window object so it can be called from DataTables
+    window.updateStatus = updateStatus;
 
     return (
         <AdminLayout>
@@ -268,6 +368,25 @@ export default function Index({ title, can, flash, categories }) {
                                         </select>
                                     </div>
                                 </div>
+                                <div className="col-12 col-md-6 col-xl-2">
+                                    <div className="d-flex flex-column">
+                                        <label className="form-label fw-bold">
+                                            Status:
+                                        </label>
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={selectedStatus}
+                                            onChange={
+                                                handleStatusChange
+                                            }
+                                        >
+                                            <option value="all">All</option>
+                                            <option value="1">Lolos</option>
+                                            <option value="2">Gagal</option>
+                                            <option value="3">Blacklist</option>
+                                        </select>
+                                    </div>
+                                </div>
                                 <div className="col-auto ms-auto">
                                     <button
                                         className="btn btn-sm btn-success me-2"
@@ -309,6 +428,7 @@ export default function Index({ title, can, flash, categories }) {
                                                 <th>PELATIHAN</th>
                                                 <th>SKOR</th>
                                                 <th>VERIFIKASI DOKUMEN</th>
+                                                <th>STATUS</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -320,30 +440,30 @@ export default function Index({ title, can, flash, categories }) {
             </div>
 
             {/* Toast Notification */}
-            {flash.message && (
+            <div
+                className="position-fixed top-0 end-0 p-3"
+                style={{ zIndex: 5 }}
+            >
                 <div
-                    className="position-fixed top-0 end-0 p-3"
-                    style={{ zIndex: 5 }}
+                    id="toast"
+                    className="toast align-items-center text-white bg-success border-0"
+                    role="alert"
+                    aria-live="assertive"
+                    aria-atomic="true"
                 >
-                    <div
-                        id="toast"
-                        className="toast align-items-center text-white bg-success border-0"
-                        role="alert"
-                        aria-live="assertive"
-                        aria-atomic="true"
-                    >
-                        <div className="d-flex">
-                            <div className="toast-body">{flash.message}</div>
-                            <button
-                                type="button"
-                                className="btn-close btn-close-white me-2 m-auto"
-                                data-bs-dismiss="toast"
-                                aria-label="Close"
-                            ></button>
+                    <div className="d-flex">
+                        <div className="toast-body">
+                            {flash.message}
                         </div>
+                        <button
+                            type="button"
+                            className="btn-close btn-close-white me-2 m-auto"
+                            data-bs-dismiss="toast"
+                            aria-label="Close"
+                        ></button>
                     </div>
                 </div>
-            )}
+            </div>
         </AdminLayout>
     );
 }

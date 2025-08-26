@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\PelatihanBanmod;
-use App\Models\PenerimaBanmod;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 use App\Traits\GeneralTrait;
+use Illuminate\Http\Request;
+use App\Models\PelatihanUmkm;
+use App\Models\PenerimaBanmod;
+use App\Models\PelatihanBanmod;
+use App\Models\PelatihanKerjas;
+use App\Models\PelatihanPetani;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class PelatihanPenerimaBanmodController extends Controller
 {
@@ -171,18 +174,44 @@ class PelatihanPenerimaBanmodController extends Controller
     // Fungsi untuk mengecek NIK apakah terdaftar sebagai penerima bantuan modal
     public function cekNIK(Request $request, $nik)
     {
+        // Cek blacklist dari semua jenis pelatihan
+        $blacklistModels = [
+            PelatihanUmkm::class,
+            PelatihanBanmod::class,
+            PelatihanKerjas::class,
+            PelatihanPetani::class
+        ];
+
+        foreach ($blacklistModels as $model) {
+            $blacklisted = $model::where('status', 3)
+                ->where('nik', $nik)
+                ->exists();
+
+            if ($blacklisted) {
+                return response()->json([
+                    'success' => false,
+                    'blacklisted' => true,
+                    'message' => 'NIK anda telah dimasukkan blacklist dalam pelatihan karena melanggar ketentuan yang berlaku.'
+                ], 403);
+            }
+        }
+
+        // Cek apakah terdaftar sebagai penerima banmod
         $data = PenerimaBanmod::where('nik', $nik)->first();
 
         if ($data) {
             return response()->json([
                 'success' => true,
+                'blacklisted' => false,
                 'data' => $data,
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'NIK tidak ditemukan sebagai penerima bantuan modal.',
+                'message' => 'NIK ditemukan sebagai penerima bantuan modal.'
             ]);
         }
+
+        return response()->json([
+            'success' => false,
+            'blacklisted' => false,
+            'message' => 'NIK tidak ditemukan sebagai penerima bantuan modal.'
+        ], 404);
     }
 }

@@ -14,6 +14,7 @@ export default function Show({ title, data, type = "PELATIHAN_BANMOD" }) {
             { key: "ktp", label: "KTP" },
             { key: "kk", label: "Kartu Keluarga" },
             { key: "nib", label: "NIB" },
+            { key: "skd", label: "Surat Keterangan Domisili" },
         ],
     };
 

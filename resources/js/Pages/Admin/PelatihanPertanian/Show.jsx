@@ -21,6 +21,7 @@ export default function Show({ title, data, type = "PELATIHAN_PERTANIAN" }) {
                 key: "rekomendasi_kelompok",
                 label: "Surat Rekomendasi Kelompok",
             },
+            { key: "skd", label: "Surat Keterangan Domisili" },
         ],
     };
 
