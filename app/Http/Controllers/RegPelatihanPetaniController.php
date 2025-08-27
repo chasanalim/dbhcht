@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
+use App\Models\KelompokTani;
+use Illuminate\Http\Request;
+use App\Models\PelatihanUmkm;
+use App\Models\PelatihanBanmod;
+use App\Models\PelatihanKerjas;
+use App\Models\PelatihanPetani;
+use Illuminate\Support\Facades\Log;
 use App\Models\JenisPelatihanPetani;
 use App\Models\KelompokPelatihanPetani;
-use App\Models\KelompokTani;
-use App\Models\PelatihanPetani;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Inertia\Inertia;
 
 class RegPelatihanPetaniController extends Controller
 {
@@ -98,19 +101,45 @@ class RegPelatihanPetaniController extends Controller
     // Fungsi untuk mengecek NIK apakah terdaftar sebagai kelompok tani
     public function cekNIK(Request $request, $nik)
     {
+        // Cek blacklist dari semua jenis pelatihan
+        $blacklistModels = [
+            PelatihanUmkm::class,
+            PelatihanBanmod::class,
+            PelatihanKerjas::class,
+            PelatihanPetani::class
+        ];
+
+        foreach ($blacklistModels as $model) {
+            $blacklisted = $model::where('status', 3)
+                ->where('nik', $nik)
+                ->exists();
+
+            if ($blacklisted) {
+                return response()->json([
+                    'success' => false,
+                    'blacklisted' => true,
+                    'message' => 'NIK Anda telah dimasukkan blacklist dalam pelatihan karena melanggar ketentuan yang berlaku.'
+                ], 403);
+            }
+        }
+
+        // Cek apakah terdaftar sebagai penerima banmod
         $data = KelompokTani::where('nik_anggota', $nik)->first();
 
         if ($data) {
             return response()->json([
                 'success' => true,
+                'blacklisted' => false,
                 'data' => $data,
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'NIK tidak ditemukan sebagai kelompok tani.',
+                'message' => 'NIK ditemukan sebagai Kelompok Tani.'
             ]);
         }
+
+        return response()->json([
+            'success' => false,
+            'blacklisted' => false,
+            'message' => 'NIK tidak ditemukan sebagai Kelompok Tani.'
+        ], 404);
     }
 
     protected function sendNotifications($phoneNumber)

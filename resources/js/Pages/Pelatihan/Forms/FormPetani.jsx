@@ -60,6 +60,7 @@ export default function FormPetani() {
 
     let fileIndex = 1;
 
+
     const cekNik = async () => {
         setErrorMessage("");
         setNikStatus("");
@@ -67,6 +68,8 @@ export default function FormPetani() {
             const response = await axios.get(
                 `/pelatihan/petani/cek-nik/${data.nik}`
             );
+
+            // Handle success response
             if (response.data.success) {
                 const d = response.data.data;
                 setDataPenerima(d);
@@ -79,16 +82,23 @@ export default function FormPetani() {
                 }));
                 setTampilKonfirmasi(true);
             } else {
-                setErrorMessage(
-                    "NIK tidak ditemukan atau Anda bukan anggota kelompok tani."
-                );
+                setErrorMessage(response.data.message);
                 setDataPenerima(null);
             }
         } catch (error) {
-            setErrorMessage("Terjadi kesalahan saat cek NIK.");
+            // Handle error response
+            if (error.response?.status === 403) {
+                setErrorMessage(error.response.data.message);
+                setDataPenerima(null);
+            } else if (error.response?.status === 404) {
+                setErrorMessage("NIK tidak ditemukan sebagai anggota kelompok tani.");
+                setDataPenerima(null);
+            } else {
+                setErrorMessage("Terjadi kesalahan saat cek NIK.");
+                console.error("Error checking NIK:", error);
+            }
         }
     };
-
     const handleUploadFoto = (e, field_name, preview_name) => {
         // const choosenFiles = Array.prototype.slice.call(e.target.files);
         let reader = new FileReader();
