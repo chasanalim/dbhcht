@@ -191,7 +191,7 @@ class PelatihanPenerimaBanmodController extends Controller
                 return response()->json([
                     'success' => false,
                     'blacklisted' => true,
-                    'message' => 'NIK anda telah dimasukkan blacklist dalam pelatihan karena melanggar ketentuan yang berlaku.'
+                    'message' => 'NIK Anda telah dimasukkan blacklist dalam pelatihan karena melanggar ketentuan yang berlaku.'
                 ], 403);
             }
         }

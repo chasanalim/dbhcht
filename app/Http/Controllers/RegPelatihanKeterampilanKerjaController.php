@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Mail\KirimPendaftar;
-use App\Models\PelatihanKerjas;
 use App\Traits\GeneralTrait;
 use Illuminate\Http\Request;
+use App\Models\PelatihanUmkm;
+use App\Models\PelatihanBanmod;
+use App\Models\PelatihanKerjas;
+use App\Models\PelatihanPetani;
 use Illuminate\Support\Facades\Mail;
-use Inertia\Inertia;
 
 class RegPelatihanKeterampilanKerjaController extends Controller
 {
@@ -77,6 +80,36 @@ class RegPelatihanKeterampilanKerjaController extends Controller
                 'title' => 'Pendaftaran Banmod',
                 'jenis' => 'Pelatihan Keterampilan Kerja',
             ],
+        ]);
+    }
+
+    public function cekNIK(Request $request, $nik)
+    {
+        // Cek blacklist dari semua jenis pelatihan
+        $blacklistModels = [
+            PelatihanUmkm::class,
+            PelatihanBanmod::class,
+            PelatihanKerjas::class,
+            PelatihanPetani::class
+        ];
+
+        foreach ($blacklistModels as $model) {
+            $blacklisted = $model::where('status', 3)
+                ->where('nik', $nik)
+                ->exists();
+
+            if ($blacklisted) {
+                return response()->json([
+                    'success' => false,
+                    'blacklisted' => true,
+                    'message' => 'NIK Anda telah dimasukkan blacklist dalam pelatihan karena melanggar ketentuan yang berlaku.'
+                ], 403);
+            }
+        }
+        return response()->json([
+            'success' => true,
+            'blacklisted' => false,
+            'message' => 'NIK tidak ditemukan dalam blacklist.'
         ]);
     }
 }

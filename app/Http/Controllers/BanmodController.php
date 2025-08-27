@@ -160,7 +160,7 @@ class BanmodController extends Controller
         if ($data) {
             return response()->json([
                 'success' => false,
-                'message' => 'NIK anda ditemukan dan pernah terdaftar sebagai penerima bantuan modal.',
+                'message' => 'NIK Anda ditemukan dan pernah terdaftar sebagai penerima bantuan modal.',
             ]);
         } else {
             return response()->json([
