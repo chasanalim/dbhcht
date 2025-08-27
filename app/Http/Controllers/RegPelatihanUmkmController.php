@@ -2,18 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PelatihanUmkm;
-use App\Models\SkorPelatihanUmkm;
+use Inertia\Inertia;
+use Illuminate\Support\Str;
+use App\Mail\KirimPendaftar;
 use App\Traits\GeneralTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
+use App\Models\PelatihanUmkm;
+use App\Models\PelatihanBanmod;
+use App\Models\PelatihanKerjas;
+use App\Models\PelatihanPetani;
+use App\Models\SkorPelatihanUmkm;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
-use Inertia\Inertia;
-use App\Mail\KirimPendaftar;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Str;
 
 
 class RegPelatihanUmkmController extends Controller
@@ -85,7 +88,7 @@ class RegPelatihanUmkmController extends Controller
             DB::beginTransaction();
 
             $data['status'] = 0; // Menunggu
-            
+
             try {
                 $uploadedFiles = $this->handleFileUploads($request);
                 $data = array_merge($data, $uploadedFiles);
@@ -171,5 +174,35 @@ class RegPelatihanUmkmController extends Controller
             return redirect()->route('pelatihan.umkm.index')
                 ->withErrors(['error' => 'Halaman tidak dapat diakses.']);
         }
+    }
+
+    public function cekNIK(Request $request, $nik)
+    {
+        // Cek blacklist dari semua jenis pelatihan
+        $blacklistModels = [
+            PelatihanUmkm::class,
+            PelatihanBanmod::class,
+            PelatihanKerjas::class,
+            PelatihanPetani::class
+        ];
+
+        foreach ($blacklistModels as $model) {
+            $blacklisted = $model::where('status', 3)
+                ->where('nik', $nik)
+                ->exists();
+
+            if ($blacklisted) {
+                return response()->json([
+                    'success' => false,
+                    'blacklisted' => true,
+                    'message' => 'NIK Anda telah dimasukkan blacklist dalam pelatihan karena melanggar ketentuan yang berlaku.'
+                ], 403);
+            }
+        }
+        return response()->json([
+            'success' => true,
+            'blacklisted' => false,
+            'message' => 'NIK tidak ditemukan dalam blacklist.'
+        ]);
     }
 }

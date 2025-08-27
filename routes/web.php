@@ -141,6 +141,8 @@ Route::get('/skor-pelatihan/{kategori}', [SkorPelatihanBanmodController::class, 
 Route::prefix('pelatihan/umkm')->group(function () {
     Route::post('/', [RegPelatihanUmkmController::class, 'store'])->name('pelatihan.umkm.store');
     Route::get('/success/{id}', [RegPelatihanUmkmController::class, 'success'])->name('pelatihan.umkm.success');
+    Route::post('/cek-nik', [RegPelatihanUmkmController::class, 'cekNIK'])->name('pelatihan.umkm.cekNIK.post');
+    Route::get('/cek-nik/{nik}', [RegPelatihanUmkmController::class, 'cekNIK'])->name('pelatihan.umkm.cekNIK.get');
 });
 
 Route::prefix('/pelatihan/petani')->group(function () {
@@ -151,8 +153,8 @@ Route::prefix('/pelatihan/petani')->group(function () {
 });
 
 Route::post('/pelatihan/kerja', [RegPelatihanKeterampilanKerjaController::class, 'store'])->name('pelatihan.kerja.store');
-
-Route::get('/pelatihan/kerja/success/{id}', [RegPelatihanKeterampilanKerjaController::class, 'success'])->name('pelatihan.kerja.success');
+Route::post('/pelatihan/kerja/cek-nik', [RegPelatihanKeterampilanKerjaController::class, 'cekNIK'])->name('pelatihan.kerja.cekNIK.post');
+Route::get('/pelatihan/kerja/cek-nik/{nik}', [RegPelatihanKeterampilanKerjaController::class, 'cekNIK'])->name('pelatihan.kerja.cekNIK.get');
 
 
 Route::get('/skor/{kategori}', [SkorPelatihanController::class, 'getSkorByKategori']);
