@@ -50,6 +50,7 @@ class DatabaseSeeder extends Seeder
             AlasanPelatihanKetKerjaSeeder::class,
             SkorPelatihanBanmodSeeder::class,
             RefPendidikanSeeder::class,
+            MasterPKLSeeder::class,
         ]);
     }
 }

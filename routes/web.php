@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\EksportController;
 use App\Http\Controllers\SkorPelatihanController;
 use App\Http\Controllers\KategoriBanmodController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\MasterPKLController;
 use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\JumlahLegalitasController;
 use App\Http\Controllers\Admin\PrivilegesController;
@@ -81,9 +82,12 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     ->name('kerja.status');
     Route::get('blacklist', [DashboardController::class, 'blacklist'])->name('blacklist');
     Route::resource('user', UserAdminController::class);
+    //master data
     Route::resource('banmodlama', PenerimaBanmodLamaController::class);
     Route::resource('banmodwirausaha', PenerimaPelatihanBanmodController::class);
     Route::resource('kelompoktani', MasterKelompokTaniController::class);
+    Route::resource('pkl', MasterPKLController::class);
+
     Route::resource('privileges', PrivilegesController::class);
     Route::post('admin/verify-document', [VerifikasiDokumenController::class, 'verify'])
         ->name('verify-document');
@@ -153,6 +157,7 @@ Route::prefix('/pelatihan/petani')->group(function () {
 });
 
 Route::post('/pelatihan/kerja', [RegPelatihanKeterampilanKerjaController::class, 'store'])->name('pelatihan.kerja.store');
+Route::get('/pelatihan/kerja/success/{id}', [RegPelatihanKeterampilanKerjaController::class, 'success'])->name('pelatihan.kerja.success');
 Route::post('/pelatihan/kerja/cek-nik', [RegPelatihanKeterampilanKerjaController::class, 'cekNIK'])->name('pelatihan.kerja.cekNIK.post');
 Route::get('/pelatihan/kerja/cek-nik/{nik}', [RegPelatihanKeterampilanKerjaController::class, 'cekNIK'])->name('pelatihan.kerja.cekNIK.get');
 
