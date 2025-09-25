@@ -15,6 +15,7 @@ use App\Ekports\BlacklistExport;
 use App\Ekports\PelBanmodExport;
 use App\Ekports\PertanianExport;
 use App\Models\PendaftaranBanmod;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -487,21 +488,65 @@ class EksportController extends Controller
 
     public function exportBlacklist(Request $request)
     {
-        $query = PelatihanKerjas::with(['refPendidikan', 'jenisPelatihan', 'alasanPelatihan', 'documentVerifications']);
+        // Ambil data masing-masing tabel (pastikan alias kolom sama)
+        $umkm = PelatihanUmkm::where('status', 3)
+            ->select([
+                'nik',
+                'no_kk',
+                'nama_lengkap as nama',
+                'jalan as alamat',
+                'kelurahan',
+                'kecamatan',
+                'status',
+                DB::raw("'Pelatihan UMKM' as jenis_pelatihan")
+            ])->get();
 
-        $data = $query->orderBy('created_at', 'asc')->get()->values() // Reset keys after sorting
-            ->map(function ($item, $index) {
-                $item->row_num = $index + 1; // Add row number
-                return $item;
-            });
+        $banmod = PelatihanBanmod::where('status', 3)
+            ->select([
+                'nik',
+                'no_kk',
+                'nama_lengkap as nama',
+                'jalan_ktp as alamat',
+                'kelurahan_ktp as kelurahan',
+                'kecamatan_ktp as kecamatan',
+                'status',
+                DB::raw("'Pelatihan Penerima Banmod' as jenis_pelatihan")
+            ])->get();
+
+        $kerja = PelatihanKerjas::where('status', 3)
+            ->select([
+                'nik',
+                'no_kk',
+                'nama_lengkap as nama',
+                'alamat',
+                'nama_kelurahan as kelurahan',
+                'nama_kecamatan as kecamatan',
+                'status',
+                DB::raw("'Pelatihan Pencari Kerja' as jenis_pelatihan")
+            ])->get();
+
+        $petani = PelatihanPetani::where('status', 3)
+            ->select([
+                'nik',
+                'kk as no_kk',
+                'nama_lengkap as nama',
+                'alamat',
+                'nama_kelurahan as kelurahan',
+                'nama_kecamatan as kecamatan',
+                'status',
+                DB::raw("'Pelatihan Pertanian' as jenis_pelatihan")
+            ])->get();
+
+        // Gabungkan semua collection dan reset index
+        $data = $umkm->concat($banmod)->concat($kerja)->concat($petani)->values();
 
 
-        // return response()->json($data);
-        // Handle export type
+        // Export Excel (BlacklistExport harus menerima Collection atau sesuaikan)
         if ($request->ext === 'excel') {
             return Excel::download(new BlacklistExport($data), 'Blacklist.xlsx');
         }
 
+        // Export PDF
         $pdf = app(PDF::class);
         $pdf->setPaper('a4', 'landscape');
         $pdf->loadView('exports.blacklist-pdf', [
