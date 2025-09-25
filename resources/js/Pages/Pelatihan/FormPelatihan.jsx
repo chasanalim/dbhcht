@@ -51,7 +51,7 @@ export default function FormPelatihan() {
                         {jenisPelatihan === "umkm" && <FormUMKM />}
                         {jenisPelatihan === "penyuluh" && <FormPenyuluh />}
                         {jenisPelatihan === "petani" && <FormPetani />}
-                        {jenisPelatihan === "industri" && <FormIndustri />}
+                        {jenisPelatihan === "ekraf" && <FormIndustri />}
                         {jenisPelatihan === "penerimabanmod" && (
                             <FormPenerimaBanmod />
                         )}
