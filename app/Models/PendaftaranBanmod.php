@@ -81,7 +81,7 @@ class PendaftaranBanmod extends Model
     public function getSkorAttribute()
     {
         $skor = 0;
-        if ($this->kategori == 1 || $this->kategori == 2 || $this->kategori == 3) {
+        if ($this->kategori == 1 || $this->kategori == 2 || $this->kategori == 3 || $this->kategori == 6) {
             $skor += (($this->lamaUsaha->skor / 4) * 0.25);
             $skor += (($this->jumlahTenagaKerja->skor / 4) * 0.35);
             $skor += (($this->brutoPerbulan->skor / 4) * 0.2);

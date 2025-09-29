@@ -66,6 +66,7 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::get('banmod/pekerja-pabrik-rokok', [PendaftaranBanmodController::class, 'pekerja_pabrik_rokok'])->name('banmod.pekerja-pabrik-rokok');
     Route::get('banmod/ikm', [PendaftaranBanmodController::class, 'ikm'])->name('banmod.ikm');
     Route::get('banmod/masyarakat-miskin', [PendaftaranBanmodController::class, 'masyarakat_miskin'])->name('banmod.masyarakat-miskin');
+    Route::get('banmod/pkl', [PendaftaranBanmodController::class, 'pkl'])->name('banmod.pkl');
     Route::resource('banmod', PendaftaranBanmodController::class);
 
     Route::resource('umkm', PelatihanUMKMController::class);

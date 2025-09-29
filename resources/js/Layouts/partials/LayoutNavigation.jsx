@@ -40,14 +40,14 @@ export default function LayoutNavigation() {
                 transition: "box-shadow 0.2s",
             }}
         >
-            <Container>
+            <Container >
                 <Navbar.Brand
                     as={Link}
                     href={route("home")}
                     className="fw-bolder d-flex align-items-center gap-2"
                     style={{
                         color: "#fff",
-                        fontSize: "1.5rem",
+                        fontSize: "1.5rem",                                                              
                         letterSpacing: "-1px",
                     }}
                 >
@@ -127,7 +127,7 @@ export default function LayoutNavigation() {
                                         </>
                                     }
                                     id="basic-nav-dropdown"
-                                    menuVariant="dark"
+                                    // menuVariant="dark"
                                 >
                                     <NavDropdown.Item
                                         as={Link}

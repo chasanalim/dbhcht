@@ -20,7 +20,8 @@ export default function Sidebar() {
             route().current("admin.banmod.buruh-tani-tembakau") ||
             route().current("admin.banmod.pekerja-pabrik-rokok") ||
             route().current("admin.banmod.ikm") ||
-            route().current("admin.banmod.masyarakat-miskin")
+            route().current("admin.banmod.masyarakat-miskin") ||
+            route().current("admin.banmod.pkl")
         );
     };
 
@@ -224,6 +225,25 @@ export default function Sidebar() {
                                                 }`}
                                             >
                                                 <span>MASYARAKAT MISKIN</span>
+                                            </NavDropdown.Item>
+                                            <NavDropdown.Item
+                                                as={Link}
+                                                method="get"
+                                                href={route(
+                                                    "admin.banmod.pkl"
+                                                )}
+                                                active={route().current(
+                                                    "admin.banmod.pkl"
+                                                )}
+                                                className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                                    route().current(
+                                                        "admin.banmod.pkl"
+                                                    )
+                                                        ? "active"
+                                                        : ""
+                                                }`}
+                                            >
+                                                <span>PEDAGANG KAKI LIMA</span>
                                             </NavDropdown.Item>
                                         </NavDropdown>
                                     </Nav>
