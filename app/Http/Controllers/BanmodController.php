@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Yajra\DataTables\DataTables;
+use App\Models\Pkl;
 
 class BanmodController extends Controller
 {
@@ -141,7 +142,7 @@ class BanmodController extends Controller
         Mail::to(env('APP_EMAIL_BANMOD'))->send(new KirimPendaftar($dataPendaftar));
 
         // Send WhatsApp message
-        $message = "Terima kasih telah mendaftar Program Bantuan Modal Kota Kediri. Data Anda telah kami terima dan akan diproses lebih lanjut. Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan. Jika ada pertanyaan, silakan hubungi kami melalui: " . env('APP_WA_BANMOD'); ;
+        $message = "Terima kasih telah mendaftar Program Bantuan Modal Kota Kediri. Data Anda telah kami terima dan akan diproses lebih lanjut. Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan. Jika ada pertanyaan, silakan hubungi kami melalui: " . env('APP_WA_BANMOD');;
         $phoneNumber = $dataPendaftar->phone_number;
         $this->sendWhatsappMessage($message, $phoneNumber);
 
@@ -153,21 +154,83 @@ class BanmodController extends Controller
         ]);
     }
 
-    public function ceknik($nik)
-    {
-        $data = PenerimaBanmod::where('nik', $nik)->first();
+    // public function ceknik($nik)
+    // {
+    //     $data = PenerimaBanmod::where('nik', $nik)->first();
 
-        if ($data) {
+    //     if ($data) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'NIK Anda ditemukan dan pernah terdaftar sebagai penerima bantuan modal.',
+    //         ]);
+    //     } else {
+    //         return response()->json([
+    //             'success' => true,
+    //             'data' => $data,
+    //         ]);
+    //     }
+    // }
+
+    public function ceknik($nik, $kategori)
+    {
+        // Validasi format NIK
+        if (strlen($nik) != 16) {
             return response()->json([
                 'success' => false,
-                'message' => 'NIK Anda ditemukan dan pernah terdaftar sebagai penerima bantuan modal.',
-            ]);
-        } else {
+                'message' => 'NIK harus 16 digit'
+            ], 400);
+        }
+
+        // Kategori 5 Masyarakat Miskin = NIK selalu valid
+        if ($kategori == 5) {
             return response()->json([
                 'success' => true,
-                'data' => $data,
+                'message' => 'NIK valid untuk kategori Masyarakat Miskin'
             ]);
         }
+
+        // Kategori 6 PKL = NIK harus ada di tabel pkl
+        if ($kategori == 6) {
+            $pklData = Pkl::where('nik', $nik)->first();
+
+            if (!$pklData) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'NIK tidak terdaftar sebagai Pedagang Kaki Lima di database kami'
+                ], 404);
+            }
+
+            // Jika NIK ada di PKL, tetap cek apakah sudah pernah daftar banmod
+            $existingBanmod = PenerimaBanmod::where('nik', $nik)->first();
+
+            if ($existingBanmod) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'NIK Anda sudah pernah terdaftar sebagai penerima bantuan modal'
+                ], 403);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'NIK valid untuk kategori PKL'
+            ]);
+        }
+
+        // Untuk kategori lainnya (1,2,3,4) - cek apakah sudah pernah daftar
+        $existingBanmod = PenerimaBanmod::where('nik', $nik)->first();
+
+        if ($existingBanmod) {
+            return response()->json([
+                'success' => false,
+                'message' => 'NIK Anda sudah pernah terdaftar sebagai penerima bantuan modal'
+            ], 403);
+        }
+
+        // Jika semua validasi lolos
+        return response()->json([
+            'success' => true,
+            'message' => 'NIK valid'
+        ]);
     }
 
     public function peserta(Request $request)

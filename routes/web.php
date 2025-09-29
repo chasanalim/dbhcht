@@ -71,16 +71,16 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
 
     Route::resource('umkm', PelatihanUMKMController::class);
     Route::post('umkm/{id}/status', [PelatihanUMKMController::class, 'updateStatus'])
-    ->name('umkm.status');
+        ->name('umkm.status');
     Route::resource('pertanian', PelatihanPertanianController::class);
     Route::post('pertanian/{id}/status', [PelatihanPertanianController::class, 'updateStatus'])
-    ->name('pertanian.status');
+        ->name('pertanian.status');
     Route::resource('pelatihan-banmod', PelatihanBanmodController::class);
     Route::post('pelatihan-banmod/{id}/status', [PelatihanBanmodController::class, 'updateStatus'])
-    ->name('pelatihan-banmod.status');
+        ->name('pelatihan-banmod.status');
     Route::resource('kerja', PelatihanKerjaController::class);
     Route::post('kerja/{id}/status', [PelatihanKerjaController::class, 'updateStatus'])
-    ->name('kerja.status');
+        ->name('kerja.status');
     Route::get('blacklist', [DashboardController::class, 'blacklist'])->name('blacklist');
     Route::resource('user', UserAdminController::class);
     //master data
@@ -123,7 +123,7 @@ Route::prefix('banmod')->group(function () {
     Route::get('/', [BanmodController::class, 'index'])->name('banmod');
     Route::post('/store', [BanmodController::class, 'store'])->name('banmod.store');
     Route::get('/success/{id}', [BanmodController::class, 'success'])->name('banmod.success');
-    Route::get('/cek-nik/{nik}', [BanmodController::class, 'ceknik'])->name('banmod.ceknik');
+    Route::get('/cek-nik/{nik}/{kategori}', [BanmodController::class, 'ceknik'])->name('banmod.ceknik');
 });
 
 Route::prefix('peserta')->group(function () {

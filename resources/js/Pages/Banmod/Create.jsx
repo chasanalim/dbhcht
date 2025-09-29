@@ -36,15 +36,26 @@ export default function BanmodPage({ meta }) {
     const ceknik = async () => {
         setErrorMessage("");
         setNikStatus("");
+        
+        // Validasi kategori harus dipilih dulu
+        if (!data.kategori) {
+            setErrorMessage("Pilih kategori usaha terlebih dahulu");
+            return;
+        }
+        
         try {
-            const response = await axios.get(`/banmod/cek-nik/${data.nik}`);
-            if (response.data.success || data.kategori == "5") {
+            const response = await axios.get(`/banmod/cek-nik/${data.nik}/${data.kategori}`);
+            if (response.data.success) {
                 setNikStatus("NIK valid!");
             } else {
                 setErrorMessage(response.data.message);
             }
         } catch (error) {
-            setErrorMessage("Terjadi kesalahan saat cek NIK.");
+            if (error.response?.status === 403 || error.response?.status === 404) {
+                setErrorMessage(error.response.data.message);
+            } else {
+                setErrorMessage("Terjadi kesalahan saat cek NIK.");
+            }
         }
     };
 
