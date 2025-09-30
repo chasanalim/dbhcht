@@ -15,6 +15,8 @@ export default function FormKeterampilan() {
     const [nikStatus, setNikStatus] = useState(null);
     const [dataPenerima, setDataPenerima] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
+    const [nikLength, setNikLength] = useState(0);
+    const [kkLength, setKkLength] = useState(0);
 
     const [isKomitmenChecked, setIsKomitmenChecked] = useState(false);
     const { data, setData, errors, post, reset } = useForm({
@@ -62,8 +64,14 @@ export default function FormKeterampilan() {
             }
         } catch (error) {
             // Handle error response
-            if (error.response?.status === 403) {
+            if (
+                error.response?.status === 403 ||
+                error.response?.status === 404 ||
+                error.response?.status === 400
+            ) {
                 setErrorMessage(error.response.data.message);
+            } else {
+                setErrorMessage("Terjadi kesalahan saat cek NIK.");
             }
         }
     };
@@ -297,16 +305,28 @@ export default function FormKeterampilan() {
                         placeholder="Nomor KTP"
                         value={data.nik}
                         onChange={(e) => {
-                            setData("nik", e.target.value);
-                            setNikStatus("");
-                            setErrorMessage("");
-                            setDataPenerima(null);
+                            const value = e.target.value.replace(/\D/g, ""); // Hanya terima angka
+                            if (value.length <= 16) {
+                                // Batasi maksimal 16 digit
+                                setData("nik", value);
+                                setNikLength(value.length);
+                                setNikStatus("");
+                                setErrorMessage("");
+                                setDataPenerima(null);
+                            }
                         }}
+                        className={`${
+                            nikLength === 16
+                                ? "border-success text-success"
+                                : "border-warning"
+                        }`}
+                        maxLength={16}
                     />
                     <Button
                         className="z-0"
                         variant="outline-primary"
-                        onClick={cekNik} // Changed from ceknik to cekNik
+                        onClick={cekNik}
+                        disabled={nikLength !== 16}
                     >
                         Cek NIK
                     </Button>
@@ -314,6 +334,17 @@ export default function FormKeterampilan() {
                         {errors.nik}
                     </Form.Control.Feedback>
                 </InputGroup>
+                <small
+                    className={`d-block mt-1 ${
+                        nikLength === 16
+                            ? "text-success"
+                            : nikLength > 0
+                            ? "text-warning"
+                            : "text-muted"
+                    }`}
+                >
+                    {nikLength}/16 digit
+                </small>
             </Form.Group>
             {errorMessage && <div className="text-danger">{errorMessage}</div>}
 
@@ -325,18 +356,45 @@ export default function FormKeterampilan() {
                     {/* Nomor KK */}
                     <Form.Group className="mb-3">
                         <Form.Label className="required">Nomor KK</Form.Label>
-                        <Form.Control
-                            name="KK"
-                            type="text"
-                            value={data.no_kk || ""}
-                            onChange={(e) =>
-                                setData({ ...data, no_kk: e.target.value })
-                            }
-                            isInvalid={!!errors.no_kk}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.no_kk}
-                        </Form.Control.Feedback>
+                        <InputGroup className="mb-3" hasValidation>
+                            <Form.Control
+                                type="text"
+                                value={data.no_kk || ""}
+                                onChange={(e) => {
+                                    const value = e.target.value.replace(
+                                        /\D/g,
+                                        ""
+                                    ); // Hanya terima angka
+                                    if (value.length <= 16) {
+                                        // Batasi maksimal 16 digit
+                                        setData("no_kk", value);
+                                        setKkLength(value.length);
+                                    }
+                                }}
+                                isInvalid={!!errors.no_kk}
+                                className={`${
+                                    kkLength === 16
+                                        ? "border-success text-success"
+                                        : "border-warning"
+                                }`}
+                                maxLength={16}
+                                placeholder="Nomor Kartu Keluarga"
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.no_kk}
+                            </Form.Control.Feedback>
+                        </InputGroup>
+                        <small
+                            className={`d-block mt-1 ${
+                                kkLength === 16
+                                    ? "text-success"
+                                    : kkLength > 0
+                                    ? "text-warning"
+                                    : "text-muted"
+                            }`}
+                        >
+                            {kkLength}/16 digit
+                        </small>
                     </Form.Group>
 
                     {/* Nama Lengkap */}

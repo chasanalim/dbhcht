@@ -85,6 +85,14 @@ class RegPelatihanKeterampilanKerjaController extends Controller
 
     public function cekNIK(Request $request, $nik)
     {
+        if (strlen($nik) != 16) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Maaf, format NIK harus 16 digit'
+            ], 400);
+        }
+
+
         // Cek blacklist dari semua jenis pelatihan
         $blacklistModels = [
             PelatihanUmkm::class,
