@@ -120,3 +120,7 @@
     position: relative;
   }
 }
+
+.hover-scale:hover {
+    transform: translateY(-5px);
+}

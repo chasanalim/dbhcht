@@ -3,6 +3,8 @@ import { Head, Link } from "@inertiajs/react";
 import { Col, Container, Image, Row } from "react-bootstrap";
 import React from "react";
 import TrainingCarousel from "@/Components/TrainingCarousel";
+import CountUp from "react-countup";
+import VisibilitySensor from "react-visibility-sensor";
 
 const trainings = [
     {
@@ -70,11 +72,18 @@ const trainings = [
     // },
 ];
 
-export default function Index({ meta }) {
+export default function Index({
+    meta,
+    banmod,
+    pelatihanbanmod,
+    pencarikerja,
+    umkm,
+    pertanian,
+}) {
     return (
         <Layout>
             <Head title={meta.title} />
-            <style>
+            {/* <style>
                 {`
 @media (max-width: 768px) {
   .hero-main {
@@ -101,7 +110,7 @@ export default function Index({ meta }) {
   }
 }
 `}
-            </style>
+            </style> */}
             <div
                 style={{
                     minHeight: "92vh",
@@ -262,8 +271,126 @@ export default function Index({ meta }) {
                 </div>
             </div>
 
+
+
             {/* Tambahkan Carousel di bawah hero */}
             <TrainingCarousel trainings={trainings} />
+
+            {/* Counter Stats Section */}
+            <div
+                style={{
+                    background: "#fff",
+                    padding: "40px 0",
+                    marginBottom: "60px",
+                    // borderBottom: "1px solid #eee",
+                }}
+            >
+                <Container>
+                    <h2
+                        className="text-center mb-5"
+                        style={{
+                            fontWeight: 700,
+                            color: "#22223b",
+                        }}
+                    >
+                        Statistik Pendaftar Program
+                    </h2>
+
+                    <Row className="justify-content-center text-center g-4">
+                        {[
+                            {
+                                label: "Bantuan Modal",
+                                value: banmod,
+                                icon: "bi-gift",
+                                color: "#ffb700",
+                            },
+                            {
+                                label: "Pelatihan Banmod",
+                                value: pelatihanbanmod,
+                                icon: "bi-person-workspace",
+                                color: "#4f8cff",
+                            },
+                            {
+                                label: "Pelatihan Kerja",
+                                value: pencarikerja,
+                                icon: "bi-tools",
+                                color: "#198754",
+                            },
+                            {
+                                label: "Pelatihan UMKM",
+                                value: umkm,
+                                icon: "bi-shop",
+                                color: "#dc3545",
+                            },
+                            {
+                                label: "Pelatihan Petani",
+                                value: pertanian,
+                                icon: "bi-tree",
+                                color: "#20c997",
+                            },
+                            {
+                                label: "Ekonomi Kreatif",
+                                value: 0,
+                                icon: "bi-brush",
+                                color: "#6f42c1",
+                            },
+                        ].map((stat, index) => (
+                            <Col key={index} xs={6} md={4} lg={2}>
+                                <div
+                                    style={{
+                                        padding: "20px",
+                                        borderRadius: "1rem",
+                                        boxShadow: "0 4px 16px rgba(0,0,0,0.05)",
+                                        height: "100%",
+                                        background: "#fff",
+                                        transition: "transform 0.2s",
+                                        cursor: "default",
+                                    }}
+                                    className="hover-scale"
+                                >
+                                    <i
+                                        className={`bi ${stat.icon} fs-1 mb-3`}
+                                        style={{ color: stat.color }}
+                                    ></i>
+                                    <h1
+                                        className="m-2"
+                                        style={{
+                                            fontWeight: 700,
+                                            color: stat.color,
+                                        }}
+                                    >
+                                        <VisibilitySensor
+                                            partialVisibility
+                                            offset={{ bottom: 10 }}
+                                        >
+                                            {({ isVisible }) => (
+                                                <div style={{ height: 50 }}>
+                                                    {isVisible ? (
+                                                        <CountUp
+                                                            start={0}
+                                                            end={stat.value}
+                                                            duration={2.5}
+                                                            separator="."
+                                                        />
+                                                    ) : (
+                                                        0
+                                                    )}
+                                                </div>
+                                            )}
+                                        </VisibilitySensor>
+                                    </h1>
+                                    <p
+                                        className="mb-0 text-muted"
+                                        style={{ fontSize: "0.9rem" }}
+                                    >
+                                        {stat.label}
+                                    </p>
+                                </div>
+                            </Col>
+                        ))}
+                    </Row>
+                </Container>
+            </div>
         </Layout>
     );
 }
