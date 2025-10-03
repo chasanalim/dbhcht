@@ -174,6 +174,14 @@ class PelatihanPenerimaBanmodController extends Controller
     // Fungsi untuk mengecek NIK apakah terdaftar sebagai penerima bantuan modal
     public function cekNIK(Request $request, $nik)
     {
+
+        if (strlen($nik) != 16) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Maaf, format NIK harus 16 digit'
+            ], 400);
+        }
+        
         // Cek blacklist dari semua jenis pelatihan
         $blacklistModels = [
             PelatihanUmkm::class,

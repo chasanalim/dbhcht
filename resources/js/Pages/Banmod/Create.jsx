@@ -25,6 +25,8 @@ export default function BanmodPage({ meta }) {
     const [nikStatus, setNikStatus] = useState(null); // Status pengecekan NIK
     const [errorMessage, setErrorMessage] = useState(""); // Pesan error
     const [isKomitmenChecked, setIsKomitmenChecked] = useState(false);
+    const [nikLength, setNikLength] = useState(0);
+    const [kkLength, setKkLength] = useState(0);
 
     // const { auth } = usePage().props;
 
@@ -36,22 +38,28 @@ export default function BanmodPage({ meta }) {
     const ceknik = async () => {
         setErrorMessage("");
         setNikStatus("");
-        
+
         // Validasi kategori harus dipilih dulu
         if (!data.kategori) {
             setErrorMessage("Pilih kategori usaha terlebih dahulu");
             return;
         }
-        
+
         try {
-            const response = await axios.get(`/banmod/cek-nik/${data.nik}/${data.kategori}`);
+            const response = await axios.get(
+                `/banmod/cek-nik/${data.nik}/${data.kategori}`
+            );
             if (response.data.success) {
                 setNikStatus("NIK valid!");
             } else {
                 setErrorMessage(response.data.message);
             }
         } catch (error) {
-            if (error.response?.status === 403 || error.response?.status === 404) {
+            if (
+                error.response?.status === 403 ||
+                error.response?.status === 404 ||
+                error.response?.status === 400
+            ) {
                 setErrorMessage(error.response.data.message);
             } else {
                 setErrorMessage("Terjadi kesalahan saat cek NIK.");
@@ -320,25 +328,49 @@ export default function BanmodPage({ meta }) {
                                     isInvalid={errors.nik}
                                     placeholder="Nomor KTP"
                                     value={data.nik}
-                                    onChange={(e) =>
-                                        setData((prevState) => ({
-                                            ...prevState,
-                                            nik: e.target.value,
-                                        }))
-                                    }
+                                    onChange={(e) => {
+                                        const value = e.target.value.replace(
+                                            /\D/g,
+                                            ""
+                                        ); // Hanya terima angka
+                                        if (value.length <= 16) {
+                                            // Batasi maksimal 16 digit
+                                            setData("nik", value);
+                                            setNikLength(value.length);
+                                            setNikStatus("");
+                                            setErrorMessage("");
+                                        }
+                                    }}
+                                    className={`${
+                                        nikLength === 16
+                                            ? "border-success text-success"
+                                            : "border-warning"
+                                    }`}
+                                    maxLength={16}
                                 />
                                 <Button
                                     className="z-0"
                                     variant="outline-primary"
                                     onClick={ceknik}
+                                    disabled={nikLength !== 16}
                                 >
                                     Cek NIK
                                 </Button>
-
                                 <Form.Control.Feedback type="invalid">
                                     {errors.nik}
                                 </Form.Control.Feedback>
                             </InputGroup>
+                            <small
+                                className={`d-block mt-1 ${
+                                    nikLength === 16
+                                        ? "text-success"
+                                        : nikLength > 0
+                                        ? "text-warning"
+                                        : "text-muted"
+                                }`}
+                            >
+                                {nikLength}/16 digit
+                            </small>
                         </div>
                         {errorMessage && (
                             <div className="text-danger">{errorMessage}</div>
@@ -352,21 +384,46 @@ export default function BanmodPage({ meta }) {
                                     <Form.Label className="required">
                                         No. KK
                                     </Form.Label>
-                                    <Form.Control
-                                        value={data.kk}
-                                        onChange={(e) =>
-                                            setData((prevState) => ({
-                                                ...prevState,
-                                                kk: e.target.value,
-                                            }))
-                                        }
-                                        name="KK"
-                                        isInvalid={errors.kk}
-                                        placeholder="Nomor KK"
-                                    ></Form.Control>
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.kk}
-                                    </Form.Control.Feedback>
+                                    <InputGroup className="mb-3" hasValidation>
+                                        <Form.Control
+                                            type="text"
+                                            value={data.kk || ""}
+                                            onChange={(e) => {
+                                                const value =
+                                                    e.target.value.replace(
+                                                        /\D/g,
+                                                        ""
+                                                    ); // Hanya terima angka
+                                                if (value.length <= 16) {
+                                                    // Batasi maksimal 16 digit
+                                                    setData("kk", value);
+                                                    setKkLength(value.length);
+                                                }
+                                            }}
+                                            isInvalid={!!errors.kk}
+                                            className={`${
+                                                kkLength === 16
+                                                    ? "border-success text-success"
+                                                    : "border-warning"
+                                            }`}
+                                            maxLength={16}
+                                            placeholder="Nomor Kartu Keluarga"
+                                        />
+                                        <Form.Control.Feedback type="invalid">
+                                            {errors.kk}
+                                        </Form.Control.Feedback>
+                                    </InputGroup>
+                                    <small
+                                        className={`d-block mt-1 ${
+                                            kkLength === 16
+                                                ? "text-success"
+                                                : kkLength > 0
+                                                ? "text-warning"
+                                                : "text-muted"
+                                        }`}
+                                    >
+                                        {kkLength}/16 digit
+                                    </small>
                                 </div>
                                 <div className="mb-3">
                                     <Form.Label className="required">

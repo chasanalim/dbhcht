@@ -177,7 +177,7 @@ class BanmodController extends Controller
         if (strlen($nik) != 16) {
             return response()->json([
                 'success' => false,
-                'message' => 'NIK harus 16 digit'
+                'message' => 'Maaf, format NIK harus 16 digit'
             ], 400);
         }
 
@@ -196,7 +196,7 @@ class BanmodController extends Controller
             if (!$pklData) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'NIK tidak terdaftar sebagai Pedagang Kaki Lima di database kami'
+                    'message' => 'Maaf, NIK tidak terdaftar sebagai Pedagang Kaki Lima di database kami'
                 ], 404);
             }
 

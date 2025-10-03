@@ -18,6 +18,7 @@ export default function FormPenerimaBanmod() {
     const [errorMessage, setErrorMessage] = useState("");
     const [tampilKonfirmasi, setTampilKonfirmasi] = useState(false);
     const [editMode, setEditMode] = useState(false);
+    const [nikLength, setNikLength] = useState(0);
 
     const { data, setData, errors, post, reset } = useForm({
         tahun_penerimaan: "",
@@ -97,7 +98,7 @@ export default function FormPenerimaBanmod() {
             }
         } catch (error) {
             // Handle error response
-            if (error.response?.status === 403) {
+            if (error.response?.status === 403 || error.response?.status === 400) {
                 setErrorMessage(error.response.data.message);
                 setDataPenerima(null);
             } else if (error.response?.status === 404) {
@@ -105,7 +106,6 @@ export default function FormPenerimaBanmod() {
                 setDataPenerima(null);
             } else {
                 setErrorMessage("Terjadi kesalahan saat cek NIK.");
-                console.error("Error checking NIK:", error);
             }
         }
     };
@@ -338,17 +338,26 @@ export default function FormPenerimaBanmod() {
                         placeholder="Nomor KTP"
                         value={data.nik}
                         onChange={(e) => {
-                            setData("nik", e.target.value);
-                            setNikStatus("");
-                            setErrorMessage("");
-                            setDataPenerima(null);
-                            setTampilKonfirmasi(false);
+                            const value = e.target.value.replace(/\D/g, ""); // Hanya terima angka
+                            if (value.length <= 16) {
+                                // Batasi maksimal 16 digit
+                                setData("nik", value);
+                                setNikLength(value.length);
+                                setNikStatus("");
+                                setErrorMessage("");
+                                setDataPenerima(null);
+                            }
                         }}
+                        className={`${
+                            nikLength === 16 ? "border-success text-success" : "border-warning"
+                        }`}
+                        maxLength={16}
                     />
                     <Button
                         className="z-0"
                         variant="outline-primary"
-                        onClick={cekNik} // Changed from ceknik to cekNik
+                        onClick={cekNik}
+                        disabled={nikLength !== 16}
                     >
                         Cek NIK
                     </Button>
@@ -356,6 +365,17 @@ export default function FormPenerimaBanmod() {
                         {errors.nik}
                     </Form.Control.Feedback>
                 </InputGroup>
+                <small
+                    className={`d-block mt-1 ${
+                        nikLength === 16
+                            ? "text-success"
+                            : nikLength > 0
+                            ? "text-warning"
+                            : "text-muted"
+                    }`}
+                >
+                    {nikLength}/16 digit
+                </small>
             </Form.Group>
 
             {errorMessage && <div className="text-danger">{errorMessage}</div>}
