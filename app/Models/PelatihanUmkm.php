@@ -116,4 +116,9 @@ class PelatihanUmkm extends Model
             'skd' => 'Surat Keterangan Domisili',
         ];
     }
+
+    public function getJenisPelatihan()
+    {
+        return ' UMKM';
+    }
 }

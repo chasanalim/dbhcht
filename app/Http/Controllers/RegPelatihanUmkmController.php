@@ -185,7 +185,7 @@ class RegPelatihanUmkmController extends Controller
                 'message' => 'Maaf, format NIK harus 16 digit'
             ], 400);
         }
-        
+
         // Cek blacklist dari semua jenis pelatihan
         $blacklistModels = [
             PelatihanUmkm::class,
@@ -207,6 +207,28 @@ class RegPelatihanUmkmController extends Controller
                 ], 403);
             }
         }
+
+        $doneModels = [
+            PelatihanBanmod::class,
+            PelatihanKerjas::class,
+            PelatihanPetani::class
+        ];
+
+        foreach ($doneModels as $model) {
+            $done = $model::where('status', 1)
+                ->where('nik', $nik)
+                ->exists();
+
+            if ($done) {
+                $jenisPelatihan = (new $model)->getJenisPelatihan();
+                return response()->json([
+                    'success' => false,
+                    'blacklisted' => true,
+                    'message' => "Mohon maaf, NIK Anda telah menerima pelatihan{$jenisPelatihan} pada periode tahun ini."
+                ], 403);
+            }
+        }
+
         return response()->json([
             'success' => true,
             'blacklisted' => false,
