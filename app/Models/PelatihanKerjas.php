@@ -60,4 +60,9 @@ class PelatihanKerjas extends Model
             'skd' => 'Surat Keterangan Domisili',
         ];
     }
+
+    public function getJenisPelatihan()
+    {
+        return ' Pencari Kerja';
+    }
 }
