@@ -278,7 +278,7 @@ export default function Index({ title, can, flash, categories }) {
 
     const updateStatus = async (url, status) => {
         let confirmMessage = '';
-        
+
         if (status === 1) {
             confirmMessage = 'Apakah anda yakin ingin meloloskan peserta ini?\n\nPerhatian: Jika peserta ini lolos, maka semua pendaftaran pelatihan lain (UMKM, Pertanian, Banmod) dengan NIK yang sama akan otomatis ditolak.';
         } else if (status === 2) {
@@ -286,7 +286,7 @@ export default function Index({ title, can, flash, categories }) {
         } else if (status === 3) {
             confirmMessage = 'Apakah anda yakin ingin membuat blacklist peserta ini?';
         }
-        
+
         if (confirm(confirmMessage)) {
             try {
                 const response = await axios.post(url, {
@@ -310,11 +310,11 @@ export default function Index({ title, can, flash, categories }) {
                 const toastEl = document.getElementById("toast");
                 const toastBody = toastEl.querySelector('.toast-body');
                 toastBody.textContent = response.data.message;
-                
+
                 // Ubah warna toast berdasarkan status
                 const toastElement = toastEl;
                 toastElement.className = toastElement.className.replace(/bg-\w+/, '');
-                
+
                 if (status === 1) {
                     toastElement.classList.add('bg-success');
                 } else if (status === 2) {
@@ -322,7 +322,7 @@ export default function Index({ title, can, flash, categories }) {
                 } else if (status === 3) {
                     toastElement.classList.add('bg-danger');
                 }
-                
+
                 const toast = new Toast(toastEl);
                 toast.show();
 
@@ -423,6 +423,7 @@ export default function Index({ title, can, flash, categories }) {
                                             <option value="1">Lolos</option>
                                             <option value="2">Gagal</option>
                                             <option value="3">Blacklist</option>
+                                            <option value="4">Lolos Pelatihan Lain</option>
                                         </select>
                                     </div>
                                 </div>

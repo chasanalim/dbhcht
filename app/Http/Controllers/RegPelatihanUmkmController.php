@@ -224,7 +224,7 @@ class RegPelatihanUmkmController extends Controller
                 return response()->json([
                     'success' => false,
                     'blacklisted' => true,
-                    'message' => "Mohon maaf, NIK Anda telah menerima pelatihan{$jenisPelatihan} pada periode tahun ini."
+                    'message' => "Mohon maaf, NIK Anda telah menerima pelatihan {$jenisPelatihan} pada periode tahun ini."
                 ], 403);
             }
         }
