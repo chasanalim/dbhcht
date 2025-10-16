@@ -36,7 +36,13 @@ class PelBanmodExport implements FromCollection, WithHeadings, WithStyles
                 'no_hp' => $item->no_hp,
                 'ketrampilan' => $item->jenis_pelatihan_industri,
                 'skor' => number_format($item->skor, 2),
-                'verifikasi' => $this->getVerificationStatus($item)
+                // 'verifikasi' => $this->getVerificationStatus($item),
+                'status' => [
+                    '1' => 'Lolos',
+                    '2' => 'Tidak Lolos',
+                    '3' => 'Blacklist',
+                    '4' => 'Lolos Pelatihan Lain',
+                ][$item->status] ?? 'Belum Diverifikasi',
             ];
         });
     }
@@ -61,7 +67,8 @@ class PelBanmodExport implements FromCollection, WithHeadings, WithStyles
                 'NO HP',
                 'KETRAMPILAN',
                 'SKOR',
-                'STATUS VERIFIKASI'
+                'STATUS VERIFIKASI',
+                'STATUS'
             ]
         ];
     }

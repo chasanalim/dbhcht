@@ -36,7 +36,13 @@ class PertanianExport implements FromCollection, WithHeadings, WithStyles
                 'no_hp' => $item->no_hp,
                 'jenis_pelatihan' => $item->jenisPelatihanPetani?->nama,
                 'skor' => number_format($item->skor, 2),
-                'verifikasi' => $this->getVerificationStatus($item)
+                // 'verifikasi' => $this->getVerificationStatus($item),
+                'status' => [
+                    '1' => 'Lolos',
+                    '2' => 'Tidak Lolos',
+                    '3' => 'Blacklist',
+                    '4' => 'Lolos Pelatihan Lain',
+                ][$item->status] ?? 'Belum Diverifikasi',
             ];
         });
     }
@@ -61,7 +67,8 @@ class PertanianExport implements FromCollection, WithHeadings, WithStyles
                 'NO HP',
                 'PELATIHAN',
                 'SKOR',
-                'STATUS VERIFIKASI'
+                // 'STATUS VERIFIKASI',
+                'STATUS'
             ]
         ];
     }

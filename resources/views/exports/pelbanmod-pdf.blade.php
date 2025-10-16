@@ -88,7 +88,8 @@
                 <th width="7%">NO HP</th>
                 <th width="7%">KETRAMPILAN</th>
                 <th width="5%">SKOR</th>
-                <th width="8%">VERIFIKASI DOKUMEN</th>
+                {{-- <th width="8%">VERIFIKASI DOKUMEN</th> --}}
+                <th width="8%">STATUS</th>
             </tr>
         </thead>
         <tbody>
@@ -106,7 +107,7 @@
                     <td>{{ $item->no_hp }}</td>
                     <td>{{ $item->jenis_pelatihan_industri }}</td>
                     <td class="numeric">{{ number_format($item->skor, 2) }}</td>
-                    <td class="center">
+                    {{-- <td class="center">
                         @php
                             $verifications = $item->documentVerifications;
                             $requiredDocs = ['ktp', 'kk', 'nib'];
@@ -123,7 +124,25 @@
                                 Belum diverifikasi
                             @endif
                         </span>
-                    </td>
+                    </td> --}}
+                    <td>
+                    @switch($item->status)
+                        @case(1)
+                            Lulus
+                            @break
+                        @case(2)
+                            Tidak Lulus
+                            @break
+                        @case(3)
+                            Blacklist
+                            @break
+                        @case(4)
+                            Lulus Pelatihan Lain
+                            @break
+                        @default
+                            Belum diverifikasi
+                    @endswitch
+                </td>
                 </tr>
             @endforeach
         </tbody>

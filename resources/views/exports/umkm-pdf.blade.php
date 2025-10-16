@@ -89,7 +89,8 @@
                 <th width="8%">PRIORITAS 2</th>
                 <th width="8%">PRIORITAS 3</th>
                 <th width="5%">SKOR</th>
-                <th width="8%">VERIFIKASI DOKUMEN</th>
+                {{-- <th width="8%">VERIFIKASI DOKUMEN</th> --}}
+                <th width="8%">STATUS</th>
             </tr>
         </thead>
         <tbody>
@@ -108,24 +109,42 @@
                     <td>{{ $item->prioritas_2 }}</td>
                     <td>{{ $item->prioritas_3 }}</td>
                     <td class="numeric">{{ number_format($item->skor, 2) }}</td>
-                    <td class="center">
+                    {{-- <td class="center">
                         @php
-                            $verifications = $item->documentVerifications;
-                            $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan'];
-                            $allVerified = count($verifications) === count($requiredDocs);
-                            $allApproved = $verifications->every(fn($v) => $v->status === 1);
+                        $verifications = $item->documentVerifications;
+                        $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan'];
+                        $allVerified = count($verifications) === count($requiredDocs);
+                        $allApproved = $verifications->every(fn($v) => $v->status === 1);
                         @endphp
                         <span
-                            class="status-{{ $allVerified && $allApproved ? 'verified' : ($allVerified && !$allApproved ? 'rejected' : 'pending') }}">
-                            @if ($allVerified && $allApproved)
-                                Terverifikasi
-                            @elseif($allVerified && !$allApproved)
-                                Tidak Memenuhi Syarat
-                            @else
-                                Belum diverifikasi
-                            @endif
-                        </span>
-                    </td>
+                        class="status-{{ $allVerified && $allApproved ? 'verified' : ($allVerified && !$allApproved ? 'rejected' : 'pending') }}">
+                        @if ($allVerified && $allApproved)
+                        Terverifikasi
+                        @elseif($allVerified && !$allApproved)
+                        Tidak Memenuhi Syarat
+                        @else
+                        Belum diverifikasi
+                        @endif
+                    </span>
+                </td> --}}
+                <td>
+                    @switch($item->status)
+                        @case(1)
+                            Lulus
+                            @break
+                        @case(2)
+                            Tidak Lulus
+                            @break
+                        @case(3)
+                            Blacklist
+                            @break
+                        @case(4)
+                            Lulus Pelatihan Lain
+                            @break
+                        @default
+                            Belum diverifikasi
+                    @endswitch
+                </td>
                 </tr>
             @endforeach
         </tbody>

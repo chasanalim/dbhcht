@@ -360,16 +360,19 @@ export default function Index({ title, can, flash, pelatihan }) {
     };
 
     const updateStatus = async (url, status) => {
-        let confirmMessage = '';
-        
+        let confirmMessage = "";
+
         if (status === 1) {
-            confirmMessage = 'Apakah anda yakin ingin meloloskan peserta ini?\n\nPerhatian: Jika peserta ini lolos, maka semua pendaftaran pelatihan lain (Pelatihan Kerja & UMKM lainnya) dengan NIK yang sama akan otomatis ditolak.';
+            confirmMessage =
+                "Apakah anda yakin ingin meloloskan peserta ini?\n\nPerhatian: Jika peserta ini lolos, maka semua pendaftaran pelatihan lain (Pelatihan Kerja & UMKM lainnya) dengan NIK yang sama akan otomatis ditolak.";
         } else if (status === 2) {
-            confirmMessage = 'Apakah anda yakin ingin menggagalkan peserta ini?';
+            confirmMessage =
+                "Apakah anda yakin ingin menggagalkan peserta ini?";
         } else if (status === 3) {
-            confirmMessage = 'Apakah anda yakin ingin membuat blacklist peserta ini?';
+            confirmMessage =
+                "Apakah anda yakin ingin membuat blacklist peserta ini?";
         }
-        
+
         if (confirm(confirmMessage)) {
             try {
                 const response = await axios.post(url, {
@@ -380,34 +383,40 @@ export default function Index({ title, can, flash, pelatihan }) {
                 if (status === 1) {
                     try {
                         // Panggil endpoint untuk auto-reject NIK yang sama di semua tabel pelatihan
-                        await axios.post(route('admin.auto-reject-nik'), {
-                            current_table: 'umkm', // identifier tabel saat ini
+                        await axios.post(route("admin.auto-reject-nik"), {
+                            current_table: "umkm", // identifier tabel saat ini
                             current_id: response.data.current_id || null, // ID record yang baru saja diloloskan
-                            nik: response.data.nik || null // NIK yang akan di-auto-reject
+                            nik: response.data.nik || null, // NIK yang akan di-auto-reject
                         });
                     } catch (autoRejectError) {
-                        console.error("Error auto-rejecting other NIK records:", autoRejectError);
+                        console.error(
+                            "Error auto-rejecting other NIK records:",
+                            autoRejectError
+                        );
                         // Tidak perlu menampilkan error ke user, proses utama sudah berhasil
                     }
                 }
 
                 // Tampilkan toast message
                 const toastEl = document.getElementById("toast");
-                const toastBody = toastEl.querySelector('.toast-body');
+                const toastBody = toastEl.querySelector(".toast-body");
                 toastBody.textContent = response.data.message;
-                
+
                 // Ubah warna toast berdasarkan status
                 const toastElement = toastEl;
-                toastElement.className = toastElement.className.replace(/bg-\w+/, '');
-                
+                toastElement.className = toastElement.className.replace(
+                    /bg-\w+/,
+                    ""
+                );
+
                 if (status === 1) {
-                    toastElement.classList.add('bg-success');
+                    toastElement.classList.add("bg-success");
                 } else if (status === 2) {
-                    toastElement.classList.add('bg-warning');
+                    toastElement.classList.add("bg-warning");
                 } else if (status === 3) {
-                    toastElement.classList.add('bg-danger');
+                    toastElement.classList.add("bg-danger");
                 }
-                
+
                 const toast = new Toast(toastEl);
                 toast.show();
 
@@ -418,10 +427,13 @@ export default function Index({ title, can, flash, pelatihan }) {
                 // Tampilkan pesan error jika ada
                 if (error.response?.data?.message) {
                     const toastEl = document.getElementById("toast");
-                    const toastBody = toastEl.querySelector('.toast-body');
+                    const toastBody = toastEl.querySelector(".toast-body");
                     toastBody.textContent = error.response.data.message;
                     const toastElement = toastEl;
-                    toastElement.className = toastElement.className.replace(/bg-\w+/, 'bg-danger');
+                    toastElement.className = toastElement.className.replace(
+                        /bg-\w+/,
+                        "bg-danger"
+                    );
                     const toast = new Toast(toastEl);
                     toast.show();
                 }
@@ -567,15 +579,16 @@ export default function Index({ title, can, flash, pelatihan }) {
                                         <select
                                             className="form-select form-select-sm"
                                             value={selectedStatus}
-                                            onChange={
-                                                handleStatusChange
-                                            }
+                                            onChange={handleStatusChange}
                                         >
                                             <option value="all">All</option>
                                             {/* <option value="0">Menunggu</option> */}
                                             <option value="1">Lolos</option>
                                             <option value="2">Gagal</option>
                                             <option value="3">Blacklist</option>
+                                            <option value="4">
+                                                Lolos Pelatihan Lain
+                                            </option>
                                         </select>
                                     </div>
                                 </div>
@@ -644,9 +657,7 @@ export default function Index({ title, can, flash, pelatihan }) {
                     aria-atomic="true"
                 >
                     <div className="d-flex">
-                        <div className="toast-body">
-                            {flash.message}
-                        </div>
+                        <div className="toast-body">{flash.message}</div>
                         <button
                             type="button"
                             className="btn-close btn-close-white me-2 m-auto"

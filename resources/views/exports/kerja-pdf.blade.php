@@ -91,7 +91,8 @@
                 <th width="7%">PENDIDIKAN</th>
                 <th width="7%">JENIS PELATIHAN</th>
                 <th width="7%">ALASAN PELATIHAN</th>
-                <th width="8%">VERIFIKASI DOKUMEN</th>
+                {{-- <th width="8%">VERIFIKASI DOKUMEN</th> --}}
+                <th width="8%">STATUS</th>
             </tr>
         </thead>
         <tbody>
@@ -112,7 +113,7 @@
                 <td>{{ $item->refPendidikan?->nama }}</td>
                 <td>{{ $item->jenisPelatihan?->nama }}</td>
                 <td>{{ $item->alasanPelatihan?->nama }}</td>
-                <td class="center">
+                {{-- <td class="center">
                     @php
                     $verifications = $item->documentVerifications;
                     $requiredDocs = ['ktp', 'kk'];
@@ -128,6 +129,24 @@
                         Belum diverifikasi
                         @endif
                     </span>
+                </td> --}}
+                <td>
+                    @switch($item->status)
+                        @case(1)
+                            Lulus
+                            @break
+                        @case(2)
+                            Tidak Lulus
+                            @break
+                        @case(3)
+                            Blacklist
+                            @break
+                        @case(4)
+                            Lulus Pelatihan Lain
+                            @break
+                        @default
+                            Belum diverifikasi
+                    @endswitch
                 </td>
             </tr>
             @endforeach

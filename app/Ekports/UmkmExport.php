@@ -36,7 +36,13 @@ class UmkmExport implements FromCollection, WithHeadings, WithStyles
                 'prioritas_2' => $item->prioritas_2,
                 'prioritas_3' => $item->prioritas_3,
                 'skor' => number_format($item->skor, 2),
-                'verifikasi' => $this->getVerificationStatus($item)
+                // 'verifikasi' => $this->getVerificationStatus($item),
+                'status' => [
+                    '1' => 'Lolos',
+                    '2' => 'Tidak Lolos',
+                    '3' => 'Blacklist',
+                    '4' => 'Lolos Pelatihan Lain',
+                ][$item->status] ?? 'Belum Diverifikasi',
             ];
         });
     }
@@ -61,7 +67,8 @@ class UmkmExport implements FromCollection, WithHeadings, WithStyles
                 'PRIORITAS 2',
                 'PRIORITAS 3',
                 'SKOR',
-                'STATUS VERIFIKASI'
+                // 'STATUS VERIFIKASI',
+                'STATUS'
             ]
         ];
     }

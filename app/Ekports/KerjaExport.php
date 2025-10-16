@@ -34,7 +34,13 @@ class KerjaExport implements FromCollection, WithHeadings, WithStyles
                 'no_hp' => $item->phone_number,
                 'pendidikan' => $item->refPendidikan?->nama,
                 'pelatihan' => $item->jenisPelatihan?->nama,
-                'verifikasi' => $this->getVerificationStatus($item)
+                // 'verifikasi' => $this->getVerificationStatus($item)
+                'status' => [
+                    '1' => 'Lolos',
+                    '2' => 'Tidak Lolos',
+                    '3' => 'Blacklist',
+                    '4' => 'Lolos Pelatihan Lain',
+                ][$item->status] ?? 'Belum Diverifikasi',
             ];
         });
     }
@@ -57,7 +63,8 @@ class KerjaExport implements FromCollection, WithHeadings, WithStyles
                 'NO HP',
                 'PENDIDIKAN',
                 'PELATIHAN',
-                'STATUS VERIFIKASI'
+                // 'STATUS VERIFIKASI',
+                'STATUS'
             ]
         ];
     }
