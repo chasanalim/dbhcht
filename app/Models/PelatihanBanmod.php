@@ -100,4 +100,9 @@ class PelatihanBanmod extends Model
             'skd' => 'Surat Keterangan Domisili',
         ];
     }
+
+    public function getJenisPelatihan()
+    {
+        return ' Penerima Bantuan Modal';
+    }
 }

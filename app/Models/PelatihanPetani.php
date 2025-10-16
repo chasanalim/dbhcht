@@ -107,4 +107,9 @@ class PelatihanPetani extends Model
             'skd' => 'Surat Keterangan Domisili',
         ];
     }
+
+    public function getJenisPelatihan()
+    {
+        return ' Petani';
+    }
 }
