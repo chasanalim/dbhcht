@@ -213,7 +213,9 @@ export default function Index({ title, can, flash, pelatihan }) {
                         } else if (data === 2) {
                             return `<span class="badge bg-danger">Tidak Lolos</span>`;
                         } else if (data === 3) {
-                            return `<span class="badge bg-black">Blacklist</span>`;
+                            return `<span class="badge bg-dark">Blacklist</span>`;
+                        } else if (data === 4) {
+                            return `<span class="badge bg-danger">Ditolak - Lolos di Pelatihan Lain</span>`;
                         }
                     },
                 },
@@ -263,23 +265,52 @@ export default function Index({ title, can, flash, pelatihan }) {
     };
 
     const updateStatus = async (url, status) => {
-        if (
-            confirm(
-                `Apakah anda yakin ingin ${
-                    status === 1 ? "meloloskan" :
-                    status === 2 ? "menggagalkan" : "membuat blacklist"
-                } peserta ini?`
-            )
-        ) {
+        let confirmMessage = '';
+        
+        if (status === 1) {
+            confirmMessage = 'Apakah anda yakin ingin meloloskan peserta ini?\n\nPerhatian: Jika peserta ini lolos, maka semua pendaftaran pelatihan lain (UMKM, Pertanian, Banmod) dengan NIK yang sama akan otomatis ditolak.';
+        } else if (status === 2) {
+            confirmMessage = 'Apakah anda yakin ingin menggagalkan peserta ini?';
+        } else if (status === 3) {
+            confirmMessage = 'Apakah anda yakin ingin membuat blacklist peserta ini?';
+        }
+        
+        if (confirm(confirmMessage)) {
             try {
                 const response = await axios.post(url, {
                     status: status,
                 });
 
+                // Jika status berubah menjadi lolos (1), panggil endpoint untuk auto-reject NIK yang sama
+                if (status === 1) {
+                    try {
+                        await axios.post(route('admin.auto-reject-nik'), {
+                            current_table: 'banmod',
+                            current_id: response.data.current_id || null,
+                            nik: response.data.nik || null
+                        });
+                    } catch (autoRejectError) {
+                        console.error("Error auto-rejecting other NIK records:", autoRejectError);
+                    }
+                }
+
                 // Tampilkan toast message
                 const toastEl = document.getElementById("toast");
                 const toastBody = toastEl.querySelector('.toast-body');
                 toastBody.textContent = response.data.message;
+                
+                // Ubah warna toast berdasarkan status
+                const toastElement = toastEl;
+                toastElement.className = toastElement.className.replace(/bg-\w+/, '');
+                
+                if (status === 1) {
+                    toastElement.classList.add('bg-success');
+                } else if (status === 2) {
+                    toastElement.classList.add('bg-warning');
+                } else if (status === 3) {
+                    toastElement.classList.add('bg-danger');
+                }
+                
                 const toast = new Toast(toastEl);
                 toast.show();
 
@@ -287,11 +318,12 @@ export default function Index({ title, can, flash, pelatihan }) {
                 $(tableRef.current).DataTable().ajax.reload();
             } catch (error) {
                 console.error("Error updating status:", error);
-                // Tampilkan pesan error jika ada
                 if (error.response?.data?.message) {
                     const toastEl = document.getElementById("toast");
                     const toastBody = toastEl.querySelector('.toast-body');
                     toastBody.textContent = error.response.data.message;
+                    const toastElement = toastEl;
+                    toastElement.className = toastElement.className.replace(/bg-\w+/, 'bg-danger');
                     const toast = new Toast(toastEl);
                     toast.show();
                 }

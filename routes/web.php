@@ -44,6 +44,7 @@ use App\Http\Controllers\Admin\PelatihanPertanianController;
 use App\Http\Controllers\Admin\PenerimaBanmodLamaController;
 use App\Http\Controllers\Admin\PenerimaPelatihanBanmodController;
 use App\Http\Controllers\RegPelatihanKeterampilanKerjaController;
+use App\Http\Controllers\Admin\AutoRejectController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/download', [HomeController::class, 'file'])->name('download');
@@ -55,7 +56,7 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
+    Route::post('/auto-reject-nik', [AutoRejectController::class, 'autoRejectNik'])->name('auto-reject-nik');
 
 
     Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');

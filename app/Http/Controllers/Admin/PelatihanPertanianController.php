@@ -260,7 +260,7 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
 
         // Validate if document is verified
         $verifications = $data->documentVerifications;
-        $requiredDocs = ['ktp', 'kk', 'pengukuhan_penyuluh_swadaya', 'rekomendasi_kelompok','skd'];
+        $requiredDocs = ['ktp', 'kk', 'pengukuhan_penyuluh_swadaya', 'rekomendasi_kelompok', 'skd'];
         $allVerified = count($verifications) === count($requiredDocs);
         $allApproved = $verifications->every(fn($v) => $v->status === 1);
 
@@ -273,8 +273,19 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
         $data->status = $request->status;
         $data->save();
 
+        $statusMessage = match ($request->status) {
+            1 => 'Peserta berhasil diloloskan',
+            2 => 'Peserta telah digagalkan',
+            3 => 'Peserta telah dimasukkan ke blacklist',
+            4 => 'Peserta ditolak karena sudah lolos di pelatihan lain',
+            default => 'Status berhasil diperbarui'
+        };
+
         return response()->json([
-            'message' => 'Status berhasil diperbarui'
+            'success' => true,
+            'message' => $statusMessage,
+            'current_id' => $id,
+            'nik' => $data->nik
         ]);
     }
     /**

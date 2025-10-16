@@ -88,7 +88,7 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
-                    $requiredDocs = ['ktp', 'kk','skd'];
+                    $requiredDocs = ['ktp', 'kk', 'skd'];
                     $verifications = $row->documentVerifications;
 
                     $allVerified = count($verifications) === count($requiredDocs);
@@ -239,7 +239,7 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
 
         // Validate if document is verified
         $verifications = $data->documentVerifications;
-        $requiredDocs = ['ktp', 'kk','skd'];
+        $requiredDocs = ['ktp', 'kk', 'skd'];
         $allVerified = count($verifications) === count($requiredDocs);
         $allApproved = $verifications->every(fn($v) => $v->status === 1);
 
@@ -252,8 +252,19 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
         $data->status = $request->status;
         $data->save();
 
+        $statusMessage = match ($request->status) {
+            1 => 'Peserta berhasil diloloskan',
+            2 => 'Peserta telah digagalkan',
+            3 => 'Peserta telah dimasukkan ke blacklist',
+            4 => 'Peserta ditolak karena sudah lolos di pelatihan lain',
+            default => 'Status berhasil diperbarui'
+        };
+
         return response()->json([
-            'message' => 'Status berhasil diperbarui'
+            'success' => true,
+            'message' => $statusMessage,
+            'current_id' => $id,
+            'nik' => $data->nik
         ]);
     }
 

@@ -63,7 +63,7 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
                 $status = $request->verification_status;
                 $data = $data->filter(function ($item) use ($status) {
                     $verifications = $item->documentVerifications;
-                    $requiredDocs = ['ktp', 'kk', 'nib','skd'];
+                    $requiredDocs = ['ktp', 'kk', 'nib', 'skd'];
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
                         return $verification->status === 1;
@@ -92,7 +92,7 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
-                    $requiredDocs = ['ktp', 'kk', 'nib','skd'];
+                    $requiredDocs = ['ktp', 'kk', 'nib', 'skd'];
                     $verifications = $row->documentVerifications;
 
                     $allVerified = count($verifications) === count($requiredDocs);
@@ -272,7 +272,7 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
 
         // Validate if document is verified
         $verifications = $data->documentVerifications;
-        $requiredDocs = ['ktp', 'kk', 'nib','skd'];
+        $requiredDocs = ['ktp', 'kk', 'nib', 'skd'];
         $allVerified = count($verifications) === count($requiredDocs);
         $allApproved = $verifications->every(fn($v) => $v->status === 1);
 
@@ -285,8 +285,19 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
         $data->status = $request->status;
         $data->save();
 
-        return redirect()->back()->with([
-            'message' => 'Status berhasil diperbarui'
+        $statusMessage = match ($request->status) {
+            1 => 'Peserta berhasil diloloskan',
+            2 => 'Peserta telah digagalkan',
+            3 => 'Peserta telah dimasukkan ke blacklist',
+            4 => 'Peserta ditolak karena sudah lolos di pelatihan lain',
+            default => 'Status berhasil diperbarui'
+        };
+
+        return response()->json([
+            'success' => true,
+            'message' => $statusMessage,
+            'current_id' => $id,
+            'nik' => $data->nik
         ]);
     }
 

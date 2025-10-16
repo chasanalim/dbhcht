@@ -307,15 +307,19 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
         $data->save();
 
         // Tambahkan pesan sesuai status
-        $statusMessage = match($request->status) {
+        $statusMessage = match ($request->status) {
             1 => 'Peserta berhasil diloloskan',
             2 => 'Peserta telah digagalkan',
             3 => 'Peserta telah dimasukkan ke blacklist',
+            4 => 'Peserta ditolak karena sudah lolos di pelatihan lain',
             default => 'Status berhasil diperbarui'
         };
 
         return response()->json([
-            'message' => $statusMessage
+            'success' => true,
+            'message' => $statusMessage,
+            'current_id' => $id,
+            'nik' => $data->nik
         ]);
     }
 
