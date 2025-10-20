@@ -23,6 +23,7 @@ import CurrencyInput from "react-currency-input-field";
 
 export default function BanmodPage({ meta }) {
     const [nikStatus, setNikStatus] = useState(null); // Status pengecekan NIK
+    const [dataPenerima, setDataPenerima] = useState(null);
     const [errorMessage, setErrorMessage] = useState(""); // Pesan error
     const [isKomitmenChecked, setIsKomitmenChecked] = useState(false);
     const [nikLength, setNikLength] = useState(0);
@@ -50,7 +51,16 @@ export default function BanmodPage({ meta }) {
                 `/banmod/cek-nik/${data.nik}/${data.kategori}`
             );
             if (response.data.success) {
-                setNikStatus("NIK valid!");
+                setNikStatus(response.data.message);
+                const d = response.data.data;
+                setDataPenerima(d);
+                setData((prev) => ({
+                    ...prev,
+                    name: d.nama,
+                    alamat: d.alamat,
+                    phone_number : d.no_hp
+                }));
+                // setTampilKonfirmasi(true);
             } else {
                 setErrorMessage(response.data.message);
             }
@@ -430,7 +440,7 @@ export default function BanmodPage({ meta }) {
                                         Nama Lengkap
                                     </Form.Label>
                                     <Form.Control
-                                        value={data.name}
+                                        value={data.name || ""}
                                         onChange={(e) =>
                                             setData((prevState) => ({
                                                 ...prevState,

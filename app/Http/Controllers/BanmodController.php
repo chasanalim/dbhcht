@@ -212,6 +212,7 @@ class BanmodController extends Controller
 
             return response()->json([
                 'success' => true,
+                'data' => $pklData,
                 'message' => 'NIK valid untuk kategori PKL'
             ]);
         }
@@ -227,10 +228,10 @@ class BanmodController extends Controller
         }
 
         // Jika semua validasi lolos
-        return response()->json([
-            'success' => true,
-            'message' => 'NIK valid'
-        ]);
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'NIK valid'
+        // ]);
     }
 
     public function peserta(Request $request)
