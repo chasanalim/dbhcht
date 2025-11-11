@@ -17,13 +17,12 @@ import SelectJenisPelatihanPetani2 from "@/Components/Select/SelectJenisPelatiha
 import SelectSkorPelatihanPetani from "@/Components/Select/SelectSkorPelatihanPetani";
 
 export default function FormPetani() {
+    const [isChecked, setIsChecked] = useState(false);
     const [nikStatus, setNikStatus] = useState(null);
     const [dataPenerima, setDataPenerima] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
     const [tampilKonfirmasi, setTampilKonfirmasi] = useState(false);
     const [editMode, setEditMode] = useState(false);
-    const [nikLength, setNikLength] = useState(0);
-    const [kkLength, setKkLength] = useState(0);
     const { data, setData, errors, post, processing, reset } = useForm({
         nik: "",
         kk: "",
@@ -62,7 +61,6 @@ export default function FormPetani() {
 
     let fileIndex = 1;
 
-
     const cekNik = async () => {
         setErrorMessage("");
         setNikStatus("");
@@ -89,14 +87,17 @@ export default function FormPetani() {
             }
         } catch (error) {
             // Handle error response
-            if (error.response?.status === 403 || error.response?.status === 400) {
+            if (error.response?.status === 403) {
                 setErrorMessage(error.response.data.message);
                 setDataPenerima(null);
             } else if (error.response?.status === 404) {
-                setErrorMessage("NIK tidak ditemukan sebagai anggota kelompok tani.");
+                setErrorMessage(
+                    "NIK tidak ditemukan sebagai anggota kelompok tani."
+                );
                 setDataPenerima(null);
             } else {
                 setErrorMessage("Terjadi kesalahan saat cek NIK.");
+                console.error("Error checking NIK:", error);
             }
         }
     };
@@ -301,26 +302,17 @@ export default function FormPetani() {
                         placeholder="Nomor KTP"
                         value={data.nik}
                         onChange={(e) => {
-                            const value = e.target.value.replace(/\D/g, ""); // Hanya terima angka
-                            if (value.length <= 16) {
-                                // Batasi maksimal 16 digit
-                                setData("nik", value);
-                                setNikLength(value.length);
-                                setNikStatus("");
-                                setErrorMessage("");
-                                setDataPenerima(null);
-                            }
+                            setData("nik", e.target.value);
+                            setNikStatus("");
+                            setErrorMessage("");
+                            setDataPenerima(null);
+                            setTampilKonfirmasi(false);
                         }}
-                        className={`${
-                            nikLength === 16 ? "border-success text-success" : "border-warning"
-                        }`}
-                        maxLength={16}
                     />
                     <Button
                         className="z-0"
                         variant="outline-primary"
-                        onClick={cekNik}
-                        disabled={nikLength !== 16}
+                        onClick={cekNik} // Changed from ceknik to cekNik
                     >
                         Cek NIK
                     </Button>
@@ -328,17 +320,6 @@ export default function FormPetani() {
                         {errors.nik}
                     </Form.Control.Feedback>
                 </InputGroup>
-                <small
-                    className={`d-block mt-1 ${
-                        nikLength === 16
-                            ? "text-success"
-                            : nikLength > 0
-                            ? "text-warning"
-                            : "text-muted"
-                    }`}
-                >
-                    {nikLength}/16 digit
-                </small>
             </Form.Group>
 
             {errorMessage && <div className="text-danger">{errorMessage}</div>}
@@ -351,32 +332,17 @@ export default function FormPetani() {
                     {/* Nomor KK */}
                     <Form.Group className="mb-3">
                         <Form.Label className="required">Nomor KK</Form.Label>
-                        <InputGroup className="mb-3" hasValidation>
-                            <Form.Control
-                                type="text"
-                                value={data.kk || ""}
-                                onChange={(e) => {
-                                    const value = e.target.value.replace(/\D/g, ''); // Hanya terima angka
-                                    if (value.length <= 16) { // Batasi maksimal 16 digit
-                                        setData("kk", value);
-                                        setKkLength(value.length);
-                                    }
-                                }}
-                                isInvalid={!!errors.kk}
-                                className={`${kkLength === 16 ? 'border-success text-success' : 'border-warning'}`}
-                                maxLength={16}
-                                placeholder="Nomor Kartu Keluarga"
-                            />
-                            <Form.Control.Feedback type="invalid">
-                                {errors.kk}
-                            </Form.Control.Feedback>
-                        </InputGroup>
-                        <small className={`d-block mt-1 ${
-                            kkLength === 16 ? 'text-success' :
-                            kkLength > 0 ? 'text-warning' : 'text-muted'
-                        }`}>
-                            {kkLength}/16 digit
-                        </small>
+                        <Form.Control
+                            type="text"
+                            value={data.kk || ""}
+                            onChange={(e) =>
+                                setData({ ...data, kk: e.target.value })
+                            }
+                            isInvalid={!!errors.kk}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errors.kk}
+                        </Form.Control.Feedback>
                     </Form.Group>
 
                     {/* Jenis Kelamin */}
@@ -914,14 +880,46 @@ export default function FormPetani() {
 
                     <hr />
 
-                    <div className="card-footer d-flex justify-content-center mt-4 gap-2">
-                        <Button type="submit">
-                            Simpan{" "}
-                            <i
-                                className="fa fa-paper-plane ms-1"
-                                aria-hidden="true"
-                            ></i>
-                        </Button>
+                    <div className="card p-4">
+                        <div className="card-body">
+                            {/* Checkbox Disclaimer */}
+                            <div className="form-check mt-3">
+                                <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    id="disclaimerCheck"
+                                    checked={isChecked}
+                                    onChange={(e) =>
+                                        setIsChecked(e.target.checked)
+                                    }
+                                />
+                                <label
+                                    className="form-check-label"
+                                    htmlFor="disclaimerCheck"
+                                >
+                                    Saya menyatakan bahwa data yang saya isi
+                                    adalah benar dan dapat dipertanggungjawabkan
+                                    serta menyetujui penggunaannya oleh
+                                    penyelenggara untuk keperluan verifikasi dan
+                                    pelaksanaan program sesuai kebijakan privasi
+                                    yang berlaku.
+                                </label>
+                            </div>
+                        </div>
+
+                        {/* Tombol Simpan */}
+                        <div className="card-footer d-flex justify-content-center mt-4 gap-2">
+                            <Button
+                                type="submit"
+                                disabled={!isChecked} // tombol aktif hanya jika checkbox dicentang
+                            >
+                                Simpan{" "}
+                                <i
+                                    className="fa fa-paper-plane ms-1"
+                                    aria-hidden="true"
+                                ></i>
+                            </Button>
+                        </div>
                     </div>
                 </>
             )}
