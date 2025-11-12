@@ -775,12 +775,34 @@ export default function FormPetani() {
                         "imagePreviewFotoProfil"
                     )}
                     {renderFileUpload(
+                        "Foto KK",
+                        "file_kk",
+                        ".png,.jpg,.jpeg",
+                        "",
+                        false,
+                        "imagePreviewKK"
+                    )}
+                    {renderFileUpload(
                         "Foto KTP",
                         "file_ktp",
                         ".png,.jpg,.jpeg",
                         "",
                         false,
                         "imagePreviewKTP"
+                    )}
+                    {renderFileUpload(
+                        "Surat Pernyataan Tidak Mengikuti Pelatihan Lain",
+                        "file_pernyataan_tidak_mengikuti_pelatihan_lain",
+                        ".pdf",
+                        "*Keterangan: -",
+                        false
+                    )}
+                    {renderFileUpload(
+                        "Surat Pernyataan Kesanggupan Mengikuti Pelatihan Secara Penuh",
+                        "file_pernyataan_kesanggupan_ikut_pelatihan",
+                        ".pdf",
+                        "*Keterangan: -",
+                        false
                     )}
                     {renderFileUpload(
                         "SK Pengukuhan Penyuluh Swadaya",
@@ -790,10 +812,24 @@ export default function FormPetani() {
                         false
                     )}
                     {renderFileUpload(
+                        "Surat Legalitas Kelompok",
+                        "file_legalitas_kelompok",
+                        ".pdf",
+                        "*Keterangan: -",
+                        false
+                    )}
+                    {renderFileUpload(
                         "Rekomendasi Kelompok",
                         "file_rekomendasi_kelompok",
                         ".pdf",
                         "*Keterangan: Khusus Untuk Calon Peserta Pengembangan Kapasitas Kelembagaan Petani",
+                        false
+                    )}
+                    {renderFileUpload(
+                        "Surat Legalitas Usaha",
+                        "file_legalitas_usaha",
+                        ".pdf",
+                        "*Keterangan: -",
                         false
                     )}
 

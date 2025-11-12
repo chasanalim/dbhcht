@@ -74,16 +74,26 @@ class RegPelatihanPetaniController extends Controller
             'jenis_pelatihan_petani' => 'required|integer',
             'alasan' => 'required|integer',
             'file_foto' => 'required|file|mimes:jpg,jpeg,png|max:2048',
+            'file_kk' => 'required|file|mimes:jpg,jpeg,png|max:2048',
             'file_ktp' => 'required|file|mimes:jpg,jpeg,png|max:2048',
+            'file_pernyataan_tidak_mengikuti_pelatihan_lain' => 'required|file|mimes:pdf|max:2048',
+            'file_pernyataan_kesanggupan_ikut_pelatihan' => 'required|file|mimes:pdf|max:2048',
             'file_pengukuhan_penyuluh_swadaya' => 'required|file|mimes:pdf|max:2048',
+            'file_legalitas_kelompok' => 'required|file|mimes:pdf|max:2048',
             'file_rekomendasi_kelompok' => 'required|file|mimes:pdf|max:2048',
+            'file_legalitas_usaha' => 'required|file|mimes:pdf|max:2048',
         ]);
 
         // Simpan file upload
         $data['file_foto'] = $request->file('file_foto')->store('petani/foto');
+        $data['file_kk'] = $request->file('file_kk')->store('petani/foto_kk');
         $data['file_ktp'] = $request->file('file_ktp')->store('petani/ktp');
+        $data['file_pernyataan_tidak_mengikuti_pelatihan_lain'] = $request->file('file_pernyataan_tidak_mengikuti_pelatihan_lain')->store('petani/file_pernyataan_tidak_mengikuti_pelatihan_lain');
+        $data['file_pernyataan_kesanggupan_ikut_pelatihan'] = $request->file('file_pernyataan_kesanggupan_ikut_pelatihan')->store('petani/file_pernyataan_kesanggupan_ikut_pelatihan');
         $data['file_pengukuhan_penyuluh_swadaya'] = $request->file('file_pengukuhan_penyuluh_swadaya')->store('petani/file_pengukuhan_penyuluh_swadaya');
+        $data['file_legalitas_kelompok'] = $request->file('file_legalitas_kelompok')->store('petani/file_legalitas_kelompok');
         $data['file_rekomendasi_kelompok'] = $request->file('file_rekomendasi_kelompok')->store('petani/file_rekomendasi_kelompok');
+        $data['file_legalitas_usaha'] = $request->file('file_legalitas_usaha')->store('petani/file_legalitas_usaha');
 
         // Format array ke string json (jika dibutuhkan)
         $data['jenis_disabilitas'] = json_encode($data['jenis_disabilitas'] ?? []);
