@@ -46,11 +46,12 @@ return new class extends Migration {
             $table->string('jangkauan');
 
             // C. Upload Berkas
-            $table->string('file_foto');
             $table->string('file_ktp');
             $table->string('file_kk');
-            $table->string('file_pernyataan');
-            $table->string('file_domisili');
+            $table->string('file_pasfoto');
+            $table->string('file_surat_pernyataan_tidak_ikut')->nullable();
+            $table->string('file_surat_kesanggupan');
+            $table->string('file_nib')->nullable();
 
             // D. Prioritas Pelatihan
             $table->string('prioritas_1');

@@ -66,11 +66,12 @@ class RegPelatihanUmkmController extends Controller
             'kesesuaian' => 'required|integer',
             'pengalaman' => 'required|integer',
             'komitmen' => 'required|boolean|accepted',
-            'file_foto' => 'required|file|mimes:jpg,jpeg,png|max:2048',
             'file_ktp' => 'required|file|mimes:jpg,jpeg,png|max:2048',
-            'file_kk' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'file_pernyataan' => 'required|file|mimes:pdf|max:2048',
-            'file_domisili' => 'required|file|mimes:pdf|max:2048',
+            'file_kk' => 'required|file|mimes:jpg,jpeg,png|max:2048',
+            'file_pasfoto' => 'required|file|mimes:jpg,jpeg,png|max:2048',
+            'file_surat_pernyataan_tidak_ikut' => 'nullable|file|mimes:pdf|max:2048',
+            'file_surat_kesanggupan' => 'required|file|mimes:pdf|max:2048',
+            'file_nib' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ];
     }
 
@@ -98,8 +99,6 @@ class RegPelatihanUmkmController extends Controller
 
                 $storedPendaftaran = PelatihanUmkm::create($data);
 
-                // $this->sendNotifications($data['no_hp']);
-
                 DB::commit();
 
                 return to_route('pelatihan.umkm.success', $storedPendaftaran->id)
@@ -121,24 +120,34 @@ class RegPelatihanUmkmController extends Controller
         }
     }
 
-
     protected function handleFileUploads(Request $request)
     {
         $uploadedFiles = [];
-        $fileFields = ['file_foto', 'file_ktp', 'file_kk', 'file_pernyataan', 'file_domisili'];
+        $fileFields = [
+            'file_ktp' => 'ktp',
+            'file_kk' => 'kk',
+            'file_pasfoto' => 'pasfoto',
+            'file_surat_pernyataan_tidak_ikut' => 'surat-pernyataan-tidak-ikut',
+            'file_surat_kesanggupan' => 'surat-kesanggupan',
+            'file_nib' => 'nib',
+        ];
 
-        foreach ($fileFields as $field) {
+        foreach ($fileFields as $field => $folder) {
             if ($request->hasFile($field)) {
-                $uploadedFiles[$field] = $request->file($field)->store('umkm/' . str_replace('file_', '', $field));
+                $fileName = $request->file($field)->hashName();
+                $uploadedFiles[$field] = '/storage/pendaftaran-pelatihan-umkm/' . $folder . '/' . $fileName;
+                $request->file($field)->storeAs('pendaftaran-pelatihan-umkm/' . $folder, $fileName, 'public');
             }
         }
 
         return $uploadedFiles;
     }
+
     protected function cleanupUploadedFiles(array $files)
     {
         foreach ($files as $path) {
-            Storage::delete($path);
+            $cleanPath = str_replace('/storage/', '', $path);
+            Storage::disk('public')->delete($cleanPath);
         }
     }
 
@@ -178,11 +187,10 @@ class RegPelatihanUmkmController extends Controller
 
     public function cekNIK(Request $request, $nik)
     {
-
-        if (strlen($nik) != 16) {
+        if (strlen($nik) !== 16 || !is_numeric($nik)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Maaf, format NIK harus 16 digit'
+                'message' => 'Maaf, format NIK harus 16 digit angka'
             ], 400);
         }
 

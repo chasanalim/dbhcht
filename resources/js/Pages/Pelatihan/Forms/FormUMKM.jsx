@@ -3,6 +3,7 @@ import Select from "react-select";
 import { useEffect, useState } from "react";
 import { useForm } from "@inertiajs/react";
 import CurrencyInput from "react-currency-input-field";
+import axios from "axios";
 
 import SelectLegalitasStatus from "@/Components/Select/SelectLegalitasStatus";
 import SelectLegalitasJenis from "@/Components/Select/SelectLegalitasJenis";
@@ -60,11 +61,12 @@ export default function FormUMKM() {
         kapasitas_jumlah: "",
         jangkauan: "",
 
-        file_foto: null,
         file_ktp: null,
         file_kk: null,
-        file_pernyataan: null,
-        file_domisili: null,
+        file_pasfoto: null,
+        file_surat_pernyataan_tidak_ikut: null,
+        file_surat_kesanggupan: null,
+        file_nib: null,
 
         prioritas_1: "",
         prioritas_2: "",
@@ -954,40 +956,48 @@ export default function FormUMKM() {
                     </div>
 
                     {renderFileUpload({
-                        label: "Foto Profil",
-                        fieldName: "file_foto",
-                        accept: ".png,.jpg,.jpeg",
-                        imagePreviewKey: "imagePreviewFotoProfil",
-                        index: 1,
-                    })}
-
-                    {renderFileUpload({
                         label: "Foto KTP",
                         fieldName: "file_ktp",
                         accept: ".png,.jpg,.jpeg",
                         imagePreviewKey: "imagePreviewKTP",
+                        index: 1,
+                    })}
+
+                    {renderFileUpload({
+                        label: "Foto Kartu Keluarga (KK)",
+                        fieldName: "file_kk",
+                        accept: ".png,.jpg,.jpeg",
+                        imagePreviewKey: "imagePreviewKK",
                         index: 2,
                     })}
 
                     {renderFileUpload({
-                        label: "Kartu Keluarga (KK)",
-                        fieldName: "file_kk",
-                        accept: ".pdf",
+                        label: "Pas Foto",
+                        fieldName: "file_pasfoto",
+                        accept: ".png,.jpg,.jpeg",
+                        imagePreviewKey: "imagePreviewPasFoto",
                         index: 3,
                     })}
 
                     {renderFileUpload({
-                        label: "Surat Pernyataan Komitmen (PDF)",
-                        fieldName: "file_pernyataan",
+                        label: "Surat Pernyataan Tidak Mengikuti Pelatihan Lain",
+                        fieldName: "file_surat_pernyataan_tidak_ikut",
                         accept: ".pdf",
                         index: 4,
                     })}
 
                     {renderFileUpload({
-                        label: "Surat Keterangan Domisili",
-                        fieldName: "file_domisili",
+                        label: "Surat Pernyataan Kesanggupan Mengikuti Pelatihan Secara Penuh",
+                        fieldName: "file_surat_kesanggupan",
                         accept: ".pdf",
                         index: 5,
+                    })}
+
+                    {renderFileUpload({
+                        label: "NIB",
+                        fieldName: "file_nib",
+                        accept: ".pdf",
+                        index: 6,
                     })}
 
                     <hr />

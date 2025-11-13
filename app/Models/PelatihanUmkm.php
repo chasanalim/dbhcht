@@ -44,11 +44,12 @@ class PelatihanUmkm extends Model
         'kapasitas_satuan',
         'kapasitas_jumlah',
         'jangkauan',
-        'file_foto',
         'file_ktp',
         'file_kk',
-        'file_pernyataan',
-        'file_domisili',
+        'file_pasfoto',
+        'file_surat_pernyataan_tidak_ikut',
+        'file_surat_kesanggupan',
+        'file_nib',
         'prioritas_1',
         'prioritas_2',
         'prioritas_3',
@@ -109,11 +110,12 @@ class PelatihanUmkm extends Model
     public static function getDocumentTypes(): array
     {
         return [
-            'foto' => 'Pas Foto',
             'ktp' => 'KTP',
             'kk' => 'Kartu Keluarga',
-            'pernyataan' => 'Surat Pernyataan',
-            'skd' => 'Surat Keterangan Domisili',
+            'pasfoto' => 'Pas Foto',
+            'surat_pernyataan_tidak_ikut' => 'Surat Pernyataan Tidak Mengikuti Pelatihan Lain',
+            'surat_kesanggupan' => 'Surat Pernyataan Kesanggupan',
+            'nib' => 'NIB',
         ];
     }
 
