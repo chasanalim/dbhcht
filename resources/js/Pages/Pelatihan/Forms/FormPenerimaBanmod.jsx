@@ -58,11 +58,13 @@ export default function FormPenerimaBanmod() {
         skor_mengisi_waktu: "",
         skor_diajak_teman: "",
 
-        // Files
+        // Files - Updated structure (removed file_domisili, added new fields)
         file_ktp: null,
         file_kk: null,
+        file_pasfoto: null,
+        file_surat_pernyataan_tidak_ikut: null,
+        file_surat_kesanggupan: null,
         file_nib: null,
-        file_domisili: null,
 
         komitmen: false,
     });
@@ -823,18 +825,45 @@ export default function FormPenerimaBanmod() {
                     </div>
 
                     {renderFileUpload(
-                        "KTP",
+                        "Foto KTP",
                         "file_ktp",
                         ".png,.jpg,.jpeg",
                         false,
                         "imagePreviewKTP"
                     )}
-                    {renderFileUpload("Kartu Keluarga (KK)", "file_kk", ".pdf")}
-                    {renderFileUpload("NIB", "file_nib", ".pdf")}
+                    
                     {renderFileUpload(
-                        "Surat Keterangan Domisili",
-                        "file_domisili",
+                        "Foto Kartu Keluarga (KK)", 
+                        "file_kk", 
+                        ".png,.jpg,.jpeg",
+                        false,
+                        "imagePreviewKK"
+                    )}
+                    
+                    {renderFileUpload(
+                        "Pas Foto",
+                        "file_pasfoto",
+                        ".png,.jpg,.jpeg",
+                        false,
+                        "imagePreviewPasFoto"
+                    )}
+                    
+                    {renderFileUpload(
+                        "Surat Pernyataan Tidak Mengikuti Pelatihan Lain",
+                        "file_surat_pernyataan_tidak_ikut",
                         ".pdf"
+                    )}
+                    
+                    {renderFileUpload(
+                        "Surat Pernyataan Kesanggupan Mengikuti Pelatihan Secara Penuh",
+                        "file_surat_kesanggupan",
+                        ".pdf"
+                    )}
+                    
+                    {renderFileUpload(
+                        "NIB", 
+                        "file_nib", 
+                        ".pdf,.png,.jpg,.jpeg"
                     )}
 
                     {/* Komitmen Section */}

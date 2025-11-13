@@ -11,11 +11,13 @@ use App\Models\PelatihanKerjas;
 use App\Models\PelatihanPetani;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class PelatihanPenerimaBanmodController extends Controller
 {
     use GeneralTrait;
+
     // Menampilkan form pelatihan banmod
     public function create()
     {
@@ -32,40 +34,42 @@ class PelatihanPenerimaBanmodController extends Controller
         try {
             $validated = $request->validate([
                 'tahun_penerimaan' => 'required',
-                'nik' => 'required',
-                'nama_lengkap' => 'required',
-                'no_kk' => 'required',
-                'no_hp' => 'required',
+                'nik' => 'required|string|size:16',
+                'nama_lengkap' => 'required|string|max:255',
+                'no_kk' => 'required|string|size:16',
+                'no_hp' => 'required|string|min:10|max:15',
 
                 // Alamat KTP
-                'kecamatan_ktp' => 'required',
-                'kelurahan_ktp' => 'required',
-                'rw_ktp' => 'required',
-                'rt_ktp' => 'required',
-                'jalan_ktp' => 'required',
+                'kecamatan_ktp' => 'required|string',
+                'kelurahan_ktp' => 'required|string',
+                'rw_ktp' => 'required|string',
+                'rt_ktp' => 'required|string',
+                'jalan_ktp' => 'required|string',
 
                 // Alamat Usaha
-                'kecamatan_usaha' => 'required',
-                'kelurahan_usaha' => 'required',
-                'rw_usaha' => 'required',
-                'rt_usaha' => 'required',
-                'jalan_usaha' => 'required',
+                'kecamatan_usaha' => 'required|string',
+                'kelurahan_usaha' => 'required|string',
+                'rw_usaha' => 'required|string',
+                'rt_usaha' => 'required|string',
+                'jalan_usaha' => 'required|string',
 
                 // Pelatihan
-                'jenis_pelatihan_industri' => 'required',
-                'perkembangan_omzet' => 'required',
-                'perkembangan_tenaga_kerja' => 'required',
-                'skor_ketrampilan' => 'required',
-                'skor_kualitas_produk' => 'required',
-                'skor_permasalahan_usaha' => 'required',
-                'skor_mengisi_waktu' => 'required',
-                'skor_diajak_teman' => 'required',
+                'jenis_pelatihan_industri' => 'required|string',
+                'perkembangan_omzet' => 'required|integer',
+                'perkembangan_tenaga_kerja' => 'required|integer',
+                'skor_ketrampilan' => 'required|integer',
+                'skor_kualitas_produk' => 'required|integer',
+                'skor_permasalahan_usaha' => 'required|integer',
+                'skor_mengisi_waktu' => 'required|integer',
+                'skor_diajak_teman' => 'required|integer',
 
-                // Files
-                'file_ktp' => 'required|file|mimes:jpg,jpeg,png',
-                'file_kk' => 'required|file|mimes:pdf',
-                'file_nib' => 'required|file|mimes:pdf',
-                'file_domisili' => 'required|file|mimes:pdf',
+                // Files - Updated validation (removed file_domisili, added new fields)
+                'file_ktp' => 'required|file|mimes:jpg,jpeg,png|max:2048',
+                'file_kk' => 'required|file|mimes:jpg,jpeg,png|max:2048',
+                'file_pasfoto' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+                'file_surat_pernyataan_tidak_ikut' => 'nullable|file|mimes:pdf|max:2048',
+                'file_surat_kesanggupan' => 'nullable|file|mimes:pdf|max:2048',
+                'file_nib' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
 
                 'komitmen' => 'required|accepted'
             ]);
@@ -74,64 +78,18 @@ class PelatihanPenerimaBanmodController extends Controller
 
             try {
                 // Handle file uploads
-                if ($request->hasFile('file_ktp')) {
-                    $file_ktp = $request->file('file_ktp')->store('pelatihan-banmod/ktp');
-                }
-                if ($request->hasFile('file_kk')) {
-                    $file_kk = $request->file('file_kk')->store('pelatihan-banmod/kk');
-                }
-                if ($request->hasFile('file_nib')) {
-                    $file_nib = $request->file('file_nib')->store('pelatihan-banmod/nib');
-                }
-                if ($request->hasFile('file_domisili')) {
-                    $file_domisili = $request->file('file_domisili')->store('pelatihan-banmod/domisili');
-                }
+                $uploadedFiles = $this->handleFileUploads($request);
 
                 // Create record
-                $pelatihan = PelatihanBanmod::create([
-                    'tahun_penerimaan' => $validated['tahun_penerimaan'],
-                    'nik' => $validated['nik'],
-                    'nama_lengkap' => $validated['nama_lengkap'],
-                    'no_kk' => $validated['no_kk'],
-                    'no_hp' => $validated['no_hp'],
-
-                    // Alamat KTP
-                    'kecamatan_ktp' => $validated['kecamatan_ktp'],
-                    'kelurahan_ktp' => $validated['kelurahan_ktp'],
-                    'rw_ktp' => $validated['rw_ktp'],
-                    'rt_ktp' => $validated['rt_ktp'],
-                    'jalan_ktp' => $validated['jalan_ktp'],
-
-                    // Alamat Usaha
-                    'kecamatan_usaha' => $validated['kecamatan_usaha'],
-                    'kelurahan_usaha' => $validated['kelurahan_usaha'],
-                    'rw_usaha' => $validated['rw_usaha'],
-                    'rt_usaha' => $validated['rt_usaha'],
-                    'jalan_usaha' => $validated['jalan_usaha'],
-
-                    // Pelatihan
-                    'jenis_pelatihan_industri' => $validated['jenis_pelatihan_industri'],
-                    'perkembangan_omzet' => $validated['perkembangan_omzet'],
-                    'perkembangan_tenaga_kerja' => $validated['perkembangan_tenaga_kerja'],
-                    'skor_ketrampilan' => $validated['skor_ketrampilan'],
-                    'skor_kualitas_produk' => $validated['skor_kualitas_produk'],
-                    'skor_permasalahan_usaha' => $validated['skor_permasalahan_usaha'],
-                    'skor_mengisi_waktu' => $validated['skor_mengisi_waktu'],
-                    'skor_diajak_teman' => $validated['skor_diajak_teman'],
-
-                    // Files
-                    'file_ktp' => $file_ktp ?? null,
-                    'file_kk' => $file_kk ?? null,
-                    'file_nib' => $file_nib ?? null,
-                    'file_domisili' => $file_domisili ?? null,
+                $pelatihan = PelatihanBanmod::create(array_merge($validated, $uploadedFiles, [
                     'status' => 0, // Menunggu
-
-                ]);
+                ]));
 
                 // Send WhatsApp notification
                 $message = "Terima kasih telah mendaftar Program Pelatihan Penerima Banmod Kota Kediri. "
                     . "Data Anda telah kami terima dan akan diproses lebih lanjut. "
-                    . "Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan.";
+                    . "Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan. "
+                    . "Jika ada pertanyaan, silakan hubungi kami melalui: " . env('APP_WA_BANMOD');
 
                 $this->sendWhatsappMessage($message, $validated['no_hp']);
 
@@ -141,6 +99,10 @@ class PelatihanPenerimaBanmodController extends Controller
                     ->with('success', 'Pendaftaran berhasil disimpan!');
             } catch (\Exception $e) {
                 DB::rollBack();
+                // Cleanup uploaded files
+                if (isset($uploadedFiles)) {
+                    $this->cleanupUploadedFiles($uploadedFiles);
+                }
                 throw $e;
             }
         } catch (ValidationException $e) {
@@ -150,6 +112,37 @@ class PelatihanPenerimaBanmodController extends Controller
             return back()
                 ->withInput()
                 ->withErrors(['error' => 'Terjadi kesalahan sistem: ' . $e->getMessage()]);
+        }
+    }
+
+    protected function handleFileUploads(Request $request)
+    {
+        $uploadedFiles = [];
+        $fileFields = [
+            'file_ktp' => 'ktp',
+            'file_kk' => 'kk',
+            'file_pasfoto' => 'pasfoto',
+            'file_surat_pernyataan_tidak_ikut' => 'surat-pernyataan-tidak-ikut',
+            'file_surat_kesanggupan' => 'surat-kesanggupan',
+            'file_nib' => 'nib',
+        ];
+
+        foreach ($fileFields as $field => $folder) {
+            if ($request->hasFile($field)) {
+                $fileName = $request->file($field)->hashName();
+                $uploadedFiles[$field] = '/storage/pelatihan-banmod/' . $folder . '/' . $fileName;
+                $request->file($field)->storeAs('pelatihan-banmod/' . $folder, $fileName, 'public');
+            }
+        }
+
+        return $uploadedFiles;
+    }
+
+    protected function cleanupUploadedFiles(array $files)
+    {
+        foreach ($files as $path) {
+            $cleanPath = str_replace('/storage/', '', $path);
+            Storage::disk('public')->delete($cleanPath);
         }
     }
 
@@ -174,11 +167,10 @@ class PelatihanPenerimaBanmodController extends Controller
     // Fungsi untuk mengecek NIK apakah terdaftar sebagai penerima bantuan modal
     public function cekNIK(Request $request, $nik)
     {
-
-        if (strlen($nik) != 16) {
+        if (strlen($nik) !== 16 || !is_numeric($nik)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Maaf, format NIK harus 16 digit'
+                'message' => 'Maaf, format NIK harus 16 digit angka'
             ], 400);
         }
 
@@ -225,7 +217,6 @@ class PelatihanPenerimaBanmodController extends Controller
             }
         }
 
-
         // Cek apakah terdaftar sebagai penerima banmod
         $data = PenerimaBanmod::where('nik', $nik)->first();
 
@@ -234,7 +225,7 @@ class PelatihanPenerimaBanmodController extends Controller
                 'success' => true,
                 'blacklisted' => false,
                 'data' => $data,
-                'message' => 'MOhon Maaf, NIK ditemukan sebagai penerima bantuan modal usaha.'
+                'message' => 'NIK ditemukan sebagai penerima bantuan modal usaha.'
             ]);
         }
 

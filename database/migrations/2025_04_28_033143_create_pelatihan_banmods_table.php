@@ -42,11 +42,13 @@ return new class extends Migration
             $table->unsignedBigInteger('skor_mengisi_waktu')->nullable();
             $table->unsignedBigInteger('skor_diajak_teman')->nullable();
 
-            // Upload File
+            // Upload File - Updated structure (removed file_domisili, added new fields)
             $table->string('file_ktp');
             $table->string('file_kk');
+            $table->string('file_pasfoto')->nullable();
+            $table->string('file_surat_pernyataan_tidak_ikut')->nullable();
+            $table->string('file_surat_kesanggupan')->nullable();
             $table->string('file_nib');
-            $table->string('file_domisili');
 
             // Komitmen
             $table->boolean('komitmen')->default(0);

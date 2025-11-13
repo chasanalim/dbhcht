@@ -8,8 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PelatihanBanmod extends Model
 {
-    use HasFactory,
-        HasVerifikasiDokumen;
+    use HasFactory, HasVerifikasiDokumen;
 
     protected $table = 'pelatihan_banmod';
 
@@ -42,10 +41,13 @@ class PelatihanBanmod extends Model
         'skor_mengisi_waktu',
         'skor_diajak_teman',
 
+        // Updated file fields
         'file_ktp',
         'file_kk',
+        'file_pasfoto',
+        'file_surat_pernyataan_tidak_ikut',
+        'file_surat_kesanggupan',
         'file_nib',
-        'file_domisili',
 
         'komitmen',
         'status',
@@ -63,18 +65,20 @@ class PelatihanBanmod extends Model
         $skor += $this->skor_permasalahan_usaha ?? 0;
         $skor += $this->skor_mengisi_waktu ?? 0;
         $skor += $this->skor_diajak_teman ?? 0;
-        if ($this->perkembangan_omzet == 'Meningkat') {
+
+        if ($this->perkembangan_omzet == 'meningkat') {
             $skor += 3;
-        } else if ($this->perkembangan_omzet == 'Tetap') {
+        } else if ($this->perkembangan_omzet == 'tetap') {
             $skor += 2;
-        } else if ($this->perkembangan_omzet == 'Menurun') {
+        } else if ($this->perkembangan_omzet == 'turun') {
             $skor += 1;
         }
-        if ($this->perkembangan_tenaga_kerja == 'Meningkat') {
+
+        if ($this->perkembangan_tenaga_kerja == 'bertambah') {
             $skor += 3;
-        } else if ($this->perkembangan_tenaga_kerja == 'Tetap') {
+        } else if ($this->perkembangan_tenaga_kerja == 'tetap') {
             $skor += 2;
-        } else if ($this->perkembangan_tenaga_kerja == 'Menurun') {
+        } else if ($this->perkembangan_tenaga_kerja == 'berkurang') {
             $skor += 1;
         }
 
@@ -83,7 +87,6 @@ class PelatihanBanmod extends Model
         }
         return $skor / 21 * 100;
     }
-
 
     public function getVerificationType(): string
     {
@@ -95,9 +98,10 @@ class PelatihanBanmod extends Model
         return [
             'ktp' => 'KTP',
             'kk' => 'Kartu Keluarga',
+            'pasfoto' => 'Pas Foto',
+            'surat_pernyataan_tidak_ikut' => 'Surat Pernyataan Tidak Mengikuti Pelatihan Lain',
+            'surat_kesanggupan' => 'Surat Pernyataan Kesanggupan',
             'nib' => 'NIB',
-            'domisili' => 'Surat Keterangan Domisili',
-            'skd' => 'Surat Keterangan Domisili',
         ];
     }
 
