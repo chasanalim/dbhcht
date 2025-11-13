@@ -30,7 +30,10 @@ return new class extends Migration
             $table->string('nama_rt');
             $table->string('file_ktp');
             $table->string('file_kk');
-            $table->string('file_domisili');
+            $table->string('file_pasfoto')->nullable();
+            $table->string('file_surat_pernyataan_tidak_ikut')->nullable();
+            $table->string('file_surat_kesanggupan')->nullable();
+            $table->string('file_fotokopi_ijazah')->nullable();
             $table->string('phone_number');
             $table->string('alasan');
             $table->string('pendidikan');
@@ -39,7 +42,6 @@ return new class extends Migration
             $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.

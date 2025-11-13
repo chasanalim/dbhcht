@@ -42,7 +42,10 @@ export default function FormKeterampilan() {
         jenis_pelatihan: "",
         file_ktp: [],
         file_kk: [],
-        file_domisili: [],
+        file_pasfoto: [],
+        file_surat_pernyataan_tidak_ikut: [],
+        file_surat_kesanggupan: [],
+        file_fotokopi_ijazah: [],
     });
     let fileIndex = 1;
 
@@ -641,14 +644,34 @@ export default function FormKeterampilan() {
                         "imagePreviewKTP"
                     )}
                     {renderFileUpload(
-                        "Kartu Keluarga (KK)",
+                        "Foto Kartu Keluarga (KK)",
                         "file_kk",
-                        ".pdf",
-                        false // Set multiple to false
+                        ".png,.jpg,.jpeg",
+                        false,
+                        "imagePreviewKK"
                     )}
                     {renderFileUpload(
-                        "Surat Keterangan Domisili",
-                        "file_domisili",
+                        "Pas Foto",
+                        "file_pasfoto",
+                        ".png,.jpg,.jpeg",
+                        false,
+                        "imagePreviewPasFoto"
+                    )}
+                    {renderFileUpload(
+                        "Surat Pernyataan Tidak Mengikuti Pelatihan Lain",
+                        "file_surat_pernyataan_tidak_ikut",
+                        ".pdf",
+                        false
+                    )}
+                    {renderFileUpload(
+                        "Surat Pernyataan Kesanggupan Mengikuti Pelatihan Secara Penuh",
+                        "file_surat_kesanggupan",
+                        ".pdf",
+                        false
+                    )}
+                    {renderFileUpload(
+                        "Fotokopi Ijazah",
+                        "file_fotokopi_ijazah",
                         ".pdf",
                         false
                     )}

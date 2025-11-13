@@ -42,7 +42,10 @@ class RegPelatihanKeterampilanKerjaController extends Controller
             "jenis_pelatihan" => ['required', 'string'],
             "file_ktp" => ['required', 'image'],
             "file_kk" => ['required', 'file'],
-            "file_domisili" => ['required', 'file'],
+            "file_pasfoto" => ['nullable', 'image'],
+            "file_surat_pernyataan_tidak_ikut" => ['nullable', 'file'],
+            "file_surat_kesanggupan" => ['nullable', 'file'],
+            "file_fotokopi_ijazah" => ['nullable', 'file'],
         ]);
         if ($request->hasFile('file_ktp')) {
             $validated['file_ktp'] = '/storage/pendaftaran-pelatihan-kerja/ktp/' . $request->file('file_ktp')->hashName();
@@ -54,9 +57,24 @@ class RegPelatihanKeterampilanKerjaController extends Controller
             $request->file('file_kk')->storeAs('/pendaftaran-pelatihan-kerja/kk', $request->file('file_kk')->hashName(), 'public');
         }
 
-        if ($request->hasFile('file_domisili')) {
-            $validated['file_domisili'] = '/storage/pendaftaran-pelatihan-kerja/domisili/' . $request->file('file_domisili')->hashName();
-            $request->file('file_domisili')->storeAs('/pendaftaran-pelatihan-kerja/domisili', $request->file('file_domisili')->hashName(), 'public');
+        if ($request->hasFile('file_pasfoto')) {
+            $validated['file_pasfoto'] = '/storage/pendaftaran-pelatihan-kerja/pasfoto/' . $request->file('file_pasfoto')->hashName();
+            $request->file('file_pasfoto')->storeAs('/pendaftaran-pelatihan-kerja/pasfoto', $request->file('file_pasfoto')->hashName(), 'public');
+        }
+
+        if ($request->hasFile('file_surat_pernyataan_tidak_ikut')) {
+            $validated['file_surat_pernyataan_tidak_ikut'] = '/storage/pendaftaran-pelatihan-kerja/surat_pernyataan_tidak_ikut/' . $request->file('file_surat_pernyataan_tidak_ikut')->hashName();
+            $request->file('file_surat_pernyataan_tidak_ikut')->storeAs('/pendaftaran-pelatihan-kerja/surat_pernyataan_tidak_ikut', $request->file('file_surat_pernyataan_tidak_ikut')->hashName(), 'public');
+        }
+
+        if ($request->hasFile('file_surat_kesanggupan')) {
+            $validated['file_surat_kesanggupan'] = '/storage/pendaftaran-pelatihan-kerja/surat_kesanggupan/' . $request->file('file_surat_kesanggupan')->hashName();
+            $request->file('file_surat_kesanggupan')->storeAs('/pendaftaran-pelatihan-kerja/surat_kesanggupan', $request->file('file_surat_kesanggupan')->hashName(), 'public');
+        }
+
+        if ($request->hasFile('file_fotokopi_ijazah')) {
+            $validated['file_fotokopi_ijazah'] = '/storage/pendaftaran-pelatihan-kerja/fotokopi_ijazah/' . $request->file('file_fotokopi_ijazah')->hashName();
+            $request->file('file_fotokopi_ijazah')->storeAs('/pendaftaran-pelatihan-kerja/fotokopi_ijazah', $request->file('file_fotokopi_ijazah')->hashName(), 'public');
         }
         $validated['status'] = 0; // Default status is 'Menunggu'
 
@@ -91,7 +109,6 @@ class RegPelatihanKeterampilanKerjaController extends Controller
                 'message' => 'Maaf, format NIK harus 16 digit'
             ], 400);
         }
-
 
         // Cek blacklist dari semua jenis pelatihan
         $blacklistModels = [

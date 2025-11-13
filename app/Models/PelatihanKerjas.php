@@ -26,7 +26,10 @@ class PelatihanKerjas extends Model
         "nama_rt",
         "file_ktp",
         "file_kk",
-        "file_domisili",
+        "file_pasfoto",
+        "file_surat_pernyataan_tidak_ikut",
+        "file_surat_kesanggupan",
+        "file_fotokopi_ijazah",
         "phone_number",
         "alasan",
         "pendidikan",
@@ -57,7 +60,10 @@ class PelatihanKerjas extends Model
         return [
             'ktp' => 'KTP',
             'kk' => 'Kartu Keluarga',
-            'skd' => 'Surat Keterangan Domisili',
+            'pasfoto' => 'Pas Foto',
+            'surat_pernyataan_tidak_ikut' => 'Surat Pernyataan Tidak Mengikuti Pelatihan Lain',
+            'surat_kesanggupan' => 'Surat Kesanggupan Mengikuti Pelatihan',
+            'fotokopi_ijazah' => 'Fotokopi Ijazah',
         ];
     }
 
