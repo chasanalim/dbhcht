@@ -53,7 +53,6 @@ return new class extends Migration
             $table->string('file_pengukuhan_penyuluh_swadaya');
             $table->string('file_legalitas_kelompok');
             $table->string('file_rekomendasi_kelompok');
-            $table->string('file_legalitas_usaha');
 
             // D. Kelompok Pelatihan Petani
             $table->string('kategori');

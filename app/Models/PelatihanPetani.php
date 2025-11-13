@@ -47,8 +47,6 @@ class PelatihanPetani extends Model
         'file_pengukuhan_penyuluh_swadaya',
         'file_legalitas_kelompok',
         'file_rekomendasi_kelompok',
-        'file_legalitas_usaha',
-        'file_domisili',
         'kategori',
         'jenis_pelatihan_petani',
         'alasan',

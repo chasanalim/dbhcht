@@ -825,13 +825,6 @@ export default function FormPetani() {
                         "*Keterangan: Khusus Untuk Calon Peserta Pengembangan Kapasitas Kelembagaan Petani",
                         false
                     )}
-                    {renderFileUpload(
-                        "Surat Legalitas Usaha",
-                        "file_legalitas_usaha",
-                        ".pdf",
-                        "*Keterangan: -",
-                        false
-                    )}
 
                     <div className="big-text text-muted mb-4">
                         Jenis Pelatihan

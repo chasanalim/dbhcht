@@ -81,7 +81,6 @@ class RegPelatihanPetaniController extends Controller
             'file_pengukuhan_penyuluh_swadaya' => 'required|file|mimes:pdf|max:2048',
             'file_legalitas_kelompok' => 'required|file|mimes:pdf|max:2048',
             'file_rekomendasi_kelompok' => 'required|file|mimes:pdf|max:2048',
-            'file_legalitas_usaha' => 'required|file|mimes:pdf|max:2048',
         ]);
 
         // Simpan file upload
@@ -93,7 +92,6 @@ class RegPelatihanPetaniController extends Controller
         $data['file_pengukuhan_penyuluh_swadaya'] = $request->file('file_pengukuhan_penyuluh_swadaya')->store('petani/file_pengukuhan_penyuluh_swadaya');
         $data['file_legalitas_kelompok'] = $request->file('file_legalitas_kelompok')->store('petani/file_legalitas_kelompok');
         $data['file_rekomendasi_kelompok'] = $request->file('file_rekomendasi_kelompok')->store('petani/file_rekomendasi_kelompok');
-        $data['file_legalitas_usaha'] = $request->file('file_legalitas_usaha')->store('petani/file_legalitas_usaha');
 
         // Format array ke string json (jika dibutuhkan)
         $data['jenis_disabilitas'] = json_encode($data['jenis_disabilitas'] ?? []);
