@@ -23,6 +23,8 @@ export default function FormPetani() {
     const [errorMessage, setErrorMessage] = useState("");
     const [tampilKonfirmasi, setTampilKonfirmasi] = useState(false);
     const [editMode, setEditMode] = useState(false);
+    const [nikLength, setNikLength] = useState(0);
+    const [kkLength, setKkLength] = useState(0);
     const { data, setData, errors, post, processing, reset } = useForm({
         nik: "",
         kk: "",
@@ -317,17 +319,28 @@ export default function FormPetani() {
                         placeholder="Nomor KTP"
                         value={data.nik}
                         onChange={(e) => {
-                            setData("nik", e.target.value);
-                            setNikStatus("");
-                            setErrorMessage("");
-                            setDataPenerima(null);
-                            setTampilKonfirmasi(false);
+                            const value = e.target.value.replace(/\D/g, ""); // Hanya terima angka
+                            if (value.length <= 16) {
+                                // Batasi maksimal 16 digit
+                                setData("nik", value);
+                                setNikLength(value.length);
+                                setNikStatus("");
+                                setErrorMessage("");
+                                setDataPenerima(null);
+                            }
                         }}
+                        className={`${
+                            nikLength === 16
+                                ? "border-success text-success"
+                                : "border-warning"
+                        }`}
+                        maxLength={16}
                     />
                     <Button
                         className="z-0"
                         variant="outline-primary"
-                        onClick={cekNik} // Changed from ceknik to cekNik
+                        onClick={cekNik}
+                        disabled={nikLength !== 16}
                     >
                         Cek NIK
                     </Button>
@@ -335,6 +348,17 @@ export default function FormPetani() {
                         {errors.nik}
                     </Form.Control.Feedback>
                 </InputGroup>
+                <small
+                    className={`d-block mt-1 ${
+                        nikLength === 16
+                            ? "text-success"
+                            : nikLength > 0
+                            ? "text-warning"
+                            : "text-muted"
+                    }`}
+                >
+                    {nikLength}/16 digit
+                </small>
             </Form.Group>
 
             {errorMessage && <div className="text-danger">{errorMessage}</div>}

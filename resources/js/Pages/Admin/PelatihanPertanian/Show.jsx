@@ -13,15 +13,21 @@ export default function Show({ title, data, type = "PELATIHAN_PERTANIAN" }) {
         PELATIHAN_PERTANIAN: [
             { key: "foto", label: "Pas Foto" },
             { key: "ktp", label: "KTP" },
+            { key: "kk", label: "Kartu Keluarga" },
+            { key: "pernyataan", label: "Surat Pernyataan Tidak Mengikuti Pelatihan Lain" },
+            { key: "kesanggupan", label: "Surat Kesanggupan Mengikuti Pelatihan" },
             {
                 key: "pengukuhan_penyuluh_swadaya",
                 label: "SK Pengukuhan Penyuluh Swadaya",
             },
             {
+                key: "legalitas_kelompok",
+                label: "Surat Legalitas Kelompok",
+            },
+            {
                 key: "rekomendasi_kelompok",
                 label: "Surat Rekomendasi Kelompok",
             },
-            { key: "skd", label: "Surat Keterangan Domisili" },
         ],
     };
 

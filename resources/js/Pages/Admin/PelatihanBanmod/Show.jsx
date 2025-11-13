@@ -11,10 +11,12 @@ export default function Show({ title, data, type = "PELATIHAN_BANMOD" }) {
 
     const DOCUMENT_TYPES = {
         PELATIHAN_BANMOD: [
+            { key: "pasfoto", label: "Pas Foto" },
             { key: "ktp", label: "KTP" },
             { key: "kk", label: "Kartu Keluarga" },
+            { key: "surat_pernyataan_tidak_ikut", label: "Surat Pernyataan Tidak Mengikuti Pelatihan Lain" },
+            { key: "surat_kesanggupan", label: "Surat Kesanggupan Mengikuti Pelatihan" },
             { key: "nib", label: "NIB" },
-            { key: "skd", label: "Surat Keterangan Domisili" },
         ],
     };
 
