@@ -156,7 +156,8 @@ export default function FormPetani() {
         accept = ".pdf",
         description = "",
         multiple = false,
-        imagePreviewKey = null
+        imagePreviewKey = null,
+        downloadLink = null
     ) => {
         const indexLabel = `${fileIndex++}.`;
 
@@ -194,6 +195,20 @@ export default function FormPetani() {
                         style={{ fontSize: "12px" }}
                     >
                         {description}
+                    </div>
+                )}
+
+                {/* ✅ Tambahan: Link untuk unduh dokumen */}
+                {downloadLink && (
+                    <div className="mt-2">
+                        <a
+                            href={downloadLink}
+                            download
+                            className="text-decoration-none text-danger fw-semibold"
+                            style={{ fontSize: "12px" }}
+                        >
+                            📥 Unduh Template Dokumen (PDF)
+                        </a>
                     </div>
                 )}
 
@@ -795,14 +810,18 @@ export default function FormPetani() {
                         "file_pernyataan_tidak_mengikuti_pelatihan_lain",
                         ".pdf",
                         "*Keterangan: -",
-                        false
+                        false,
+                        null,
+                        "/templates/surat_pernyataan_tidak_mengikuti_pelatihan_lain.pdf"
                     )}
                     {renderFileUpload(
                         "Surat Pernyataan Kesanggupan Mengikuti Pelatihan Secara Penuh",
                         "file_pernyataan_kesanggupan_ikut_pelatihan",
                         ".pdf",
                         "*Keterangan: -",
-                        false
+                        false,
+                        null,
+                        "/templates/surat_pernyataan_kesanggupan_ikut_pelatihan.pdf"
                     )}
                     {renderFileUpload(
                         "SK Pengukuhan Penyuluh Swadaya",
@@ -823,7 +842,9 @@ export default function FormPetani() {
                         "file_rekomendasi_kelompok",
                         ".pdf",
                         "*Keterangan: Khusus Untuk Calon Peserta Pengembangan Kapasitas Kelembagaan Petani",
-                        false
+                        false,
+                        null,
+                        "/templates/surat_rekomendasi_kelompok.pdf"
                     )}
 
                     <div className="big-text text-muted mb-4">
