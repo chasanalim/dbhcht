@@ -83,34 +83,67 @@ export default function Index({
     return (
         <Layout>
             <Head title={meta.title} />
-            {/* <style>
+            <style>
                 {`
-@media (max-width: 768px) {
-  .hero-main {
-    flex-direction: column !important;
-    padding: 28px 10px !important;
-    gap: 24px !important;
-    border-radius: 1.1rem !important;
-  }
-  .hero-left {
-    min-width: 0 !important;
-    width: 100% !important;
-  }
-  .hero-title {
-    font-size: 2rem !important;
-  }
-  .hero-btns {
-    flex-direction: column !important;
-    gap: 0.8rem !important;
-  }
-  .hero-img {
-    max-height: 180px !important;
-    border-radius: 1rem !important;
-    margin-top: 12px !important;
-  }
-}
-`}
-            </style> */}
+                    @media (max-width: 768px) {
+                        .hero-main {
+                            flex-direction: column !important;
+                            padding: 40px 20px !important;
+                            gap: 24px !important;
+                        }
+                        
+                        .hero-left {
+                            min-width: 0 !important;
+                            width: 100% !important;
+                        }
+                        
+                        .hero-title {
+                            font-size: 1.8rem !important;
+                            line-height: 1.3 !important;
+                        }
+                        
+                        .hero-btns {
+                            flex-direction: column !important;
+                            gap: 10px !important;
+                            width: 100% !important;
+                        }
+                        
+                        .hero-btns .btn {
+                            width: 100% !important;
+                            padding: 0.85rem 1rem !important;
+                            font-size: 1rem !important;
+                        }
+                        
+                        .hero-img {
+                            max-height: 200px !important;
+                            width: 100% !important;
+                        }
+                    }
+                    
+                    @media (max-width: 576px) {
+                        .hero-main {
+                            padding: 30px 15px !important;
+                        }
+                        
+                        .hero-title {
+                            font-size: 1.5rem !important;
+                        }
+                        
+                        .hero-btns .btn {
+                            font-size: 0.95rem !important;
+                            padding: 0.75rem 0.8rem !important;
+                        }
+                        
+                        .hero-btns .btn i {
+                            font-size: 0.9rem !important;
+                        }
+                    }
+                    
+                    .hover-scale:hover {
+                        transform: translateY(-5px);
+                    }
+                `}
+            </style>
             <div
                 style={{
                     minHeight: "92vh",
@@ -289,9 +322,7 @@ export default function Index({
                 </div>
             </div>
 
-
-
-            {/* Tambahkan Carousel di bawah hero */}
+            {/* Carousel Section */}
             <TrainingCarousel trainings={trainings} />
 
             {/* Counter Stats Section */}
@@ -300,7 +331,6 @@ export default function Index({
                     background: "#fff",
                     padding: "40px 0",
                     marginBottom: "60px",
-                    // borderBottom: "1px solid #eee",
                 }}
             >
                 <Container>
