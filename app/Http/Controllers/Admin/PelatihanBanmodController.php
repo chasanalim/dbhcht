@@ -28,9 +28,10 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
         return [
             'ktp' => 'KTP',
             'kk' => 'Kartu Keluarga',
+            'pasfoto' => 'Pas Foto',
+            'surat_pernyataan_tidak_ikut' => 'Surat Pernyataan Tidak Mengikuti Pelatihan Lain',
+            'surat_kesanggupan' => 'Surat Pernyataan Kesanggupan',
             'nib' => 'NIB',
-            'skd' => 'Surat Keterangan Domisili',
-
         ];
     }
     /**
@@ -63,7 +64,7 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
                 $status = $request->verification_status;
                 $data = $data->filter(function ($item) use ($status) {
                     $verifications = $item->documentVerifications;
-                    $requiredDocs = ['ktp', 'kk', 'nib', 'skd'];
+                    $requiredDocs = ['ktp', 'kk', 'pasfoto', 'surat_pernyataan_tidak_ikut', 'surat_kesanggupan','nib'];
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
                         return $verification->status === 1;
@@ -92,7 +93,7 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
-                    $requiredDocs = ['ktp', 'kk', 'nib', 'skd'];
+                    $requiredDocs = ['ktp', 'kk', 'pasfoto', 'surat_pernyataan_tidak_ikut', 'surat_kesanggupan','nib'];
                     $verifications = $row->documentVerifications;
 
                     $allVerified = count($verifications) === count($requiredDocs);
@@ -235,14 +236,23 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
                         'url' => asset('storage/' . $data->file_kk),
                         'verification' => $verifiedDocuments['kk'] ?? null
                     ],
+                    'pasfoto' => [
+                        'url' => asset('storage/' . $data->file_pasfoto),
+                        'verification' => $verifiedDocuments['pasfoto'] ?? null
+                    ],
+                    'surat_pernyataan_tidak_ikut' => [
+                        'url' => asset('storage/' . $data->file_surat_pernyataan_tidak_ikut),
+                        'verification' => $verifiedDocuments['surat_pernyataan_tidak_ikut'] ?? null
+                    ],
+                    'surat_kesanggupan' => [
+                        'url' => asset('storage/' . $data->file_surat_kesanggupan),
+                        'verification' => $verifiedDocuments['surat_kesanggupan'] ?? null
+                    ],
                     'nib' => [
                         'url' => asset('storage/' . $data->file_nib),
                         'verification' => $verifiedDocuments['nib'] ?? null
                     ],
-                    'skd' => [
-                        'url' => asset('storage/' . $data->file_domisili),
-                        'verification' => $verifiedDocuments['skd'] ?? null
-                    ],
+
                 ],
                 'documentTypes' => PelatihanBanmod::getDocumentTypes(),
 
@@ -272,7 +282,7 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
 
         // Validate if document is verified
         $verifications = $data->documentVerifications;
-        $requiredDocs = ['ktp', 'kk', 'nib', 'skd'];
+        $requiredDocs = ['ktp', 'kk', 'pasfoto', 'surat_pernyataan_tidak_ikut', 'surat_kesanggupan','nib'];
         $allVerified = count($verifications) === count($requiredDocs);
         $allApproved = $verifications->every(fn($v) => $v->status === 1);
 

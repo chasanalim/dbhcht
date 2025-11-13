@@ -47,7 +47,7 @@ export default function LayoutNavigation() {
                     className="fw-bolder d-flex align-items-center gap-2"
                     style={{
                         color: "#fff",
-                        fontSize: "1.5rem",                                                              
+                        fontSize: "1.5rem",
                         letterSpacing: "-1px",
                     }}
                 >
@@ -77,7 +77,7 @@ export default function LayoutNavigation() {
                                         as={Link}
                                         href={route(item.route)}
                                         className={classNames(
-                                            "me-4 fw-semibold rounded-pill px-4 py-2",
+                                            "fw-semibold rounded-pill px-4 py-2",
                                             { active: isActive }
                                         )}
                                         style={{

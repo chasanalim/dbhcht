@@ -69,6 +69,12 @@ class HandleInertiaRequests extends Middleware
                 'icon' => 'bi bi-person-arms-up',
                 'show' => true,
             ],
+            [
+                'label' => 'Cek Status',
+                'route' => 'cek-status',
+                'icon' => 'bi bi-person-arms-up',
+                'show' => true,
+            ],
         ];
     }
 

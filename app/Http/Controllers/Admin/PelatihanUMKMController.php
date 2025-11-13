@@ -27,11 +27,12 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
     public static function getDocumentTypes(): array
     {
         return [
-            'foto' => 'Pas Foto',
             'ktp' => 'KTP',
             'kk' => 'Kartu Keluarga',
-            'pernyataan' => 'Surat Pernyataan',
-            'skd' => 'Surat Keterangan Domisili',
+            'pasfoto' => 'Pas Foto',
+            'surat_pernyataan_tidak_ikut' => 'Surat Pernyataan Tidak Mengikuti Pelatihan Lain',
+            'surat_kesanggupan' => 'Surat Pernyataan Kesanggupan',
+            'nib' => 'NIB',
         ];
     }
 
@@ -77,7 +78,7 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
                 $status = $request->verification_status;
                 $data = $data->filter(function ($item) use ($status) {
                     $verifications = $item->documentVerifications;
-                    $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan', 'skd'];
+                    $requiredDocs =  ['pasfoto', 'ktp', 'kk', 'surat_pernyataan_tidak_ikut', 'surat_kesanggupan', 'nib'];
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
                         return $verification->status === 1;
@@ -107,7 +108,7 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
-                    $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan', 'skd'];
+                    $requiredDocs = ['pasfoto', 'ktp', 'kk', 'surat_pernyataan_tidak_ikut', 'surat_kesanggupan', 'nib'];
                     $verifications = $row->documentVerifications;
 
                     $allVerified = count($verifications) === count($requiredDocs);
@@ -242,9 +243,9 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
 
                 // Files
                 'files' => [
-                    'foto' => [
-                        'url' => asset('storage/' . $data->file_foto),
-                        'verification' => $verifiedDocuments['foto'] ?? null
+                    'pasfoto' => [
+                        'url' => asset('storage/' . $data->file_pasfoto),
+                        'verification' => $verifiedDocuments['pasfoto'] ?? null
                     ],
                     'ktp' => [
                         'url' => asset('storage/' . $data->file_ktp),
@@ -254,13 +255,17 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
                         'url' => asset('storage/' . $data->file_kk),
                         'verification' => $verifiedDocuments['kk'] ?? null
                     ],
-                    'pernyataan' => [
-                        'url' => asset('storage/' . $data->file_pernyataan),
-                        'verification' => $verifiedDocuments['pernyataan'] ?? null
+                    'surat_pernyataan_tidak_ikut' => [
+                        'url' => asset('storage/' . $data->file_surat_pernyataan_tidak_ikut_pelatihan),
+                        'verification' => $verifiedDocuments['surat_pernyataan_tidak_ikut'] ?? null
                     ],
-                    'skd' => [
-                        'url' => asset('storage/' . $data->file_domisili),
-                        'verification' => $verifiedDocuments['skd'] ?? null
+                    'surat_kesanggupan' => [
+                        'url' => asset('storage/' . $data->file_surat_kesanggupan),
+                        'verification' => $verifiedDocuments['surat_kesanggupan'] ?? null
+                    ],
+                    'nib' => [
+                        'url' => asset('storage/' . $data->file_nib),
+                        'verification' => $verifiedDocuments['nib'] ?? null
                     ],
                 ],
                 'documentTypes' => PelatihanUmkm::getDocumentTypes()

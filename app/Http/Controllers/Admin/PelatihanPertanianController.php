@@ -28,9 +28,12 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
         return [
             'foto' => 'Pas Foto',
             'ktp' => 'KTP',
+            'kk' => 'Kartu Keluarga',
+            'pernyataan' => 'Surat Pernyataan Tidak Mengikuti Pelatihan Lain',
+            'kesanggupan' => 'Surat Pernyataan Kesanggupan Mengikuti Pelatihan Secara Penuh',
             'pengukuhan_penyuluh_swadaya' => 'SK Pengukuhan Penyuluh Swadaya',
-            'rekomendasi_kelompok' => 'Surat Rekomendasi Kelompok Tani',
-            'skd' => 'Surat Keterangan Domisili',
+            'legalitas_kelompok' => 'Surat Legalitas Kelompok Tani',
+            'rekomendasi_kelompok' => 'Surat Rekomendasi Ketua Kelompok Tani',
         ];
     }
     /**
@@ -59,7 +62,7 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
                 $status = $request->verification_status;
                 $data = $data->filter(function ($item) use ($status) {
                     $verifications = $item->documentVerifications;
-                    $requiredDocs = ['ktp', 'kk', 'pengukuhan_penyuluh_swadaya', 'rekomendasi_kelompok', 'skd'];
+                    $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan', 'kesanggupan','pengukuhan_penyuluh_swadaya', 'legalitas_kelompok', 'rekomendasi_kelompok'];
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
                         return $verification->status === 1;
@@ -88,7 +91,7 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
-                    $requiredDocs = ['ktp', 'kk', 'pengukuhan_penyuluh_swadaya', 'rekomendasi_kelompok', 'skd'];
+                    $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan', 'kesanggupan','pengukuhan_penyuluh_swadaya', 'legalitas_kelompok', 'rekomendasi_kelompok'];
                     $verifications = $row->documentVerifications;
 
                     $allVerified = count($verifications) === count($requiredDocs);
@@ -211,26 +214,39 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
                 'skor_alasan' => $data->alasanPelatihan?->skor,
 
                 'files' => [
+                    'foto' => [
+                        'url' => asset('storage/' . $data->file_foto),
+                        'verification' => $verifiedDocuments['foto'] ?? null
+                    ],
                     'ktp' => [
                         'url' => asset('storage/' . $data->file_ktp),
                         'verification' => $verifiedDocuments['ktp'] ?? null
                     ],
-                    'foto' => [
+                    'kk' => [
                         'url' => asset('storage/' . $data->file_foto),
-                        'verification' => $verifiedDocuments['foto'] ?? null
+                        'verification' => $verifiedDocuments['kk'] ?? null
+                    ],
+                    'pernyataan' => [
+                        'url' => asset('storage/' . $data->file_pernyataan_tidak_mengikuti_pelatihan_lain),
+                        'verification' => $verifiedDocuments['pernyataan'] ?? null
+                    ],
+                    'kesanggupan' => [
+                        'url' => asset('storage/' . $data->file_pernyataan_kesanggupan_ikut_pelatihan),
+                        'verification' => $verifiedDocuments['kesanggupan'] ?? null
                     ],
                     'pengukuhan_penyuluh_swadaya' => [
                         'url' => asset('storage/' . $data->file_pengukuhan_penyuluh_swadaya),
                         'verification' => $verifiedDocuments['pengukuhan_penyuluh_swadaya'] ?? null
                     ],
+                    'legalitas_kelompok' => [
+                        'url' => asset('storage/' . $data->file_legalitas_kelompok),
+                        'verification' => $verifiedDocuments['legalitas_kelompok'] ?? null
+                    ],
                     'rekomendasi_kelompok' => [
                         'url' => asset('storage/' . $data->file_rekomendasi_kelompok),
                         'verification' => $verifiedDocuments['rekomendasi_kelompok'] ?? null
                     ],
-                    'skd' => [
-                        'url' => asset('storage/' . $data->file_domisili),
-                        'verification' => $verifiedDocuments['skd'] ?? null
-                    ],
+
                 ],
                 'documentTypes' => PelatihanPetani::getDocumentTypes()
             ]
@@ -260,7 +276,7 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
 
         // Validate if document is verified
         $verifications = $data->documentVerifications;
-        $requiredDocs = ['ktp', 'kk', 'pengukuhan_penyuluh_swadaya', 'rekomendasi_kelompok', 'skd'];
+        $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan', 'kesanggupan','pengukuhan_penyuluh_swadaya', 'legalitas_kelompok', 'rekomendasi_kelompok'];
         $allVerified = count($verifications) === count($requiredDocs);
         $allApproved = $verifications->every(fn($v) => $v->status === 1);
 
