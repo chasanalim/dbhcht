@@ -836,7 +836,7 @@ export default function FormPetani() {
                         "*Keterangan: -",
                         false,
                         null,
-                        "/templates/surat_pernyataan_tidak_mengikuti_pelatihan_lain.pdf"
+                        "/storage/files/fkRcQoD10CYOoZigoqOZihIHMgNgeLrXzKMbEzBX.pdf"
                     )}
                     {renderFileUpload(
                         "Surat Pernyataan Kesanggupan Mengikuti Pelatihan Secara Penuh",
@@ -845,7 +845,7 @@ export default function FormPetani() {
                         "*Keterangan: -",
                         false,
                         null,
-                        "/templates/surat_pernyataan_kesanggupan_ikut_pelatihan.pdf"
+                        "/storage/files/Lu5raNNSz02Si6sn4rptJBb77kyllhsAyNRkQzzj.pdf"
                     )}
                     {renderFileUpload(
                         "SK Pengukuhan Penyuluh Swadaya",
@@ -868,7 +868,7 @@ export default function FormPetani() {
                         "*Keterangan: Khusus Untuk Calon Peserta Pengembangan Kapasitas Kelembagaan Petani",
                         false,
                         null,
-                        "/templates/surat_rekomendasi_kelompok.pdf"
+                        "/storage/files/28wqa5tO8fkjN9ajwlBY3dCWBO2utzzrxJi8zb2p.pdf"
                     )}
 
                     <div className="big-text text-muted mb-4">
