@@ -77,4 +77,73 @@ class HomeController extends Controller
             'jenis' => $request->query('jenis')
         ]);
     }
+
+    public function cekStatus()
+    {
+        return Inertia::render('Home/Status', [
+            'meta' => [
+                'title' => 'Cek Status Pendaftaran Banmod dan Pelatihan',
+            ],
+        ]);
+    }
+    public function cekNIK(Request $request, $nik)
+    {
+        if (strlen($nik) != 16) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Maaf, format NIK harus 16 digit'
+            ], 400);
+        }
+
+        $results = [];
+
+        // Check in all models
+        $models = [
+            'Pelatihan UMKM' => PelatihanUmkm::class,
+            'Pelatihan Penerima Banmod' => PelatihanBanmod::class,
+            'Pelatihan Pencari Kerja' => PelatihanKerjas::class,
+            'Pelatihan Petani' => PelatihanPetani::class,
+            'Bantuan Modal Usaha' => PendaftaranBanmod::class
+        ];
+
+        foreach ($models as $type => $model) {
+            $data = $model::where('nik', $nik)->first();
+
+            if ($data) {
+                $results[] = [
+                    'jenis_pelatihan' => $type,
+                    'nama' => $data->nama_lengkap ?? $data->name,
+                    'nik' => $data->nik,
+                    // 'verifikasi_dokumen' => $data->documentVerifications()->count(),
+                    'status' => $this->getStatus($data->status),
+                    'created_at' => $data->created_at->format('d-m-Y') ?? 'NULL',
+                ];
+            }
+        }
+
+        if (count($results) > 0) {
+            return response()->json([
+                'success' => true,
+                'data' => $results,
+                'message' => 'Data ditemukan'
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'NIK tidak ditemukan'
+        ], 404);
+    }
+
+    private function getStatus($status)
+    {
+        return match($status) {
+            0 => 'Menunggu Verifikasi',
+            1 => 'Lolos',
+            2 => 'Tidak Lolos',
+            3 => 'Blacklist',
+            4 => 'Ditolak - Lolos di Pelatihan Lain',
+            default => 'Menunggu Verifikasi',
+        };
+    }
 }

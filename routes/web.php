@@ -51,6 +51,8 @@ Route::get('/download', [HomeController::class, 'file'])->name('download');
 Route::get('/download/{file}', [HomeController::class, 'download'])->name('download.file');
 Route::get('/pelatihan', [HomeController::class, 'pelatihan'])->name('pelatihan');
 Route::get('/pelatihan/form', [HomeController::class, 'pelatihan'])->name('pelatihan.form');
+Route::get('cek-nik/{nik}', [HomeController::class, 'cekNIK'])->name('cek-nik');
+Route::get('cek-status', [HomeController::class, 'cekStatus'])->name('cek-status');
 
 Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

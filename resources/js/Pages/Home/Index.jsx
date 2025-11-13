@@ -215,7 +215,7 @@ export default function Index({
                                         "linear-gradient(90deg,#4f8cff 60%,#6ea8fe 100%)",
                                     color: "#fff",
                                     borderRadius: "2rem",
-                                    padding: "0.95rem 2.5rem",
+                                    padding: "0.95rem 1.5rem",
                                     fontWeight: 700,
                                     fontSize: "1.15rem",
                                     boxShadow: "0 2px 16px #4f8cff22",
@@ -234,7 +234,7 @@ export default function Index({
                                         "linear-gradient(90deg,#ffb700 60%,#ffe082 100%)",
                                     color: "#22223b",
                                     borderRadius: "2rem",
-                                    padding: "0.95rem 2.5rem",
+                                    padding: "0.95rem 1.5rem",
                                     fontWeight: 700,
                                     fontSize: "1.15rem",
                                     boxShadow: "0 2px 16px #ffb70022",
@@ -244,6 +244,24 @@ export default function Index({
                             >
                                 <i className="bi bi-cash-stack"></i> Daftar
                                 Banmod
+                            </Link>
+                            <Link
+                                href={route("cek-status")}
+                                className="btn"
+                                style={{
+                                    background:
+                                        "linear-gradient(90deg,#45b07e 60%,#63cf9c 100%)",
+                                    color: "#22223b",
+                                    borderRadius: "2rem",
+                                    padding: "0.95rem 1.5rem",
+                                    fontWeight: 700,
+                                    fontSize: "1.15rem",
+                                    boxShadow: "0 2px 16px #ffb70022",
+                                    border: "none",
+                                    transition: "transform 0.15s",
+                                }}
+                            >
+                                <i className="bi bi-cash-stack"></i> Cek Status
                             </Link>
                         </div>
                     </div>
