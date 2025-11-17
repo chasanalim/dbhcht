@@ -56,7 +56,7 @@ export default function FormKeterampilan() {
             const response = await axios.get(
                 `/pelatihan/kerja/cek-nik/${data.nik}`
             );
-            console.log(response);
+            // console.log(response);
 
             // Handle success response
             if (response.data.success === true) {

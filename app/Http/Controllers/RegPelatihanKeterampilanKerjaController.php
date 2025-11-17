@@ -98,9 +98,9 @@ class RegPelatihanKeterampilanKerjaController extends Controller
         // dd($dataPendaftar);
 
         // Send WhatsApp message
-        $message = "Terima kasih telah mendaftar Program Pelatihan Untuk Pencari Kerja Kota Kediri. Data Anda telah kami terima dan akan diproses lebih lanjut. Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan. Jika ada pertanyaan, silakan hubungi kami melalui: " . env('APP_WA_BANMOD');;
-        $phoneNumber = $dataPendaftar->phone_number;
-        $this->sendWhatsappMessage($message, $phoneNumber);
+        // $message = "Terima kasih telah mendaftar Program Pelatihan Untuk Pencari Kerja Kota Kediri. Data Anda telah kami terima dan akan diproses lebih lanjut. Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan. Jika ada pertanyaan, silakan hubungi kami melalui: " . env('APP_WA_BANMOD');;
+        // $phoneNumber = $dataPendaftar->phone_number;
+        // $this->sendWhatsappMessage($message, $phoneNumber);
 
         return Inertia::render('Banmod/Success', [
             'meta' => [

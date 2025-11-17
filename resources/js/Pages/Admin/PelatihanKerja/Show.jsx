@@ -11,9 +11,12 @@ export default function Show({ title, data, type = "PELATIHAN_KERJA" }) {
 
     const DOCUMENT_TYPES = {
         PELATIHAN_KERJA: [
+            { key: "pasfoto", label: "Pas Foto" },
             { key: "ktp", label: "KTP" },
             { key: "kk", label: "Kartu Keluarga" },
-            { key: "skd", label: "Surat Keterangan Domisili" },
+            { key: "fotokopi_ijazah", label: "Fotocopi Ijazah" },
+            { key: "surat_pernyataan_tidak_ikut", label: "Surat Pernyataan Tidak Mengikuti Pelatihan Lain" },
+            { key: "surat_kesanggupan", label: "Surat Kesanggupan Mengikuti Pelatihan" },
         ],
     };
 

@@ -57,12 +57,12 @@ class HandleInertiaRequests extends Middleware
                 'icon' => 'bi bi-shop-window',
                 'show' => true,
             ],
-            [
-                'label' => 'List Pendaftar Banmod',
-                'route' => 'peserta.get',
-                'icon' => 'bi bi-person-lines-fill',
-                'show' => true,
-            ],
+            // [
+            //     'label' => 'List Pendaftar Banmod',
+            //     'route' => 'peserta.get',
+            //     'icon' => 'bi bi-person-lines-fill',
+            //     'show' => true,
+            // ],
             [
                 'label' => 'Daftar Pelatihan',
                 'route' => 'pelatihan',

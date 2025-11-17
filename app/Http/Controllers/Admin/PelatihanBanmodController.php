@@ -229,27 +229,27 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
                 'komitmen' => $data->komitmen,
                 'files' => [
                     'ktp' => [
-                        'url' => asset('storage/' . $data->file_ktp),
+                        'url' => asset($data->file_ktp),
                         'verification' => $verifiedDocuments['ktp'] ?? null
                     ],
                     'kk' => [
-                        'url' => asset('storage/' . $data->file_kk),
+                        'url' => asset($data->file_kk),
                         'verification' => $verifiedDocuments['kk'] ?? null
                     ],
                     'pasfoto' => [
-                        'url' => asset('storage/' . $data->file_pasfoto),
+                        'url' => asset($data->file_pasfoto),
                         'verification' => $verifiedDocuments['pasfoto'] ?? null
                     ],
                     'surat_pernyataan_tidak_ikut' => [
-                        'url' => asset('storage/' . $data->file_surat_pernyataan_tidak_ikut),
+                        'url' => asset($data->file_surat_pernyataan_tidak_ikut),
                         'verification' => $verifiedDocuments['surat_pernyataan_tidak_ikut'] ?? null
                     ],
                     'surat_kesanggupan' => [
-                        'url' => asset('storage/' . $data->file_surat_kesanggupan),
+                        'url' => asset($data->file_surat_kesanggupan),
                         'verification' => $verifiedDocuments['surat_kesanggupan'] ?? null
                     ],
                     'nib' => [
-                        'url' => asset('storage/' . $data->file_nib),
+                        'url' => asset($data->file_nib),
                         'verification' => $verifiedDocuments['nib'] ?? null
                     ],
 

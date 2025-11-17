@@ -18,7 +18,8 @@ class BanmodController extends Controller
 
     public function index()
     {
-        return Inertia::render('Banmod/Create', [
+         return Inertia::render('404/BelumTersedia', [
+        // return Inertia::render('Banmod/Create', [
             'meta' => [
                 'title' => 'Pendaftaran Banmod',
             ],

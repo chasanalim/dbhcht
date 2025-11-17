@@ -204,12 +204,12 @@ class RegPelatihanPetaniController extends Controller
         try {
             $dataPendaftar = PelatihanPetani::findOrFail($id);
 
-            $message = "Terima kasih telah mendaftar Program Pelatihan Petani Kota Kediri. "
-                . "Data Anda telah kami terima dan akan diproses lebih lanjut. "
-                . "Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan. "
-                . "Jika ada pertanyaan, silakan hubungi kami melalui: " . env('APP_WA_PELATIHAN');
+            // $message = "Terima kasih telah mendaftar Program Pelatihan Petani Kota Kediri. "
+            //     . "Data Anda telah kami terima dan akan diproses lebih lanjut. "
+            //     . "Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan. "
+            //     . "Jika ada pertanyaan, silakan hubungi kami melalui: " . env('APP_WA_PELATIHAN');
 
-            $this->sendWhatsappMessage($message, $dataPendaftar->no_hp);
+            // $this->sendWhatsappMessage($message, $dataPendaftar->no_hp);
 
             return Inertia::render('Pelatihan/Success', [
                 'meta' => [
