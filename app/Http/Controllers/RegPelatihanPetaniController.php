@@ -222,7 +222,7 @@ class RegPelatihanPetaniController extends Controller
             return Inertia::render('Pelatihan/Success', [
                 'meta' => [
                     'title' => 'Pendaftaran Pelatihan Petani',
-                    'jenis' => 'Pelatihan Petani',
+                    'jenis' => 'Pelatihan Pertanian',
                 ],
             ]);
         } catch (\Exception $e) {

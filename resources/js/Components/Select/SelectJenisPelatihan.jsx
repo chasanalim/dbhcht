@@ -13,7 +13,7 @@ export default function SelectJenisPelatihan({ onChange, value, errors }) {
         },
         { value: "umkm", label: "Pelatihan UMKM" },
         // { value: "penyuluh", label: "Pelatihan Penyuluh" },
-        { value: "petani", label: "Pelatihan Petani" },
+        { value: "petani", label: "Pelatihan Pertanian" },
         { value: "ekraf", label: "Pelatihan Ekonomi Kreatif" },
     ];
 

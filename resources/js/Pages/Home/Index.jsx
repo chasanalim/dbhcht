@@ -49,7 +49,7 @@ const trainings = [
     },
     {
         id: 4,
-        title: "Pelatihan Petani",
+        title: "Pelatihan Pertanian",
         description:
             "Teknik pertanian modern dan pemanfaatan alat pertanian terbaru.",
         image: "https://dokar.kendalkab.go.id/upload/berita/1688524912IMG_20230704_163951.jpg",
@@ -91,54 +91,54 @@ export default function Index({
                             padding: 40px 20px !important;
                             gap: 24px !important;
                         }
-                        
+
                         .hero-left {
                             min-width: 0 !important;
                             width: 100% !important;
                         }
-                        
+
                         .hero-title {
                             font-size: 1.8rem !important;
                             line-height: 1.3 !important;
                         }
-                        
+
                         .hero-btns {
                             flex-direction: column !important;
                             gap: 10px !important;
                             width: 100% !important;
                         }
-                        
+
                         .hero-btns .btn {
                             width: 100% !important;
                             padding: 0.85rem 1rem !important;
                             font-size: 1rem !important;
                         }
-                        
+
                         .hero-img {
                             max-height: 200px !important;
                             width: 100% !important;
                         }
                     }
-                    
+
                     @media (max-width: 576px) {
                         .hero-main {
                             padding: 30px 15px !important;
                         }
-                        
+
                         .hero-title {
                             font-size: 1.5rem !important;
                         }
-                        
+
                         .hero-btns .btn {
                             font-size: 0.95rem !important;
                             padding: 0.75rem 0.8rem !important;
                         }
-                        
+
                         .hero-btns .btn i {
                             font-size: 0.9rem !important;
                         }
                     }
-                    
+
                     .hover-scale:hover {
                         transform: translateY(-5px);
                     }
@@ -371,7 +371,7 @@ export default function Index({
                                 color: "#dc3545",
                             },
                             {
-                                label: "Pelatihan Petani",
+                                label: "Pelatihan Pertanian",
                                 value: pertanian,
                                 icon: "bi-tree",
                                 color: "#20c997",

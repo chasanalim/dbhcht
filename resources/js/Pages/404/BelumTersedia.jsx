@@ -354,9 +354,9 @@ export default function BelumTersedia({ meta }) {
                                 </h1>
 
                                 {/* Subtitle */}
-                                <p className="subtitle">
-                                    Kami sedang mempersiapkan sesuatu yang luar biasa untuk Anda
-                                </p>
+                                {/* <p className="subtitle">
+
+                                </p> */}
 
                                 {/* Description */}
                                 {/* <p className="description">

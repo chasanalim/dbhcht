@@ -103,7 +103,7 @@ class HomeController extends Controller
             'Pelatihan UMKM' => PelatihanUmkm::class,
             'Pelatihan Penerima Banmod' => PelatihanBanmod::class,
             'Pelatihan Pencari Kerja' => PelatihanKerjas::class,
-            'Pelatihan Petani' => PelatihanPetani::class,
+            'Pelatihan Pertanian' => PelatihanPetani::class,
             'Bantuan Modal Usaha' => PendaftaranBanmod::class
         ];
 
