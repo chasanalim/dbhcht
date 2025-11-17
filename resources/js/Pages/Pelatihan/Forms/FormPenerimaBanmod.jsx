@@ -112,31 +112,6 @@ export default function FormPenerimaBanmod() {
         }
     };
 
-    // Add these state handlers for file uploads
-    const handleUploadFoto = (e, field_name, preview_name) => {
-        let reader = new FileReader();
-        let file = e.target.files[0];
-
-        reader.onloadend = () => {
-            setData((prevState) => ({
-                ...prevState,
-                [field_name]: file,
-                [preview_name]: reader.result,
-            }));
-        };
-
-        reader.readAsDataURL(file);
-    };
-
-    const handleUploadFile = (e, field_name, multiple) => {
-        const files = Array.prototype.slice.call(e.target.files);
-
-        setData((prevState) => ({
-            ...prevState,
-            [field_name]: multiple ? files : files[0],
-        }));
-    };
-
     const handleRemoveFile = (field, index) => {
         setData((prev) => {
             const updated = [...(prev[field] || [])];
@@ -153,23 +128,105 @@ export default function FormPenerimaBanmod() {
         }));
     };
 
-    // Add file index counter
-    let fileIndex = 1;
+    const handleRemovePdfFile = (fieldName) => {
+        setData((prev) => ({
+            ...prev,
+            [fieldName]: null,
+        }));
+    };
 
-    // Add renderFileUpload function
+    const formatFileSize = (bytes) => {
+        if (bytes === 0) return "0 Bytes";
+        const k = 1024;
+        const sizes = ["Bytes", "KB", "MB", "GB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+    };
+
+    const handleUploadFoto = (e, field_name, preview_name) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validasi ukuran file (2MB)
+        const maxFileSize = 2 * 1024 * 1024; // 2MB
+        if (file.size > maxFileSize) {
+            alert(
+                `Ukuran file terlalu besar: ${formatFileSize(file.size)}\n` +
+                `Maksimal ukuran file: 2MB\n` +
+                `Silakan kompres atau pilih file yang lebih kecil.`
+            );
+            e.target.value = ''; // Reset input
+            return;
+        }
+
+        let reader = new FileReader();
+
+        reader.onloadend = () => {
+            setData((prevState) => ({
+                ...prevState,
+                [field_name]: file,
+                [preview_name]: reader.result,
+            }));
+        };
+
+        reader.readAsDataURL(file);
+    };
+
+    const handleUploadFile = (e, field_name, multiple) => {
+        const rawFiles = e.target.files;
+        if (!rawFiles || rawFiles.length === 0) return;
+
+        const files = Array.from(rawFiles);
+        const maxFileSize = 2 * 1024 * 1024; // 2MB
+
+        // Validasi setiap file
+        for (let file of files) {
+            if (file.size > maxFileSize) {
+                alert(
+                    `File "${file.name}" terlalu besar: ${formatFileSize(file.size)}\n` +
+                    `Maksimal ukuran file: 2MB\n` +
+                    `Silakan kompres atau pilih file yang lebih kecil.`
+                );
+                e.target.value = '';
+                return;
+            }
+        }
+
+        setData((prevState) => ({
+            ...prevState,
+            [field_name]: multiple ? files : files[0],
+        }));
+    };
+
+    const FileCompressionGuide = () => (
+        <div className="alert alert-info mb-4">
+            <h6 className="fw-bold">📋 Panduan Upload File:</h6>
+            <ul className="mb-0 small">
+                <li>Maksimal ukuran per file: <strong>2MB</strong></li>
+                <li>Jika file terlalu besar, gunakan tools kompresi online:
+                    <ul>
+                        <li>Untuk gambar: <a href="https://tinypng.com" target="_blank" rel="noopener noreferrer">TinyPNG</a> atau <a href="https://compressjpeg.com" target="_blank" rel="noopener noreferrer">CompressJPEG</a></li>
+                        <li>Untuk PDF: <a href="https://www.ilovepdf.com/compress_pdf" target="_blank" rel="noopener noreferrer">ILovePDF</a> atau <a href="https://smallpdf.com/compress-pdf" target="_blank" rel="noopener noreferrer">SmallPDF</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    );
+
     const renderFileUpload = (
         label,
         fieldName,
         accept = ".pdf",
         multiple = false,
-        imagePreviewKey = null
+        imagePreviewKey = null,
+        downloadLink = null,
+        description = "",
+        fileIndex = 1
     ) => {
-        const indexLabel = `${fileIndex++}.`;
-
         return (
             <Form.Group className="mb-4" key={fieldName}>
                 <div className="mb-2 fw-semibold">
-                    {indexLabel} {label}
+                    {fileIndex}. {label}  {/* ✅ GANTI index dengan fileIndex */}
                 </div>
                 <Form.Label
                     className="text-primary"
@@ -178,6 +235,7 @@ export default function FormPenerimaBanmod() {
                     Format:{" "}
                     {accept === ".pdf" ? "*.pdf" : "*.png, *.jpg, *.jpeg"}
                 </Form.Label>
+                
                 <Form.Control
                     type="file"
                     accept={accept}
@@ -187,7 +245,36 @@ export default function FormPenerimaBanmod() {
                             ? handleUploadFoto(e, fieldName, imagePreviewKey)
                             : handleUploadFile(e, fieldName, multiple)
                     }
+                    isInvalid={!!errors[fieldName]}
                 />
+
+                {/* Error display */}
+                {errors[fieldName] && (
+                    <Form.Control.Feedback type="invalid">
+                        {errors[fieldName]}
+                    </Form.Control.Feedback>
+                )}
+
+                {/* Deskripsi tambahan */}
+                {description && (
+                    <div className="text-muted mt-1" style={{ fontSize: "12px" }}>
+                        {description}
+                    </div>
+                )}
+
+                {/* Link untuk unduh template dokumen */}
+                {downloadLink && (
+                    <div className="mt-2">
+                        <a
+                            href={downloadLink}
+                            download
+                            className="text-decoration-none text-danger fw-semibold"
+                            style={{ fontSize: "12px" }}
+                        >
+                            📥 Unduh Template Dokumen (PDF)
+                        </a>
+                    </div>
+                )}
 
                 {/* Image Preview with Remove */}
                 {imagePreviewKey && data[imagePreviewKey] && (
@@ -197,6 +284,7 @@ export default function FormPenerimaBanmod() {
                             width={200}
                             height={200}
                             src={data[imagePreviewKey]}
+                            alt="Preview"
                         />
                         <Button
                             size="sm"
@@ -212,7 +300,7 @@ export default function FormPenerimaBanmod() {
                 )}
 
                 {/* PDF/File Preview */}
-                {!imagePreviewKey && data[fieldName]?.length > 0 && (
+                {!imagePreviewKey && data[fieldName] && (
                     <ListGroup className="mt-3">
                         {Array.isArray(data[fieldName]) ? (
                             data[fieldName].map((file, idx) => (
@@ -221,13 +309,12 @@ export default function FormPenerimaBanmod() {
                                     className="d-flex justify-content-between align-items-center"
                                 >
                                     <span>
-                                        📄 {file.name}{" "}
+                                        📄 {file.name} ({formatFileSize(file.size)})
                                         <a
                                             href={URL.createObjectURL(file)}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="ms-2 text-decoration-underline"
-                                            style={{ fontSize: "12px" }}
                                         >
                                             Preview
                                         </a>
@@ -246,15 +333,12 @@ export default function FormPenerimaBanmod() {
                         ) : (
                             <ListGroup.Item className="d-flex justify-content-between align-items-center">
                                 <span>
-                                    📄 {data[fieldName]?.name}
+                                    📄 {data[fieldName].name} ({formatFileSize(data[fieldName].size)})
                                     <a
-                                        href={URL.createObjectURL(
-                                            data[fieldName]
-                                        )}
+                                        href={URL.createObjectURL(data[fieldName])}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="ms-2 text-decoration-underline"
-                                        style={{ fontSize: "12px" }}
                                     >
                                         Preview
                                     </a>
@@ -262,9 +346,7 @@ export default function FormPenerimaBanmod() {
                                 <Button
                                     size="sm"
                                     variant="outline-danger"
-                                    onClick={() =>
-                                        handleRemoveFile(fieldName, 0)
-                                    }
+                                    onClick={() => handleRemovePdfFile(fieldName)}
                                 >
                                     Hapus
                                 </Button>
@@ -275,19 +357,31 @@ export default function FormPenerimaBanmod() {
             </Form.Group>
         );
     };
+    
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(data);
-        post(route("pelatihan-banmod.store"), {
-            forceFormData: true,
-            onSuccess: () => {
-                reset();
-                setTampilKonfirmasi(false);
-                setDataPenerima(null);
-                setNikStatus(null);
-            },
-        });
+        setIsSubmitting(true);
+        
+        try {
+            await post(route("pelatihan-banmod.store"), {
+                forceFormData: true,
+                onSuccess: () => {
+                    reset();
+                    setTampilKonfirmasi(false);
+                    setDataPenerima(null);
+                    setNikStatus(null);
+                },
+                onError: (errors) => {
+                    console.error("Form errors:", errors);
+                }
+            });
+        } catch (error) {
+            console.error("Submit error:", error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -820,50 +914,82 @@ export default function FormPenerimaBanmod() {
 
                     {/* Upload Section */}
                     <div className="big-text text-muted mb-4">
-                        B. Berkas yang Diupload
+                        B. Berkas yang Diupload Max 2MB per File
                         <div className="underline"></div>
                     </div>
+
+                    {errors.error && (
+                        <div className="alert alert-danger mb-3">
+                            <strong>Error:</strong> {errors.error}
+                        </div>
+                    )}
+
+                    <FileCompressionGuide />
 
                     {renderFileUpload(
                         "Foto KTP",
                         "file_ktp",
                         ".png,.jpg,.jpeg",
                         false,
-                        "imagePreviewKTP"
+                        "imagePreviewKTP",
+                        null,
+                        "Maksimal 2MB. Format: PNG, JPG, JPEG",
+                        1
                     )}
-                    
+
                     {renderFileUpload(
                         "Foto Kartu Keluarga (KK)", 
                         "file_kk", 
                         ".png,.jpg,.jpeg",
                         false,
-                        "imagePreviewKK"
+                        "imagePreviewKK",
+                        null,
+                        "Maksimal 2MB. Format: PNG, JPG, JPEG",
+                        2
                     )}
-                    
+
                     {renderFileUpload(
                         "Pas Foto",
                         "file_pasfoto",
                         ".png,.jpg,.jpeg",
                         false,
-                        "imagePreviewPasFoto"
+                        "imagePreviewPasFoto",
+                        null,
+                        "Maksimal 2MB. Format: PNG, JPG, JPEG",
+                        3
                     )}
-                    
+
                     {renderFileUpload(
                         "Surat Pernyataan Tidak Mengikuti Pelatihan Lain",
                         "file_surat_pernyataan_tidak_ikut",
-                        ".pdf"
+                        ".pdf",
+                        false,
+                        null,
+                        "http://localhost:8000/storage/files/rM6CgIAHgL518kkXcvDiutYz7iqGe2cMRwXPgDhQ.pdf",
+                        "Maksimal 2MB. Format: PDF",
+                        4
                     )}
-                    
+
                     {renderFileUpload(
                         "Surat Pernyataan Kesanggupan Mengikuti Pelatihan Secara Penuh",
                         "file_surat_kesanggupan",
-                        ".pdf"
+                        ".pdf",
+                        false,
+                        null,
+                        "http://localhost:8000/storage/files/H2LjEsHX6j0Hq6P7eUzUTeziRUy7lftr6tRMKsWN.pdf",
+                        "Maksimal 2MB. Format: PDF",
+                        5
                     )}
-                    
+
                     {renderFileUpload(
                         "NIB", 
                         "file_nib", 
-                        ".pdf,.png,.jpg,.jpeg"
+                        ".pdf,.png,.jpg,.jpeg",
+                        false,
+                        null,
+                        null,
+                        "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
+                        6
                     )}
 
                     {/* Komitmen Section */}
@@ -890,14 +1016,23 @@ export default function FormPenerimaBanmod() {
 
                     {/* Submit Button */}
                     <div className="d-flex justify-content-center mt-4">
-                        <Button
-                            type="submit"
-                            disabled={!data.komitmen}
-                            className={!data.komitmen ? "opacity-50" : ""}
-                        >
-                            Kirim <i className="fa fa-paper-plane ms-1"></i>
-                        </Button>
-                    </div>
+                    <Button
+                        type="submit"
+                        disabled={!data.komitmen || isSubmitting}
+                        className={!data.komitmen || isSubmitting ? "opacity-50" : ""}
+                    >
+                        {isSubmitting ? (
+                            <>
+                                Loading...{" "}
+                                <span className="spinner-border spinner-border-sm" />
+                            </>
+                        ) : (
+                            <>
+                                Kirim <i className="fa fa-paper-plane ms-1"></i>
+                            </>
+                        )}
+                    </Button>
+                </div>
                 </>
             )}
 
