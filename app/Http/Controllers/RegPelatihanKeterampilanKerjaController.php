@@ -11,6 +11,9 @@ use App\Models\PelatihanBanmod;
 use App\Models\PelatihanKerjas;
 use App\Models\PelatihanPetani;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Laravel\Facades\Image;
+use Intervention\Image\Encoders\WebpEncoder;
 
 class RegPelatihanKeterampilanKerjaController extends Controller
 {
@@ -34,52 +37,58 @@ class RegPelatihanKeterampilanKerjaController extends Controller
             "nama_rw" => ['required', 'string'],
             "kode_rt" => ['required', 'string'],
             "nama_rt" => ['required', 'string'],
-            "file_ktp" => ['required', 'image'],
+            "file_ktp" => ['required', 'file'],
             "file_kk" => ['required', 'file'],
             "phone_number" => ['required', 'numeric', 'digits_between:10,15'],
             "alasan" => ['required', 'string'],
             "pendidikan" => ['required', 'string'],
             "jenis_pelatihan" => ['required', 'string'],
-            "file_ktp" => ['required', 'image'],
-            "file_kk" => ['required', 'file'],
-            "file_pasfoto" => ['nullable', 'image'],
+            "file_pasfoto" => ['nullable', 'file'],
             "file_surat_pernyataan_tidak_ikut" => ['nullable', 'file'],
             "file_surat_kesanggupan" => ['nullable', 'file'],
             "file_fotokopi_ijazah" => ['nullable', 'file'],
         ]);
-        if ($request->hasFile('file_ktp')) {
-            $validated['file_ktp'] = '/storage/pendaftaran-pelatihan-kerja/ktp/' . $request->file('file_ktp')->hashName();
-            $request->file('file_ktp')->storeAs('/pendaftaran-pelatihan-kerja/ktp', $request->file('file_ktp')->hashName(), 'public');
+    
+        $fileFields = [
+            'file_ktp' => 'ktp',
+            'file_kk' => 'kk',
+            'file_pasfoto' => 'pasfoto',
+            'file_surat_pernyataan_tidak_ikut' => 'surat_pernyataan_tidak_ikut',
+            'file_surat_kesanggupan' => 'surat_kesanggupan',
+            'file_fotokopi_ijazah' => 'fotokopi_ijazah',
+        ];
+    
+        foreach ($fileFields as $field => $folder) {
+            if ($request->hasFile($field)) {
+                $file = $request->file($field);
+                $extension = strtolower($file->getClientOriginalExtension());
+                $fileNameWithoutExt = pathinfo($file->hashName(), PATHINFO_FILENAME);
+                $storageFolder = 'pendaftaran-pelatihan-kerja/' . $folder;
+    
+                if (in_array($extension, ['jpg', 'jpeg', 'png'])) {
+                    $webpFileName = $fileNameWithoutExt . '.webp';
+                    $storagePath = $storageFolder . '/' . $webpFileName;
+    
+                    $image = Image::read($file)->encode(new WebpEncoder(quality: 80));
+    
+                    Storage::disk('public')->put($storagePath, (string) $image);
+                    $validated[$field] = '/storage/' . $storagePath;
+                } else {
+                    $fileName = $file->hashName();
+                    $storagePath = $storageFolder . '/' . $fileName;
+    
+                    $file->storeAs($storageFolder, $fileName, 'public');
+                    $validated[$field] = '/storage/' . $storagePath;
+                }
+            }
         }
-
-        if ($request->hasFile('file_kk')) {
-            $validated['file_kk'] = '/storage/pendaftaran-pelatihan-kerja/kk/' . $request->file('file_kk')->hashName();
-            $request->file('file_kk')->storeAs('/pendaftaran-pelatihan-kerja/kk', $request->file('file_kk')->hashName(), 'public');
-        }
-
-        if ($request->hasFile('file_pasfoto')) {
-            $validated['file_pasfoto'] = '/storage/pendaftaran-pelatihan-kerja/pasfoto/' . $request->file('file_pasfoto')->hashName();
-            $request->file('file_pasfoto')->storeAs('/pendaftaran-pelatihan-kerja/pasfoto', $request->file('file_pasfoto')->hashName(), 'public');
-        }
-
-        if ($request->hasFile('file_surat_pernyataan_tidak_ikut')) {
-            $validated['file_surat_pernyataan_tidak_ikut'] = '/storage/pendaftaran-pelatihan-kerja/surat_pernyataan_tidak_ikut/' . $request->file('file_surat_pernyataan_tidak_ikut')->hashName();
-            $request->file('file_surat_pernyataan_tidak_ikut')->storeAs('/pendaftaran-pelatihan-kerja/surat_pernyataan_tidak_ikut', $request->file('file_surat_pernyataan_tidak_ikut')->hashName(), 'public');
-        }
-
-        if ($request->hasFile('file_surat_kesanggupan')) {
-            $validated['file_surat_kesanggupan'] = '/storage/pendaftaran-pelatihan-kerja/surat_kesanggupan/' . $request->file('file_surat_kesanggupan')->hashName();
-            $request->file('file_surat_kesanggupan')->storeAs('/pendaftaran-pelatihan-kerja/surat_kesanggupan', $request->file('file_surat_kesanggupan')->hashName(), 'public');
-        }
-
-        if ($request->hasFile('file_fotokopi_ijazah')) {
-            $validated['file_fotokopi_ijazah'] = '/storage/pendaftaran-pelatihan-kerja/fotokopi_ijazah/' . $request->file('file_fotokopi_ijazah')->hashName();
-            $request->file('file_fotokopi_ijazah')->storeAs('/pendaftaran-pelatihan-kerja/fotokopi_ijazah', $request->file('file_fotokopi_ijazah')->hashName(), 'public');
-        }
-        $validated['status'] = 0; // Default status is 'Menunggu'
-
+    
+        $validated['status'] = 0;
+    
         $storedPendaftaran = PelatihanKerjas::create($validated);
-        return to_route('pelatihan.kerja.success', $storedPendaftaran->id)->with('success', 'Pendaftaran Berhasil.');
+    
+        return to_route('pelatihan.kerja.success', $storedPendaftaran->id)
+            ->with('success', 'Pendaftaran Berhasil.');
     }
 
 

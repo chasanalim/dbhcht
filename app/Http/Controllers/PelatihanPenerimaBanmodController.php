@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use Intervention\Image\Laravel\Facades\Image;
 
 class PelatihanPenerimaBanmodController extends Controller
 {
@@ -28,7 +29,6 @@ class PelatihanPenerimaBanmodController extends Controller
         ]);
     }
 
-    // Menyimpan data pelatihan banmod
     public function store(Request $request)
     {
         try {
@@ -39,21 +39,18 @@ class PelatihanPenerimaBanmodController extends Controller
                 'no_kk' => 'required|string|size:16',
                 'no_hp' => 'required|string|min:10|max:15',
 
-                // Alamat KTP
                 'kecamatan_ktp' => 'required|string',
                 'kelurahan_ktp' => 'required|string',
                 'rw_ktp' => 'required|string',
                 'rt_ktp' => 'required|string',
                 'jalan_ktp' => 'required|string',
 
-                // Alamat Usaha
                 'kecamatan_usaha' => 'required|string',
                 'kelurahan_usaha' => 'required|string',
                 'rw_usaha' => 'required|string',
                 'rt_usaha' => 'required|string',
                 'jalan_usaha' => 'required|string',
 
-                // Pelatihan
                 'jenis_pelatihan_industri' => 'required|string',
                 'perkembangan_omzet' => 'required|integer',
                 'perkembangan_tenaga_kerja' => 'required|integer',
@@ -63,10 +60,9 @@ class PelatihanPenerimaBanmodController extends Controller
                 'skor_mengisi_waktu' => 'required|integer',
                 'skor_diajak_teman' => 'required|integer',
 
-                // Files - Updated validation (removed file_domisili, added new fields)
-                'file_ktp' => 'required|file|mimes:jpg,jpeg,png|max:2048',
-                'file_kk' => 'required|file|mimes:jpg,jpeg,png|max:2048',
-                'file_pasfoto' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+                'file_ktp' => 'required|file|mimes:jpg,jpeg,png',
+                'file_kk' => 'required|file|mimes:jpg,jpeg,png',
+                'file_pasfoto' => 'nullable|file|mimes:jpg,jpeg,png',
                 'file_surat_pernyataan_tidak_ikut' => 'nullable|file|mimes:pdf|max:2048',
                 'file_surat_kesanggupan' => 'nullable|file|mimes:pdf|max:2048',
                 'file_nib' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
@@ -129,14 +125,33 @@ class PelatihanPenerimaBanmodController extends Controller
 
         foreach ($fileFields as $field => $folder) {
             if ($request->hasFile($field)) {
-                $fileName = $request->file($field)->hashName();
-                $uploadedFiles[$field] = '/storage/pelatihan-banmod/' . $folder . '/' . $fileName;
-                $request->file($field)->storeAs('pelatihan-banmod/' . $folder, $fileName, 'public');
+                $file = $request->file($field);
+                $extension = strtolower($file->getClientOriginalExtension());
+                $fileNameWithoutExt = pathinfo($file->hashName(), PATHINFO_FILENAME);
+
+                $webpFileName = $fileNameWithoutExt . '.webp';
+                $storagePath = 'pelatihan-banmod/' . $folder . '/' . $webpFileName;
+
+                if (in_array($extension, ['jpg', 'jpeg', 'png'])) {
+                    $image = Image::make($file)
+                        ->encode('webp', 80);
+
+                    \Storage::disk('public')->put($storagePath, $image);
+
+                    $uploadedFiles[$field] = '/storage/' . $storagePath;
+                } else {
+                    $fileName = $file->hashName();
+                    $storagePath = 'pelatihan-banmod/' . $folder . '/' . $fileName;
+                    $file->storeAs('pelatihan-banmod/' . $folder, $fileName, 'public');
+
+                    $uploadedFiles[$field] = '/storage/' . $storagePath;
+                }
             }
         }
 
         return $uploadedFiles;
-    }
+}
+
 
     protected function cleanupUploadedFiles(array $files)
     {
