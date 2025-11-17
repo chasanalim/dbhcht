@@ -215,35 +215,35 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
 
                 'files' => [
                     'foto' => [
-                        'url' => asset('storage/' . $data->file_foto),
+                        'url' => asset($data->file_foto),
                         'verification' => $verifiedDocuments['foto'] ?? null
                     ],
                     'ktp' => [
-                        'url' => asset('storage/' . $data->file_ktp),
+                        'url' => asset($data->file_ktp),
                         'verification' => $verifiedDocuments['ktp'] ?? null
                     ],
                     'kk' => [
-                        'url' => asset('storage/' . $data->file_foto),
+                        'url' => asset($data->file_kk),
                         'verification' => $verifiedDocuments['kk'] ?? null
                     ],
                     'pernyataan' => [
-                        'url' => asset('storage/' . $data->file_pernyataan_tidak_mengikuti_pelatihan_lain),
+                        'url' => asset($data->file_pernyataan_tidak_mengikuti_pelatihan_lain),
                         'verification' => $verifiedDocuments['pernyataan'] ?? null
                     ],
                     'kesanggupan' => [
-                        'url' => asset('storage/' . $data->file_pernyataan_kesanggupan_ikut_pelatihan),
+                        'url' => asset($data->file_pernyataan_kesanggupan_ikut_pelatihan),
                         'verification' => $verifiedDocuments['kesanggupan'] ?? null
                     ],
                     'pengukuhan_penyuluh_swadaya' => [
-                        'url' => asset('storage/' . $data->file_pengukuhan_penyuluh_swadaya),
+                        'url' => asset($data->file_pengukuhan_penyuluh_swadaya),
                         'verification' => $verifiedDocuments['pengukuhan_penyuluh_swadaya'] ?? null
                     ],
                     'legalitas_kelompok' => [
-                        'url' => asset('storage/' . $data->file_legalitas_kelompok),
+                        'url' => asset($data->file_legalitas_kelompok),
                         'verification' => $verifiedDocuments['legalitas_kelompok'] ?? null
                     ],
                     'rekomendasi_kelompok' => [
-                        'url' => asset('storage/' . $data->file_rekomendasi_kelompok),
+                        'url' => asset($data->file_rekomendasi_kelompok),
                         'verification' => $verifiedDocuments['rekomendasi_kelompok'] ?? null
                     ],
 

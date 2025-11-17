@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\JenisPelatihanPetani;
 use App\Models\KelompokPelatihanPetani;
 use Intervention\Image\Laravel\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 class RegPelatihanPetaniController extends Controller
 {
@@ -235,13 +236,18 @@ class RegPelatihanPetaniController extends Controller
     {
         $hash = pathinfo($file->hashName(), PATHINFO_FILENAME);
         $webpName = $hash . '.webp';
-        $path = 'public/' . $folder . '/' . $webpName;
 
+        // Pastikan folder dibuat di storage/app/public/<folder>
+        Storage::disk('public')->makeDirectory($folder);
+
+        // Convert ke webp menggunakan Intervention Image
         $image = Image::read($file)->toWebp(80);
 
-        \Storage::put($path, (string)$image);
+        // Simpan ke storage/app/public/<folder>/<hash>.webp
+        Storage::disk('public')->put("$folder/$webpName", (string) $image);
 
-        return 'storage/' . $folder . '/' . $webpName;
+        // URL yang bisa diakses browser → public/storage/<folder>/<hash>.webp
+        return "storage/$folder/$webpName";
     }
 
     protected function saveAndCompressPdf($file, $folder)
