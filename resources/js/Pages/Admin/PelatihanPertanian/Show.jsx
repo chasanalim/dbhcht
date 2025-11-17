@@ -346,10 +346,9 @@ export default function Show({ title, data, type = "PELATIHAN_PERTANIAN" }) {
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>Masa Aktif</td>
+                                            <td>Mempunyai Legalitas</td>
                                             <td>
-                                                :{" "}
-                                                {data.kelompok_tani.masa_aktif}
+                                                : Ya
                                             </td>
                                             <td className="text-danger text-bold">
                                                 Skor :{" "}
@@ -367,6 +366,14 @@ export default function Show({ title, data, type = "PELATIHAN_PERTANIAN" }) {
                                                         50
                                                 ).toFixed(2)}
                                             </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Masa Aktif</td>
+                                            <td>
+                                                :{" "}
+                                                {data.kelompok_tani.masa_aktif}
+                                            </td>
+
                                         </tr>
                                         <tr>
                                             <td>Bidang Usaha</td>
