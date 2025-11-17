@@ -78,13 +78,27 @@ class RegPelatihanUmkmController extends Controller
     public function store(Request $request)
     {
         try {
+            // Cek ukuran request sebelum processing
+            $contentLength = $request->server('CONTENT_LENGTH');
+            $maxPostSize = $this->getPostMaxSize();
+
+            if ($contentLength > $maxPostSize) {
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'error' => 'Total ukuran file terlalu besar (' . $this->formatBytes($contentLength) . '). Maksimal ' . $this->formatBytes($maxPostSize) . '. Silakan kompres file atau hapus beberapa file.'
+                    ]);
+            }
+
+            // Validasi phone number format
             if (Str::startsWith($request->no_hp, '08')) {
                 $request->merge([
                     'no_hp' => '62' . substr($request->no_hp, 1)
                 ]);
             }
 
-            $data = $request->validate($this->getValidationRules());
+            // Custom validation dengan pesan error yang lebih jelas
+            $data = $request->validate($this->getValidationRules(), $this->getCustomMessages());
 
             DB::beginTransaction();
 
@@ -112,12 +126,60 @@ class RegPelatihanUmkmController extends Controller
             return back()
                 ->withInput()
                 ->withErrors($e->errors());
+        } catch (\Illuminate\Http\Exceptions\PostTooLargeException $e) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'error' => 'Data yang dikirim terlalu besar. Silakan kompres file atau kurangi ukuran file. Maksimal total 8MB.'
+                ]);
         } catch (\Exception $e) {
             Log::error('Registration Error: ' . $e->getMessage());
             return back()
                 ->withInput()
                 ->withErrors(['error' => 'Terjadi kesalahan sistem: ' . $e->getMessage()]);
         }
+    }
+
+    protected function getCustomMessages()
+    {
+        return [
+            '*.max' => 'Ukuran file maksimal 2MB.',
+            '*.mimes' => 'Format file tidak sesuai.',
+            '*.required' => 'Field ini wajib diisi.',
+            'file_*.required' => 'File ini wajib diupload.',
+            'komitmen.accepted' => 'Anda harus menyetujui pernyataan komitmen.',
+        ];
+    }
+
+    protected function getPostMaxSize()
+    {
+        $postMaxSize = ini_get('post_max_size');
+        if (!$postMaxSize) return 0;
+
+        $unit = strtoupper(substr($postMaxSize, -1));
+        $value = (int) $postMaxSize;
+
+        switch ($unit) {
+            case 'G':
+                return $value * 1024 * 1024 * 1024;
+            case 'M':
+                return $value * 1024 * 1024;
+            case 'K':
+                return $value * 1024;
+            default:
+                return $value;
+        }
+    }
+
+    protected function formatBytes($bytes, $precision = 2)
+    {
+        $units = array('B', 'KB', 'MB', 'GB', 'TB');
+
+        for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
+            $bytes /= 1024;
+        }
+
+        return round($bytes, $precision) . ' ' . $units[$i];
     }
 
     protected function handleFileUploads(Request $request)
