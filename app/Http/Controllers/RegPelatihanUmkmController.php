@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use Intervention\Image\Laravel\Facades\Image;
+use Intervention\Image\Encoders\WebpEncoder;
 
 
 class RegPelatihanUmkmController extends Controller
@@ -133,11 +135,62 @@ class RegPelatihanUmkmController extends Controller
         ];
 
         foreach ($fileFields as $field => $folder) {
-            if ($request->hasFile($field)) {
-                $fileName = $request->file($field)->hashName();
-                $uploadedFiles[$field] = '/storage/pendaftaran-pelatihan-umkm/' . $folder . '/' . $fileName;
-                $request->file($field)->storeAs('pendaftaran-pelatihan-umkm/' . $folder, $fileName, 'public');
+
+            if (!$request->hasFile($field)) {
+                continue;
             }
+
+            $file = $request->file($field);
+            $extension = strtolower($file->getClientOriginalExtension());
+
+            $fileNameWithoutExt = pathinfo($file->hashName(), PATHINFO_FILENAME);
+            $storageFolder = 'pendaftaran-pelatihan-umkm/' . $folder;
+
+            if (in_array($extension, ['jpg', 'jpeg', 'png'])) {
+
+                $webpName = $fileNameWithoutExt . '.webp';
+                $storagePath = $storageFolder . '/' . $webpName;
+
+                $image = Image::read($file)->encode(new WebpEncoder(quality: 80));
+
+                Storage::disk('public')->put($storagePath, (string) $image);
+
+                $uploadedFiles[$field] = '/storage/' . $storagePath;
+                continue;
+            }
+
+            if ($extension === 'pdf') {
+
+                $originalName = $fileNameWithoutExt . '.pdf';
+                $originalPath = storage_path('app/public/' . $storageFolder . '/' . $originalName);
+
+                $file->storeAs($storageFolder, $originalName, 'public');
+
+                $compressedPath = storage_path('app/public/' . $storageFolder . '/' . $fileNameWithoutExt . '-compressed.pdf');
+
+                if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+
+                    $gsCmd = 'gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook ' .
+                            '-dNOPAUSE -dQUIET -dBATCH ' .
+                            '-sOutputFile="' . $compressedPath . '" "' . $originalPath . '"';
+
+                    exec($gsCmd);
+
+                    if (file_exists($compressedPath)) {
+                        unlink($originalPath);
+                        rename($compressedPath, $originalPath);
+                    }
+                }
+
+                $uploadedFiles[$field] = '/storage/' . $storageFolder . '/' . $originalName;
+                continue;
+            }
+
+            $fileName = $file->hashName();
+            $storagePath = $storageFolder . '/' . $fileName;
+
+            $file->storeAs($storageFolder, $fileName, 'public');
+            $uploadedFiles[$field] = '/storage/' . $storagePath;
         }
 
         return $uploadedFiles;

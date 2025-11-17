@@ -48,7 +48,7 @@ class RegPelatihanKeterampilanKerjaController extends Controller
             "file_surat_kesanggupan" => ['nullable', 'file'],
             "file_fotokopi_ijazah" => ['nullable', 'file'],
         ]);
-    
+
         $fileFields = [
             'file_ktp' => 'ktp',
             'file_kk' => 'kk',
@@ -57,36 +57,67 @@ class RegPelatihanKeterampilanKerjaController extends Controller
             'file_surat_kesanggupan' => 'surat_kesanggupan',
             'file_fotokopi_ijazah' => 'fotokopi_ijazah',
         ];
-    
+
         foreach ($fileFields as $field => $folder) {
             if ($request->hasFile($field)) {
+
                 $file = $request->file($field);
                 $extension = strtolower($file->getClientOriginalExtension());
                 $fileNameWithoutExt = pathinfo($file->hashName(), PATHINFO_FILENAME);
                 $storageFolder = 'pendaftaran-pelatihan-kerja/' . $folder;
-    
+
                 if (in_array($extension, ['jpg', 'jpeg', 'png'])) {
+
                     $webpFileName = $fileNameWithoutExt . '.webp';
                     $storagePath = $storageFolder . '/' . $webpFileName;
-    
+
                     $image = Image::read($file)->encode(new WebpEncoder(quality: 80));
-    
+
                     Storage::disk('public')->put($storagePath, (string) $image);
                     $validated[$field] = '/storage/' . $storagePath;
-                } else {
-                    $fileName = $file->hashName();
-                    $storagePath = $storageFolder . '/' . $fileName;
-    
-                    $file->storeAs($storageFolder, $fileName, 'public');
-                    $validated[$field] = '/storage/' . $storagePath;
+
+                    continue;
                 }
+
+                if ($extension === 'pdf') {
+
+                    $originalName = $fileNameWithoutExt . '.pdf';
+                    $originalPath = storage_path("app/public/$storageFolder/$originalName");
+
+                    $file->storeAs($storageFolder, $originalName, 'public');
+
+                    // path PDF hasil compress
+                    $compressedPath = storage_path("app/public/$storageFolder/{$fileNameWithoutExt}_compressed.pdf");
+
+                    // perintah Ghostscript
+                    $gsCmd = 'gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 ' .
+                            '-dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH ' .
+                            '-sOutputFile="' . $compressedPath . '" "' . $originalPath . '"';
+
+                    @exec($gsCmd);
+
+                    if (file_exists($compressedPath)) {
+                        unlink($originalPath);
+                        rename($compressedPath, $originalPath);
+                    }
+
+                    $validated[$field] = '/storage/' . $storageFolder . '/' . $originalName;
+
+                    continue;
+                }
+
+                $fileName = $file->hashName();
+                $storagePath = $storageFolder . '/' . $fileName;
+
+                $file->storeAs($storageFolder, $fileName, 'public');
+                $validated[$field] = '/storage/' . $storagePath;
             }
         }
-    
+
         $validated['status'] = 0;
-    
+
         $storedPendaftaran = PelatihanKerjas::create($validated);
-    
+
         return to_route('pelatihan.kerja.success', $storedPendaftaran->id)
             ->with('success', 'Pendaftaran Berhasil.');
     }

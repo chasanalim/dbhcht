@@ -122,35 +122,64 @@ class PelatihanPenerimaBanmodController extends Controller
             'file_surat_kesanggupan' => 'surat-kesanggupan',
             'file_nib' => 'nib',
         ];
-
+    
         foreach ($fileFields as $field => $folder) {
             if ($request->hasFile($field)) {
                 $file = $request->file($field);
                 $extension = strtolower($file->getClientOriginalExtension());
                 $fileNameWithoutExt = pathinfo($file->hashName(), PATHINFO_FILENAME);
-
-                $webpFileName = $fileNameWithoutExt . '.webp';
-                $storagePath = 'pelatihan-banmod/' . $folder . '/' . $webpFileName;
-
+    
                 if (in_array($extension, ['jpg', 'jpeg', 'png'])) {
-                    $image = Image::make($file)
-                        ->encode('webp', 80);
-
-                    \Storage::disk('public')->put($storagePath, $image);
-
+    
+                    $webpFileName = $fileNameWithoutExt . '.webp';
+                    $storagePath = 'pelatihan-banmod/' . $folder . '/' . $webpFileName;
+    
+                    $image = Image::read($file)
+                        ->encode(new \Intervention\Image\Encoders\WebpEncoder(quality: 80));
+    
+                    Storage::disk('public')->put($storagePath, (string)$image);
+    
                     $uploadedFiles[$field] = '/storage/' . $storagePath;
-                } else {
-                    $fileName = $file->hashName();
-                    $storagePath = 'pelatihan-banmod/' . $folder . '/' . $fileName;
-                    $file->storeAs('pelatihan-banmod/' . $folder, $fileName, 'public');
-
-                    $uploadedFiles[$field] = '/storage/' . $storagePath;
+                    continue;
                 }
+    
+                if ($extension === 'pdf') {
+    
+                    $originalName = $fileNameWithoutExt . '.pdf';
+                    $storagePath = storage_path('app/public/pelatihan-banmod/' . $folder . '/' . $originalName);
+    
+                    $file->storeAs('pelatihan-banmod/' . $folder, $originalName, 'public');
+    
+                    $compressedPath = storage_path(
+                        'app/public/pelatihan-banmod/' . $folder . '/' . $fileNameWithoutExt . '-compressed.pdf'
+                    );
+    
+                    // perintah Ghostscript
+                    $gsCmd = 'gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook ' .
+                             '-dNOPAUSE -dQUIET -dBATCH ' .
+                             '-sOutputFile="' . $compressedPath . '" "' . $storagePath . '"';
+    
+                    @exec($gsCmd);
+    
+                    if (file_exists($compressedPath)) {
+                        unlink($storagePath);
+                        rename($compressedPath, $storagePath);
+                    }
+    
+                    $uploadedFiles[$field] = '/storage/pelatihan-banmod/' . $folder . '/' . $originalName;
+                    continue;
+                }
+    
+                $fileName = $file->hashName();
+                $storagePath = 'pelatihan-banmod/' . $folder . '/' . $fileName;
+                $file->storeAs('pelatihan-banmod/' . $folder, $fileName, 'public');
+    
+                $uploadedFiles[$field] = '/storage/' . $storagePath;
             }
         }
-
+    
         return $uploadedFiles;
-}
+    }    
 
 
     protected function cleanupUploadedFiles(array $files)
