@@ -12,6 +12,7 @@ use App\Models\PelatihanPetani;
 use Illuminate\Support\Facades\Log;
 use App\Models\JenisPelatihanPetani;
 use App\Models\KelompokPelatihanPetani;
+use Intervention\Image\Laravel\Facades\Image;
 
 class RegPelatihanPetaniController extends Controller
 {
@@ -42,8 +43,6 @@ class RegPelatihanPetaniController extends Controller
 
     public function store(Request $request)
     {
-        // return response()->json(request()->all());
-
         $data = $request->validate([
             'nik' => 'required|numeric|digits:16|unique:pelatihan_petanis,nik',
             'kk' => 'required|numeric|digits:16',
@@ -83,24 +82,32 @@ class RegPelatihanPetaniController extends Controller
             'file_rekomendasi_kelompok' => 'required|file|mimes:pdf|max:2048',
         ]);
 
-        // Simpan file upload
-        $data['file_foto'] = $request->file('file_foto')->store('petani/foto');
-        $data['file_kk'] = $request->file('file_kk')->store('petani/foto_kk');
-        $data['file_ktp'] = $request->file('file_ktp')->store('petani/ktp');
-        $data['file_pernyataan_tidak_mengikuti_pelatihan_lain'] = $request->file('file_pernyataan_tidak_mengikuti_pelatihan_lain')->store('petani/file_pernyataan_tidak_mengikuti_pelatihan_lain');
-        $data['file_pernyataan_kesanggupan_ikut_pelatihan'] = $request->file('file_pernyataan_kesanggupan_ikut_pelatihan')->store('petani/file_pernyataan_kesanggupan_ikut_pelatihan');
-        $data['file_pengukuhan_penyuluh_swadaya'] = $request->file('file_pengukuhan_penyuluh_swadaya')->store('petani/file_pengukuhan_penyuluh_swadaya');
-        $data['file_legalitas_kelompok'] = $request->file('file_legalitas_kelompok')->store('petani/file_legalitas_kelompok');
-        $data['file_rekomendasi_kelompok'] = $request->file('file_rekomendasi_kelompok')->store('petani/file_rekomendasi_kelompok');
+        // === Handle IMAGE as WEBP ===
+        $data['file_foto'] = $this->saveImageAsWebp($request->file('file_foto'), 'petani/foto');
+        $data['file_kk'] = $this->saveImageAsWebp($request->file('file_kk'), 'petani/foto_kk');
+        $data['file_ktp'] = $this->saveImageAsWebp($request->file('file_ktp'), 'petani/ktp');
 
-        // Format array ke string json (jika dibutuhkan)
+        // === Handle PDF (compress for Linux) ===
+        $data['file_pernyataan_tidak_mengikuti_pelatihan_lain'] =
+            $this->saveAndCompressPdf($request->file('file_pernyataan_tidak_mengikuti_pelatihan_lain'), 'petani/file_pernyataan_tidak_mengikuti_pelatihan_lain');
+
+        $data['file_pernyataan_kesanggupan_ikut_pelatihan'] =
+            $this->saveAndCompressPdf($request->file('file_pernyataan_kesanggupan_ikut_pelatihan'), 'petani/file_pernyataan_kesanggupan_ikut_pelatihan');
+
+        $data['file_pengukuhan_penyuluh_swadaya'] =
+            $this->saveAndCompressPdf($request->file('file_pengukuhan_penyuluh_swadaya'), 'petani/file_pengukuhan_penyuluh_swadaya');
+
+        $data['file_legalitas_kelompok'] =
+            $this->saveAndCompressPdf($request->file('file_legalitas_kelompok'), 'petani/file_legalitas_kelompok');
+
+        $data['file_rekomendasi_kelompok'] =
+            $this->saveAndCompressPdf($request->file('file_rekomendasi_kelompok'), 'petani/file_rekomendasi_kelompok');
+
+        // Format array ke json
         $data['jenis_disabilitas'] = json_encode($data['jenis_disabilitas'] ?? []);
-        $data['status'] = 0; // Default status is 'Menunggu'
+        $data['status'] = 0;
 
         $storedPetani = PelatihanPetani::create($data);
-        // PelatihanPetani::create($data);
-
-        // return redirect()->back()->with('success', 'Pendaftaran berhasil disimpan!');
 
         return to_route('pelatihan.petani.success', $storedPetani->id)
             ->with('success', 'Pendaftaran berhasil disimpan!');
@@ -223,4 +230,51 @@ class RegPelatihanPetaniController extends Controller
                 ->withErrors(['error' => 'Halaman tidak dapat diakses.']);
         }
     }
+
+    protected function saveImageAsWebp($file, $folder)
+    {
+        $hash = pathinfo($file->hashName(), PATHINFO_FILENAME);
+        $webpName = $hash . '.webp';
+        $path = 'public/' . $folder . '/' . $webpName;
+
+        $image = Image::read($file)->toWebp(80);
+
+        \Storage::put($path, (string)$image);
+
+        return 'storage/' . $folder . '/' . $webpName;
+    }
+
+    protected function saveAndCompressPdf($file, $folder)
+    {
+        $fileName = $file->hashName();
+        $storagePath = storage_path("app/public/$folder/$fileName");
+
+        // Simpan original dulu
+        $file->storeAs($folder, $fileName, 'public');
+
+        // Jika di Windows => langsung return original (tidak compress)
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            return "storage/$folder/$fileName";
+        }
+
+        // Path untuk compressed PDF
+        $compressed = storage_path("app/public/$folder/compressed-$fileName");
+
+        // Perintah Ghostscript
+        $cmd = 'gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook '
+            . '-dNOPAUSE -dQUIET -dBATCH '
+            . '-sOutputFile="' . $compressed . '" "' . $storagePath . '"';
+
+        @exec($cmd);
+
+        // Jika compress sukses → replace file asli
+        if (file_exists($compressed)) {
+            unlink($storagePath);
+            rename($compressed, $storagePath);
+        }
+
+        return "storage/$folder/$fileName";
+    }
+
+
 }

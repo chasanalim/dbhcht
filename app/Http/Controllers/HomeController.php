@@ -70,6 +70,7 @@ class HomeController extends Controller
 
     public function pelatihan(Request $request)
     {
+        // return Inertia::render('404/BelumTersedia', [
         return Inertia::render('Pelatihan/FormPelatihan', [
             'meta' => [
                 'title' => 'Form Pendaftaran Pelatihan',
