@@ -153,12 +153,69 @@ export default function FormUMKM() {
         }
     };
 
+    // Fungsi untuk format ukuran file
+    const formatFileSize = (bytes) => {
+        if (bytes === 0) return "0 Bytes";
+        const k = 1024;
+        const sizes = ["Bytes", "KB", "MB", "GB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+    };
+
+    // Fungsi untuk validasi total ukuran file
+    const getTotalFileSize = () => {
+        let totalSize = 0;
+        
+        const fileFields = [
+            'file_ktp', 'file_kk', 'file_pasfoto', 
+            'file_surat_pernyataan_tidak_ikut', 
+            'file_surat_kesanggupan', 'file_nib'
+        ];
+
+        fileFields.forEach(field => {
+            if (data[field]) {
+                if (Array.isArray(data[field])) {
+                    data[field].forEach(file => {
+                        totalSize += file.size || 0;
+                    });
+                } else {
+                    totalSize += data[field].size || 0;
+                }
+            }
+        });
+
+        return totalSize;
+    };
+
     const handleUploadFoto = (e, field_name, preview_name) => {
         const file = e.target.files[0];
         if (!file) return;
 
-        if (file.size > 2 * 1024 * 1024) {
-            alert("Ukuran file maksimal 2MB. File terlalu besar: " + file.name);
+        // Validasi ukuran file individual (2MB)
+        const maxFileSize = 2 * 1024 * 1024; // 2MB
+        if (file.size > maxFileSize) {
+            alert(
+                `Ukuran file terlalu besar: ${formatFileSize(file.size)}\n` +
+                `Maksimal ukuran file: 2MB\n` +
+                `Silakan kompres atau pilih file yang lebih kecil.`
+            );
+            e.target.value = ''; // Reset input
+            return;
+        }
+
+        // Validasi total ukuran semua file (8MB)
+        const currentTotalSize = getTotalFileSize();
+        const maxTotalSize = 8 * 1024 * 1024; // 8MB
+        const newTotalSize = currentTotalSize + file.size - (data[field_name]?.size || 0);
+
+        if (newTotalSize > maxTotalSize) {
+            alert(
+                `Total ukuran semua file akan melebihi batas: ${formatFileSize(newTotalSize)}\n` +
+                `Maksimal total ukuran: 8MB\n` +
+                `Saat ini: ${formatFileSize(currentTotalSize)}\n` +
+                `Silakan kompres file atau hapus file lain terlebih dahulu.`
+            );
+            e.target.value = '';
             return;
         }
 
@@ -175,24 +232,44 @@ export default function FormUMKM() {
         reader.readAsDataURL(file);
     };
 
-    const formatFileSize = (bytes) => {
-        if (bytes === 0) return "0 Bytes";
-        const k = 1024;
-        const sizes = ["Bytes", "KB", "MB", "GB"];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-    };
-
     const handleUploadFile = (e, field_name, multiple) => {
         const rawFiles = e.target.files;
         if (!rawFiles || rawFiles.length === 0) return;
 
         const files = Array.from(rawFiles);
+        const maxFileSize = 2 * 1024 * 1024; // 2MB
 
-        if (files[0].size > 2 * 1024 * 1024) {
+        // Validasi setiap file
+        for (let file of files) {
+            if (file.size > maxFileSize) {
+                alert(
+                    `File "${file.name}" terlalu besar: ${formatFileSize(file.size)}\n` +
+                    `Maksimal ukuran file: 2MB\n` +
+                    `Silakan kompres atau pilih file yang lebih kecil.`
+                );
+                e.target.value = '';
+                return;
+            }
+        }
+
+        // Validasi total ukuran
+        const currentTotalSize = getTotalFileSize();
+        const newFilesSize = files.reduce((sum, file) => sum + file.size, 0);
+        const oldFileSize = Array.isArray(data[field_name]) 
+            ? data[field_name].reduce((sum, file) => sum + (file.size || 0), 0)
+            : (data[field_name]?.size || 0);
+        
+        const newTotalSize = currentTotalSize + newFilesSize - oldFileSize;
+        const maxTotalSize = 8 * 1024 * 1024; // 8MB
+
+        if (newTotalSize > maxTotalSize) {
             alert(
-                "Ukuran file maksimal 2MB. File terlalu besar: " + files[0].name
+                `Total ukuran semua file akan melebihi batas: ${formatFileSize(newTotalSize)}\n` +
+                `Maksimal total ukuran: 8MB\n` +
+                `Saat ini: ${formatFileSize(currentTotalSize)}\n` +
+                `Silakan kompres file atau hapus file lain terlebih dahulu.`
             );
+            e.target.value = '';
             return;
         }
 
@@ -202,19 +279,55 @@ export default function FormUMKM() {
         }));
     };
 
+    // // Component untuk menampilkan info ukuran total
+    // const FileSizeIndicator = () => {
+    //     const totalSize = getTotalFileSize();
+    //     const maxSize = 8 * 1024 * 1024; // 8MB
+    //     const percentage = (totalSize / maxSize) * 100;
+
+    //     return (
+    //         <div className="mb-3 p-3 border rounded bg-light">
+    //             <div className="d-flex justify-content-between align-items-center mb-2">
+    //                 <span className="fw-semibold">Total Ukuran File:</span>
+    //                 <span className={`fw-bold ${percentage > 80 ? 'text-danger' : percentage > 60 ? 'text-warning' : 'text-success'}`}>
+    //                     {formatFileSize(totalSize)} / 8MB
+    //                 </span>
+    //             </div>
+    //             <div className="progress" style={{ height: '8px' }}>
+    //                 <div 
+    //                     className={`progress-bar ${percentage > 80 ? 'bg-danger' : percentage > 60 ? 'bg-warning' : 'bg-success'}`}
+    //                     style={{ width: `${Math.min(percentage, 100)}%` }}
+    //                 ></div>
+    //             </div>
+    //             {percentage > 80 && (
+    //                 <small className="text-danger mt-1 d-block">
+    //                     ⚠️ Mendekati batas maksimal! Kompres file untuk menghindari error.
+    //                 </small>
+    //             )}
+    //         </div>
+    //     );
+    // };
+
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         setIsSubmitting(true);
-        console.log(data);
+        
         try {
             await post(route("pelatihan.umkm.store"), {
                 forceFormData: true,
+                onSuccess: () => {
+                    localStorage.removeItem("form_umkm_data");
+                    // Redirect akan dilakukan oleh Inertia
+                },
+                onError: (errors) => {
+                    console.error("Form errors:", errors);
+                    // Errors akan otomatis ditampilkan di form
+                }
             });
-            localStorage.removeItem("form_umkm_data");
         } catch (error) {
-            console.error("Error:", error);
+            console.error("Submit error:", error);
         } finally {
             setIsSubmitting(false);
         }
@@ -236,6 +349,21 @@ export default function FormUMKM() {
         }));
     };
 
+    const FileCompressionGuide = () => (
+        <div className="alert alert-info mb-4">
+            <h6 className="fw-bold">📋 Panduan Upload File:</h6>
+            <ul className="mb-0 small">
+                <li>Maksimal ukuran per file: <strong>2MB</strong></li>
+                <li>Jika file terlalu besar, gunakan tools kompresi online:
+                    <ul>
+                        <li>Untuk gambar: <a href="https://tinypng.com" target="_blank" rel="noopener noreferrer">TinyPNG</a> atau <a href="https://compressjpeg.com" target="_blank" rel="noopener noreferrer">CompressJPEG</a></li>
+                        <li>Untuk PDF: <a href="https://www.ilovepdf.com/compress_pdf" target="_blank" rel="noopener noreferrer">ILovePDF</a> atau <a href="https://smallpdf.com/compress-pdf" target="_blank" rel="noopener noreferrer">SmallPDF</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    );
+
     const renderFileUpload = ({
         label,
         fieldName,
@@ -243,6 +371,8 @@ export default function FormUMKM() {
         multiple = false,
         imagePreviewKey = null,
         index = 1,
+        description = "",
+        downloadLink = null,
     }) => {
         const indexLabel = `${index}.`;
 
@@ -251,13 +381,10 @@ export default function FormUMKM() {
                 <div className="mb-2 fw-semibold">
                     {indexLabel} {label}
                 </div>
-                <Form.Label
-                    className="text-primary"
-                    style={{ fontSize: "11px" }}
-                >
-                    Format:{" "}
-                    {accept === ".pdf" ? "*.pdf" : "*.png, *.jpg, *.jpeg"}
+                <Form.Label className="text-primary" style={{ fontSize: "11px" }}>
+                    Format: {accept === ".pdf" ? "*.pdf" : "*.png, *.jpg, *.jpeg"}
                 </Form.Label>
+                
                 <Form.Control
                     type="file"
                     accept={accept}
@@ -267,9 +394,38 @@ export default function FormUMKM() {
                             ? handleUploadFoto(e, fieldName, imagePreviewKey)
                             : handleUploadFile(e, fieldName, multiple)
                     }
+                    isInvalid={!!errors[fieldName]}
                 />
+                
+                {/* Error display */}
+                {errors[fieldName] && (
+                    <Form.Control.Feedback type="invalid">
+                        {errors[fieldName]}
+                    </Form.Control.Feedback>
+                )}
 
-                {/* Image Preview with Remove */}
+                {/* Deskripsi tambahan */}
+                {description && (
+                    <div className="text-muted mt-1" style={{ fontSize: "12px" }}>
+                        {description}
+                    </div>
+                )}
+
+                {/* Link untuk unduh template dokumen */}
+                {downloadLink && (
+                    <div className="mt-2">
+                        <a
+                            href={downloadLink}
+                            download
+                            className="text-decoration-none text-danger fw-semibold"
+                            style={{ fontSize: "12px" }}
+                        >
+                            📥 Unduh Template Dokumen (PDF)
+                        </a>
+                    </div>
+                )}
+
+                {/* Image Preview */}
                 {imagePreviewKey && data[imagePreviewKey] && (
                     <div className="mt-3 position-relative d-inline-block">
                         <img
@@ -277,22 +433,21 @@ export default function FormUMKM() {
                             width={200}
                             height={200}
                             src={data[imagePreviewKey]}
+                            alt="Preview"
                         />
                         <Button
                             size="sm"
                             variant="danger"
                             className="position-absolute top-0 end-0"
-                            onClick={() =>
-                                handleRemoveImage(fieldName, imagePreviewKey)
-                            }
+                            onClick={() => handleRemoveImage(fieldName, imagePreviewKey)}
                         >
                             ✕
                         </Button>
                     </div>
                 )}
 
-                {/* PDF/File Preview */}
-                {!imagePreviewKey && data[fieldName]?.length > 0 && (
+                {/* File Preview */}
+                {!imagePreviewKey && data[fieldName] && (
                     <ListGroup className="mt-3">
                         {Array.isArray(data[fieldName]) ? (
                             data[fieldName].map((file, idx) => (
@@ -301,8 +456,7 @@ export default function FormUMKM() {
                                     className="d-flex justify-content-between align-items-center"
                                 >
                                     <span>
-                                        📄 {file.name} (
-                                        {formatFileSize(file.size)})
+                                        📄 {file.name} ({formatFileSize(file.size)})
                                         <a
                                             href={URL.createObjectURL(file)}
                                             target="_blank"
@@ -315,9 +469,7 @@ export default function FormUMKM() {
                                     <Button
                                         size="sm"
                                         variant="outline-danger"
-                                        onClick={() =>
-                                            handleRemoveFile(fieldName, idx)
-                                        }
+                                        onClick={() => handleRemoveFile(fieldName, idx)}
                                     >
                                         Hapus
                                     </Button>
@@ -326,15 +478,12 @@ export default function FormUMKM() {
                         ) : (
                             <ListGroup.Item className="d-flex justify-content-between align-items-center">
                                 <span>
-                                    📄 {data[fieldName][0]?.name}
+                                    📄 {data[fieldName].name} ({formatFileSize(data[fieldName].size)})
                                     <a
-                                        href={URL.createObjectURL(
-                                            data[fieldName][0]
-                                        )}
+                                        href={URL.createObjectURL(data[fieldName])}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="ms-2 text-decoration-underline"
-                                        style={{ fontSize: "12px" }}
                                     >
                                         Preview
                                     </a>
@@ -342,9 +491,7 @@ export default function FormUMKM() {
                                 <Button
                                     size="sm"
                                     variant="outline-danger"
-                                    onClick={() =>
-                                        handleRemoveFile(fieldName, 0)
-                                    }
+                                    onClick={() => handleRemoveImage(fieldName, imagePreviewKey || 'preview')}
                                 >
                                     Hapus
                                 </Button>
@@ -951,16 +1098,31 @@ export default function FormUMKM() {
                     </Form.Group>
 
                     <div className="big-text text-muted mb-4">
-                        Upload Berkas Max 2MB
+                        Upload Berkas Max 2MB (Total Max 8MB)
                         <div className="underline"></div>
                     </div>
 
+                    {/* Error display untuk file size */}
+                    {errors.error && (
+                        <div className="alert alert-danger mb-3">
+                            <strong>Error:</strong> {errors.error}
+                        </div>
+                    )}
+
+                    {/* File Size Indicator
+                    <FileSizeIndicator /> */}
+
+                    {/* Panduan Kompresi */}
+                    <FileCompressionGuide />
+
+                    {/* File uploads */}
                     {renderFileUpload({
                         label: "Foto KTP",
                         fieldName: "file_ktp",
                         accept: ".png,.jpg,.jpeg",
                         imagePreviewKey: "imagePreviewKTP",
                         index: 1,
+                        description: "Maksimal 2MB. Format: PNG, JPG, JPEG",
                     })}
 
                     {renderFileUpload({
@@ -969,6 +1131,7 @@ export default function FormUMKM() {
                         accept: ".png,.jpg,.jpeg",
                         imagePreviewKey: "imagePreviewKK",
                         index: 2,
+                        description: "Maksimal 2MB. Format: PNG, JPG, JPEG",
                     })}
 
                     {renderFileUpload({
@@ -977,6 +1140,7 @@ export default function FormUMKM() {
                         accept: ".png,.jpg,.jpeg",
                         imagePreviewKey: "imagePreviewPasFoto",
                         index: 3,
+                        description: "Maksimal 2MB. Format: PNG, JPG, JPEG",
                     })}
 
                     {renderFileUpload({
@@ -984,6 +1148,8 @@ export default function FormUMKM() {
                         fieldName: "file_surat_pernyataan_tidak_ikut",
                         accept: ".pdf",
                         index: 4,
+                        description: "Maksimal 2MB. Format: PDF",
+                        downloadLink: "/storage/templates/surat_pernyataan_tidak_ikut.pdf",
                     })}
 
                     {renderFileUpload({
@@ -991,6 +1157,8 @@ export default function FormUMKM() {
                         fieldName: "file_surat_kesanggupan",
                         accept: ".pdf",
                         index: 5,
+                        description: "Maksimal 2MB. Format: PDF",
+                        downloadLink: "/storage/templates/surat_kesanggupan.pdf",
                     })}
 
                     {renderFileUpload({
@@ -998,6 +1166,7 @@ export default function FormUMKM() {
                         fieldName: "file_nib",
                         accept: ".pdf",
                         index: 6,
+                        description: "Maksimal 2MB. Format: PDF",
                     })}
 
                     <hr />
