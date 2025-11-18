@@ -74,6 +74,14 @@ export default function Navbar(props) {
                         >
                             <NavDropdown.Item
                                 as={Link}
+                                method="get"
+                                href={route("admin.profile.edit")}
+                            >
+                                <i className="bi bi-person me-2"></i> Edit Profile
+                            </NavDropdown.Item>
+                            <NavDropdown.Divider />
+                            <NavDropdown.Item
+                                as={Link}
                                 method="post"
                                 href={route("logout")}
                                 preserveScroll

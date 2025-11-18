@@ -12,7 +12,8 @@ export default function SelectJenisPelatihan({ onChange, value, errors }) {
             label: "Pelatihan Keterampilan Untuk Penerima Banmod",
         },
         { value: "umkm", label: "Pelatihan UMKM" },
-        { value: "petani", label: "Pelatihan Petani" },
+        // { value: "penyuluh", label: "Pelatihan Penyuluh" },
+        { value: "petani", label: "Pelatihan Pertanian" },
         { value: "ekraf", label: "Pelatihan Ekonomi Kreatif" },
     ];
 
