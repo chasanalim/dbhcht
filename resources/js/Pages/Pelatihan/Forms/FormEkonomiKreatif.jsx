@@ -16,6 +16,10 @@ export default function FormEkonomiKreatif({
     jenis_pelatihan_options = {},
     quota_info = {} 
 }) {
+    // State untuk NIK checking (sama seperti UMKM)
+    const [nikStatus, setNikStatus] = useState(null);
+    const [dataPenerima, setDataPenerima] = useState(null);
+    const [errorMessage, setErrorMessage] = useState("");
     const [nikLength, setNikLength] = useState(0);
     const [kkLength, setKkLength] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -67,6 +71,32 @@ export default function FormEkonomiKreatif({
         
         komitmen: false,
     });
+
+    // Cek NIK function (sama seperti UMKM)
+    const cekNik = async () => {
+        setErrorMessage("");
+        setNikStatus("");
+        try {
+            const response = await axios.get(
+                `/pelatihan/ekonomi-kreatif/cek-nik/${data.nik}`
+            );
+
+            // Handle success response
+            if (response.data.success === true) {
+                setNikStatus("NIK valid!");
+                setDataPenerima(true);
+            } else {
+                setErrorMessage(response.data.message);
+            }
+        } catch (error) {
+            // Handle error response
+            if (error.response?.status === 403 || error.response?.status === 400) {
+                setErrorMessage(error.response.data.message);
+            } else {
+                setErrorMessage("Terjadi kesalahan saat cek NIK.");
+            }
+        }
+    };
 
     // Fetch required files when kategori changes
     useEffect(() => {
@@ -312,7 +342,7 @@ export default function FormEkonomiKreatif({
                 </ul>
             </div>
 
-            {/* ✅ NEW: Kuota Info Section */}
+            {/* Kuota Info Section */}
             {Object.keys(quota_info).length > 0 && (
                 <div className="alert alert-warning mb-4">
                     <h6 className="fw-bold mb-3">📊 Informasi Kuota Pelatihan Real-time:</h6>
@@ -348,320 +378,234 @@ export default function FormEkonomiKreatif({
                 </div>
             )}
 
-            {/* Kategori Pendaftar */}
+            {/* NIK Checking Section */}
             <div className="big-text text-muted mb-4">
-                A. Kategori Pendaftar
+                Data Peserta
                 <div className="underline"></div>
             </div>
 
+            {/* NIK & Pengecekan */}
             <Form.Group className="mb-3">
-                <Form.Label className="required">Kategori Pendaftar</Form.Label>
-                <SelectKategoriPendaftar
-                    value={data.kategori_pendaftar}
-                    onChange={(value) => {
-                        setData("kategori_pendaftar", value);
-                        // Reset file fields when category changes
-                        setData(prev => ({
-                            ...prev,
-                            file_surat_pemilik_lahan: null,
-                            file_id_card_iht: null,
-                            file_surat_phk: null,
-                            file_surat_disabilitas: null,
-                            file_surat_kb: null,
-                        }));
-                    }}
-                    errors={errors.kategori_pendaftar}
-                />
-                <Form.Text className="text-muted">
-                    Pilih kategori yang sesuai dengan kondisi Anda untuk menentukan persyaratan dokumen yang diperlukan.
-                </Form.Text>
+                <Form.Label className="required">NIK</Form.Label>
+                <InputGroup className="mb-3" hasValidation>
+                    <Form.Control
+                        name="nik"
+                        isInvalid={errors.nik}
+                        placeholder="Nomor KTP"
+                        value={data.nik}
+                        onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, ""); // Hanya terima angka
+                            if (value.length <= 16) {
+                                setData("nik", value);
+                                setNikLength(value.length);
+                                setNikStatus("");
+                                setErrorMessage("");
+                                setDataPenerima(null);
+                            }
+                        }}
+                        className={`${
+                            nikLength === 16 ? "border-success text-success" : "border-warning"
+                        }`}
+                        maxLength={16}
+                    />
+                    <Button
+                        className="z-0"
+                        variant="outline-primary"
+                        onClick={cekNik}
+                        disabled={nikLength !== 16}
+                    >
+                        Cek NIK
+                    </Button>
+                    <Form.Control.Feedback type="invalid">
+                        {errors.nik}
+                    </Form.Control.Feedback>
+                </InputGroup>
+                <small
+                    className={`d-block mt-1 ${
+                        nikLength === 16
+                            ? "text-success"
+                            : nikLength > 0
+                            ? "text-warning"
+                            : "text-muted"
+                    }`}
+                >
+                    {nikLength}/16 digit
+                </small>
             </Form.Group>
 
-            {/* Show requirements info when category selected */}
-            {data.kategori_pendaftar && (
-                <div className="alert alert-warning mb-4">
-                    <strong>📋 Dokumen yang diperlukan untuk kategori "{data.kategori_pendaftar.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}":</strong>
-                    <ul className="mb-0 mt-2">
-                        {Object.entries(requiredFiles).map(([key, label]) => (
-                            <li key={key}>{label}</li>
-                        ))}
-                    </ul>
-                </div>
-            )}
+            {/* Error & Success Messages */}
+            {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+            {nikStatus && <div className="alert alert-success">{nikStatus}</div>}
 
-            {/* Data Pendaftar - Only show if category selected */}
-            {data.kategori_pendaftar && (
+            {/* Show rest of form only when NIK is validated */}
+            {dataPenerima && (
                 <>
-                    {/* ...existing sections B (Data Pendaftar) & alamat sections remain the same... */}
+                    {/* Kategori Pendaftar */}
                     <div className="big-text text-muted mb-4">
-                        B. Data Pendaftar
+                        A. Kategori Pendaftar
                         <div className="underline"></div>
                     </div>
 
-                    {/* NIK */}
                     <Form.Group className="mb-3">
-                        <Form.Label className="required">NIK</Form.Label>
-                        <Form.Control
-                            type="text"
-                            value={data.nik}
-                            onChange={(e) => {
-                                const value = e.target.value.replace(/\D/g, "");
-                                if (value.length <= 16) {
-                                    setData("nik", value);
-                                    setNikLength(value.length);
-                                }
+                        <Form.Label className="required">Kategori Pendaftar</Form.Label>
+                        <SelectKategoriPendaftar
+                            value={data.kategori_pendaftar}
+                            onChange={(value) => {
+                                setData("kategori_pendaftar", value);
+                                // Reset file fields when category changes
+                                setData(prev => ({
+                                    ...prev,
+                                    file_surat_pemilik_lahan: null,
+                                    file_id_card_iht: null,
+                                    file_surat_phk: null,
+                                    file_surat_disabilitas: null,
+                                    file_surat_kb: null,
+                                }));
                             }}
-                            className={nikLength === 16 ? "border-success text-success" : "border-warning"}
-                            maxLength={16}
-                            placeholder="Nomor KTP"
-                            isInvalid={!!errors.nik}
+                            errors={errors.kategori_pendaftar}
                         />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.nik}
-                        </Form.Control.Feedback>
-                        <small className={`d-block mt-1 ${
-                            nikLength === 16 ? "text-success" : nikLength > 0 ? "text-warning" : "text-muted"
-                        }`}>
-                            {nikLength}/16 digit
-                        </small>
-                    </Form.Group>
-
-                    {/* Nomor KK */}
-                    <Form.Group className="mb-3">
-                        <Form.Label className="required">Nomor KK</Form.Label>
-                        <Form.Control
-                            type="text"
-                            value={data.no_kk}
-                            onChange={(e) => {
-                                const value = e.target.value.replace(/\D/g, "");
-                                if (value.length <= 16) {
-                                    setData("no_kk", value);
-                                    setKkLength(value.length);
-                                }
-                            }}
-                            className={kkLength === 16 ? "border-success text-success" : "border-warning"}
-                            maxLength={16}
-                            placeholder="Nomor Kartu Keluarga"
-                            isInvalid={!!errors.no_kk}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.no_kk}
-                        </Form.Control.Feedback>
-                        <small className={`d-block mt-1 ${
-                            kkLength === 16 ? "text-success" : kkLength > 0 ? "text-warning" : "text-muted"
-                        }`}>
-                            {kkLength}/16 digit
-                        </small>
-                    </Form.Group>
-
-                    {/* Nama Lengkap */}
-                    <Form.Group className="mb-3">
-                        <Form.Label className="required">Nama Lengkap</Form.Label>
-                        <Form.Control
-                            type="text"
-                            value={data.nama_lengkap}
-                            onChange={(e) => setData("nama_lengkap", e.target.value)}
-                            isInvalid={!!errors.nama_lengkap}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.nama_lengkap}
-                        </Form.Control.Feedback>
-                    </Form.Group>
-
-                    {/* Tanggal Lahir & Usia */}
-                    <Form.Group className="mb-3">
-                        <Form.Label className="required">Tanggal Lahir</Form.Label>
-                        <Form.Control
-                            type="date"
-                            value={data.tanggal_lahir}
-                            onChange={(e) => setData("tanggal_lahir", e.target.value)}
-                            max={new Date(new Date().setFullYear(new Date().getFullYear() - 17)).toISOString().split('T')[0]} // Max: 17 tahun yang lalu
-                            min={new Date(new Date().setFullYear(new Date().getFullYear() - 65)).toISOString().split('T')[0]} // Min: 65 tahun yang lalu
-                            isInvalid={!!errors.tanggal_lahir}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.tanggal_lahir}
-                        </Form.Control.Feedback>
-                        
-                        {/* Display calculated age */}
-                        {data.tanggal_lahir && (
-                            <Form.Text className={`mt-1 d-block fw-semibold ${
-                                currentAge >= 17 && currentAge <= 65 ? 'text-success' : 'text-danger'
-                            }`}>
-                                Usia saat ini: {currentAge} tahun
-                                {(currentAge < 17 || currentAge > 65) && (
-                                    <span className="ms-2">⚠️ Usia harus antara 17-65 tahun</span>
-                                )}
-                            </Form.Text>
-                        )}
-                        
                         <Form.Text className="text-muted">
-                            Usia minimal 17 tahun, maksimal 65 tahun
+                            Pilih kategori yang sesuai dengan kondisi Anda untuk menentukan persyaratan dokumen yang diperlukan.
                         </Form.Text>
                     </Form.Group>
 
-                    {/* No HP */}
-                    <Form.Group className="mb-3">
-                        <Form.Label className="required">No HP/WA</Form.Label>
-                        <Form.Control
-                            type="text"
-                            value={data.no_hp}
-                            onChange={(e) => setData("no_hp", e.target.value)}
-                            placeholder="628XXXXXXXXXX"
-                            isInvalid={!!errors.no_hp}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.no_hp}
-                        </Form.Control.Feedback>
-                    </Form.Group>
-
-                    {/* Alamat KTP */}
-                    <div className="big-text text-muted mb-4">
-                        Alamat Sesuai KTP
-                        <div className="underline"></div>
-                    </div>
-
-                    <Form.Group className="row mb-3">
-                        <div className="col-md-6 mb-3">
-                            <Form.Label className="required">Kecamatan</Form.Label>
-                            <SelectKecamatan
-                                onChange={(item) => setData(prev => ({
-                                    ...prev,
-                                    kode_kecamatan_ktp: item.id,
-                                    kecamatan_ktp: item.text,
-                                }))}
-                                errors={errors.kecamatan_ktp}
-                            />
+                    {/* Show requirements info when category selected */}
+                    {data.kategori_pendaftar && (
+                        <div className="alert alert-warning mb-4">
+                            <strong>📋 Dokumen yang diperlukan untuk kategori "{data.kategori_pendaftar.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}":</strong>
+                            <ul className="mb-0 mt-2">
+                                {Object.entries(requiredFiles).map(([key, label]) => (
+                                    <li key={key}>{label}</li>
+                                ))}
+                            </ul>
                         </div>
-                        <div className="col-md-6 mb-3">
-                            <Form.Label className="required">Kelurahan</Form.Label>
-                            <SelectKelurahan
-                                kodeKecamatan={data.kode_kecamatan_ktp}
-                                onChange={(item) => setData(prev => ({
-                                    ...prev,
-                                    kode_kelurahan_ktp: item.id,
-                                    kelurahan_ktp: item.text,
-                                }))}
-                                errors={errors.kelurahan_ktp}
-                            />
-                        </div>
-                    </Form.Group>
+                    )}
 
-                    <Form.Group className="row mb-3">
-                        <div className="col-md-6 mb-3">
-                            <Form.Label className="required">RW</Form.Label>
-                            <SelectRw
-                                kodeKelurahan={data.kode_kelurahan_ktp}
-                                onChange={(item) => setData(prev => ({
-                                    ...prev,
-                                    rw_ktp: item.text,
-                                }))}
-                                errors={errors.rw_ktp}
-                            />
-                        </div>
-                        <div className="col-md-6 mb-3">
-                            <Form.Label className="required">RT</Form.Label>
-                            <SelectRt
-                                kodeKelurahan={data.kode_kelurahan_ktp}
-                                kodeRw={data.rw_ktp}
-                                onChange={(item) => setData(prev => ({
-                                    ...prev,
-                                    rt_ktp: item.text,
-                                }))}
-                                errors={errors.rt_ktp}
-                            />
-                        </div>
-                    </Form.Group>
-
-                    <Form.Group className="mb-4">
-                        <Form.Label className="required">Alamat Lengkap KTP</Form.Label>
-                        <Form.Control
-                            as="textarea"
-                            rows={3}
-                            value={data.alamat_ktp}
-                            onChange={(e) => setData("alamat_ktp", e.target.value)}
-                            placeholder="Alamat lengkap sesuai KTP"
-                            isInvalid={!!errors.alamat_ktp}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.alamat_ktp}
-                        </Form.Control.Feedback>
-                    </Form.Group>
-
-                    {/* Alamat Domisili */}
-                    <div className="big-text text-muted mb-4">
-                        Alamat Domisili Saat Ini
-                        <div className="underline"></div>
-                    </div>
-
-                    {/* Checkbox untuk alamat domisili */}
-                    <Form.Group className="mb-3">
-                        <Form.Check
-                            type="checkbox"
-                            id="isDomisiliDifferent"
-                            label="Tidak sama dengan KTP"
-                            checked={data.isDomisili || false}
-                            onChange={(e) => {
-                                const isDifferent = e.target.checked;
-                                setData(prev => ({
-                                    ...prev,
-                                    isDomisili: isDifferent,
-                                    // Jika tidak diceklis, copy data dari KTP
-                                    ...(!isDifferent && {
-                                        alamat_domisili: prev.alamat_ktp,
-                                        rt_domisili: prev.rt_ktp,
-                                        rw_domisili: prev.rw_ktp,
-                                        kelurahan_domisili: prev.kelurahan_ktp,
-                                        kecamatan_domisili: prev.kecamatan_ktp,
-                                        kode_kelurahan_domisili: prev.kode_kelurahan_ktp,
-                                        kode_kecamatan_domisili: prev.kode_kecamatan_ktp,
-                                    })
-                                }));
-                            }}
-                        />
-                    </Form.Group>
-
-                    {/* Form alamat domisili - hanya muncul jika checkbox dicentang */}
-                    {data.isDomisili && (
+                    {/* Data Pendaftar - Only show if category selected */}
+                    {data.kategori_pendaftar && (
                         <>
+                            <div className="big-text text-muted mb-4">
+                                B. Data Pendaftar
+                                <div className="underline"></div>
+                            </div>
+
+                            {/* Nomor KK */}
+                            <Form.Group className="mb-3">
+                                <Form.Label className="required">Nomor KK</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={data.no_kk}
+                                    onChange={(e) => {
+                                        const value = e.target.value.replace(/\D/g, "");
+                                        if (value.length <= 16) {
+                                            setData("no_kk", value);
+                                            setKkLength(value.length);
+                                        }
+                                    }}
+                                    className={kkLength === 16 ? "border-success text-success" : "border-warning"}
+                                    maxLength={16}
+                                    placeholder="Nomor Kartu Keluarga"
+                                    isInvalid={!!errors.no_kk}
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.no_kk}
+                                </Form.Control.Feedback>
+                                <small className={`d-block mt-1 ${
+                                    kkLength === 16 ? "text-success" : kkLength > 0 ? "text-warning" : "text-muted"
+                                }`}>
+                                    {kkLength}/16 digit
+                                </small>
+                            </Form.Group>
+
+                            {/* Nama Lengkap */}
+                            <Form.Group className="mb-3">
+                                <Form.Label className="required">Nama Lengkap</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={data.nama_lengkap}
+                                    onChange={(e) => setData("nama_lengkap", e.target.value)}
+                                    isInvalid={!!errors.nama_lengkap}
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.nama_lengkap}
+                                </Form.Control.Feedback>
+                            </Form.Group>
+
+                            {/* Tanggal Lahir & Usia */}
+                            <Form.Group className="mb-3">
+                                <Form.Label className="required">Tanggal Lahir</Form.Label>
+                                <Form.Control
+                                    type="date"
+                                    value={data.tanggal_lahir}
+                                    onChange={(e) => setData("tanggal_lahir", e.target.value)}
+                                    max={new Date(new Date().setFullYear(new Date().getFullYear() - 17)).toISOString().split('T')[0]}
+                                    min={new Date(new Date().setFullYear(new Date().getFullYear() - 65)).toISOString().split('T')[0]}
+                                    isInvalid={!!errors.tanggal_lahir}
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.tanggal_lahir}
+                                </Form.Control.Feedback>
+                                
+                                {/* Display calculated age */}
+                                {data.tanggal_lahir && (
+                                    <Form.Text className={`mt-1 d-block fw-semibold ${
+                                        currentAge >= 17 && currentAge <= 65 ? 'text-success' : 'text-danger'
+                                    }`}>
+                                        Usia saat ini: {currentAge} tahun
+                                        {(currentAge < 17 || currentAge > 65) && (
+                                            <span className="ms-2">⚠️ Usia harus antara 17-65 tahun</span>
+                                        )}
+                                    </Form.Text>
+                                )}
+                                
+                                <Form.Text className="text-muted">
+                                    Usia minimal 17 tahun, maksimal 65 tahun
+                                </Form.Text>
+                            </Form.Group>
+
+                            {/* No HP */}
+                            <Form.Group className="mb-3">
+                                <Form.Label className="required">No HP/WA</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={data.no_hp}
+                                    onChange={(e) => setData("no_hp", e.target.value)}
+                                    placeholder="628XXXXXXXXXX"
+                                    isInvalid={!!errors.no_hp}
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.no_hp}
+                                </Form.Control.Feedback>
+                            </Form.Group>
+
+                            {/* Alamat KTP */}
+                            <div className="big-text text-muted mb-4">
+                                Alamat Sesuai KTP
+                                <div className="underline"></div>
+                            </div>
+
                             <Form.Group className="row mb-3">
                                 <div className="col-md-6 mb-3">
                                     <Form.Label className="required">Kecamatan</Form.Label>
                                     <SelectKecamatan
-                                        value={data.kode_kecamatan_domisili && data.kecamatan_domisili ? 
-                                            {id: data.kode_kecamatan_domisili, text: data.kecamatan_domisili} : 
-                                            null
-                                        }
                                         onChange={(item) => setData(prev => ({
                                             ...prev,
-                                            kode_kecamatan_domisili: item.id,
-                                            kecamatan_domisili: item.text,
-                                            // Reset kelurahan ketika kecamatan berubah
-                                            kode_kelurahan_domisili: "",
-                                            kelurahan_domisili: "",
-                                            rw_domisili: "",
-                                            rt_domisili: "",
+                                            kode_kecamatan_ktp: item.id,
+                                            kecamatan_ktp: item.text,
                                         }))}
-                                        errors={errors.kecamatan_domisili}
+                                        errors={errors.kecamatan_ktp}
                                     />
                                 </div>
                                 <div className="col-md-6 mb-3">
                                     <Form.Label className="required">Kelurahan</Form.Label>
                                     <SelectKelurahan
-                                        kodeKecamatan={data.kode_kecamatan_domisili}
-                                        value={data.kode_kelurahan_domisili && data.kelurahan_domisili ? 
-                                            {id: data.kode_kelurahan_domisili, text: data.kelurahan_domisili} : 
-                                            null
-                                        }
+                                        kodeKecamatan={data.kode_kecamatan_ktp}
                                         onChange={(item) => setData(prev => ({
                                             ...prev,
-                                            kode_kelurahan_domisili: item.id,
-                                            kelurahan_domisili: item.text,
-                                            // Reset RW/RT ketika kelurahan berubah
-                                            rw_domisili: "",
-                                            rt_domisili: "",
+                                            kode_kelurahan_ktp: item.id,
+                                            kelurahan_ktp: item.text,
                                         }))}
-                                        errors={errors.kelurahan_domisili}
+                                        errors={errors.kelurahan_ktp}
                                     />
                                 </div>
                             </Form.Group>
@@ -670,246 +614,367 @@ export default function FormEkonomiKreatif({
                                 <div className="col-md-6 mb-3">
                                     <Form.Label className="required">RW</Form.Label>
                                     <SelectRw
-                                        kodeKelurahan={data.kode_kelurahan_domisili}
-                                        value={data.rw_domisili ? {text: data.rw_domisili} : null}
+                                        kodeKelurahan={data.kode_kelurahan_ktp}
                                         onChange={(item) => setData(prev => ({
                                             ...prev,
-                                            rw_domisili: item.text,
-                                            rt_domisili: "", // Reset RT ketika RW berubah
+                                            rw_ktp: item.text,
                                         }))}
-                                        errors={errors.rw_domisili}
+                                        errors={errors.rw_ktp}
                                     />
                                 </div>
                                 <div className="col-md-6 mb-3">
                                     <Form.Label className="required">RT</Form.Label>
                                     <SelectRt
-                                        kodeKelurahan={data.kode_kelurahan_domisili}
-                                        kodeRw={data.rw_domisili}
-                                        value={data.rt_domisili ? {text: data.rt_domisili} : null}
+                                        kodeKelurahan={data.kode_kelurahan_ktp}
+                                        kodeRw={data.rw_ktp}
                                         onChange={(item) => setData(prev => ({
                                             ...prev,
-                                            rt_domisili: item.text,
+                                            rt_ktp: item.text,
                                         }))}
-                                        errors={errors.rt_domisili}
+                                        errors={errors.rt_ktp}
                                     />
                                 </div>
                             </Form.Group>
 
                             <Form.Group className="mb-4">
-                                <Form.Label className="required">Alamat Lengkap Domisili</Form.Label>
+                                <Form.Label className="required">Alamat Lengkap KTP</Form.Label>
                                 <Form.Control
                                     as="textarea"
                                     rows={3}
-                                    value={data.alamat_domisili}
-                                    onChange={(e) => setData("alamat_domisili", e.target.value)}
-                                    placeholder="Alamat lengkap domisili saat ini"
-                                    isInvalid={!!errors.alamat_domisili}
+                                    value={data.alamat_ktp}
+                                    onChange={(e) => setData("alamat_ktp", e.target.value)}
+                                    placeholder="Alamat lengkap sesuai KTP"
+                                    isInvalid={!!errors.alamat_ktp}
                                 />
                                 <Form.Control.Feedback type="invalid">
-                                    {errors.alamat_domisili}
+                                    {errors.alamat_ktp}
                                 </Form.Control.Feedback>
                             </Form.Group>
+
+                            {/* Alamat Domisili */}
+                            <div className="big-text text-muted mb-4">
+                                Alamat Domisili Saat Ini
+                                <div className="underline"></div>
+                            </div>
+
+                            {/* Checkbox untuk alamat domisili */}
+                            <Form.Group className="mb-3">
+                                <Form.Check
+                                    type="checkbox"
+                                    id="isDomisiliDifferent"
+                                    label="Tidak sama dengan KTP"
+                                    checked={data.isDomisili || false}
+                                    onChange={(e) => {
+                                        const isDifferent = e.target.checked;
+                                        setData(prev => ({
+                                            ...prev,
+                                            isDomisili: isDifferent,
+                                            // Jika tidak diceklis, copy data dari KTP
+                                            ...(!isDifferent && {
+                                                alamat_domisili: prev.alamat_ktp,
+                                                rt_domisili: prev.rt_ktp,
+                                                rw_domisili: prev.rw_ktp,
+                                                kelurahan_domisili: prev.kelurahan_ktp,
+                                                kecamatan_domisili: prev.kecamatan_ktp,
+                                                kode_kelurahan_domisili: prev.kode_kelurahan_ktp,
+                                                kode_kecamatan_domisili: prev.kode_kecamatan_ktp,
+                                            })
+                                        }));
+                                    }}
+                                />
+                            </Form.Group>
+
+                            {/* Form alamat domisili - hanya muncul jika checkbox dicentang */}
+                            {data.isDomisili && (
+                                <>
+                                    <Form.Group className="row mb-3">
+                                        <div className="col-md-6 mb-3">
+                                            <Form.Label className="required">Kecamatan</Form.Label>
+                                            <SelectKecamatan
+                                                value={data.kode_kecamatan_domisili && data.kecamatan_domisili ? 
+                                                    {id: data.kode_kecamatan_domisili, text: data.kecamatan_domisili} : 
+                                                    null
+                                                }
+                                                onChange={(item) => setData(prev => ({
+                                                    ...prev,
+                                                    kode_kecamatan_domisili: item.id,
+                                                    kecamatan_domisili: item.text,
+                                                    // Reset kelurahan ketika kecamatan berubah
+                                                    kode_kelurahan_domisili: "",
+                                                    kelurahan_domisili: "",
+                                                    rw_domisili: "",
+                                                    rt_domisili: "",
+                                                }))}
+                                                errors={errors.kecamatan_domisili}
+                                            />
+                                        </div>
+                                        <div className="col-md-6 mb-3">
+                                            <Form.Label className="required">Kelurahan</Form.Label>
+                                            <SelectKelurahan
+                                                kodeKecamatan={data.kode_kecamatan_domisili}
+                                                value={data.kode_kelurahan_domisili && data.kelurahan_domisili ? 
+                                                    {id: data.kode_kelurahan_domisili, text: data.kelurahan_domisili} : 
+                                                    null
+                                                }
+                                                onChange={(item) => setData(prev => ({
+                                                    ...prev,
+                                                    kode_kelurahan_domisili: item.id,
+                                                    kelurahan_domisili: item.text,
+                                                    // Reset RW/RT ketika kelurahan berubah
+                                                    rw_domisili: "",
+                                                    rt_domisili: "",
+                                                }))}
+                                                errors={errors.kelurahan_domisili}
+                                            />
+                                        </div>
+                                    </Form.Group>
+
+                                    <Form.Group className="row mb-3">
+                                        <div className="col-md-6 mb-3">
+                                            <Form.Label className="required">RW</Form.Label>
+                                            <SelectRw
+                                                kodeKelurahan={data.kode_kelurahan_domisili}
+                                                value={data.rw_domisili ? {text: data.rw_domisili} : null}
+                                                onChange={(item) => setData(prev => ({
+                                                    ...prev,
+                                                    rw_domisili: item.text,
+                                                    rt_domisili: "",
+                                                }))}
+                                                errors={errors.rw_domisili}
+                                            />
+                                        </div>
+                                        <div className="col-md-6 mb-3">
+                                            <Form.Label className="required">RT</Form.Label>
+                                            <SelectRt
+                                                kodeKelurahan={data.kode_kelurahan_domisili}
+                                                kodeRw={data.rw_domisili}
+                                                value={data.rt_domisili ? {text: data.rt_domisili} : null}
+                                                onChange={(item) => setData(prev => ({
+                                                    ...prev,
+                                                    rt_domisili: item.text,
+                                                }))}
+                                                errors={errors.rt_domisili}
+                                            />
+                                        </div>
+                                    </Form.Group>
+
+                                    <Form.Group className="mb-4">
+                                        <Form.Label className="required">Alamat Lengkap Domisili</Form.Label>
+                                        <Form.Control
+                                            as="textarea"
+                                            rows={3}
+                                            value={data.alamat_domisili}
+                                            onChange={(e) => setData("alamat_domisili", e.target.value)}
+                                            placeholder="Alamat lengkap domisili saat ini"
+                                            isInvalid={!!errors.alamat_domisili}
+                                        />
+                                        <Form.Control.Feedback type="invalid">
+                                            {errors.alamat_domisili}
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                </>
+                            )}
+
+                            {/* Jika alamat sama dengan KTP, tampilkan informasi */}
+                            {!data.isDomisili && (
+                                <div className="alert alert-info mb-4">
+                                    <i className="fa fa-info-circle me-2"></i>
+                                    Alamat domisili sama dengan alamat KTP
+                                </div>
+                            )}
+
+                            {/* Jenis Pelatihan */}
+                            <div className="big-text text-muted mb-4">
+                                C. Jenis Pelatihan
+                                <div className="underline"></div>
+                            </div>
+
+                            <Form.Group className="mb-4">
+                                <SelectJenisPelatihanEkraf
+                                    value={data.jenis_pelatihan}
+                                    onChange={(value) => setData("jenis_pelatihan", value)}
+                                    errors={errors.jenis_pelatihan}
+                                    quotaInfo={quota_info}
+                                />
+                            </Form.Group>
+
+                            {/* Warning jika user pilih jenis pelatihan yang hampir habis */}
+                            {data.jenis_pelatihan && quota_info[data.jenis_pelatihan] && (
+                                <div className={`alert mb-4 ${
+                                    quota_info[data.jenis_pelatihan].penuh 
+                                        ? 'alert-danger' 
+                                        : quota_info[data.jenis_pelatihan].sisa <= 5 
+                                            ? 'alert-warning' 
+                                            : 'alert-success'
+                                }`}>
+                                    {quota_info[data.jenis_pelatihan].penuh ? (
+                                        <>
+                                            <i className="fa fa-times-circle me-2"></i>
+                                            <strong>Kuota Penuh!</strong> Jenis pelatihan {data.jenis_pelatihan} sudah tidak tersedia.
+                                        </>
+                                    ) : quota_info[data.jenis_pelatihan].sisa <= 5 ? (
+                                        <>
+                                            <i className="fa fa-exclamation-triangle me-2"></i>
+                                            <strong>Kuota Terbatas!</strong> Hanya tersisa {quota_info[data.jenis_pelatihan].sisa} tempat untuk {data.jenis_pelatihan}. Segera selesaikan pendaftaran!
+                                        </>
+                                    ) : (
+                                        <>
+                                            <i className="fa fa-check-circle me-2"></i>
+                                            <strong>Kuota Tersedia!</strong> Masih tersedia {quota_info[data.jenis_pelatihan].sisa} tempat untuk {data.jenis_pelatihan}.
+                                        </>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Upload Section */}
+                            <div className="big-text text-muted mb-4">
+                                D. Berkas yang Diupload (Max 2MB per File)
+                                <div className="underline"></div>
+                            </div>
+
+                            <FileCompressionGuide />
+
+                            {/* Base files for all categories */}
+                            {renderFileUpload(
+                                "Foto KTP",
+                                "file_ktp",
+                                ".png,.jpg,.jpeg",
+                                "imagePreviewKTP",
+                                "Maksimal 2MB. Format: PNG, JPG, JPEG",
+                                1
+                            )}
+
+                            {renderFileUpload(
+                                "Foto Kartu Keluarga (KK)",
+                                "file_kk",
+                                ".png,.jpg,.jpeg",
+                                "imagePreviewKK",
+                                "Maksimal 2MB. Format: PNG, JPG, JPEG",
+                                2
+                            )}
+
+                            {renderFileUpload(
+                                "Pas Foto",
+                                "file_pasfoto",
+                                ".png,.jpg,.jpeg",
+                                "imagePreviewPasFoto",
+                                "Maksimal 2MB. Format: PNG, JPG, JPEG",
+                                3
+                            )}
+
+                            {renderFileUpload(
+                                "Surat Pernyataan",
+                                "file_surat_pernyataan",
+                                ".pdf",
+                                null,
+                                "Maksimal 2MB. Format: PDF",
+                                4
+                            )}
+
+                            {renderFileUpload(
+                                "NIB",
+                                "file_nib",
+                                ".pdf,.png,.jpg,.jpeg",
+                                null,
+                                "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
+                                5
+                            )}
+
+                            {renderFileUpload(
+                                "Surat Keterangan Pekerja Ekonomi Kreatif",
+                                "file_surat_pekerja_ekraf",
+                                ".pdf",
+                                null,
+                                "Maksimal 2MB. Format: PDF",
+                                6
+                            )}
+
+                            {/* Conditional files based on category */}
+                            {data.kategori_pendaftar === "buruh_tani_tembakau" && renderFileUpload(
+                                "Surat Keterangan dari Pemilik Lahan",
+                                "file_surat_pemilik_lahan",
+                                ".pdf,.png,.jpg,.jpeg",
+                                null,
+                                "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
+                                7
+                            )}
+
+                            {data.kategori_pendaftar === "buruh_pabrik_rokok" && renderFileUpload(
+                                "ID Card / Surat Keterangan dari IHT",
+                                "file_id_card_iht",
+                                ".pdf,.png,.jpg,.jpeg",
+                                null,
+                                "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
+                                7
+                            )}
+
+                            {data.kategori_pendaftar === "buruh_phk" && renderFileUpload(
+                                "Surat Pemberhentian Kerja",
+                                "file_surat_phk",
+                                ".pdf,.png,.jpg,.jpeg",
+                                null,
+                                "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
+                                7
+                            )}
+
+                            {data.kategori_pendaftar === "disabilitas" && renderFileUpload(
+                                "Surat Keterangan Disabilitas dari Kelurahan",
+                                "file_surat_disabilitas",
+                                ".pdf,.png,.jpg,.jpeg",
+                                null,
+                                "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
+                                7
+                            )}
+
+                            {data.kategori_pendaftar === "perempuan_kk" && renderFileUpload(
+                                "Surat Keterangan dari Dinas KB",
+                                "file_surat_kb",
+                                ".pdf,.png,.jpg,.jpeg",
+                                null,
+                                "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
+                                7
+                            )}
+
+                            {/* Komitmen */}
+                            <div className="big-text text-muted mb-4">
+                                E. Pernyataan Komitmen
+                                <div className="underline"></div>
+                            </div>
+
+                            <Form.Group className="mb-4">
+                                <Form.Check
+                                    type="checkbox"
+                                    id="komitmen"
+                                    label="Saya menyatakan bahwa data yang saya isi adalah benar dan dapat dipertanggungjawabkan serta menyetujui penggunaannya oleh penyelenggara untuk keperluan verifikasi dan pelaksanaan program sesuai kebijakan privasi yang berlaku."
+                                    checked={data.komitmen}
+                                    onChange={(e) => setData("komitmen", e.target.checked)}
+                                    isInvalid={!!errors.komitmen}
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.komitmen}
+                                </Form.Control.Feedback>
+                            </Form.Group>
+
+                            {/* Submit Button */}
+                            <div className="d-flex justify-content-center mt-4">
+                                <Button
+                                    type="submit"
+                                    disabled={!data.komitmen || isSubmitting}
+                                    className={!data.komitmen || isSubmitting ? "opacity-50" : ""}
+                                >
+                                    {isSubmitting ? (
+                                        <>
+                                            Loading... <span className="spinner-border spinner-border-sm" />
+                                        </>
+                                    ) : (
+                                        <>
+                                            Kirim <i className="fa fa-paper-plane ms-1"></i>
+                                        </>
+                                    )}
+                                </Button>
+                            </div>
                         </>
                     )}
-
-                    {/* Jika alamat sama dengan KTP, tampilkan informasi */}
-                    {!data.isDomisili && (
-                        <div className="alert alert-info mb-4">
-                            <i className="fa fa-info-circle me-2"></i>
-                            Alamat domisili sama dengan alamat KTP
-                        </div>
-                    )}
-
-                    {/* Jenis Pelatihan - Updated with quota info */}
-                    <div className="big-text text-muted mb-4">
-                        C. Jenis Pelatihan
-                        <div className="underline"></div>
-                    </div>
-
-                    <Form.Group className="mb-4">
-                        <SelectJenisPelatihanEkraf
-                            value={data.jenis_pelatihan}
-                            onChange={(value) => setData("jenis_pelatihan", value)}
-                            errors={errors.jenis_pelatihan}
-                            quotaInfo={quota_info}
-                        />
-                    </Form.Group>
-
-                    {/* ✅ Warning jika user pilih jenis pelatihan yang hampir habis */}
-                    {data.jenis_pelatihan && quota_info[data.jenis_pelatihan] && (
-                        <div className={`alert mb-4 ${
-                            quota_info[data.jenis_pelatihan].penuh 
-                                ? 'alert-danger' 
-                                : quota_info[data.jenis_pelatihan].sisa <= 5 
-                                    ? 'alert-warning' 
-                                    : 'alert-success'
-                        }`}>
-                            {quota_info[data.jenis_pelatihan].penuh ? (
-                                <>
-                                    <i className="fa fa-times-circle me-2"></i>
-                                    <strong>Kuota Penuh!</strong> Jenis pelatihan {data.jenis_pelatihan} sudah tidak tersedia.
-                                </>
-                            ) : quota_info[data.jenis_pelatihan].sisa <= 5 ? (
-                                <>
-                                    <i className="fa fa-exclamation-triangle me-2"></i>
-                                    <strong>Kuota Terbatas!</strong> Hanya tersisa {quota_info[data.jenis_pelatihan].sisa} tempat untuk {data.jenis_pelatihan}. Segera selesaikan pendaftaran!
-                                </>
-                            ) : (
-                                <>
-                                    <i className="fa fa-check-circle me-2"></i>
-                                    <strong>Kuota Tersedia!</strong> Masih tersedia {quota_info[data.jenis_pelatihan].sisa} tempat untuk {data.jenis_pelatihan}.
-                                </>
-                            )}
-                        </div>
-                    )}
-
-                    {/* Upload Section */}
-                    <div className="big-text text-muted mb-4">
-                        D. Berkas yang Diupload (Max 2MB per File)
-                        <div className="underline"></div>
-                    </div>
-
-                    <FileCompressionGuide />
-
-                    {/* Base files for all categories */}
-                    {renderFileUpload(
-                        "Foto KTP",
-                        "file_ktp",
-                        ".png,.jpg,.jpeg",
-                        "imagePreviewKTP",
-                        "Maksimal 2MB. Format: PNG, JPG, JPEG",
-                        1
-                    )}
-
-                    {renderFileUpload(
-                        "Foto Kartu Keluarga (KK)",
-                        "file_kk",
-                        ".png,.jpg,.jpeg",
-                        "imagePreviewKK",
-                        "Maksimal 2MB. Format: PNG, JPG, JPEG",
-                        2
-                    )}
-
-                    {renderFileUpload(
-                        "Pas Foto",
-                        "file_pasfoto",
-                        ".png,.jpg,.jpeg",
-                        "imagePreviewPasFoto",
-                        "Maksimal 2MB. Format: PNG, JPG, JPEG",
-                        3
-                    )}
-
-                    {renderFileUpload(
-                        "Surat Pernyataan",
-                        "file_surat_pernyataan",
-                        ".pdf",
-                        null,
-                        "Maksimal 2MB. Format: PDF",
-                        4
-                    )}
-
-                    {renderFileUpload(
-                        "NIB",
-                        "file_nib",
-                        ".pdf,.png,.jpg,.jpeg",
-                        null,
-                        "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
-                        5
-                    )}
-
-                    {renderFileUpload(
-                        "Surat Keterangan Pekerja Ekonomi Kreatif",
-                        "file_surat_pekerja_ekraf",
-                        ".pdf",
-                        null,
-                        "Maksimal 2MB. Format: PDF",
-                        6
-                    )}
-
-                    {/* Conditional files based on category */}
-                    {data.kategori_pendaftar === "buruh_tani_tembakau" && renderFileUpload(
-                        "Surat Keterangan dari Pemilik Lahan",
-                        "file_surat_pemilik_lahan",
-                        ".pdf,.png,.jpg,.jpeg",
-                        null,
-                        "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
-                        7
-                    )}
-
-                    {data.kategori_pendaftar === "buruh_pabrik_rokok" && renderFileUpload(
-                        "ID Card / Surat Keterangan dari IHT",
-                        "file_id_card_iht",
-                        ".pdf,.png,.jpg,.jpeg",
-                        null,
-                        "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
-                        7
-                    )}
-
-                    {data.kategori_pendaftar === "buruh_phk" && renderFileUpload(
-                        "Surat Pemberhentian Kerja",
-                        "file_surat_phk",
-                        ".pdf,.png,.jpg,.jpeg",
-                        null,
-                        "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
-                        7
-                    )}
-
-                    {data.kategori_pendaftar === "disabilitas" && renderFileUpload(
-                        "Surat Keterangan Disabilitas dari Kelurahan",
-                        "file_surat_disabilitas",
-                        ".pdf,.png,.jpg,.jpeg",
-                        null,
-                        "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
-                        7
-                    )}
-
-                    {data.kategori_pendaftar === "perempuan_kk" && renderFileUpload(
-                        "Surat Keterangan dari Dinas KB",
-                        "file_surat_kb",
-                        ".pdf,.png,.jpg,.jpeg",
-                        null,
-                        "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
-                        7
-                    )}
-
-                    {/* Komitmen */}
-                    <div className="big-text text-muted mb-4">
-                        E. Pernyataan Komitmen
-                        <div className="underline"></div>
-                    </div>
-
-                    <Form.Group className="mb-4">
-                        <Form.Check
-                            type="checkbox"
-                            id="komitmen"
-                            label="Saya menyatakan bahwa data yang saya isi adalah benar dan dapat dipertanggungjawabkan serta menyetujui penggunaannya oleh penyelenggara untuk keperluan verifikasi dan pelaksanaan program sesuai kebijakan privasi yang berlaku."
-                            checked={data.komitmen}
-                            onChange={(e) => setData("komitmen", e.target.checked)}
-                            isInvalid={!!errors.komitmen}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.komitmen}
-                        </Form.Control.Feedback>
-                    </Form.Group>
-
-                    {/* Submit Button */}
-                    <div className="d-flex justify-content-center mt-4">
-                        <Button
-                            type="submit"
-                            disabled={!data.komitmen || isSubmitting}
-                            className={!data.komitmen || isSubmitting ? "opacity-50" : ""}
-                        >
-                            {isSubmitting ? (
-                                <>
-                                    Loading... <span className="spinner-border spinner-border-sm" />
-                                </>
-                            ) : (
-                                <>
-                                    Kirim <i className="fa fa-paper-plane ms-1"></i>
-                                </>
-                            )}
-                        </Button>
-                    </div>
                 </>
             )}
         </Form>

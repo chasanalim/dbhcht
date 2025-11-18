@@ -177,6 +177,69 @@ class RegPelatihanEkonomiKreatifController extends Controller
     /**
      * Validasi data berdasarkan kategori pendaftar
      */
+
+    public function cekNIK(Request $request, $nik)
+    {
+        if (strlen($nik) !== 16 || !is_numeric($nik)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Maaf, format NIK harus 16 digit angka'
+            ], 400);
+        }
+
+        // Cek blacklist dari semua jenis pelatihan
+        $blacklistModels = [
+            \App\Models\PelatihanUmkm::class,
+            \App\Models\PelatihanBanmod::class,
+            \App\Models\PelatihanKerjas::class,
+            \App\Models\PelatihanPetani::class,
+            PelatihanEkonomiKreatif::class
+        ];
+
+        foreach ($blacklistModels as $model) {
+            $blacklisted = $model::where('status', 3)
+                ->where('nik', $nik)
+                ->exists();
+
+            if ($blacklisted) {
+                return response()->json([
+                    'success' => false,
+                    'blacklisted' => true,
+                    'message' => 'NIK Anda telah dimasukkan blacklist dalam pelatihan karena melanggar ketentuan yang berlaku.'
+                ], 403);
+            }
+        }
+
+        // Cek sudah pernah ikut pelatihan lain
+        $doneModels = [
+            \App\Models\PelatihanBanmod::class,
+            \App\Models\PelatihanKerjas::class,
+            \App\Models\PelatihanPetani::class,
+            \App\Models\PelatihanUmkm::class
+        ];
+
+        foreach ($doneModels as $model) {
+            $done = $model::where('status', 1)
+                ->where('nik', $nik)
+                ->exists();
+
+            if ($done) {
+                $jenisPelatihan = (new $model)->getJenisPelatihan();
+                return response()->json([
+                    'success' => false,
+                    'blacklisted' => true,
+                    'message' => "Mohon maaf, NIK Anda telah menerima pelatihan {$jenisPelatihan} pada periode tahun ini."
+                ], 403);
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'blacklisted' => false,
+            'message' => 'NIK tidak ditemukan dalam blacklist.'
+        ]);
+    }
+
     private function validateByKategori(Request $request)
     {
         $baseRules = [
