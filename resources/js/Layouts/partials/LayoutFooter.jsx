@@ -39,20 +39,19 @@ export default function LayoutFooter() {
                                     className="bi bi-geo-alt-fill me-2"
                                     style={{ color: "#ffb700" }}
                                 ></i>
-                                Jl. Basuki Rahmat No.15, Pocanan, Kota Kediri
-                                Kecamatan, Kota Kediri, Jawa Timur 64129
+                                Jl. Himalaya No.4, Sukorame, Mojoroto, Kota Kediri, Jawa Timur 64129
                             </li>
                             <li>
                                 <i
                                     className="bi bi-telephone-fill me-2"
                                     style={{ color: "#ffb700" }}
                                 ></i>
-                                (0354) 682955
+                                (0354) 6099113
                             </li>
                         </ul>
                         <div className="d-flex gap-3 mt-3">
                             <a
-                                href="#"
+                                href="https://www.instagram.com/pemkotkediri" target="_blank"
                                 className="fs-4"
                                 style={{
                                     color: "#ffb700",
@@ -62,7 +61,7 @@ export default function LayoutFooter() {
                                 <i className="bi bi-instagram"></i>
                             </a>
                             <a
-                                href="#"
+                                href="https://www.facebook.com/pemkotkediri.nda/" target="_blank"
                                 className="fs-4"
                                 style={{
                                     color: "#ffb700",
@@ -72,7 +71,7 @@ export default function LayoutFooter() {
                                 <i className="bi bi-facebook"></i>
                             </a>
                             <a
-                                href="#"
+                                href="https://x.com/pemkot_kediri?lang=en"
                                 className="fs-4"
                                 style={{
                                     color: "#ffb700",
@@ -82,7 +81,7 @@ export default function LayoutFooter() {
                                 <i className="bi bi-twitter"></i>
                             </a>
                             <a
-                                href="#"
+                                href="https://www.youtube.com/channel/UCX6KxXBUbivqWXTku0nnPbA"
                                 className="fs-4"
                                 style={{
                                     color: "#ffb700",
@@ -90,6 +89,16 @@ export default function LayoutFooter() {
                                 }}
                             >
                                 <i className="bi bi-youtube"></i>
+                            </a>
+                            <a
+                                href="https://www.tiktok.com/@pemkotkediri"
+                                className="fs-4"
+                                style={{
+                                    color: "#ffb700",
+                                    transition: "color 0.2s",
+                                }}
+                            >
+                                <i className="bi bi-tiktok"></i>
                             </a>
                         </div>
                     </Col>
@@ -143,7 +152,7 @@ export default function LayoutFooter() {
                                 className="fs-3 fw-bold"
                                 style={{ color: "#fff" }}
                             >
-                                12345
+                                7983
                             </span>
                             <span
                                 className="small px-3 py-1 rounded w-75 text-center"
@@ -154,7 +163,7 @@ export default function LayoutFooter() {
                                 }}
                             >
                                 <i className="online bi bi-circle-fill small text-success"></i>{" "}
-                                10 Online
+                                7 Online
                             </span>
                         </div>
                     </Col>
