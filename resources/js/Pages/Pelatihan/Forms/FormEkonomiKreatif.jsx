@@ -10,13 +10,18 @@ import SelectRw from "@/Components/Select/SelectRw";
 import SelectKategoriPendaftar from "@/Components/Select/SelectKategoriPendaftar";
 import SelectJenisPelatihanEkraf from "@/Components/Select/SelectJenisPelatihanEkraf";
 
-export default function FormEkonomiKreatif() {
+export default function FormEkonomiKreatif({ 
+    title = "Pendaftaran Pelatihan Ekonomi Kreatif", 
+    kategori_options = {},
+    jenis_pelatihan_options = {},
+    quota_info = {} 
+}) {
     const [nikLength, setNikLength] = useState(0);
     const [kkLength, setKkLength] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [requiredFiles, setRequiredFiles] = useState({});
 
-        const { data, setData, errors, post, reset } = useForm({
+    const { data, setData, errors, post, reset } = useForm({
         kategori_pendaftar: "",
         nik: "",
         no_kk: "",
@@ -307,6 +312,42 @@ export default function FormEkonomiKreatif() {
                 </ul>
             </div>
 
+            {/* ✅ NEW: Kuota Info Section */}
+            {Object.keys(quota_info).length > 0 && (
+                <div className="alert alert-warning mb-4">
+                    <h6 className="fw-bold mb-3">📊 Informasi Kuota Pelatihan Real-time:</h6>
+                    <div className="row">
+                        {Object.entries(quota_info).map(([jenis, quota]) => (
+                            <div key={jenis} className="col-md-6 mb-2">
+                                <div className={`card border-${quota.penuh ? 'danger' : 'success'}`}>
+                                    <div className="card-body py-2 px-3">
+                                        <div className="d-flex justify-content-between align-items-center">
+                                            <span className="fw-semibold text-capitalize">
+                                                {jenis.replace('_', ' ')}
+                                            </span>
+                                            <span className={`badge bg-${quota.penuh ? 'danger' : 'success'}`}>
+                                                {quota.penuh 
+                                                    ? 'PENUH' 
+                                                    : `${quota.sisa}/${quota.total_kuota} tersisa`
+                                                }
+                                            </span>
+                                        </div>
+                                        {quota.penuh && (
+                                            <small className="text-danger d-block mt-1">
+                                                ⚠️ Kuota sudah habis - tidak dapat memilih jenis ini
+                                            </small>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <small className="text-muted d-block mt-2">
+                        * Kuota dihitung berdasarkan pendaftar yang sudah diterima. Data diupdate secara real-time.
+                    </small>
+                </div>
+            )}
+
             {/* Kategori Pendaftar */}
             <div className="big-text text-muted mb-4">
                 A. Kategori Pendaftar
@@ -351,6 +392,7 @@ export default function FormEkonomiKreatif() {
             {/* Data Pendaftar - Only show if category selected */}
             {data.kategori_pendaftar && (
                 <>
+                    {/* ...existing sections B (Data Pendaftar) & alamat sections remain the same... */}
                     <div className="big-text text-muted mb-4">
                         B. Data Pendaftar
                         <div className="underline"></div>
@@ -678,20 +720,48 @@ export default function FormEkonomiKreatif() {
                         </div>
                     )}
 
-                    {/* Jenis Pelatihan */}
+                    {/* Jenis Pelatihan - Updated with quota info */}
                     <div className="big-text text-muted mb-4">
                         C. Jenis Pelatihan
                         <div className="underline"></div>
                     </div>
 
                     <Form.Group className="mb-4">
-                        <Form.Label className="required">Jenis Pelatihan yang Dipilih</Form.Label>
                         <SelectJenisPelatihanEkraf
                             value={data.jenis_pelatihan}
                             onChange={(value) => setData("jenis_pelatihan", value)}
                             errors={errors.jenis_pelatihan}
+                            quotaInfo={quota_info}
                         />
                     </Form.Group>
+
+                    {/* ✅ Warning jika user pilih jenis pelatihan yang hampir habis */}
+                    {data.jenis_pelatihan && quota_info[data.jenis_pelatihan] && (
+                        <div className={`alert mb-4 ${
+                            quota_info[data.jenis_pelatihan].penuh 
+                                ? 'alert-danger' 
+                                : quota_info[data.jenis_pelatihan].sisa <= 5 
+                                    ? 'alert-warning' 
+                                    : 'alert-success'
+                        }`}>
+                            {quota_info[data.jenis_pelatihan].penuh ? (
+                                <>
+                                    <i className="fa fa-times-circle me-2"></i>
+                                    <strong>Kuota Penuh!</strong> Jenis pelatihan {data.jenis_pelatihan} sudah tidak tersedia.
+                                </>
+                            ) : quota_info[data.jenis_pelatihan].sisa <= 5 ? (
+                                <>
+                                    <i className="fa fa-exclamation-triangle me-2"></i>
+                                    <strong>Kuota Terbatas!</strong> Hanya tersisa {quota_info[data.jenis_pelatihan].sisa} tempat untuk {data.jenis_pelatihan}. Segera selesaikan pendaftaran!
+                                </>
+                            ) : (
+                                <>
+                                    <i className="fa fa-check-circle me-2"></i>
+                                    <strong>Kuota Tersedia!</strong> Masih tersedia {quota_info[data.jenis_pelatihan].sisa} tempat untuk {data.jenis_pelatihan}.
+                                </>
+                            )}
+                        </div>
+                    )}
 
                     {/* Upload Section */}
                     <div className="big-text text-muted mb-4">

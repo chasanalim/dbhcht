@@ -18,6 +18,26 @@ class RegPelatihanEkonomiKreatifController extends Controller
     use GeneralTrait;
 
     /**
+     * API endpoint untuk mendapatkan info kuota real-time
+     */
+    public function getQuotaInfo()
+    {
+        try {
+            $quotaInfo = PelatihanEkonomiKreatif::getAllQuotaInfo();
+
+            return response()->json([
+                'success' => true,
+                'data' => $quotaInfo
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching quota info: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Display the registration form
      */
     public function index()
@@ -26,6 +46,7 @@ class RegPelatihanEkonomiKreatifController extends Controller
             'title' => 'Pendaftaran Pelatihan Ekonomi Kreatif',
             'kategori_options' => PelatihanEkonomiKreatif::getKategoriPendaftar(),
             'jenis_pelatihan_options' => $this->getJenisPelatihanOptions(),
+            'quota_info' => PelatihanEkonomiKreatif::getAllQuotaInfo(), // Pass quota info
         ]);
     }
 
@@ -190,11 +211,21 @@ class RegPelatihanEkonomiKreatifController extends Controller
             'kode_kelurahan_domisili' => 'nullable|string|max:20',
             'kode_kecamatan_domisili' => 'nullable|string|max:20',
 
-            // Pelatihan
-            'jenis_pelatihan' => 'required|string|max:255',
-
             // Komitmen
             'komitmen' => 'required|boolean|accepted',
+        ];
+
+        // ✅ Tambah validasi kuota sebelum jenis_pelatihan
+        $baseRules['jenis_pelatihan'] = [
+            'required',
+            'string',
+            'max:255',
+            function ($attribute, $value, $fail) {
+                if (!PelatihanEkonomiKreatif::isQuotaAvailable($value)) {
+                    $quota = PelatihanEkonomiKreatif::getAvailableQuota($value);
+                    $fail("Maaf, kuota untuk jenis pelatihan {$value} sudah penuh. ({$quota['terpakai']}/{$quota['total_kuota']})");
+                }
+            },
         ];
 
         // ✅ ADD: Conditional validation untuk domisili jika berbeda dengan KTP
@@ -248,8 +279,6 @@ class RegPelatihanEkonomiKreatifController extends Controller
             'nik.regex' => 'NIK hanya boleh berisi angka.',
             'no_kk.required' => 'Nomor KK wajib diisi.',
             'no_kk.size' => 'Nomor KK harus 16 digit.',
-            'usia.min' => 'Usia minimal 17 tahun.',
-            'usia.max' => 'Usia maksimal 65 tahun.',
             'komitmen.accepted' => 'Anda harus menyetujui pernyataan komitmen.',
 
             // ✅ UPDATE: Conditional messages
@@ -315,23 +344,30 @@ class RegPelatihanEkonomiKreatifController extends Controller
     }
 
     /**
-     * Get jenis pelatihan options
+     * ✅ Update jenis pelatihan options dengan info kuota
      */
     private function getJenisPelatihanOptions()
     {
-        return [
-            'fashion_design' => 'Fashion Design',
-            'craft_handmade' => 'Kerajinan Tangan (Craft)',
-            'digital_marketing' => 'Digital Marketing',
-            'photography' => 'Photography & Videography',
-            'culinary_arts' => 'Culinary Arts',
-            'music_production' => 'Produksi Musik',
-            'graphic_design' => 'Desain Grafis',
-            'animation' => 'Animasi & Motion Graphics',
-            'game_development' => 'Game Development',
-            'content_creation' => 'Content Creation',
-            'e_commerce' => 'E-Commerce Management',
-            'interior_design' => 'Interior Design',
+        $baseOptions = [
+            'fotografi' => 'Fotografi',
+            'videografi' => 'Videografi',
         ];
+
+        $quotaInfo = PelatihanEkonomiKreatif::getAllQuotaInfo();
+        $result = [];
+
+        foreach ($baseOptions as $value => $label) {
+            $quota = $quotaInfo[$value] ?? ['sisa' => 0, 'total_kuota' => 0, 'penuh' => true];
+            $result[$value] = [
+                'label' => $label,
+                'quota_info' => $quota,
+                'display_text' => $quota['penuh']
+                    ? "{$label} (KUOTA PENUH)"
+                    : "{$label} (Sisa: {$quota['sisa']}/{$quota['total_kuota']})",
+                'available' => !$quota['penuh']
+            ];
+        }
+
+        return $result;
     }
 }

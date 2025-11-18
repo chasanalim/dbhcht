@@ -218,6 +218,9 @@ Route::prefix('pelatihan/ekonomi-kreatif')->group(function () {
     Route::get('/requirements/{kategori}', [RegPelatihanEkonomiKreatifController::class, 'getRequirementsByCategory'])->name('pelatihan-ekonomi-kreatif.requirements');
 });
 
+Route::get('/pelatihan/ekonomi-kreatif/quota-info', [RegPelatihanEkonomiKreatifController::class, 'getQuotaInfo'])
+    ->name('pelatihan-ekonomi-kreatif.quota-info');
+
 Route::prefix('regpelatihanpetani')->as('regpelatihanpetani.')->group(function () {
     Route::prefix('kelompokpelatihanpetani')->as('kelompokpelatihanpetani.')->group(function () {
         Route::get('/', [RegPelatihanPetaniController::class, 'kelompokpelatihanpetani'])->name('kelompokpelatihanpetani');

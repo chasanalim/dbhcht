@@ -74,6 +74,41 @@ class PelatihanEkonomiKreatif extends Model
         'updated_at' => 'datetime',
     ];
 
+    const KUOTA_PELATIHAN = [
+        'fotografi' => 25,
+        'videografi' => 25,
+    ];
+
+    public static function getAvailableQuota($jenis_pelatihan)
+    {
+        $totalKuota = self::KUOTA_PELATIHAN[$jenis_pelatihan] ?? 0;
+        $terpakai = self::where('jenis_pelatihan', $jenis_pelatihan)
+            ->where('status', self::STATUS_LOLOS) // Hanya yang diterima
+            ->count();
+
+        return [
+            'total_kuota' => $totalKuota,
+            'terpakai' => $terpakai,
+            'sisa' => $totalKuota - $terpakai,
+            'penuh' => ($totalKuota - $terpakai) <= 0
+        ];
+    }
+
+    public static function getAllQuotaInfo()
+    {
+        $result = [];
+        foreach (self::KUOTA_PELATIHAN as $jenis => $kuota) {
+            $result[$jenis] = self::getAvailableQuota($jenis);
+        }
+        return $result;
+    }
+
+    public static function isQuotaAvailable($jenis_pelatihan)
+    {
+        $quota = self::getAvailableQuota($jenis_pelatihan);
+        return !$quota['penuh'];
+    }
+
     /**
      * Konstanta untuk kategori pendaftar
      */
