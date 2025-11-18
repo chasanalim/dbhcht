@@ -8,11 +8,10 @@ export default function SelectJenisPelatihan({ onChange, value, errors }) {
             label: "Pelatihan Keterampilan Untuk Pencari Kerja",
         },
         {
-            value: "penerimabanmod",
+            value: "penerimabanmod", 
             label: "Pelatihan Keterampilan Untuk Penerima Banmod",
         },
         { value: "umkm", label: "Pelatihan UMKM" },
-        // { value: "penyuluh", label: "Pelatihan Penyuluh" },
         { value: "petani", label: "Pelatihan Petani" },
         { value: "ekraf", label: "Pelatihan Ekonomi Kreatif" },
     ];

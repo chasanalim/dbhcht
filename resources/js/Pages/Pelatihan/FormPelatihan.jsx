@@ -10,6 +10,7 @@ import FormPenyuluh from "./Forms/FormPenyuluh";
 import FormPetani from "./Forms/FormPetani";
 import FormIndustri from "./Forms/FormIndustri";
 import FormPenerimaBanmod from "./Forms/FormPenerimaBanmod";
+import FormEkonomiKreatif from "./Forms/FormEkonomiKreatif";
 
 import { useState } from "react";
 
@@ -51,10 +52,11 @@ export default function FormPelatihan() {
                         {jenisPelatihan === "umkm" && <FormUMKM />}
                         {jenisPelatihan === "penyuluh" && <FormPenyuluh />}
                         {jenisPelatihan === "petani" && <FormPetani />}
-                        {jenisPelatihan === "ekraf" && <FormIndustri />}
+                        {jenisPelatihan === "ekraf" && <FormEkonomiKreatif />}
                         {jenisPelatihan === "penerimabanmod" && (
                             <FormPenerimaBanmod />
                         )}
+                        
                     </div>
                 </div>
             </div>

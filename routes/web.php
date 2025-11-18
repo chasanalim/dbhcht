@@ -24,6 +24,7 @@ use App\Http\Controllers\RegPelatihanUmkmController;
 use App\Http\Controllers\JumlahTenagaKerjaController;
 use App\Http\Controllers\Admin\LampiranFileController;
 use App\Http\Controllers\RegPelatihanPetaniController;
+use App\Http\Controllers\RegPelatihanEkonomiKreatifController;
 use App\Http\Controllers\TanggunganKeluargaController;
 use App\Http\Controllers\Admin\PelatihanUMKMController;
 use App\Http\Controllers\SkorPelatihanBanmodController;
@@ -208,6 +209,13 @@ Route::prefix('refer')->as('refer.')->group(function () {
     Route::prefix('pendidikan')->as('pendidikan.')->group(function () {
         Route::get('/', [PendidikanController::class, 'index'])->name('index');
     });
+});
+
+Route::prefix('pelatihan/ekonomi-kreatif')->group(function () {
+    Route::get('/', [RegPelatihanEkonomiKreatifController::class, 'index'])->name('pelatihan-ekonomi-kreatif.create');
+    Route::post('/', [RegPelatihanEkonomiKreatifController::class, 'store'])->name('pelatihan-ekonomi-kreatif.store');
+    Route::get('/success/{id}', [RegPelatihanEkonomiKreatifController::class, 'success'])->name('pelatihan-ekonomi-kreatif.success');
+    Route::get('/requirements/{kategori}', [RegPelatihanEkonomiKreatifController::class, 'getRequirementsByCategory'])->name('pelatihan-ekonomi-kreatif.requirements');
 });
 
 Route::prefix('regpelatihanpetani')->as('regpelatihanpetani.')->group(function () {
