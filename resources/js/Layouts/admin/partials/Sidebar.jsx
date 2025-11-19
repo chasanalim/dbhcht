@@ -337,6 +337,38 @@ export default function Sidebar() {
                                 </li>
                             </>
                         )}
+                        {can.viewUser && (
+                            <>
+                                <li>
+                                    <h6 className="text-uppercase mt-3 menu">
+                                        Pelatihan Ekonomi Kreatif
+                                    </h6>
+                                </li>
+
+                                <li>
+                                    <NavLink
+                                        href={route(
+                                            "admin.ekraf.index"
+                                        )}
+                                        active={route().current(
+                                            "admin.ekraf.index"
+                                        )}
+                                        className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                            route().current(
+                                                "admin.ekraf.index"
+                                            )
+                                                ? "active"
+                                                : ""
+                                        }`}
+                                    >
+                                        <i className="bi bi-people fs-5"></i>
+                                        <span className="text-white mt-1 ms-2">
+                                            Daftar Peserta
+                                        </span>
+                                    </NavLink>
+                                </li>
+                            </>
+                        )}
                         {can.viewPertanian && (
                             <>
                                 <li>
