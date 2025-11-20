@@ -4,19 +4,31 @@ import { useEffect, useRef, useState } from "react";
 import $ from "jquery";
 import "datatables.net-bs5";
 import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
-import { Toast, Tooltip } from "bootstrap";
-// Import bootstrap JS
+import { Toast, Tooltip, Popover } from "bootstrap";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import axios from "axios";
 
 export default function Index({ title, can, flash, pelatihan }) {
     const tableRef = useRef();
     const [selectedCategory, setSelectedCategory] = useState("Semua Pelatihan");
     const [verificationFilter, setVerificationFilter] = useState("all");
     const [selectedStatus, setSelectedStatus] = useState("all");
+    const [showBlacklistModal, setShowBlacklistModal] = useState(false);
+    const [blacklistNotes, setBlacklistNotes] = useState("");
+    const [pendingBlacklistUrl, setPendingBlacklistUrl] = useState(null);
+    const [pendingBlacklistStatus, setPendingBlacklistStatus] = useState(null);
+    const [stats, setStats] = useState({
+        total: 0,
+        lolos: 0,
+        gagal: 0,
+        blacklist: 0,
+        lolosLain: 0
+    });
 
     const handleCategoryChange = (e) => {
         setSelectedCategory(e.target.value);
     };
+
     const handleVerificationFilterChange = (e) => {
         setVerificationFilter(e.target.value);
     };
@@ -24,6 +36,31 @@ export default function Index({ title, can, flash, pelatihan }) {
     const handleStatusChange = (e) => {
         setSelectedStatus(e.target.value);
     };
+
+    /**
+     * Fetch statistics
+     */
+    const fetchStats = async () => {
+        try {
+            const response = await axios.get(route("admin.ekraf.index"), {
+                params: {
+                    jenis_pelatihan: selectedCategory,
+                    verification_status: verificationFilter,
+                    stats: true
+                }
+            });
+
+            if (response.data.stats) {
+                setStats(response.data.stats);
+            }
+        } catch (error) {
+            console.error("Error fetching stats:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchStats();
+    }, [selectedCategory, verificationFilter]);
 
     useEffect(() => {
         const dt = $(tableRef.current).DataTable({
@@ -60,16 +97,13 @@ export default function Index({ title, can, flash, pelatihan }) {
                     render: function (data, type, row) {
                         let buttons = [];
 
-                        // Add view button
                         buttons.push(`
                             <a href="${data.detail_url}" class="btn btn-sm btn-info me-1" title="Detail">
                                 <i class="bi bi-eye"></i>
                             </a>
                         `);
 
-                        // Add status buttons if document is verified
                         if (row.status == 0) {
-                            // If status is 0, show both Lolos and Gagal buttons
                             if (
                                 row.verifikasi_dokumen.all_verified &&
                                 row.verifikasi_dokumen.all_approved
@@ -87,16 +121,10 @@ export default function Index({ title, can, flash, pelatihan }) {
                                 `);
                             }
                         } else if (row.status == 1) {
-                            // If status is 1, hide the Lolos button, only show the Gagal button
                             if (
                                 row.verifikasi_dokumen.all_verified &&
                                 row.verifikasi_dokumen.all_approved
                             ) {
-                                // buttons.push(`
-                                //     <button onclick="updateStatus('${data.status_url}', 2)" class="btn btn-sm btn-danger me-1" title="Gagal">
-                                //         <i class="bi bi-x-lg"></i>
-                                //     </button>
-                                // `);
                                 buttons.push(`
                                     <button onclick="updateStatus('${data.status_url}', 3)" class="btn btn-sm btn-dark" title="Blacklist">
                                         <i class="bi bi-file-x"></i>
@@ -104,23 +132,8 @@ export default function Index({ title, can, flash, pelatihan }) {
                                 `);
                             }
                         }
-                        // else if (row.status == 2) {
-                        //     // If status is 2, hide the Gagal button, only show the Lolos button
-                        //     if (
-                        //         row.verifikasi_dokumen.all_verified &&
-                        //         row.verifikasi_dokumen.all_approved
-                        //     ) {
-                        //         buttons.push(`
-                        //             <button onclick="updateStatus('${data.status_url}', 1)" class="btn btn-sm btn-success me-1" title="Lolos">
-                        //                 <i class="bi bi-check-lg"></i>
-                        //             </button>
-                        //         `);
-                        //     }
-                        // }
 
-                        return `<div class="btn-group">${buttons.join(
-                            ""
-                        )}</div>`;
+                        return `<div class="btn-group">${buttons.join("")}</div>`;
                     },
                 },
                 {
@@ -205,7 +218,7 @@ export default function Index({ title, can, flash, pelatihan }) {
                     name: "status",
                     className: "text-center",
                     searchable: true,
-                    render: function (data) {
+                    render: function (data, type, row) {
                         if (data === 0) {
                             return `<span class="badge bg-warning">-</span>`;
                         } else if (data === 1) {
@@ -213,7 +226,24 @@ export default function Index({ title, can, flash, pelatihan }) {
                         } else if (data === 2) {
                             return `<span class="badge bg-danger">Tidak Lolos</span>`;
                         } else if (data === 3) {
-                            return `<span class="badge bg-dark">Blacklist</span>`;
+                            const keterangan = row.keterangan ? row.keterangan : 'Tidak ada keterangan';
+
+                            return `
+                                <div class="d-flex align-items-center justify-content-center gap-2">
+                                    <span class="badge bg-dark">Blacklist</span>
+                                    <span
+                                        class="badge bg-secondary cursor-pointer info-badge"
+                                        data-bs-toggle="popover"
+                                        data-bs-placement="left"
+                                        data-bs-html="true"
+                                        data-bs-content="${keterangan.replace(/"/g, '&quot;').replace(/\n/g, '<br>')}"
+                                        data-bs-trigger="hover"
+                                        title="Keterangan Blacklist"
+                                    >
+                                        <i class="bi bi-info-circle"></i>
+                                    </span>
+                                </div>
+                            `;
                         } else if (data === 4) {
                             return `<span class="badge bg-danger">Ditolak - Lolos di Pelatihan Lain</span>`;
                         }
@@ -221,17 +251,32 @@ export default function Index({ title, can, flash, pelatihan }) {
                 },
             ],
             drawCallback: function () {
-                // Initialize tooltips
                 const tooltips = document.querySelectorAll(
                     '[data-bs-toggle="tooltip"]'
                 );
                 tooltips.forEach((tooltipNode) => {
+                    const existingTooltip = Tooltip.getInstance(tooltipNode);
+                    if (existingTooltip) {
+                        existingTooltip.dispose();
+                    }
                     new Tooltip(tooltipNode);
+                });
+
+                const popovers = document.querySelectorAll('[data-bs-toggle="popover"]');
+                popovers.forEach((popoverNode) => {
+                    const existingPopover = Popover.getInstance(popoverNode);
+                    if (existingPopover) {
+                        existingPopover.dispose();
+                    }
+                    new Popover(popoverNode, {
+                        html: true,
+                        trigger: 'hover',
+                        placement: 'left',
+                    });
                 });
             },
         });
 
-        // Handle flash messages
         if (flash?.message) {
             const toastEl = document.getElementById("toast");
             if (toastEl) {
@@ -242,7 +287,6 @@ export default function Index({ title, can, flash, pelatihan }) {
 
         return () => {
             dt.destroy();
-            // Dispose tooltips
             const tooltips = document.querySelectorAll(
                 '[data-bs-toggle="tooltip"]'
             );
@@ -252,8 +296,17 @@ export default function Index({ title, can, flash, pelatihan }) {
                     tooltip.dispose();
                 }
             });
+
+            const popovers = document.querySelectorAll('[data-bs-toggle="popover"]');
+            popovers.forEach((popoverNode) => {
+                const popover = Popover.getInstance(popoverNode);
+                if (popover) {
+                    popover.dispose();
+                }
+            });
         };
     }, [flash, selectedCategory, verificationFilter, selectedStatus]);
+
     const handleExport = (type) => {
         const url = route("admin.export.pelatihanbanmod", {
             verification_status: verificationFilter,
@@ -264,70 +317,155 @@ export default function Index({ title, can, flash, pelatihan }) {
         window.open(url, "_blank");
     };
 
+    const handleBlacklistConfirm = async () => {
+        if (!blacklistNotes.trim()) {
+            alert("Silakan masukkan keterangan blacklist!");
+            return;
+        }
+
+        try {
+            const response = await axios.post(pendingBlacklistUrl, {
+                status: pendingBlacklistStatus,
+                notes: blacklistNotes,
+            });
+
+            if (pendingBlacklistStatus === 1) {
+                try {
+                    await axios.post(route('admin.auto-reject-nik'), {
+                        current_table: 'pelatihan_ekonomi_kreatif',
+                        current_id: response.data.current_id || null,
+                        nik: response.data.nik || null
+                    });
+                } catch (autoRejectError) {
+                    console.error("Error auto-rejecting other NIK records:", autoRejectError);
+                }
+            }
+
+            const toastEl = document.getElementById("toast");
+            const toastBody = toastEl.querySelector('.toast-body');
+            toastBody.textContent = response.data.message;
+
+            const toastElement = toastEl;
+            toastElement.className = toastElement.className.replace(/bg-\w+/, '');
+
+            if (pendingBlacklistStatus === 1) {
+                toastElement.classList.add('bg-success');
+            } else if (pendingBlacklistStatus === 2) {
+                toastElement.classList.add('bg-warning');
+            } else if (pendingBlacklistStatus === 3) {
+                toastElement.classList.add('bg-danger');
+            }
+
+            const toast = new Toast(toastEl);
+            toast.show();
+
+            setShowBlacklistModal(false);
+            setBlacklistNotes("");
+            setPendingBlacklistUrl(null);
+            setPendingBlacklistStatus(null);
+
+            $(tableRef.current).DataTable().ajax.reload();
+            fetchStats();
+        } catch (error) {
+            console.error("Error updating status:", error);
+            if (error.response?.data?.message) {
+                const toastEl = document.getElementById("toast");
+                const toastBody = toastEl.querySelector('.toast-body');
+                toastBody.textContent = error.response.data.message;
+                const toastElement = toastEl;
+                toastElement.className = toastElement.className.replace(/bg-\w+/, 'bg-danger');
+                const toast = new Toast(toastEl);
+                toast.show();
+            }
+        }
+    };
+
     const updateStatus = async (url, status) => {
         let confirmMessage = '';
 
         if (status === 1) {
             confirmMessage = 'Apakah anda yakin ingin meloloskan peserta ini?\n\nPerhatian: Jika peserta ini lolos, maka semua pendaftaran pelatihan lain (UMKM, Pertanian, Banmod) dengan NIK yang sama akan otomatis ditolak.';
-        } else if (status === 2) {
-            confirmMessage = 'Apakah anda yakin ingin menggagalkan peserta ini?';
-        } else if (status === 3) {
-            confirmMessage = 'Apakah anda yakin ingin membuat blacklist peserta ini?';
-        }
+            if (confirm(confirmMessage)) {
+                try {
+                    const response = await axios.post(url, {
+                        status: status,
+                    });
 
-        if (confirm(confirmMessage)) {
-            try {
-                const response = await axios.post(url, {
-                    status: status,
-                });
-
-                // Jika status berubah menjadi lolos (1), panggil endpoint untuk auto-reject NIK yang sama
-                if (status === 1) {
-                    try {
-                        await axios.post(route('admin.auto-reject-nik'), {
-                            current_table: 'banmod',
-                            current_id: response.data.current_id || null,
-                            nik: response.data.nik || null
-                        });
-                    } catch (autoRejectError) {
-                        console.error("Error auto-rejecting other NIK records:", autoRejectError);
+                    if (status === 1) {
+                        try {
+                            await axios.post(route('admin.auto-reject-nik'), {
+                                current_table: 'pelatihan_ekonomi_kreatif',
+                                current_id: response.data.current_id || null,
+                                nik: response.data.nik || null
+                            });
+                        } catch (autoRejectError) {
+                            console.error("Error auto-rejecting other NIK records:", autoRejectError);
+                        }
                     }
-                }
 
-                // Tampilkan toast message
-                const toastEl = document.getElementById("toast");
-                const toastBody = toastEl.querySelector('.toast-body');
-                toastBody.textContent = response.data.message;
-
-                // Ubah warna toast berdasarkan status
-                const toastElement = toastEl;
-                toastElement.className = toastElement.className.replace(/bg-\w+/, '');
-
-                if (status === 1) {
-                    toastElement.classList.add('bg-success');
-                } else if (status === 2) {
-                    toastElement.classList.add('bg-warning');
-                } else if (status === 3) {
-                    toastElement.classList.add('bg-danger');
-                }
-
-                const toast = new Toast(toastEl);
-                toast.show();
-
-                // Reload data table
-                $(tableRef.current).DataTable().ajax.reload();
-            } catch (error) {
-                console.error("Error updating status:", error);
-                if (error.response?.data?.message) {
                     const toastEl = document.getElementById("toast");
                     const toastBody = toastEl.querySelector('.toast-body');
-                    toastBody.textContent = error.response.data.message;
+                    toastBody.textContent = response.data.message;
+
                     const toastElement = toastEl;
-                    toastElement.className = toastElement.className.replace(/bg-\w+/, 'bg-danger');
+                    toastElement.className = toastElement.className.replace(/bg-\w+/, '');
+                    toastElement.classList.add('bg-success');
+
                     const toast = new Toast(toastEl);
                     toast.show();
+
+                    $(tableRef.current).DataTable().ajax.reload();
+                    fetchStats();
+                } catch (error) {
+                    console.error("Error updating status:", error);
+                    if (error.response?.data?.message) {
+                        const toastEl = document.getElementById("toast");
+                        const toastBody = toastEl.querySelector('.toast-body');
+                        toastBody.textContent = error.response.data.message;
+                        const toastElement = toastEl;
+                        toastElement.className = toastElement.className.replace(/bg-\w+/, 'bg-danger');
+                        const toast = new Toast(toastEl);
+                        toast.show();
+                    }
                 }
             }
+        } else if (status === 2) {
+            confirmMessage = 'Apakah anda yakin ingin menggagalkan peserta ini?';
+            if (confirm(confirmMessage)) {
+                try {
+                    const response = await axios.post(url, {
+                        status: status,
+                    });
+
+                    const toastEl = document.getElementById("toast");
+                    const toastBody = toastEl.querySelector('.toast-body');
+                    toastBody.textContent = response.data.message;
+
+                    const toastElement = toastEl;
+                    toastElement.className = toastElement.className.replace(/bg-\w+/, 'bg-warning');
+
+                    const toast = new Toast(toastEl);
+                    toast.show();
+
+                    $(tableRef.current).DataTable().ajax.reload();
+                    fetchStats();
+                } catch (error) {
+                    console.error("Error updating status:", error);
+                    if (error.response?.data?.message) {
+                        const toastEl = document.getElementById("toast");
+                        const toastBody = toastEl.querySelector('.toast-body');
+                        toastBody.textContent = error.response.data.message;
+                        const toastElement = toastEl;
+                        toastElement.className = toastElement.className.replace(/bg-\w+/, 'bg-danger');
+                        const toast = new Toast(toastEl);
+                        toast.show();
+                    }
+                }
+            }
+        } else if (status === 3) {
+            setPendingBlacklistUrl(url);
+            setPendingBlacklistStatus(status);
+            setShowBlacklistModal(true);
         }
     };
 
@@ -352,7 +490,6 @@ export default function Index({ title, can, flash, pelatihan }) {
                                         </label>
                                         <select
                                             className="form-select form-select-sm"
-                                            // style={{ minWidth: "300px" }}
                                             value={selectedCategory}
                                             onChange={handleCategoryChange}
                                         >
@@ -431,6 +568,41 @@ export default function Index({ title, can, flash, pelatihan }) {
                                     </button>
                                 </div>
                             </div>
+
+                            {/* Statistics Row */}
+                            <div className="row g-2 px-3 pb-3">
+                                <div className="col-6 col-sm-4 col-md-2">
+                                    <div className="bg-light rounded p-2 text-center">
+                                        <div className="fw-bold fs-6 text-primary">{stats.total}</div>
+                                        <small className="text-muted">Total</small>
+                                    </div>
+                                </div>
+                                <div className="col-6 col-sm-4 col-md-2">
+                                    <div className="bg-light rounded p-2 text-center">
+                                        <div className="fw-bold fs-6 text-success">{stats.lolos}</div>
+                                        <small className="text-muted">Lolos</small>
+                                    </div>
+                                </div>
+                                <div className="col-6 col-sm-4 col-md-2">
+                                    <div className="bg-light rounded p-2 text-center">
+                                        <div className="fw-bold fs-6 text-danger">{stats.gagal}</div>
+                                        <small className="text-muted">Gagal</small>
+                                    </div>
+                                </div>
+                                <div className="col-6 col-sm-4 col-md-2">
+                                    <div className="bg-light rounded p-2 text-center">
+                                        <div className="fw-bold fs-6 text-dark">{stats.blacklist}</div>
+                                        <small className="text-muted">Blacklist</small>
+                                    </div>
+                                </div>
+                                <div className="col-6 col-sm-4 col-md-2">
+                                    <div className="bg-light rounded p-2 text-center">
+                                        <div className="fw-bold fs-6 text-warning">{stats.lolosLain}</div>
+                                        <small className="text-muted">Lolos Pelatihan Lain</small>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div className="card-body">
                                 <div className="table-responsive">
                                     <table
@@ -490,6 +662,85 @@ export default function Index({ title, can, flash, pelatihan }) {
                     </div>
                 </div>
             </div>
+
+            {/* Blacklist Modal */}
+            {showBlacklistModal && (
+                <div
+                    className="modal fade show d-block"
+                    style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+                    tabIndex="-1"
+                    role="dialog"
+                    aria-labelledby="blacklistModalLabel"
+                    aria-hidden="true"
+                >
+                    <div className="modal-dialog" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header bg-danger text-white">
+                                <h5 className="modal-title" id="blacklistModalLabel">
+                                    <i className="bi bi-exclamation-triangle me-2"></i>
+                                    Tambah Keterangan Blacklist
+                                </h5>
+                                <button
+                                    type="button"
+                                    className="btn-close btn-close-white"
+                                    onClick={() => {
+                                        setShowBlacklistModal(false);
+                                        setBlacklistNotes("");
+                                        setPendingBlacklistUrl(null);
+                                        setPendingBlacklistStatus(null);
+                                    }}
+                                    aria-label="Close"
+                                ></button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="alert alert-warning" role="alert">
+                                    <i className="bi bi-info-circle me-2"></i>
+                                    Masukkan keterangan alasan peserta diblacklist. Informasi ini akan disimpan dalam sistem.
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="blacklistNotes" className="form-label fw-bold">
+                                        Keterangan Blacklist <span className="text-danger">*</span>
+                                    </label>
+                                    <textarea
+                                        id="blacklistNotes"
+                                        className="form-control"
+                                        rows="4"
+                                        value={blacklistNotes}
+                                        onChange={(e) => setBlacklistNotes(e.target.value)}
+                                        placeholder="Contoh: Melakukan kecurangan dalam dokumen, Melanggar tata tertib, dll..."
+                                    ></textarea>
+                                    <small className="form-text text-muted">
+                                        Minimal keterangan untuk alasan blacklist
+                                    </small>
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    onClick={() => {
+                                        setShowBlacklistModal(false);
+                                        setBlacklistNotes("");
+                                        setPendingBlacklistUrl(null);
+                                        setPendingBlacklistStatus(null);
+                                    }}
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-danger"
+                                    onClick={handleBlacklistConfirm}
+                                    disabled={!blacklistNotes.trim()}
+                                >
+                                    <i className="bi bi-check-lg me-1"></i>
+                                    Konfirmasi Blacklist
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </AdminLayout>
     );
 }

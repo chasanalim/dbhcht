@@ -81,11 +81,52 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
             if ($request->has('jenis_pelatihan') && $request->jenis_pelatihan !== 'Semua Pelatihan') {
                 $query->where('jenis_pelatihan', $request->jenis_pelatihan);
             }
+
+            // Jika request untuk stats saja
+            if ($request->has('stats') && $request->stats) {
+                $data = $query->get();
+
+                if ($request->has('verification_status')) {
+                    $status = $request->verification_status;
+                    $data = $data->filter(function ($item) use ($status) {
+                        $requiredDocs = $this->getRequiredDocumentsByKategori($item->kategori_pendaftar);
+                        $verifications = $item->documentVerifications->whereIn('document_type', $requiredDocs);
+
+                        $allVerified = count($verifications) === count($requiredDocs);
+                        $allApproved = $verifications->every(function ($verification) {
+                            return $verification->status === 1;
+                        });
+
+                        switch ($status) {
+                            case 'verified':
+                                return $allVerified && $allApproved;
+                            case 'rejected':
+                                return $allVerified && !$allApproved;
+                            case 'pending':
+                                return !$allVerified;
+                            default:
+                                return true;
+                        }
+                    });
+                }
+
+                return response()->json([
+                    'stats' => [
+                        'total' => $data->count(),
+                        'lolos' => $data->where('status', 1)->count(),
+                        'gagal' => $data->where('status', 2)->count(),
+                        'blacklist' => $data->where('status', 3)->count(),
+                        'lolosLain' => $data->where('status', 4)->count(),
+                    ]
+                ]);
+            }
+
+            // Original DataTable logic
             if ($request->has('status') && $request->status !== 'all') {
                 $query->where('status', $request->status);
             }
 
-            $data = $query->orderBy('created_at', 'asc')->get();
+            $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor');;
 
             if ($request->has('verification_status')) {
                 $status = $request->verification_status;
@@ -134,6 +175,10 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
                         'all_verified' => $allVerified,
                         'all_approved' => $allApproved
                     ];
+                })
+                ->addColumn('keterangan', function ($row) {
+                    // Kirim keterangan untuk tooltip
+                    return $row->keterangan ?? null;
                 })
                 ->rawColumns(['action', 'verifikasi_dokumen'])
                 ->make(true);
@@ -235,6 +280,9 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
                     'alamat' => $data->alamat_domisili,
                 ],
 
+                'status' => $data->status,
+                'keterangan' => $data->keterangan,
+
                 // Data Pelatihan
                 'jenis_pelatihan' => $data->jenis_pelatihan,
                 'kategori_pendaftar' => $data->kategori_pendaftar,
@@ -248,6 +296,11 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
 
     public function updateStatus(Request $request, $id)
     {
+        $validated = $request->validate([
+            'status' => 'required|integer|in:1,2,3,4',
+            'notes' => 'nullable|string', // Tambah validasi untuk notes
+        ]);
+
         $data = PelatihanEkonomiKreatif::findOrFail($id);
 
         // Validate if document is verified sesuai kategori
@@ -257,22 +310,28 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
         $allVerified = count($verifications) === count($requiredDocs);
         $allApproved = $verifications->every(fn($v) => $v->status === 1);
 
-        if (!$allVerified) {
+        if (!$allVerified && $validated['status'] === 1) {
             return response()->json([
                 'message' => 'Dokumen belum lengkap. Diperlukan ' . count($requiredDocs) . ' dokumen untuk kategori ' . $this->getCategoryLabel($data->kategori_pendaftar)
             ], 422);
         }
 
-        if (!$allApproved) {
+        if (!$allApproved && $validated['status'] === 1) {
             return response()->json([
                 'message' => 'Semua dokumen harus disetujui sebelum peserta dapat diloloskan'
             ], 422);
         }
 
-        $data->status = $request->status;
+        $data->status = $validated['status'];
+
+        // Simpan notes jika ada (untuk blacklist atau status lainnya)
+        if (!empty($validated['notes'])) {
+            $data->keterangan = $validated['notes'];
+        }
+
         $data->save();
 
-        $statusMessage = match ($request->status) {
+        $statusMessage = match ($validated['status']) {
             1 => 'Peserta berhasil diloloskan',
             2 => 'Peserta telah ditolak',
             3 => 'Peserta telah dimasukkan ke blacklist',
@@ -313,5 +372,5 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
     /**
      * Reset verifikasi dokumen
      */
-    
+
 }

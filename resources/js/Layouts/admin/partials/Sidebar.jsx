@@ -337,7 +337,7 @@ export default function Sidebar() {
                                 </li>
                             </>
                         )}
-                        {can.viewUser && (
+                        {can.viewPelatihanBanmod && (
                             <>
                                 <li>
                                     <h6 className="text-uppercase mt-3 menu">

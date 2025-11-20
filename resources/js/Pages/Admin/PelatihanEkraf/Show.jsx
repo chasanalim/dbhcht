@@ -13,56 +13,86 @@ export default function Show({ title, data, type = "PELATIHAN_EKRAF" }) {
     const [isLoadingReject, setIsLoadingReject] = useState(false);
 
     const REQUIRED_DOCUMENTS = {
-        'umum': [
+        umum: [
             { key: "pasfoto", label: "Pas Foto" },
             { key: "ktp", label: "KTP" },
             { key: "kk", label: "Kartu Keluarga" },
             { key: "surat_pernyataan", label: "Surat Pernyataan Komitmen" },
-            { key: "surat_pekerja_ekraf", label: "Surat Keterangan Pekerja Ekonomi Kreatif" },
+            {
+                key: "surat_pekerja_ekraf",
+                label: "Surat Keterangan Pekerja Ekonomi Kreatif",
+            },
             { key: "nib", label: "NIB" },
         ],
-        'buruh_tani_tembakau': [
+        buruh_tani_tembakau: [
             { key: "pasfoto", label: "Pas Foto" },
             { key: "ktp", label: "KTP" },
             { key: "kk", label: "Kartu Keluarga" },
             { key: "surat_pernyataan", label: "Surat Pernyataan Komitmen" },
-            { key: "surat_pekerja_ekraf", label: "Surat Keterangan Pekerja Ekonomi Kreatif" },
+            {
+                key: "surat_pekerja_ekraf",
+                label: "Surat Keterangan Pekerja Ekonomi Kreatif",
+            },
             { key: "nib", label: "NIB" },
-            { key: "surat_pemilik_lahan", label: "Surat Keterangan Pemilik Lahan" },
+            {
+                key: "surat_pemilik_lahan",
+                label: "Surat Keterangan Pemilik Lahan",
+            },
         ],
-        'buruh_pabrik_rokok': [
+        buruh_pabrik_rokok: [
             { key: "pasfoto", label: "Pas Foto" },
             { key: "ktp", label: "KTP" },
             { key: "kk", label: "Kartu Keluarga" },
             { key: "surat_pernyataan", label: "Surat Pernyataan Komitmen" },
-            { key: "surat_pekerja_ekraf", label: "Surat Keterangan Pekerja Ekonomi Kreatif" },
+            {
+                key: "surat_pekerja_ekraf",
+                label: "Surat Keterangan Pekerja Ekonomi Kreatif",
+            },
             { key: "nib", label: "NIB" },
-            { key: "id_card_iht", label: "ID Card / Surat Keterangan dari IHT" },
+            {
+                key: "id_card_iht",
+                label: "ID Card / Surat Keterangan dari IHT",
+            },
         ],
-        'buruh_phk': [
+        buruh_phk: [
             { key: "pasfoto", label: "Pas Foto" },
             { key: "ktp", label: "KTP" },
             { key: "kk", label: "Kartu Keluarga" },
             { key: "surat_pernyataan", label: "Surat Pernyataan Komitmen" },
-            { key: "surat_pekerja_ekraf", label: "Surat Keterangan Pekerja Ekonomi Kreatif" },
+            {
+                key: "surat_pekerja_ekraf",
+                label: "Surat Keterangan Pekerja Ekonomi Kreatif",
+            },
             { key: "nib", label: "NIB" },
-            { key: "surat_phk", label: "Surat Pemberhentian Kerja / sejenisnya dari IHT" },
+            {
+                key: "surat_phk",
+                label: "Surat Pemberhentian Kerja / sejenisnya dari IHT",
+            },
         ],
-        'disabilitas': [
+        disabilitas: [
             { key: "pasfoto", label: "Pas Foto" },
             { key: "ktp", label: "KTP" },
             { key: "kk", label: "Kartu Keluarga" },
             { key: "surat_pernyataan", label: "Surat Pernyataan Komitmen" },
-            { key: "surat_pekerja_ekraf", label: "Surat Keterangan Pekerja Ekonomi Kreatif" },
+            {
+                key: "surat_pekerja_ekraf",
+                label: "Surat Keterangan Pekerja Ekonomi Kreatif",
+            },
             { key: "nib", label: "NIB" },
-            { key: "surat_disabilitas", label: "Surat Keterangan Disabilitas dari Kelurahan" },
+            {
+                key: "surat_disabilitas",
+                label: "Surat Keterangan Disabilitas dari Kelurahan",
+            },
         ],
-        'perempuan_kk': [
+        perempuan_kk: [
             { key: "pasfoto", label: "Pas Foto" },
             { key: "ktp", label: "KTP" },
             { key: "kk", label: "Kartu Keluarga" },
             { key: "surat_pernyataan", label: "Surat Pernyataan Komitmen" },
-            { key: "surat_pekerja_ekraf", label: "Surat Keterangan Pekerja Ekonomi Kreatif" },
+            {
+                key: "surat_pekerja_ekraf",
+                label: "Surat Keterangan Pekerja Ekonomi Kreatif",
+            },
             { key: "nib", label: "NIB" },
             { key: "surat_kb", label: "Surat Keterangan Dinas KB" },
         ],
@@ -134,28 +164,25 @@ export default function Show({ title, data, type = "PELATIHAN_EKRAF" }) {
 
         setIsLoadingReset(true);
 
-        router.delete(
-            route("admin.reset-document-verification"),
-            {
-                data: {
-                    training_type: type,
-                    id: data.id,
-                    document_type: fileType,
-                },
-                preserveScroll: true,
-                onSuccess: () => {
-                    setShowModal(false);
-                    setShowRejectForm(false);
-                    setRejectNote("");
-                    setIsLoadingReset(false);
-                    router.reload();
-                },
-                onError: () => {
-                    setIsLoadingReset(false);
-                    alert("Terjadi kesalahan saat mereset verifikasi");
-                },
-            }
-        );
+        router.delete(route("admin.reset-document-verification"), {
+            data: {
+                training_type: type,
+                id: data.id,
+                document_type: fileType,
+            },
+            preserveScroll: true,
+            onSuccess: () => {
+                setShowModal(false);
+                setShowRejectForm(false);
+                setRejectNote("");
+                setIsLoadingReset(false);
+                router.reload();
+            },
+            onError: () => {
+                setIsLoadingReset(false);
+                alert("Terjadi kesalahan saat mereset verifikasi");
+            },
+        });
     };
 
     useEffect(() => {
@@ -273,8 +300,10 @@ export default function Show({ title, data, type = "PELATIHAN_EKRAF" }) {
     };
 
     const renderDocuments = () => {
-        const kategori = data.kategori_pendaftar || 'umum';
-        const documentTypes = REQUIRED_DOCUMENTS[kategori] || REQUIRED_DOCUMENTS['umum'];
+        const kategori = data.kategori_pendaftar || "umum";
+        const status = data.status;
+        const documentTypes =
+            REQUIRED_DOCUMENTS[kategori] || REQUIRED_DOCUMENTS["umum"];
 
         return (
             <div className="row row-cols-1 row-cols-md-3 g-4">
@@ -292,14 +321,25 @@ export default function Show({ title, data, type = "PELATIHAN_EKRAF" }) {
 
     const getCategoryLabel = (kategori) => {
         const categories = {
-            'umum': 'Umum',
-            'buruh_tani_tembakau': 'Buruh Tani Tembakau',
-            'buruh_pabrik_rokok': 'Buruh Pabrik Rokok',
-            'buruh_phk': 'Buruh yang Terkena PHK',
-            'disabilitas': 'Disabilitas',
-            'perempuan_kk': 'Perempuan Kepala Keluarga'
+            umum: "Umum",
+            buruh_tani_tembakau: "Buruh Tani Tembakau",
+            buruh_pabrik_rokok: "Buruh Pabrik Rokok",
+            buruh_phk: "Buruh yang Terkena PHK",
+            disabilitas: "Disabilitas",
+            perempuan_kk: "Perempuan Kepala Keluarga",
         };
         return categories[kategori] || kategori;
+    };
+
+    const getStatusLabel = (status) => {
+        const statusLabel = {
+            0: "-",
+            1: "Lolos",
+            2: "Tidak Lolos",
+            3: "Blacklist",
+            4: "Ditolak - Lolos di Pelatihan Lain",
+        };
+        return statusLabel[status] || status;
     };
 
     // Modal JSX
@@ -326,7 +366,8 @@ export default function Show({ title, data, type = "PELATIHAN_EKRAF" }) {
                                         <h5 className="modal-title">
                                             {activeFile.label === "KTP"
                                                 ? `${activeFile.label} | NIK : ${data.nik}`
-                                                : activeFile.label === "Kartu Keluarga"
+                                                : activeFile.label ===
+                                                  "Kartu Keluarga"
                                                 ? `${activeFile.label} | NO KK : ${data.no_kk}`
                                                 : activeFile.label}
                                         </h5>
@@ -334,7 +375,11 @@ export default function Show({ title, data, type = "PELATIHAN_EKRAF" }) {
                                             type="button"
                                             className="btn-close"
                                             onClick={() => setShowModal(false)}
-                                            disabled={isLoadingVerify || isLoadingReject || isLoadingReset}
+                                            disabled={
+                                                isLoadingVerify ||
+                                                isLoadingReject ||
+                                                isLoadingReset
+                                            }
                                         ></button>
                                     </div>
                                     <div className="modal-body">
@@ -364,11 +409,15 @@ export default function Show({ title, data, type = "PELATIHAN_EKRAF" }) {
                                                         className="form-control"
                                                         value={rejectNote}
                                                         onChange={(e) =>
-                                                            setRejectNote(e.target.value)
+                                                            setRejectNote(
+                                                                e.target.value
+                                                            )
                                                         }
                                                         rows="3"
                                                         placeholder="Tuliskan alasan penolakan dokumen..."
-                                                        disabled={isLoadingReject}
+                                                        disabled={
+                                                            isLoadingReject
+                                                        }
                                                     ></textarea>
                                                 </div>
                                                 <div className="d-flex justify-content-end gap-2 mt-2">
@@ -376,10 +425,14 @@ export default function Show({ title, data, type = "PELATIHAN_EKRAF" }) {
                                                         type="button"
                                                         className="btn btn-secondary"
                                                         onClick={() => {
-                                                            setShowRejectForm(false);
+                                                            setShowRejectForm(
+                                                                false
+                                                            );
                                                             setRejectNote("");
                                                         }}
-                                                        disabled={isLoadingReject}
+                                                        disabled={
+                                                            isLoadingReject
+                                                        }
                                                     >
                                                         Batal
                                                     </button>
@@ -387,10 +440,13 @@ export default function Show({ title, data, type = "PELATIHAN_EKRAF" }) {
                                                         type="button"
                                                         className="btn btn-danger"
                                                         onClick={() =>
-                                                            handleTolak(activeFile.fileType)
+                                                            handleTolak(
+                                                                activeFile.fileType
+                                                            )
                                                         }
                                                         disabled={
-                                                            !rejectNote.trim() || isLoadingReject
+                                                            !rejectNote.trim() ||
+                                                            isLoadingReject
                                                         }
                                                     >
                                                         {isLoadingReject ? (
@@ -413,7 +469,9 @@ export default function Show({ title, data, type = "PELATIHAN_EKRAF" }) {
                                             <button
                                                 type="button"
                                                 className="btn btn-secondary"
-                                                onClick={() => setShowModal(false)}
+                                                onClick={() =>
+                                                    setShowModal(false)
+                                                }
                                                 disabled={
                                                     isLoadingVerify ||
                                                     isLoadingReject ||
@@ -428,7 +486,9 @@ export default function Show({ title, data, type = "PELATIHAN_EKRAF" }) {
                                                         type="button"
                                                         className="btn btn-danger"
                                                         onClick={() =>
-                                                            setShowRejectForm(true)
+                                                            setShowRejectForm(
+                                                                true
+                                                            )
                                                         }
                                                         disabled={
                                                             isLoadingVerify ||
@@ -466,7 +526,8 @@ export default function Show({ title, data, type = "PELATIHAN_EKRAF" }) {
                                                 </>
                                             )}
                                             {activeFile.verification &&
-                                                activeFile.verification.status === 0 && (
+                                                activeFile.verification
+                                                    .status === 0 && (
                                                     <button
                                                         type="button"
                                                         className="btn btn-info"
@@ -475,7 +536,9 @@ export default function Show({ title, data, type = "PELATIHAN_EKRAF" }) {
                                                                 activeFile.fileType
                                                             )
                                                         }
-                                                        disabled={isLoadingReset}
+                                                        disabled={
+                                                            isLoadingReset
+                                                        }
                                                     >
                                                         {isLoadingReset ? (
                                                             <>
@@ -530,7 +593,12 @@ export default function Show({ title, data, type = "PELATIHAN_EKRAF" }) {
                                     <tbody>
                                         <tr>
                                             <td>Kategori</td>
-                                            <td>: {getCategoryLabel(data.kategori_pendaftar)}</td>
+                                            <td>
+                                                :{" "}
+                                                {getCategoryLabel(
+                                                    data.kategori_pendaftar
+                                                )}
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -587,6 +655,43 @@ export default function Show({ title, data, type = "PELATIHAN_EKRAF" }) {
                                         </tr>
                                     </tbody>
                                 </table>
+
+                            </div>
+                            <div className="col-md-6">
+                                <h6 className="fw-bold">Alamat Domisili</h6>
+                                <table className="table table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <td style={{ width: "200px" }}>
+                                                Jalan
+                                            </td>
+                                            <td>
+                                                : {data.alamat_domisili.alamat}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>RT/RW</td>
+                                            <td>
+                                                : {data.alamat_domisili.rt}/
+                                                {data.alamat_domisili.rw}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Kelurahan</td>
+                                            <td>
+                                                :{" "}
+                                                {data.alamat_domisili.kelurahan}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Kecamatan</td>
+                                            <td>
+                                                :{" "}
+                                                {data.alamat_domisili.kecamatan}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                                 <h6 className="fw-bold">SKORING</h6>
                                 <table className="table table-sm">
                                     <tbody>
@@ -602,36 +707,23 @@ export default function Show({ title, data, type = "PELATIHAN_EKRAF" }) {
                                         </tr>
                                     </tbody>
                                 </table>
-                            </div>
-                            <div className="col-md-6">
-                                <h6 className="fw-bold">Alamat Domisili</h6>
+                                <h6 className="fw-bold">Status</h6>
                                 <table className="table table-sm">
                                     <tbody>
                                         <tr>
                                             <td style={{ width: "200px" }}>
-                                                Jalan
+                                                Status Pendaftaran
                                             </td>
-                                            <td>: {data.alamat_domisili.alamat}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>RT/RW</td>
                                             <td>
-                                                : {data.alamat_domisili.rt}/
-                                                {data.alamat_domisili.rw}
+                                                : {getStatusLabel(data.status)}
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <td>Kelurahan</td>
-                                            <td>
-                                                : {data.alamat_domisili.kelurahan}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Kecamatan</td>
-                                            <td>
-                                                : {data.alamat_domisili.kecamatan}
-                                            </td>
-                                        </tr>
+                                        {data.status === 3 && (
+                                            <tr>
+                                                <td>Keterangan</td>
+                                                <td>: {data.keterangan}</td>
+                                            </tr>
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
@@ -640,7 +732,10 @@ export default function Show({ title, data, type = "PELATIHAN_EKRAF" }) {
                         {renderModal()}
 
                         <div className="mt-4">
-                            <h6 className="fw-bold mb-3">Dokumen (Kategori: {getCategoryLabel(data.kategori_pendaftar)})</h6>
+                            <h6 className="fw-bold mb-3">
+                                Dokumen (Kategori:{" "}
+                                {getCategoryLabel(data.kategori_pendaftar)})
+                            </h6>
                             {renderDocuments()}
                         </div>
                     </div>

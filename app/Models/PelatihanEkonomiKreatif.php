@@ -64,6 +64,7 @@ class PelatihanEkonomiKreatif extends Model
         // Status
         'komitmen',
         'status',
+        'keterangan',
         'created_by',
         'updated_by',
     ];
@@ -318,7 +319,14 @@ class PelatihanEkonomiKreatif extends Model
     // Tambah method skor:
     public function getSkorAttribute()
     {
-        return $this->alasanPelatihan->skor ?? 0;
+        $skor = 0;
+        $skor += $this->alasanPelatihan->skor ?? 0;
+
+        if ($skor === 0) {
+            return 0;
+        }
+        return $skor / 3 * 100;
+
     }
 
     // Tambah relasi:
