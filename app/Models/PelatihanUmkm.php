@@ -58,6 +58,7 @@ class PelatihanUmkm extends Model
         'pengalaman',
         'komitmen',
         'status',
+        'keterangan',
     ];
 
     protected $casts = [
