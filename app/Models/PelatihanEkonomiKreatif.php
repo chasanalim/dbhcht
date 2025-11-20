@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\HasVerifikasiDokumen;
+use App\Models\SkorPelatihanEkonomiKreatif;
 
 class PelatihanEkonomiKreatif extends Model
 {
@@ -43,6 +44,7 @@ class PelatihanEkonomiKreatif extends Model
 
         // Pelatihan
         'jenis_pelatihan',
+        'alasan',
 
         // Files Wajib
         'file_ktp',
@@ -222,5 +224,22 @@ class PelatihanEkonomiKreatif extends Model
     public function getKategoriTextAttribute()
     {
         return self::getKategoriPendaftar()[$this->kategori_pendaftar] ?? 'Unknown';
+    }
+
+    // Tambah appends:
+    protected $appends = [
+        'skor',
+    ];
+
+    // Tambah method skor:
+    public function getSkorAttribute()
+    {
+        return $this->alasanPelatihan->skor ?? 0;
+    }
+
+    // Tambah relasi:
+    public function alasanPelatihan()
+    {
+        return $this->belongsTo(SkorPelatihanEkonomiKreatif::class, 'alasan', 'id');
     }
 }

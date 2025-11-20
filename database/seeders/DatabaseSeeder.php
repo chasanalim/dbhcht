@@ -51,6 +51,7 @@ class DatabaseSeeder extends Seeder
             SkorPelatihanBanmodSeeder::class,
             RefPendidikanSeeder::class,
             MasterPKLSeeder::class,
+            SkorPelatihanEkonomiKreatifSeeder::class,
         ]);
     }
 }

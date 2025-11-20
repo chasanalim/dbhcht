@@ -51,6 +51,9 @@ return new class extends Migration {
             // Data Pelatihan
             $table->string('jenis_pelatihan')->comment('Jenis pelatihan ekonomi kreatif yang dipilih');
 
+            // Skala Prioritas (Foreign Key ke tabel skor)
+            $table->unsignedBigInteger('alasan')->nullable()->comment('ID alasan mengikuti pelatihan');
+
             // Upload Files Wajib (untuk semua kategori)
             $table->string('file_ktp')->nullable()->comment('File foto KTP');
             $table->string('file_kk')->nullable()->comment('File foto Kartu Keluarga');
@@ -69,6 +72,7 @@ return new class extends Migration {
             // Status & Komitmen
             $table->boolean('komitmen')->default(false)->comment('Persetujuan komitmen pendaftar');
             $table->integer('status')->default(0)->comment('0: Menunggu, 1: Lolos, 2: Gagal, 3: Blacklist');
+            $table->text('keterangan')->nullable()->comment('Keterangan tambahan untuk status atau catatan admin');
 
             // Audit Trail
             $table->string('created_by')->nullable()->comment('User yang menginput data');

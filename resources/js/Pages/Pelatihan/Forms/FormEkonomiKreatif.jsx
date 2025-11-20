@@ -2,6 +2,7 @@ import { Form, Button, ListGroup, InputGroup } from "react-bootstrap";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useForm } from "@inertiajs/react";
+import Select from "react-select";
 
 import SelectKecamatan from "@/Components/Select/SelectKecamatan";
 import SelectKelurahan from "@/Components/Select/SelectKelurahan";
@@ -24,6 +25,8 @@ export default function FormEkonomiKreatif({
     const [kkLength, setKkLength] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [requiredFiles, setRequiredFiles] = useState({});
+
+    const [skorAlasanOptions, setSkorAlasanOptions] = useState([]);
 
     const { data, setData, errors, post, reset } = useForm({
         kategori_pendaftar: "",
@@ -53,6 +56,7 @@ export default function FormEkonomiKreatif({
         
         // Pelatihan
         jenis_pelatihan: "",
+        alasan: "",
         
         // Files Wajib
         file_ktp: null,
@@ -70,6 +74,8 @@ export default function FormEkonomiKreatif({
         file_surat_kb: null,
         
         komitmen: false,
+
+        keterangan: "",
     });
 
     // Cek NIK function (sama seperti UMKM)
@@ -97,6 +103,22 @@ export default function FormEkonomiKreatif({
             }
         }
     };
+
+    useEffect(() => {
+        fetch("/skor-ekraf/alasan")
+            .then((res) => res.json())
+            .then((data) => {
+                setSkorAlasanOptions(
+                    data.map((item) => ({ 
+                        value: item.id, 
+                        label: item.jawaban 
+                    }))
+                );
+            })
+            .catch(error => {
+                console.error('Error loading skor options:', error);
+            });
+    }, []);
 
     // Fetch required files when kategori changes
     useEffect(() => {
@@ -935,9 +957,37 @@ export default function FormEkonomiKreatif({
                                 7
                             )}
 
-                            {/* Komitmen */}
+                            {/* TAMBAH SECTION INI SETELAH UPLOAD FILES */}
+                            {/* Skala Prioritas */}
                             <div className="big-text text-muted mb-4">
-                                E. Pernyataan Komitmen
+                                E. Skala Prioritas Peserta Pelatihan
+                                <div className="underline"></div>
+                            </div>
+
+                            <Form.Group className="mb-4">
+                                <Form.Label className="required">Alasan Mengikuti Pelatihan</Form.Label>
+                                <Select
+                                    options={skorAlasanOptions}
+                                    value={skorAlasanOptions.find(
+                                        (opt) => opt.value === data.alasan
+                                    )}
+                                    onChange={(selected) =>
+                                        setData("alasan", selected?.value || "")
+                                    }
+                                    className={errors.alasan ? "is-invalid" : ""}
+                                    placeholder="Pilih alasan mengikuti pelatihan..."
+                                    isClearable
+                                />
+                                {errors.alasan && (
+                                    <div className="invalid-feedback d-block">
+                                        {errors.alasan}
+                                    </div>
+                                )}
+                            </Form.Group>
+
+                            {/* Update section komitmen jadi huruf F */}
+                            <div className="big-text text-muted mb-4">
+                                F. Pernyataan Komitmen
                                 <div className="underline"></div>
                             </div>
 

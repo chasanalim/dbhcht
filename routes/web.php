@@ -220,6 +220,10 @@ Route::prefix('pelatihan/ekonomi-kreatif')->group(function () {
     Route::get('/cek-nik/{nik}', [RegPelatihanEkonomiKreatifController::class, 'cekNIK'])->name('pelatihan-ekonomi-kreatif.cek-nik');
 });
 
+Route::get('/skor-ekraf/alasan', function () {
+    return \App\Models\SkorPelatihanEkonomiKreatif::orderBy('skor', 'desc')->get();
+});
+
 Route::get('/pelatihan/ekonomi-kreatif/quota-info', [RegPelatihanEkonomiKreatifController::class, 'getQuotaInfo'])
     ->name('pelatihan-ekonomi-kreatif.quota-info');
 

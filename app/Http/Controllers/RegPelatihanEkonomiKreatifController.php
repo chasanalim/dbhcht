@@ -273,6 +273,7 @@ class RegPelatihanEkonomiKreatifController extends Controller
             'kecamatan_domisili' => 'nullable|string|max:100',
             'kode_kelurahan_domisili' => 'nullable|string|max:20',
             'kode_kecamatan_domisili' => 'nullable|string|max:20',
+            'alasan' => 'required|integer|exists:skor_pelatihan_ekonomi_kreatif,id',
 
             // Komitmen
             'komitmen' => 'required|boolean|accepted',
@@ -350,6 +351,9 @@ class RegPelatihanEkonomiKreatifController extends Controller
             'rw_domisili.required' => 'RW domisili wajib diisi jika berbeda dengan alamat KTP.',
             'kelurahan_domisili.required' => 'Kelurahan domisili wajib diisi jika berbeda dengan alamat KTP.',
             'kecamatan_domisili.required' => 'Kecamatan domisili wajib diisi jika berbeda dengan alamat KTP.',
+
+            'alasan.required' => 'Alasan mengikuti pelatihan wajib dipilih.',
+            'alasan.exists' => 'Pilihan alasan tidak valid.',
 
             // File messages
             'file_ktp.required' => 'File KTP wajib diupload.',
