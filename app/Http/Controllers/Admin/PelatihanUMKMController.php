@@ -283,6 +283,8 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
                 'skor_pengalaman' => $data->pengalamanPelatihan?->skor,
                 'skor' => $data->skor,
                 'komitmen' => $data->komitmen,
+                'status' => $data->status,
+                'keterangan' => $data->keterangan,
 
                 // Files
                 'files' => [
