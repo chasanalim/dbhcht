@@ -68,7 +68,7 @@ class PelatihanEkonomiKreatif extends Model
 
     protected $casts = [
         'komitmen' => 'boolean',
-        'usia' => 'integer',
+        // 'usia' => 'integer',
         'status' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -126,6 +126,7 @@ class PelatihanEkonomiKreatif extends Model
     const STATUS_LOLOS = 1;
     const STATUS_GAGAL = 2;
     const STATUS_BLACKLIST = 3;
+    const STATUS_LOLOS_PELATIHAN_LAIN = 4;
 
     /**
      * Get daftar kategori pendaftar
@@ -152,6 +153,7 @@ class PelatihanEkonomiKreatif extends Model
             self::STATUS_LOLOS => 'Lolos Seleksi',
             self::STATUS_GAGAL => 'Tidak Lolos',
             self::STATUS_BLACKLIST => 'Blacklist',
+            self::STATUS_LOLOS_PELATIHAN_LAIN => 'Ditolak - Lolos di Pelatihan Lain',
         ];
     }
 
@@ -222,5 +224,87 @@ class PelatihanEkonomiKreatif extends Model
     public function getKategoriTextAttribute()
     {
         return self::getKategoriPendaftar()[$this->kategori_pendaftar] ?? 'Unknown';
+    }
+
+    public function getVerificationType(): string
+    {
+        return 'PELATIHAN_EKRAF';
+    }
+
+    public static function getDocumentTypes(): array
+    {
+        return [
+            'pasfoto' => 'Pas Foto',
+            'ktp' => 'KTP',
+            'kk' => 'Kartu Keluarga',
+            'surat_pernyataan' => 'Surat Pernyataan Komitmen',
+            'surat_pekerja_ekraf' => 'Surat Keterangan Pekerja Ekonomi Kreatif',
+            'nib' => 'NIB',
+            'surat_pemilik_lahan' => 'Surat Keterangan Pemilik Lahan',
+            'id_card_iht' => 'ID Card / Surat Keterangan dari IHT',
+            'surat_phk' => 'Surat Pemberhentian Kerja',
+            'surat_disabilitas' => 'Surat Keterangan Disabilitas dari Kelurahan',
+            'surat_kb' => 'Surat Keterangan Dinas KB',
+        ];
+    }
+
+    public function getJenisPelatihan()
+    {
+        return ' Ekonomi Kreatif';
+    }
+
+    public static function getRequiredDocumentsByKategori($kategori)
+    {
+        $baseDocuments = [
+            'pasfoto' => 'Pas Foto',
+            'ktp' => 'KTP',
+            'kk' => 'Kartu Keluarga',
+            'surat_pernyataan' => 'Surat Pernyataan Komitmen',
+            'surat_pekerja_ekraf' => 'Surat Keterangan Pekerja Ekonomi Kreatif',
+            'nib' => 'NIB',
+        ];
+
+        $additionalDocuments = [
+            self::KATEGORI_BURUH_TANI => [
+                'surat_pemilik_lahan' => 'Surat Keterangan Pemilik Lahan'
+            ],
+            self::KATEGORI_BURUH_PABRIK => [
+                'id_card_iht' => 'ID Card / Surat Keterangan dari IHT'
+            ],
+            self::KATEGORI_BURUH_PHK => [
+                'surat_phk' => 'Surat Pemberhentian Kerja'
+            ],
+            self::KATEGORI_DISABILITAS => [
+                'surat_disabilitas' => 'Surat Keterangan Disabilitas dari Kelurahan'
+            ],
+            self::KATEGORI_PEREMPUAN_KK => [
+                'surat_kb' => 'Surat Keterangan Dinas KB'
+            ],
+        ];
+
+        return array_merge(
+            $baseDocuments,
+            $additionalDocuments[$kategori] ?? []
+        );
+    }
+
+    public function areAllDocumentsVerified(): bool
+    {
+        $requiredDocs = self::getRequiredDocumentsByKategori($this->kategori_pendaftar);
+        $verifications = $this->documentVerifications->whereIn('document_type', array_keys($requiredDocs));
+
+        return count($verifications) === count($requiredDocs) &&
+            $verifications->every(fn($v) => $v->status === 1);
+    }
+
+    /**
+     * Check if any documents are rejected
+     */
+    public function hasRejectedDocuments(): bool
+    {
+        $requiredDocs = self::getRequiredDocumentsByKategori($this->kategori_pendaftar);
+        $verifications = $this->documentVerifications->whereIn('document_type', array_keys($requiredDocs));
+
+        return $verifications->contains(fn($v) => $v->status === 0);
     }
 }
