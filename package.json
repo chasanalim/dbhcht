@@ -41,7 +41,7 @@
         "react-currency-input-field": "^3.10.0",
         "react-paginate": "^8.3.0",
         "react-router-dom": "^7.7.1",
-        "react-select": "^5.10.1",
+        "react-select": "^5.10.2",
         "react-toastify": "^11.0.5",
         "react-visibility-sensor": "^5.1.1",
         "sweetalert2": "^11.6.13",
