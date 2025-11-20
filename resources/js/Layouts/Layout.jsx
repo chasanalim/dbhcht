@@ -1,5 +1,6 @@
-import LayoutNavigation from "./partials/LayoutNavigation";
 import LayoutFooter from "./partials/LayoutFooter";
+import LayoutNavigation from "./partials/LayoutNavigation";
+
 
 export default function Layout({ children }) {
     return (

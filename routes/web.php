@@ -99,6 +99,8 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
         ->name('verify-document');
     Route::post('admin/tolak-document', [VerifikasiDokumenController::class, 'tolak'])
         ->name('tolak-document');
+    Route::delete('admin/reset-document-verification', [VerifikasiDokumenController::class, 'resetDocumentVerification'])
+    ->name('reset-document-verification');
 
     // EKSPORT EXCELL
     Route::get('export/banmod', [EksportController::class, 'exportBanmod'])

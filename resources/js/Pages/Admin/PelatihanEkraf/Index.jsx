@@ -31,10 +31,10 @@ export default function Index({ title, can, flash, pelatihan }) {
             serverSide: true,
             responsive: true,
             ajax: {
-                url: route("admin.pelatihan-banmod.index"),
+                url: route("admin.ekraf.index"),
                 type: "GET",
                 data: function (d) {
-                    d.jenis_pelatihan_industri = selectedCategory;
+                    d.jenis_pelatihan = selectedCategory;
                     d.verification_status = verificationFilter;
                     d.status = selectedStatus;
                 },
@@ -124,8 +124,8 @@ export default function Index({ title, can, flash, pelatihan }) {
                     },
                 },
                 {
-                    data: "tahun_penerimaan",
-                    name: "tahun_penerimaan",
+                    data: "kategori_pendaftar",
+                    name: "kategori_pendaftar",
                     orderable: true,
                     searchable: true,
                 },
@@ -144,8 +144,8 @@ export default function Index({ title, can, flash, pelatihan }) {
                     name: "nama_lengkap",
                 },
                 {
-                    data: "jalan_ktp",
-                    name: "jalan_ktp",
+                    data: "alamat_ktp",
+                    name: "alamat_ktp",
                 },
                 {
                     data: "rt_ktp",
@@ -168,8 +168,8 @@ export default function Index({ title, can, flash, pelatihan }) {
                     name: "no_hp",
                 },
                 {
-                    data: "jenis_pelatihan_industri",
-                    name: "jenis_pelatihan_industri",
+                    data: "jenis_pelatihan",
+                    name: "jenis_pelatihan",
                 },
                 {
                     data: "skor",
@@ -441,7 +441,7 @@ export default function Index({ title, can, flash, pelatihan }) {
                                             <tr>
                                                 <th>No</th>
                                                 <th>AKSI</th>
-                                                <th>TAHUN PENERIMAAN</th>
+                                                <th>KATEGORI</th>
                                                 <th>NIK</th>
                                                 <th>NO KK</th>
                                                 <th>NAMA</th>
