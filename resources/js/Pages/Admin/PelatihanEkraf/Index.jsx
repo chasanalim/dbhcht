@@ -22,7 +22,7 @@ export default function Index({ title, can, flash, pelatihan }) {
         lolos: 0,
         gagal: 0,
         blacklist: 0,
-        lolosLain: 0
+        lolosLain: 0,
     });
 
     const handleCategoryChange = (e) => {
@@ -46,8 +46,8 @@ export default function Index({ title, can, flash, pelatihan }) {
                 params: {
                     jenis_pelatihan: selectedCategory,
                     verification_status: verificationFilter,
-                    stats: true
-                }
+                    stats: true,
+                },
             });
 
             if (response.data.stats) {
@@ -119,6 +119,15 @@ export default function Index({ title, can, flash, pelatihan }) {
                                         <i class="bi bi-x-lg"></i>
                                     </button>
                                 `);
+                            } else if (
+                                row.verifikasi_dokumen.all_verified &&
+                                !row.verifikasi_dokumen.all_approved
+                            ) {
+                                buttons.push(`
+                                        <button onclick="updateStatus('${data.status_url}', 2)" class="btn btn-sm btn-danger" title="Gagal">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    `);
                             }
                         } else if (row.status == 1) {
                             if (
@@ -133,7 +142,9 @@ export default function Index({ title, can, flash, pelatihan }) {
                             }
                         }
 
-                        return `<div class="btn-group">${buttons.join("")}</div>`;
+                        return `<div class="btn-group">${buttons.join(
+                            ""
+                        )}</div>`;
                     },
                 },
                 {
@@ -226,7 +237,9 @@ export default function Index({ title, can, flash, pelatihan }) {
                         } else if (data === 2) {
                             return `<span class="badge bg-danger">Tidak Lolos</span>`;
                         } else if (data === 3) {
-                            const keterangan = row.keterangan ? row.keterangan : 'Tidak ada keterangan';
+                            const keterangan = row.keterangan
+                                ? row.keterangan
+                                : "Tidak ada keterangan";
 
                             return `
                                 <div class="d-flex align-items-center justify-content-center gap-2">
@@ -236,7 +249,9 @@ export default function Index({ title, can, flash, pelatihan }) {
                                         data-bs-toggle="popover"
                                         data-bs-placement="left"
                                         data-bs-html="true"
-                                        data-bs-content="${keterangan.replace(/"/g, '&quot;').replace(/\n/g, '<br>')}"
+                                        data-bs-content="${keterangan
+                                            .replace(/"/g, "&quot;")
+                                            .replace(/\n/g, "<br>")}"
                                         data-bs-trigger="hover"
                                         title="Keterangan Blacklist"
                                     >
@@ -262,7 +277,9 @@ export default function Index({ title, can, flash, pelatihan }) {
                     new Tooltip(tooltipNode);
                 });
 
-                const popovers = document.querySelectorAll('[data-bs-toggle="popover"]');
+                const popovers = document.querySelectorAll(
+                    '[data-bs-toggle="popover"]'
+                );
                 popovers.forEach((popoverNode) => {
                     const existingPopover = Popover.getInstance(popoverNode);
                     if (existingPopover) {
@@ -270,8 +287,8 @@ export default function Index({ title, can, flash, pelatihan }) {
                     }
                     new Popover(popoverNode, {
                         html: true,
-                        trigger: 'hover',
-                        placement: 'left',
+                        trigger: "hover",
+                        placement: "left",
                     });
                 });
             },
@@ -297,7 +314,9 @@ export default function Index({ title, can, flash, pelatihan }) {
                 }
             });
 
-            const popovers = document.querySelectorAll('[data-bs-toggle="popover"]');
+            const popovers = document.querySelectorAll(
+                '[data-bs-toggle="popover"]'
+            );
             popovers.forEach((popoverNode) => {
                 const popover = Popover.getInstance(popoverNode);
                 if (popover) {
@@ -331,29 +350,35 @@ export default function Index({ title, can, flash, pelatihan }) {
 
             if (pendingBlacklistStatus === 1) {
                 try {
-                    await axios.post(route('admin.auto-reject-nik'), {
-                        current_table: 'pelatihan_ekonomi_kreatif',
+                    await axios.post(route("admin.auto-reject-nik"), {
+                        current_table: "pelatihan_ekonomi_kreatif",
                         current_id: response.data.current_id || null,
-                        nik: response.data.nik || null
+                        nik: response.data.nik || null,
                     });
                 } catch (autoRejectError) {
-                    console.error("Error auto-rejecting other NIK records:", autoRejectError);
+                    console.error(
+                        "Error auto-rejecting other NIK records:",
+                        autoRejectError
+                    );
                 }
             }
 
             const toastEl = document.getElementById("toast");
-            const toastBody = toastEl.querySelector('.toast-body');
+            const toastBody = toastEl.querySelector(".toast-body");
             toastBody.textContent = response.data.message;
 
             const toastElement = toastEl;
-            toastElement.className = toastElement.className.replace(/bg-\w+/, '');
+            toastElement.className = toastElement.className.replace(
+                /bg-\w+/,
+                ""
+            );
 
             if (pendingBlacklistStatus === 1) {
-                toastElement.classList.add('bg-success');
+                toastElement.classList.add("bg-success");
             } else if (pendingBlacklistStatus === 2) {
-                toastElement.classList.add('bg-warning');
+                toastElement.classList.add("bg-warning");
             } else if (pendingBlacklistStatus === 3) {
-                toastElement.classList.add('bg-danger');
+                toastElement.classList.add("bg-danger");
             }
 
             const toast = new Toast(toastEl);
@@ -370,10 +395,13 @@ export default function Index({ title, can, flash, pelatihan }) {
             console.error("Error updating status:", error);
             if (error.response?.data?.message) {
                 const toastEl = document.getElementById("toast");
-                const toastBody = toastEl.querySelector('.toast-body');
+                const toastBody = toastEl.querySelector(".toast-body");
                 toastBody.textContent = error.response.data.message;
                 const toastElement = toastEl;
-                toastElement.className = toastElement.className.replace(/bg-\w+/, 'bg-danger');
+                toastElement.className = toastElement.className.replace(
+                    /bg-\w+/,
+                    "bg-danger"
+                );
                 const toast = new Toast(toastEl);
                 toast.show();
             }
@@ -381,10 +409,11 @@ export default function Index({ title, can, flash, pelatihan }) {
     };
 
     const updateStatus = async (url, status) => {
-        let confirmMessage = '';
+        let confirmMessage = "";
 
         if (status === 1) {
-            confirmMessage = 'Apakah anda yakin ingin meloloskan peserta ini?\n\nPerhatian: Jika peserta ini lolos, maka semua pendaftaran pelatihan lain (UMKM, Pertanian, Banmod) dengan NIK yang sama akan otomatis ditolak.';
+            confirmMessage =
+                "Apakah anda yakin ingin meloloskan peserta ini?\n\nPerhatian: Jika peserta ini lolos, maka semua pendaftaran pelatihan lain (UMKM, Pertanian, Banmod) dengan NIK yang sama akan otomatis ditolak.";
             if (confirm(confirmMessage)) {
                 try {
                     const response = await axios.post(url, {
@@ -393,23 +422,29 @@ export default function Index({ title, can, flash, pelatihan }) {
 
                     if (status === 1) {
                         try {
-                            await axios.post(route('admin.auto-reject-nik'), {
-                                current_table: 'pelatihan_ekonomi_kreatif',
+                            await axios.post(route("admin.auto-reject-nik"), {
+                                current_table: "pelatihan_ekonomi_kreatif",
                                 current_id: response.data.current_id || null,
-                                nik: response.data.nik || null
+                                nik: response.data.nik || null,
                             });
                         } catch (autoRejectError) {
-                            console.error("Error auto-rejecting other NIK records:", autoRejectError);
+                            console.error(
+                                "Error auto-rejecting other NIK records:",
+                                autoRejectError
+                            );
                         }
                     }
 
                     const toastEl = document.getElementById("toast");
-                    const toastBody = toastEl.querySelector('.toast-body');
+                    const toastBody = toastEl.querySelector(".toast-body");
                     toastBody.textContent = response.data.message;
 
                     const toastElement = toastEl;
-                    toastElement.className = toastElement.className.replace(/bg-\w+/, '');
-                    toastElement.classList.add('bg-success');
+                    toastElement.className = toastElement.className.replace(
+                        /bg-\w+/,
+                        ""
+                    );
+                    toastElement.classList.add("bg-success");
 
                     const toast = new Toast(toastEl);
                     toast.show();
@@ -420,17 +455,21 @@ export default function Index({ title, can, flash, pelatihan }) {
                     console.error("Error updating status:", error);
                     if (error.response?.data?.message) {
                         const toastEl = document.getElementById("toast");
-                        const toastBody = toastEl.querySelector('.toast-body');
+                        const toastBody = toastEl.querySelector(".toast-body");
                         toastBody.textContent = error.response.data.message;
                         const toastElement = toastEl;
-                        toastElement.className = toastElement.className.replace(/bg-\w+/, 'bg-danger');
+                        toastElement.className = toastElement.className.replace(
+                            /bg-\w+/,
+                            "bg-danger"
+                        );
                         const toast = new Toast(toastEl);
                         toast.show();
                     }
                 }
             }
         } else if (status === 2) {
-            confirmMessage = 'Apakah anda yakin ingin menggagalkan peserta ini?';
+            confirmMessage =
+                "Apakah anda yakin ingin menggagalkan peserta ini?";
             if (confirm(confirmMessage)) {
                 try {
                     const response = await axios.post(url, {
@@ -438,11 +477,14 @@ export default function Index({ title, can, flash, pelatihan }) {
                     });
 
                     const toastEl = document.getElementById("toast");
-                    const toastBody = toastEl.querySelector('.toast-body');
+                    const toastBody = toastEl.querySelector(".toast-body");
                     toastBody.textContent = response.data.message;
 
                     const toastElement = toastEl;
-                    toastElement.className = toastElement.className.replace(/bg-\w+/, 'bg-warning');
+                    toastElement.className = toastElement.className.replace(
+                        /bg-\w+/,
+                        "bg-warning"
+                    );
 
                     const toast = new Toast(toastEl);
                     toast.show();
@@ -453,10 +495,13 @@ export default function Index({ title, can, flash, pelatihan }) {
                     console.error("Error updating status:", error);
                     if (error.response?.data?.message) {
                         const toastEl = document.getElementById("toast");
-                        const toastBody = toastEl.querySelector('.toast-body');
+                        const toastBody = toastEl.querySelector(".toast-body");
                         toastBody.textContent = error.response.data.message;
                         const toastElement = toastEl;
-                        toastElement.className = toastElement.className.replace(/bg-\w+/, 'bg-danger');
+                        toastElement.className = toastElement.className.replace(
+                            /bg-\w+/,
+                            "bg-danger"
+                        );
                         const toast = new Toast(toastEl);
                         toast.show();
                     }
@@ -539,15 +584,15 @@ export default function Index({ title, can, flash, pelatihan }) {
                                         <select
                                             className="form-select form-select-sm"
                                             value={selectedStatus}
-                                            onChange={
-                                                handleStatusChange
-                                            }
+                                            onChange={handleStatusChange}
                                         >
                                             <option value="all">All</option>
                                             <option value="1">Lolos</option>
                                             <option value="2">Gagal</option>
                                             <option value="3">Blacklist</option>
-                                            <option value="4">Lolos Pelatihan Lain</option>
+                                            <option value="4">
+                                                Lolos Pelatihan Lain
+                                            </option>
                                         </select>
                                     </div>
                                 </div>
@@ -573,32 +618,52 @@ export default function Index({ title, can, flash, pelatihan }) {
                             <div className="row g-2 px-3 pb-3">
                                 <div className="col-6 col-sm-4 col-md-2">
                                     <div className="bg-light rounded p-2 text-center">
-                                        <div className="fw-bold fs-6 text-primary">{stats.total}</div>
-                                        <small className="text-muted">Total</small>
+                                        <div className="fw-bold fs-6 text-primary">
+                                            {stats.total}
+                                        </div>
+                                        <small className="text-muted">
+                                            Total
+                                        </small>
                                     </div>
                                 </div>
                                 <div className="col-6 col-sm-4 col-md-2">
                                     <div className="bg-light rounded p-2 text-center">
-                                        <div className="fw-bold fs-6 text-success">{stats.lolos}</div>
-                                        <small className="text-muted">Lolos</small>
+                                        <div className="fw-bold fs-6 text-success">
+                                            {stats.lolos}
+                                        </div>
+                                        <small className="text-muted">
+                                            Lolos
+                                        </small>
                                     </div>
                                 </div>
                                 <div className="col-6 col-sm-4 col-md-2">
                                     <div className="bg-light rounded p-2 text-center">
-                                        <div className="fw-bold fs-6 text-danger">{stats.gagal}</div>
-                                        <small className="text-muted">Gagal</small>
+                                        <div className="fw-bold fs-6 text-danger">
+                                            {stats.gagal}
+                                        </div>
+                                        <small className="text-muted">
+                                            Gagal
+                                        </small>
                                     </div>
                                 </div>
                                 <div className="col-6 col-sm-4 col-md-2">
                                     <div className="bg-light rounded p-2 text-center">
-                                        <div className="fw-bold fs-6 text-dark">{stats.blacklist}</div>
-                                        <small className="text-muted">Blacklist</small>
+                                        <div className="fw-bold fs-6 text-dark">
+                                            {stats.blacklist}
+                                        </div>
+                                        <small className="text-muted">
+                                            Blacklist
+                                        </small>
                                     </div>
                                 </div>
                                 <div className="col-6 col-sm-4 col-md-2">
                                     <div className="bg-light rounded p-2 text-center">
-                                        <div className="fw-bold fs-6 text-warning">{stats.lolosLain}</div>
-                                        <small className="text-muted">Lolos Pelatihan Lain</small>
+                                        <div className="fw-bold fs-6 text-warning">
+                                            {stats.lolosLain}
+                                        </div>
+                                        <small className="text-muted">
+                                            Lolos Pelatihan Lain
+                                        </small>
                                     </div>
                                 </div>
                             </div>
@@ -650,9 +715,7 @@ export default function Index({ title, can, flash, pelatihan }) {
                     aria-atomic="true"
                 >
                     <div className="d-flex">
-                        <div className="toast-body">
-                            {flash.message}
-                        </div>
+                        <div className="toast-body">{flash.message}</div>
                         <button
                             type="button"
                             className="btn-close btn-close-white me-2 m-auto"
@@ -676,7 +739,10 @@ export default function Index({ title, can, flash, pelatihan }) {
                     <div className="modal-dialog" role="document">
                         <div className="modal-content">
                             <div className="modal-header bg-danger text-white">
-                                <h5 className="modal-title" id="blacklistModalLabel">
+                                <h5
+                                    className="modal-title"
+                                    id="blacklistModalLabel"
+                                >
                                     <i className="bi bi-exclamation-triangle me-2"></i>
                                     Tambah Keterangan Blacklist
                                 </h5>
@@ -693,24 +759,36 @@ export default function Index({ title, can, flash, pelatihan }) {
                                 ></button>
                             </div>
                             <div className="modal-body">
-                                <div className="alert alert-warning" role="alert">
+                                <div
+                                    className="alert alert-warning"
+                                    role="alert"
+                                >
                                     <i className="bi bi-info-circle me-2"></i>
-                                    Masukkan keterangan alasan peserta diblacklist. Informasi ini akan disimpan dalam sistem.
+                                    Masukkan keterangan alasan peserta
+                                    diblacklist. Informasi ini akan disimpan
+                                    dalam sistem.
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="blacklistNotes" className="form-label fw-bold">
-                                        Keterangan Blacklist <span className="text-danger">*</span>
+                                    <label
+                                        htmlFor="blacklistNotes"
+                                        className="form-label fw-bold"
+                                    >
+                                        Keterangan Blacklist{" "}
+                                        <span className="text-danger">*</span>
                                     </label>
                                     <textarea
                                         id="blacklistNotes"
                                         className="form-control"
                                         rows="4"
                                         value={blacklistNotes}
-                                        onChange={(e) => setBlacklistNotes(e.target.value)}
+                                        onChange={(e) =>
+                                            setBlacklistNotes(e.target.value)
+                                        }
                                         placeholder="Contoh: Melakukan kecurangan dalam dokumen, Melanggar tata tertib, dll..."
                                     ></textarea>
                                     <small className="form-text text-muted">
-                                        Minimal keterangan untuk alasan blacklist
+                                        Minimal keterangan untuk alasan
+                                        blacklist
                                     </small>
                                 </div>
                             </div>
