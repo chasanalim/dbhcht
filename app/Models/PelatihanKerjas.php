@@ -34,7 +34,8 @@ class PelatihanKerjas extends Model
         "alasan",
         "pendidikan",
         "jenis_pelatihan",
-        'status'
+        'status',
+        'keterangan'
     ];
 
     public function refPendidikan()

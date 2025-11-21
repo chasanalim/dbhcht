@@ -54,7 +54,7 @@ return new class extends Migration
             $table->boolean('komitmen')->default(0);
 
             $table->integer('status')->default(0); // 0: Menunggu, 1: lolos, 2: Gagal
-
+            $table->string('keterangan')->nullable();
             $table->timestamps();
         });
     }

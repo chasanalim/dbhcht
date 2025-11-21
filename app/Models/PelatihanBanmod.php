@@ -51,6 +51,7 @@ class PelatihanBanmod extends Model
 
         'komitmen',
         'status',
+        'keterangan',
     ];
 
     protected $appends = [
