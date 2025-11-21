@@ -54,6 +54,43 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
             if ($request->has('jenis_pelatihan_petani') && $request->jenis_pelatihan_petani !== 'all') {
                 $query->where('jenis_pelatihan_petani', $request->jenis_pelatihan_petani);
             }
+            // Jika request untuk stats saja
+            if ($request->has('stats') && $request->stats) {
+                $data = $query->get();
+
+                if ($request->has('verification_status')) {
+                    $status = $request->verification_status;
+                    $data = $data->filter(function ($item) use ($status) {
+                        $verifications = $item->documentVerifications;
+                        $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan', 'kesanggupan', 'pengukuhan_penyuluh_swadaya', 'legalitas_kelompok', 'rekomendasi_kelompok'];
+                        $allVerified = count($verifications) === count($requiredDocs);
+                        $allApproved = $verifications->every(function ($verification) {
+                            return $verification->status === 1;
+                        });
+
+                        switch ($status) {
+                            case 'verified':
+                                return $allVerified && $allApproved;
+                            case 'rejected':
+                                return $allVerified && !$allApproved;
+                            case 'pending':
+                                return !$allVerified;
+                            default:
+                                return true;
+                        }
+                    });
+                }
+
+                return response()->json([
+                    'stats' => [
+                        'total' => $data->count(),
+                        'lolos' => $data->where('status', 1)->count(),
+                        'gagal' => $data->where('status', 2)->count(),
+                        'blacklist' => $data->where('status', 3)->count(),
+                        'lolosLain' => $data->where('status', 4)->count(),
+                    ]
+                ]);
+            }
             if ($request->has('status') && $request->status !== 'all') {
                 $query->where('status', $request->status);
             }
@@ -62,7 +99,7 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
                 $status = $request->verification_status;
                 $data = $data->filter(function ($item) use ($status) {
                     $verifications = $item->documentVerifications;
-                    $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan', 'kesanggupan','pengukuhan_penyuluh_swadaya', 'legalitas_kelompok', 'rekomendasi_kelompok'];
+                    $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan', 'kesanggupan', 'pengukuhan_penyuluh_swadaya', 'legalitas_kelompok', 'rekomendasi_kelompok'];
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
                         return $verification->status === 1;
@@ -91,7 +128,7 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
-                    $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan', 'kesanggupan','pengukuhan_penyuluh_swadaya', 'legalitas_kelompok', 'rekomendasi_kelompok'];
+                    $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan', 'kesanggupan', 'pengukuhan_penyuluh_swadaya', 'legalitas_kelompok', 'rekomendasi_kelompok'];
                     $verifications = $row->documentVerifications;
 
                     $allVerified = count($verifications) === count($requiredDocs);
@@ -212,6 +249,8 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
                 'skor' => $data->skor,
                 'alasan' => $data->alasanPelatihan?->jawaban,
                 'skor_alasan' => $data->alasanPelatihan?->skor,
+                'status' => $data->status,
+                'keterangan' => $data->keterangan,
 
                 'files' => [
                     'foto' => [
@@ -272,21 +311,30 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
 
     public function updateStatus(Request $request, $id)
     {
+        $validated = $request->validate([
+            'status' => 'required|integer|in:1,2,3,4',
+            'notes' => 'nullable|string', // Tambah validasi untuk notes
+        ]);
         $data = PelatihanPetani::findOrFail($id);
 
         // Validate if document is verified
         $verifications = $data->documentVerifications;
-        $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan', 'kesanggupan','pengukuhan_penyuluh_swadaya', 'legalitas_kelompok', 'rekomendasi_kelompok'];
+        $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan', 'kesanggupan', 'pengukuhan_penyuluh_swadaya', 'legalitas_kelompok', 'rekomendasi_kelompok'];
         $allVerified = count($verifications) === count($requiredDocs);
         $allApproved = $verifications->every(fn($v) => $v->status === 1);
 
-        if (!$allVerified || !$allApproved) {
+        if (!$allVerified ) {
             return response()->json([
                 'message' => 'Dokumen belum terverifikasi lengkap'
             ], 422);
         }
 
-        $data->status = $request->status;
+        $data->status = $validated['status'];
+        // Simpan notes jika ada (untuk blacklist atau status lainnya)
+        if (!empty($validated['notes'])) {
+            $data->keterangan = $validated['notes'];
+        }
+
         $data->save();
 
         $statusMessage = match ($request->status) {

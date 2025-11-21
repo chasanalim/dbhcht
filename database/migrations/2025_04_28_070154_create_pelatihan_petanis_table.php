@@ -61,6 +61,7 @@ return new class extends Migration
             // E. Skoring
             $table->string('alasan');
             $table->integer('status')->default(0); // 0: Menunggu, 1: lolos, 2: Gagal
+            $table->string('keterangan')->nullable();
 
             $table->timestamps();
         });

@@ -51,6 +51,7 @@ class PelatihanPetani extends Model
         'jenis_pelatihan_petani',
         'alasan',
         'status',
+        'keterangan',
     ];
 
     protected $appends = [
