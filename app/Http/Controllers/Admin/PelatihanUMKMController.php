@@ -353,7 +353,7 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
         $allVerified = count($verifications) === count($requiredDocs);
         $allApproved = $verifications->every(fn($v) => $v->status === 1);
 
-        if (!$allVerified || !$allApproved) {
+        if (!$allVerified ) {
             return response()->json([
                 'message' => 'Dokumen belum terverifikasi lengkap'
             ], 422);

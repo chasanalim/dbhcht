@@ -118,12 +118,12 @@ export default function Index({ title, can, flash, pelatihan }) {
         try {
             const response = await axios.get(route("admin.umkm.index"), {
                 params: {
-                    prioritas_1 : selectedPelatihan1,
-                    prioritas_2 : selectedPelatihan2,
-                    prioritas_3 : selectedPelatihan3,
-                    verification_status : verificationFilter,
-                    stats: true
-                }
+                    prioritas_1: selectedPelatihan1,
+                    prioritas_2: selectedPelatihan2,
+                    prioritas_3: selectedPelatihan3,
+                    verification_status: verificationFilter,
+                    stats: true,
+                },
             });
 
             if (response.data.stats) {
@@ -136,7 +136,12 @@ export default function Index({ title, can, flash, pelatihan }) {
 
     useEffect(() => {
         fetchStats();
-    }, [selectedPelatihan1, selectedPelatihan2, selectedPelatihan3, verificationFilter]);
+    }, [
+        selectedPelatihan1,
+        selectedPelatihan2,
+        selectedPelatihan3,
+        verificationFilter,
+    ]);
 
     useEffect(() => {
         const dt = $(tableRef.current).DataTable({
@@ -199,6 +204,15 @@ export default function Index({ title, can, flash, pelatihan }) {
                                         <i class="bi bi-x-lg"></i>
                                     </button>
                                 `);
+                            } else if (
+                                row.verifikasi_dokumen.all_verified &&
+                                !row.verifikasi_dokumen.all_approved
+                            ) {
+                                buttons.push(`
+                                        <button onclick="updateStatus('${data.status_url}', 2)" class="btn btn-sm btn-danger" title="Gagal">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    `);
                             }
                         } else if (row.status == 1) {
                             // If status is 1, hide the Lolos button, only show the Gagal button
@@ -452,7 +466,7 @@ export default function Index({ title, can, flash, pelatihan }) {
             if (pendingBlacklistStatus === 1) {
                 try {
                     await axios.post(route("admin.auto-reject-nik"), {
-                        current_table: "pelatihan_ekonomi_kreatif",
+                        current_table: "pelatihan_umkmf",
                         current_id: response.data.current_id || null,
                         nik: response.data.nik || null,
                     });
