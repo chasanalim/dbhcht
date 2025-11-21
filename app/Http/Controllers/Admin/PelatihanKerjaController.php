@@ -54,6 +54,44 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
             if ($request->has('jenis_pelatihan') && $request->jenis_pelatihan !== 'all') {
                 $query->where('jenis_pelatihan', $request->jenis_pelatihan);
             }
+            // Jika request untuk stats saja
+            if ($request->has('stats') && $request->stats) {
+                $data = $query->get();
+
+                if ($request->has('verification_status')) {
+                    $status = $request->verification_status;
+                    $data = $data->filter(function ($item) use ($status) {
+                        $verifications = $item->documentVerifications;
+                        $requiredDocs =  ['ktp', 'kk', 'pasfoto', 'surat_pernyataan_tidak_ikut', 'surat_kesanggupan', 'fotokopi_ijazah'];
+                        $allVerified = count($verifications) === count($requiredDocs);
+                        $allApproved = $verifications->every(function ($verification) {
+                            return $verification->status === 1;
+                        });
+
+                        switch ($status) {
+                            case 'verified':
+                                return $allVerified && $allApproved;
+                            case 'rejected':
+                                return $allVerified && !$allApproved;
+                            case 'pending':
+                                return !$allVerified;
+                            default:
+                                return true;
+                        }
+                    });
+                }
+
+                return response()->json([
+                    'stats' => [
+                        'total' => $data->count(),
+                        'lolos' => $data->where('status', 1)->count(),
+                        'gagal' => $data->where('status', 2)->count(),
+                        'blacklist' => $data->where('status', 3)->count(),
+                        'lolosLain' => $data->where('status', 4)->count(),
+                    ]
+                ]);
+            }
+
             if ($request->has('status') && $request->status !== 'all') {
                 $query->where('status', $request->status);
             }
@@ -172,6 +210,8 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
                 'tgl_lhr' => $data->tgl_lhr,
                 'jenis_kelamin' => $data->jenis_kelamin,
                 'alamat' => $data->alamat,
+                'status' => $data->status,
+                'keterangan' => $data->keterangan,
                 'kecamatan' => [
                     'kode' => $data->kode_kecamatan,
                     'nama' => $data->nama_kecamatan,
@@ -250,6 +290,11 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
 
     public function updateStatus(Request $request, $id)
     {
+        $validated = $request->validate([
+            'status' => 'required|integer|in:1,2,3,4',
+            'notes' => 'nullable|string', // Tambah validasi untuk notes
+        ]);
+
         $data = PelatihanKerjas::findOrFail($id);
 
         // Validate if document is verified
@@ -258,13 +303,19 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
         $allVerified = count($verifications) === count($requiredDocs);
         $allApproved = $verifications->every(fn($v) => $v->status === 1);
 
-        if (!$allVerified || !$allApproved) {
+        if (!$allVerified ) {
             return response()->json([
                 'message' => 'Dokumen belum terverifikasi lengkap'
             ], 422);
         }
 
-        $data->status = $request->status;
+
+        $data->status = $validated['status'];
+        // Simpan notes jika ada (untuk blacklist atau status lainnya)
+        if (!empty($validated['notes'])) {
+            $data->keterangan = $validated['notes'];
+        }
+
         $data->save();
 
         $statusMessage = match ($request->status) {
