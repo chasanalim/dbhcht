@@ -16,45 +16,45 @@ class DashboardController extends Controller
     public function index(): JsonResponse
     {
         return response()->json([
-            'banmod' => [
-                'summary' => $this->getBanmodSummary(),
-                'byKategori' => $this->getBanmodByKategori(),
-                'byKecamatan' => $this->getBanmodByKecamatan(),
-                'byJenisUsaha' => $this->getBanmodByJenisUsaha(),
-                'byVerifikasiDokumen' => $this->getBanmodByVerifikasi(),
-                'byKelurahan' => $this->getBanmodByKelurahan()
-            ],
+            // 'banmod' => [
+            //     'summary' => $this->getBanmodSummary(),
+                // 'byKategori' => $this->getBanmodByKategori(),
+                // 'byKecamatan' => $this->getBanmodByKecamatan(),
+                // 'byJenisUsaha' => $this->getBanmodByJenisUsaha(),
+                // 'byVerifikasiDokumen' => $this->getBanmodByVerifikasi(),
+                // 'byKelurahan' => $this->getBanmodByKelurahan()
+            // ],
             'umkm' => [
                 'summary' => $this->getUmkmSummary(),
-                'byKecamatan' => $this->getUmkmByKecamatan(),
-                'byPrioritas1' => $this->getUmkmByPrioritas1(),
-                'byPrioritas2' => $this->getUmkmByPrioritas2(),
-                'byPrioritas3' => $this->getUmkmByPrioritas3(),
-                'byVerifikasiDokumen' => $this->getUmkmByVerifikasi(),
-                'byKelurahan' => $this->getUmkmByKelurahan()
+                // 'byKecamatan' => $this->getUmkmByKecamatan(),
+                // 'byPrioritas1' => $this->getUmkmByPrioritas1(),
+                // 'byPrioritas2' => $this->getUmkmByPrioritas2(),
+                // 'byPrioritas3' => $this->getUmkmByPrioritas3(),
+                // 'byVerifikasiDokumen' => $this->getUmkmByVerifikasi(),
+                // 'byKelurahan' => $this->getUmkmByKelurahan()
             ],
             'kerja' => [
                 'summary' => $this->getKerjaSummary(),
-                'byKecamatan' => $this->getKerjaByKecamatan(),
-                'byPendidikan' => $this->getKerjaByPendidikan(),
-                'byJenisPelatihan' => $this->getKerjaByJenisPelatihan(),
-                'byVerifikasiDokumen' => $this->getKerjaByVerifikasi(),
-                'byKelurahan' => $this->getKerjaByKelurahan()
+                // 'byKecamatan' => $this->getKerjaByKecamatan(),
+                // 'byPendidikan' => $this->getKerjaByPendidikan(),
+                // 'byJenisPelatihan' => $this->getKerjaByJenisPelatihan(),
+                // 'byVerifikasiDokumen' => $this->getKerjaByVerifikasi(),
+                // 'byKelurahan' => $this->getKerjaByKelurahan()
             ],
             'pelatihan_banmod' => [
                 'summary' => $this->getPelatihanBanmodSummary(),
-                'byKecamatan' => $this->getPelatihanBanmodByKecamatan(),
-                'byJenisPelatihan' => $this->getPelatihanBanmodByJenisPelatihan(),
-                'byVerifikasiDokumen' => $this->getPelatihanBanmodByVerifikasi(),
-                'byKelurahan' => $this->getPelatihanBanmodByKelurahan(),
-                'byTahunPenerimaan' => $this->getPelatihanBanmodByTahunPenerimaan()
+                // 'byKecamatan' => $this->getPelatihanBanmodByKecamatan(),
+                // 'byJenisPelatihan' => $this->getPelatihanBanmodByJenisPelatihan(),
+                // 'byVerifikasiDokumen' => $this->getPelatihanBanmodByVerifikasi(),
+                // 'byKelurahan' => $this->getPelatihanBanmodByKelurahan(),
+                // 'byTahunPenerimaan' => $this->getPelatihanBanmodByTahunPenerimaan()
             ],
             'pertanian' => [
                 'summary' => $this->getPertanianSummary(),
-                'byKecamatan' => $this->getPertanianByKecamatan(),
-                'byJenisPelatihan' => $this->getPertanianByJenisPelatihan(),
-                'byVerifikasiDokumen' => $this->getPertanianByVerifikasi(),
-                'byKelurahan' => $this->getPertanianByKelurahan()
+                // 'byKecamatan' => $this->getPertanianByKecamatan(),
+                // 'byJenisPelatihan' => $this->getPertanianByJenisPelatihan(),
+                // 'byVerifikasiDokumen' => $this->getPertanianByVerifikasi(),
+                // 'byKelurahan' => $this->getPertanianByKelurahan()
             ],
         ]);
     }
