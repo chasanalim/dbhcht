@@ -40,6 +40,10 @@ export default function FormKeterampilan() {
         alasan: "",
         pendidikan: "",
         jenis_pelatihan: "",
+        // Field baru untuk scoring
+        status_bekerja: "",
+        pernah_pelatihan: "",
+        status_domisili: "",
         file_ktp: [],
         file_kk: [],
         file_pasfoto: [],
@@ -612,6 +616,61 @@ export default function FormKeterampilan() {
                             }
                             errors={errors.alasan}
                         />
+                    </Form.Group>
+
+                    {/* Field Baru: Status Bekerja */}
+                    <Form.Group className="mb-3">
+                        <Form.Label className="required">Status Bekerja</Form.Label>
+                        <Form.Select
+                            value={data.status_bekerja}
+                            onChange={(e) => setData('status_bekerja', e.target.value)}
+                            isInvalid={!!errors.status_bekerja}
+                        >
+                            <option value="">Pilih Status Bekerja</option>
+                            <option value="3">Belum bekerja</option>
+                            <option value="2">Sudah bekerja tapi tidak tetap</option>
+                            <option value="1">Sudah bekerja</option>
+                        </Form.Select>
+                        <Form.Control.Feedback type="invalid">
+                            {errors.status_bekerja}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+
+                    {/* Field Baru: Pernah Mengikuti Pelatihan */}
+                    <Form.Group className="mb-3">
+                        <Form.Label className="required">
+                            Pernah Mengikuti Pelatihan Tahun Sebelumnya?
+                        </Form.Label>
+                        <Form.Select
+                            value={data.pernah_pelatihan}
+                            onChange={(e) => setData('pernah_pelatihan', e.target.value)}
+                            isInvalid={!!errors.pernah_pelatihan}
+                        >
+                            <option value="">Pilih</option>
+                            <option value="3">Tidak pernah</option>
+                            <option value="1">Pernah</option>
+                        </Form.Select>
+                        <Form.Control.Feedback type="invalid">
+                            {errors.pernah_pelatihan}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+
+                    {/* Field Baru: Status Domisili */}
+                    <Form.Group className="mb-3">
+                        <Form.Label className="required">Status Domisili</Form.Label>
+                        <Form.Select
+                            value={data.status_domisili}
+                            onChange={(e) => setData('status_domisili', e.target.value)}
+                            isInvalid={!!errors.status_domisili}
+                        >
+                            <option value="">Pilih Status Domisili</option>
+                            <option value="3">Domisili sesuai KTP</option>
+                            <option value="2">Domisili Kota Kediri (tidak sesuai KTP)</option>
+                            <option value="1">Domisili luar Kota Kediri</option>
+                        </Form.Select>
+                        <Form.Control.Feedback type="invalid">
+                            {errors.status_domisili}
+                        </Form.Control.Feedback>
                     </Form.Group>
 
                     <Form.Group className="mb-3">

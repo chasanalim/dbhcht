@@ -16,10 +16,10 @@ const trainings = [
         requirements: [
             { label: "Usia Min", value: "18 tahun" },
             { label: "Usia Maks", value: "45 tahun" },
-            { label: "Status", value: "Belum bekerja" },
+            // { label: "Status", value: "-" },
         ],
-        duration: "3 Minggu",
-        location: "Disnaker Kota Kediri",
+        duration: "2 Minggu",
+        location: "Kota Kediri",
         jenis: "keterampilan",
         comingSoon: false,
     },

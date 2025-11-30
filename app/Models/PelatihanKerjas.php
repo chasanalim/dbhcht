@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class PelatihanKerjas extends Model
 {
     use HasVerifikasiDokumen;
+
     protected $fillable = [
         "nik",
         "no_kk",
@@ -34,18 +35,54 @@ class PelatihanKerjas extends Model
         "alasan",
         "pendidikan",
         "jenis_pelatihan",
+        // Field baru untuk scoring
+        "status_bekerja",
+        "pernah_pelatihan",
+        "status_domisili",
         'status',
         'keterangan'
     ];
+
+    // Tambah appends untuk skor
+    protected $appends = [
+        'skor',
+    ];
+
+    // Method untuk menghitung skor
+    public function getSkorAttribute()
+    {
+        $skor = 0;
+
+        // Skor dari alasan pelatihan (relasi)
+        $skor += $this->alasanPelatihan->skor ?? 0;
+
+        // Skor status bekerja (1-3)
+        $skor += $this->status_bekerja ?? 0;
+
+        // Skor pernah pelatihan (1 atau 3)
+        $skor += $this->pernah_pelatihan ?? 0;
+
+        // Skor status domisili (1-3)
+        $skor += $this->status_domisili ?? 0;
+
+        if ($skor === 0) {
+            return 0;
+        }
+
+        // Total maksimal = 4 (alasan) + 3 (status_bekerja) + 3 (pernah) + 3 (domisili) = 13
+        return ($skor / 13) * 100;
+    }
 
     public function refPendidikan()
     {
         return $this->belongsTo(RefPendidikan::class, 'pendidikan', 'id');
     }
+
     public function jenisPelatihan()
     {
         return $this->belongsTo(JenisPelatihanKetKerja::class, 'jenis_pelatihan', 'id');
     }
+
     public function alasanPelatihan()
     {
         return $this->belongsTo(AlasanPelatihanKetKerja::class, 'alasan', 'id');

@@ -43,6 +43,10 @@ class RegPelatihanKeterampilanKerjaController extends Controller
             "alasan" => ['required', 'string'],
             "pendidikan" => ['required', 'string'],
             "jenis_pelatihan" => ['required', 'string'],
+            // Tambah validasi field baru
+            "status_bekerja" => ['required', 'integer', 'in:1,2,3'],
+            "pernah_pelatihan" => ['required', 'integer', 'in:1,3'],
+            "status_domisili" => ['required', 'integer', 'in:1,2,3'],
             "file_pasfoto" => ['nullable', 'file'],
             "file_surat_pernyataan_tidak_ikut" => ['nullable', 'file'],
             "file_surat_kesanggupan" => ['nullable', 'file'],
@@ -91,8 +95,8 @@ class RegPelatihanKeterampilanKerjaController extends Controller
 
                     // perintah Ghostscript
                     $gsCmd = 'gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 ' .
-                            '-dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH ' .
-                            '-sOutputFile="' . $compressedPath . '" "' . $originalPath . '"';
+                        '-dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH ' .
+                        '-sOutputFile="' . $compressedPath . '" "' . $originalPath . '"';
 
                     @exec($gsCmd);
 

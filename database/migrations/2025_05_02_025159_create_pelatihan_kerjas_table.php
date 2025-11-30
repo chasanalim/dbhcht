@@ -36,6 +36,10 @@ return new class extends Migration
             $table->string('file_fotokopi_ijazah')->nullable();
             $table->string('phone_number');
             $table->string('alasan');
+            // Field baru untuk scoring
+            $table->integer('status_bekerja')->nullable()->comment('3=Belum bekerja, 2=Sudah bekerja tidak tetap, 1=Sudah bekerja');
+            $table->integer('pernah_pelatihan')->nullable()->comment('3=Tidak pernah, 1=Pernah');
+            $table->integer('status_domisili')->nullable()->comment('3=Sesuai KTP, 2=Kota Kediri tidak sesuai KTP, 1=Luar Kota Kediri');
             $table->string('pendidikan');
             $table->string('jenis_pelatihan');
             $table->integer('status')->default(0); // 0: Menunggu, 1: lolos, 2: Gagal , 3: Blacklist
