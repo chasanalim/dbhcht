@@ -1,4 +1,4 @@
-import { Form, Button, ListGroup, InputGroup } from "react-bootstrap";
+import { Form, Button, ListGroup, InputGroup, Spinner } from "react-bootstrap";
 import React, { useState } from "react";
 
 import SelectAlasanPelatihan from "@/Components/Select/SelectAlasanPelatihan";
@@ -19,7 +19,7 @@ export default function FormKeterampilan() {
     const [kkLength, setKkLength] = useState(0);
 
     const [isKomitmenChecked, setIsKomitmenChecked] = useState(false);
-    const { data, setData, errors, post, reset } = useForm({
+    const { data, setData, errors, post, reset, processing } = useForm({
         nik: "",
         no_kk: "",
         nama_lengkap: "",
@@ -750,14 +750,30 @@ export default function FormKeterampilan() {
                     <div className="card-footer d-flex justify-content-center mt-4 gap-2">
                         <Button
                             type="submit"
-                            disabled={!isKomitmenChecked}
-                            className={!isKomitmenChecked ? "opacity-50" : ""}
+                            disabled={!isKomitmenChecked || processing}
+                            className={(!isKomitmenChecked || processing) ? "opacity-50" : ""}
                         >
-                            Simpan{" "}
-                            <i
-                                className="fa fa-paper-plane ms-1"
-                                aria-hidden="true"
-                            ></i>
+                            {processing ? (
+                                <>
+                                    <Spinner
+                                        as="span"
+                                        animation="border"
+                                        size="sm"
+                                        role="status"
+                                        aria-hidden="true"
+                                        className="me-2"
+                                    />
+                                    Sedang Menyimpan...
+                                </>
+                            ) : (
+                                <>
+                                    Simpan{" "}
+                                    <i
+                                        className="fa fa-paper-plane ms-1"
+                                        aria-hidden="true"
+                                    ></i>
+                                </>
+                            )}
                         </Button>
                     </div>
                 </>
