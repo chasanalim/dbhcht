@@ -240,6 +240,15 @@ export default function Index({ title, can, flash, categories }) {
                     name: "jenis_pelatihan.nama",
                 },
                 {
+                    data: "skor",
+                    name: "skor",
+                    render: function (data) {
+                        return `<span class="badge bg-success">${parseFloat(
+                            data
+                        ).toFixed(2)}</span>`;
+                    },
+                },
+                {
                     data: "verifikasi_dokumen",
                     name: "verifikasi_dokumen",
                     className: "text-center",
@@ -717,6 +726,7 @@ export default function Index({ title, can, flash, categories }) {
                                                 <th>NO HP</th>
                                                 <th>PENDIDIKAN</th>
                                                 <th>PELATIHAN</th>
+                                                <th>SKOR</th>
                                                 <th>VERIFIKASI DOKUMEN</th>
                                                 <th>STATUS</th>
                                             </tr>

@@ -95,7 +95,7 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
             if ($request->has('status') && $request->status !== 'all') {
                 $query->where('status', $request->status);
             }
-            $data = $query->orderBy('created_at', 'asc')->get();
+            $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor');
 
             if ($request->has('verification_status')) {
                 $status = $request->verification_status;
@@ -212,6 +212,7 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
                 'alamat' => $data->alamat,
                 'status' => $data->status,
                 'keterangan' => $data->keterangan,
+                'skor_total' => $data->skor,
                 'kecamatan' => [
                     'kode' => $data->kode_kecamatan,
                     'nama' => $data->nama_kecamatan,
