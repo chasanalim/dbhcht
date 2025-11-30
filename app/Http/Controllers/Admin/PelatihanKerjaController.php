@@ -242,6 +242,9 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
                     'id' => $data->alasanPelatihan->id,
                     'nama' => $data->alasanPelatihan->nama,
                 ],
+                'status_bekerja' => $data->status_bekerja,
+                'pernah_pelatihan' => $data->pernah_pelatihan,
+                'status_domisili' => $data->status_domisili,
                 'files' => [
                     'ktp' => [
                         'url' => asset('' . $data->file_ktp),

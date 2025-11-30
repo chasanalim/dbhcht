@@ -15,8 +15,14 @@ export default function Show({ title, data, type = "PELATIHAN_KERJA" }) {
             { key: "ktp", label: "KTP" },
             { key: "kk", label: "Kartu Keluarga" },
             { key: "fotokopi_ijazah", label: "Fotocopi Ijazah" },
-            { key: "surat_pernyataan_tidak_ikut", label: "Surat Pernyataan Tidak Mengikuti Pelatihan Lain" },
-            { key: "surat_kesanggupan", label: "Surat Kesanggupan Mengikuti Pelatihan" },
+            {
+                key: "surat_pernyataan_tidak_ikut",
+                label: "Surat Pernyataan Tidak Mengikuti Pelatihan Lain",
+            },
+            {
+                key: "surat_kesanggupan",
+                label: "Surat Kesanggupan Mengikuti Pelatihan",
+            },
         ],
     };
 
@@ -302,6 +308,56 @@ export default function Show({ title, data, type = "PELATIHAN_KERJA" }) {
                                             <td>Alasan Mengikuti</td>
                                             <td>
                                                 : {data.alasan_pelatihan.nama}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Status Bekerja</td>
+                                            <td>
+                                                :
+                                                {data.status_bekerja === 1
+                                                    ? " Sudah bekerja"
+                                                    : data.status_bekerja === 2
+                                                    ? " Sudah tidak bekerja"
+                                                    : " Belum bekerja"}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Mengikuti Pelatihan Sebelumnya
+                                            </td>
+                                            <td>
+                                                :{" "}
+                                                {data.pernah_pelatihan === 1
+                                                    ? " Pernah"
+                                                    : data.pernah_pelatihan === 2
+                                                    ? " Pernah"
+                                                    : " Tidak Pernah"}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Status Domisili</td>
+                                            <td>
+                                                :{" "}
+                                                {data.status_domisili === 1
+                                                    ? " Luar Kota Kediri"
+                                                    : data.status_domisili === 2
+                                                    ? " Kota Kediri tidak sesuai KTP"
+                                                    : " Sesuai KTP"}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <h6 className="fw-bold">SKORING</h6>
+                                <table className="table table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <td>Skor </td>
+                                            <td>
+                                                {" "}
+                                                :{" "}
+                                                {parseFloat(data.skor_total).toFixed(
+                                                    2
+                                                )}
                                             </td>
                                         </tr>
                                     </tbody>
