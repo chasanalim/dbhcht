@@ -41,17 +41,17 @@ export default function SuccessPage({ meta }) {
                                 {meta.jenis} Kota Kediri. Data Anda telah kami
                                 terima dan akan diproses lebih lanjut.
                             </p>
-                            <p className="mb-3">
+                            {/* <p className="mb-3">
                                 Mohon menunggu informasi selanjutnya melalui
                                 WhatsApp yang telah Anda daftarkan.
                             </p>
                             <p>
                                 Jika ada pertanyaan, silakan hubungi kami
                                 melalui:
-                            </p>
+                            </p> */}
                         </div>
 
-                        <div
+                        {/* <div
                             className="contact-info p-4 mb-4"
                             style={{
                                 background: "#f7fafc",
@@ -76,7 +76,7 @@ export default function SuccessPage({ meta }) {
                                     {env["app_email_pelatihan"]}
                                 </a>
                             </div>
-                        </div>
+                        </div> */}
 
                         <div className="d-flex justify-content-center">
                             <a href="/" className="btn btn-primary px-4 py-2">
