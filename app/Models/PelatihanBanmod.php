@@ -46,7 +46,7 @@ class PelatihanBanmod extends Model
         'file_kk',
         'file_pasfoto',
         'file_surat_pernyataan_tidak_ikut',
-        'file_surat_kesanggupan',
+        // 'file_surat_kesanggupan',
         'file_nib',
 
         'komitmen',

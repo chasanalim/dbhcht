@@ -47,7 +47,7 @@ return new class extends Migration
             $table->string('file_kk');
             $table->string('file_pasfoto')->nullable();
             $table->string('file_surat_pernyataan_tidak_ikut')->nullable();
-            $table->string('file_surat_kesanggupan')->nullable();
+            // $table->string('file_surat_kesanggupan')->nullable();
             $table->string('file_nib');
 
             // Komitmen

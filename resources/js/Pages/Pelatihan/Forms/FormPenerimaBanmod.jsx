@@ -63,7 +63,7 @@ export default function FormPenerimaBanmod() {
         file_kk: null,
         file_pasfoto: null,
         file_surat_pernyataan_tidak_ikut: null,
-        file_surat_kesanggupan: null,
+        // file_surat_kesanggupan: null,
         file_nib: null,
 
         komitmen: false,
@@ -960,17 +960,17 @@ export default function FormPenerimaBanmod() {
                     )}
 
                     {renderFileUpload(
-                        "Surat Pernyataan Tidak Mengikuti Pelatihan Lain",
+                        "Surat Pernyataan",
                         "file_surat_pernyataan_tidak_ikut",
                         ".pdf",
                         false,
                         null,
-                        "http://localhost:8000/storage/files/rM6CgIAHgL518kkXcvDiutYz7iqGe2cMRwXPgDhQ.pdf",
+                        "https://sultan.kedirikota.go.id/storage/files/jG8YSc7E11f1vCyMtwpA63pzzsqVmiIEPghYd4ZR.pdf",
                         "Maksimal 2MB. Format: PDF",
                         4
                     )}
 
-                    {renderFileUpload(
+                    {/* {renderFileUpload(
                         "Surat Pernyataan Kesanggupan Mengikuti Pelatihan Secara Penuh",
                         "file_surat_kesanggupan",
                         ".pdf",
@@ -979,7 +979,7 @@ export default function FormPenerimaBanmod() {
                         "http://localhost:8000/storage/files/H2LjEsHX6j0Hq6P7eUzUTeziRUy7lftr6tRMKsWN.pdf",
                         "Maksimal 2MB. Format: PDF",
                         5
-                    )}
+                    )} */}
 
                     {renderFileUpload(
                         "NIB",
@@ -989,7 +989,7 @@ export default function FormPenerimaBanmod() {
                         null,
                         null,
                         "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
-                        6
+                        5
                     )}
 
                     {/* Komitmen Section */}
