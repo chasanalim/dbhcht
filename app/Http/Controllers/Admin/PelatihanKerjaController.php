@@ -241,6 +241,7 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
                 'alasan_pelatihan' => [
                     'id' => $data->alasanPelatihan->id,
                     'nama' => $data->alasanPelatihan->nama,
+                    'skor' => $data->alasanPelatihan->skor,
                 ],
                 'status_bekerja' => $data->status_bekerja,
                 'pernah_pelatihan' => $data->pernah_pelatihan,

@@ -70,7 +70,7 @@ class PelatihanKerjas extends Model
         }
 
         // Total maksimal = 4 (alasan) + 3 (status_bekerja) + 3 (pernah) + 3 (domisili) = 13
-        return ($skor / 13) * 100;
+        return ($skor / 12) * 100;
     }
 
     public function refPendidikan()
