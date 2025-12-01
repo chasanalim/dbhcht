@@ -33,7 +33,7 @@ const trainings = [
         duration: "2 Minggu",
         location: "Balai Latihan Usaha",
         jenis: "penerimabanmod",
-        comingSoon: false,
+        comingSoon: true,
     },
     {
         id: 3,
@@ -45,7 +45,7 @@ const trainings = [
         duration: "1 Minggu",
         location: "Gedung UMKM Center",
         jenis: "umkm",
-        comingSoon: false,
+        comingSoon: true,
     },
     {
         id: 4,
@@ -57,7 +57,7 @@ const trainings = [
         duration: "2 Minggu",
         location: "Balai Pertanian",
         jenis: "petani",
-        comingSoon: false,
+        comingSoon: true,
     },
     // {
     //     id: 5,
