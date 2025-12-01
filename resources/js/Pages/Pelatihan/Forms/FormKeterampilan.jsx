@@ -54,6 +54,33 @@ export default function FormKeterampilan() {
     });
     let fileIndex = 1;
 
+    const handleUsia = (birthDate) => {
+        const today = new Date();
+        const birth = new Date(birthDate);
+
+        let age = today.getFullYear() - birth.getFullYear();
+        const monthDiff = today.getMonth() - birth.getMonth();
+
+        // Adjust age if birthday hasn't occurred this year
+        if (
+            monthDiff < 0 ||
+            (monthDiff === 0 && today.getDate() < birth.getDate())
+        ) {
+            age--;
+        }
+        setData((prevState) => ({
+            ...prevState,
+            tgl_lhr: birthDate,
+            usia: age,
+        }));
+    };
+
+    const getMaxBirthDate = () => {
+        const today = new Date();
+        const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+        return maxDate.toISOString().split('T')[0];
+    };
+
     const cekNik = async () => {
         setErrorMessage("");
         setNikStatus("");
@@ -349,28 +376,7 @@ export default function FormKeterampilan() {
             </Form.Group>
         );
     };
-
-    const handleUsia = (birthDate) => {
-        const today = new Date();
-        const birth = new Date(birthDate);
-
-        let age = today.getFullYear() - birth.getFullYear();
-        const monthDiff = today.getMonth() - birth.getMonth();
-
-        // Adjust age if birthday hasn't occurred this year
-        if (
-            monthDiff < 0 ||
-            (monthDiff === 0 && today.getDate() < birth.getDate())
-        ) {
-            age--;
-        }
-        setData((prevState) => ({
-            ...prevState,
-            tgl_lhr: birthDate,
-            usia: age,
-        }));
-    };
-
+    
     return (
         <Form onSubmit={handleSubmit} encType="multipart/form-data">
             {/* Form Title */}
@@ -674,10 +680,12 @@ export default function FormKeterampilan() {
                                 value={data.tgl_lhr}
                                 onChange={(e) => handleUsia(e.target.value)}
                                 isInvalid={errors.tgl_lhr}
+                                max={getMaxBirthDate()}
                             ></Form.Control>
                             <Form.Control.Feedback type="invalid">
                                 {errors.tgl_lhr}
                             </Form.Control.Feedback>
+                            <small className="text-muted">Minimal usia 18 tahun</small>
                         </div>
                     </div>
 
@@ -784,6 +792,17 @@ export default function FormKeterampilan() {
                             }
                             errors={errors.jenis_pelatihan}
                         />
+                        {/* Pesan error yang lebih umum */}
+                        {data.pendidikan && data.usia && (
+                            (data.usia < 18 || data.usia > 45) && (
+                                <div className="alert alert-warning mt-2">
+                                    <small>
+                                        <i className="fas fa-exclamation-triangle me-1"></i>
+                                        Tidak ada pelatihan yang sesuai dengan usia dan pendidikan Anda. Periksa kembali persyaratan pelatihan.
+                                    </small>
+                                </div>
+                            )
+                        )}
                     </Form.Group>
 
                     <div className="big-text text-muted mb-4">
