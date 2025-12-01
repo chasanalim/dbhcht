@@ -309,6 +309,17 @@ export default function Show({ title, data, type = "PELATIHAN_KERJA" }) {
                                             <td>
                                                 : {data.alasan_pelatihan.nama}
                                             </td>
+                                            <td className="text-danger text-bold">
+                                                {" "}
+                                                Skor : {data.alasan_pelatihan.skor}
+                                            </td>
+                                            <td className="text-danger text-bold">
+                                                NA :{" "}
+                                                {parseFloat(
+                                                    (data.alasan_pelatihan.skor / 3) *
+                                                        25
+                                                ).toFixed(2)}
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td>Status Bekerja</td>
@@ -319,6 +330,17 @@ export default function Show({ title, data, type = "PELATIHAN_KERJA" }) {
                                                     : data.status_bekerja === 2
                                                     ? " Sudah tidak bekerja"
                                                     : " Belum bekerja"}
+                                            </td>
+                                            <td className="text-danger text-bold">
+                                                {" "}
+                                                Skor : {data.status_bekerja}
+                                            </td>
+                                            <td className="text-danger text-bold">
+                                                NA :{" "}
+                                                {parseFloat(
+                                                    (data.status_bekerja / 3) *
+                                                        25
+                                                ).toFixed(2)}
                                             </td>
                                         </tr>
                                         <tr>
@@ -333,6 +355,17 @@ export default function Show({ title, data, type = "PELATIHAN_KERJA" }) {
                                                     ? " Pernah"
                                                     : " Tidak Pernah"}
                                             </td>
+                                            <td className="text-danger text-bold">
+                                                {" "}
+                                                Skor : {data.pernah_pelatihan}
+                                            </td>
+                                            <td className="text-danger text-bold">
+                                                NA :{" "}
+                                                {parseFloat(
+                                                    (data.pernah_pelatihan / 3) *
+                                                        25
+                                                ).toFixed(2)}
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td>Status Domisili</td>
@@ -343,6 +376,17 @@ export default function Show({ title, data, type = "PELATIHAN_KERJA" }) {
                                                     : data.status_domisili === 2
                                                     ? " Kota Kediri tidak sesuai KTP"
                                                     : " Sesuai KTP"}
+                                            </td>
+                                            <td className="text-danger text-bold">
+                                                {" "}
+                                                Skor : {data.status_domisili}
+                                            </td>
+                                            <td className="text-danger text-bold">
+                                                NA :{" "}
+                                                {parseFloat(
+                                                    (data.status_domisili / 3) *
+                                                        25
+                                                ).toFixed(2)}
                                             </td>
                                         </tr>
                                     </tbody>
