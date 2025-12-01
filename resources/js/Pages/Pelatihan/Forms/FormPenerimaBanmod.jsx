@@ -235,7 +235,7 @@ export default function FormPenerimaBanmod() {
                     Format:{" "}
                     {accept === ".pdf" ? "*.pdf" : "*.png, *.jpg, *.jpeg"}
                 </Form.Label>
-                
+
                 <Form.Control
                     type="file"
                     accept={accept}
@@ -357,13 +357,13 @@ export default function FormPenerimaBanmod() {
             </Form.Group>
         );
     };
-    
+
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
-        
+
         try {
             await post(route("pelatihan-banmod.store"), {
                 forceFormData: true,
@@ -938,8 +938,8 @@ export default function FormPenerimaBanmod() {
                     )}
 
                     {renderFileUpload(
-                        "Foto Kartu Keluarga (KK)", 
-                        "file_kk", 
+                        "Foto Kartu Keluarga (KK)",
+                        "file_kk",
                         ".png,.jpg,.jpeg",
                         false,
                         "imagePreviewKK",
@@ -982,8 +982,8 @@ export default function FormPenerimaBanmod() {
                     )}
 
                     {renderFileUpload(
-                        "NIB", 
-                        "file_nib", 
+                        "NIB",
+                        "file_nib",
                         ".pdf,.png,.jpg,.jpeg",
                         false,
                         null,
@@ -1041,7 +1041,7 @@ export default function FormPenerimaBanmod() {
                 <div className="alert alert-warning mt-3">
                     NIK YANG ANDA MASUKKAN SALAH ATAU ANDA BUKAN PENERIMA
                     BANTUAN MODAL. INFO LEBIH LANJUT KIRIM WA KE{" "}
-                    <strong>0811398319</strong> DENGAN FORMAT:
+                    <strong>081-359-075-353</strong> DENGAN FORMAT:
                     <br />
                     <strong>NIK_NAMA_KELURAHAN_KELUHAN/PERTANYAAN</strong>
                 </div>

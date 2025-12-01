@@ -41,11 +41,12 @@ export default function SuccessPage({ meta }) {
                                 {meta.jenis} Kota Kediri. Data Anda telah kami
                                 terima dan akan diproses lebih lanjut.
                             </p>
-                            {/* <p className="mb-3">
-                                Mohon menunggu informasi selanjutnya melalui
-                                WhatsApp yang telah Anda daftarkan.
+                            <p className="mb-3">
+                                Anda bisa melihat Status Daftar Anda melalui menu "Cek Status".
+
                             </p>
-                            <p>
+                            <a href="https://sultan.kedirikota.go.id/cek-status"> Klik di SIni</a>
+                            {/* <p>
                                 Jika ada pertanyaan, silakan hubungi kami
                                 melalui:
                             </p> */}

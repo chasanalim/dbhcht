@@ -11,11 +11,11 @@ import SelectRw from "@/Components/Select/SelectRw";
 import SelectKategoriPendaftar from "@/Components/Select/SelectKategoriPendaftar";
 import SelectJenisPelatihanEkraf from "@/Components/Select/SelectJenisPelatihanEkraf";
 
-export default function FormEkonomiKreatif({ 
-    title = "Pendaftaran Pelatihan Ekonomi Kreatif", 
+export default function FormEkonomiKreatif({
+    title = "Pendaftaran Pelatihan Ekonomi Kreatif",
     kategori_options = {},
     jenis_pelatihan_options = {},
-    quota_info = {} 
+    quota_info = {}
 }) {
     // State untuk NIK checking (sama seperti UMKM)
     const [nikStatus, setNikStatus] = useState(null);
@@ -35,7 +35,7 @@ export default function FormEkonomiKreatif({
         nama_lengkap: "",
         tanggal_lahir: "",
         no_hp: "",
-        
+
         // Alamat KTP
         alamat_ktp: "",
         rt_ktp: "",
@@ -44,7 +44,7 @@ export default function FormEkonomiKreatif({
         kecamatan_ktp: "",
         kode_kelurahan_ktp: "",
         kode_kecamatan_ktp: "",
-        
+
         // Alamat Domisili
         alamat_domisili: "",
         rt_domisili: "",
@@ -53,11 +53,11 @@ export default function FormEkonomiKreatif({
         kecamatan_domisili: "",
         kode_kelurahan_domisili: "",
         kode_kecamatan_domisili: "",
-        
+
         // Pelatihan
         jenis_pelatihan: "",
         alasan: "",
-        
+
         // Files Wajib
         file_ktp: null,
         file_kk: null,
@@ -65,14 +65,14 @@ export default function FormEkonomiKreatif({
         file_surat_pernyataan: null,
         file_nib: null,
         file_surat_pekerja_ekraf: null,
-        
+
         // Files Khusus per Kategori
         file_surat_pemilik_lahan: null,
         file_id_card_iht: null,
         file_surat_phk: null,
         file_surat_disabilitas: null,
         file_surat_kb: null,
-        
+
         komitmen: false,
 
         keterangan: "",
@@ -109,9 +109,9 @@ export default function FormEkonomiKreatif({
             .then((res) => res.json())
             .then((data) => {
                 setSkorAlasanOptions(
-                    data.map((item) => ({ 
-                        value: item.id, 
-                        label: item.jawaban 
+                    data.map((item) => ({
+                        value: item.id,
+                        label: item.jawaban
                     }))
                 );
             })
@@ -135,16 +135,16 @@ export default function FormEkonomiKreatif({
 
     const calculateAge = (birthDate) => {
         if (!birthDate) return 0;
-        
+
         const today = new Date();
         const birth = new Date(birthDate);
         let age = today.getFullYear() - birth.getFullYear();
         const monthDiff = today.getMonth() - birth.getMonth();
-        
+
         if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
             age--;
         }
-        
+
         return age;
     };
 
@@ -223,7 +223,7 @@ export default function FormEkonomiKreatif({
     const handleSubmit = async (event) => {
         event.preventDefault();
         setIsSubmitting(true);
-        
+
         try {
             await post(route("pelatihan-ekonomi-kreatif.store"), {
                 forceFormData: true,
@@ -272,7 +272,7 @@ export default function FormEkonomiKreatif({
                 <Form.Label className="text-primary" style={{ fontSize: "11px" }}>
                     Format: {accept === ".pdf" ? "*.pdf" : "*.png, *.jpg, *.jpeg"}
                 </Form.Label>
-                
+
                 <Form.Control
                     type="file"
                     accept={accept}
@@ -378,8 +378,8 @@ export default function FormEkonomiKreatif({
                                                 {jenis.replace('_', ' ')}
                                             </span>
                                             <span className={`badge bg-${quota.penuh ? 'danger' : 'success'}`}>
-                                                {quota.penuh 
-                                                    ? 'PENUH' 
+                                                {quota.penuh
+                                                    ? 'PENUH'
                                                     : `${quota.sisa}/${quota.total_kuota} tersisa`
                                                 }
                                             </span>
@@ -567,7 +567,7 @@ export default function FormEkonomiKreatif({
                                 <Form.Control.Feedback type="invalid">
                                     {errors.tanggal_lahir}
                                 </Form.Control.Feedback>
-                                
+
                                 {/* Display calculated age */}
                                 {data.tanggal_lahir && (
                                     <Form.Text className={`mt-1 d-block fw-semibold ${
@@ -579,7 +579,7 @@ export default function FormEkonomiKreatif({
                                         )}
                                     </Form.Text>
                                 )}
-                                
+
                                 <Form.Text className="text-muted">
                                     Usia minimal 17 tahun, maksimal 65 tahun
                                 </Form.Text>
@@ -713,8 +713,8 @@ export default function FormEkonomiKreatif({
                                         <div className="col-md-6 mb-3">
                                             <Form.Label className="required">Kecamatan</Form.Label>
                                             <SelectKecamatan
-                                                value={data.kode_kecamatan_domisili && data.kecamatan_domisili ? 
-                                                    {id: data.kode_kecamatan_domisili, text: data.kecamatan_domisili} : 
+                                                value={data.kode_kecamatan_domisili && data.kecamatan_domisili ?
+                                                    {id: data.kode_kecamatan_domisili, text: data.kecamatan_domisili} :
                                                     null
                                                 }
                                                 onChange={(item) => setData(prev => ({
@@ -734,8 +734,8 @@ export default function FormEkonomiKreatif({
                                             <Form.Label className="required">Kelurahan</Form.Label>
                                             <SelectKelurahan
                                                 kodeKecamatan={data.kode_kecamatan_domisili}
-                                                value={data.kode_kelurahan_domisili && data.kelurahan_domisili ? 
-                                                    {id: data.kode_kelurahan_domisili, text: data.kelurahan_domisili} : 
+                                                value={data.kode_kelurahan_domisili && data.kelurahan_domisili ?
+                                                    {id: data.kode_kelurahan_domisili, text: data.kelurahan_domisili} :
                                                     null
                                                 }
                                                 onChange={(item) => setData(prev => ({
@@ -823,10 +823,10 @@ export default function FormEkonomiKreatif({
                             {/* Warning jika user pilih jenis pelatihan yang hampir habis */}
                             {data.jenis_pelatihan && quota_info[data.jenis_pelatihan] && (
                                 <div className={`alert mb-4 ${
-                                    quota_info[data.jenis_pelatihan].penuh 
-                                        ? 'alert-danger' 
-                                        : quota_info[data.jenis_pelatihan].sisa <= 5 
-                                            ? 'alert-warning' 
+                                    quota_info[data.jenis_pelatihan].penuh
+                                        ? 'alert-danger'
+                                        : quota_info[data.jenis_pelatihan].sisa <= 5
+                                            ? 'alert-warning'
                                             : 'alert-success'
                                 }`}>
                                     {quota_info[data.jenis_pelatihan].penuh ? (
@@ -1026,6 +1026,16 @@ export default function FormEkonomiKreatif({
                         </>
                     )}
                 </>
+            )}
+            {/* Error Message for Invalid NIK */}
+            {!dataPenerima && errorMessage && (
+                <div className="alert alert-warning mt-3">
+                    NIK YANG ANDA MASUKKAN SALAH ATAU ANDA BUKAN PENERIMA
+                    BANTUAN MODAL. INFO LEBIH LANJUT KIRIM WA KE{" "}
+                    <strong>081-216-540-162</strong> DENGAN FORMAT:
+                    <br />
+                    <strong>NIK_NAMA_KELURAHAN_KELUHAN/PERTANYAAN</strong>
+                </div>
             )}
         </Form>
     );
