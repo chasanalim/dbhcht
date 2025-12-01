@@ -3,7 +3,7 @@ import { Head } from "@inertiajs/react";
 import React from "react";
 import FileCard from "@/Components/FileCard";
 
-export default function File({ meta, banmod, pelatihanbanmod ,pencarikerja, umkm, pertanian}) {
+export default function File({ meta, banmod, pelatihanbanmod ,pencarikerja, umkm, pertanian, ekraf}) {
     return (
         <Layout>
             <Head title={meta.title} />
