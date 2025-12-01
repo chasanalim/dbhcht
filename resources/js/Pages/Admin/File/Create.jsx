@@ -91,6 +91,9 @@ export default function Create({ title, file, action, method = "POST" }) {
                                                     <option value="umkm">
                                                         Pelatihan UMKM
                                                     </option>
+                                                    <option value="ekraf">
+                                                        Pelatihan Ekonomi Kreatif
+                                                    </option>
                                                 </select>
                                                 {errors.kategori && (
                                                     <div className="invalid-feedback">

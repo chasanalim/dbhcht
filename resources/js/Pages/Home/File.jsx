@@ -118,6 +118,28 @@ export default function File({ meta, banmod, pelatihanbanmod ,pencarikerja, umkm
                     </div>
                 </div>
             </div>
+            <div className="py-4">
+                <div className="container">
+                    <div className="card shadow-sm">
+                        <div className="card-body">
+                            <h2 className="fs-3 fw-bold mb-3">
+                                Daftar File Pelatihan Ekonomi Kreatif 2025
+                            </h2>
+                            <hr className="py-0"/>
+                            <div className="row g-4">
+                                {ekraf.map((file) => (
+                                    <div
+                                        className="col-md-6 col-lg-4"
+                                        key={file.id}
+                                    >
+                                        <FileCard file={file} />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </Layout>
     );

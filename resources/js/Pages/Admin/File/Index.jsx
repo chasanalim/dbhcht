@@ -109,6 +109,8 @@ export default function Index({ title, can, flash }) {
                             ? '<span class="badge bg-danger">Pelatihan Penerima Banmod</span>'
                             : data === "umkm"
                             ? '<span class="badge bg-secondary">Pelatihan UMKM</span>'
+                            : data === "ekraf"
+                            ? '<span class="badge bg-primary">Pelatihan Ekonomi Kreatif</span>'
                             : '<span class="badge bg-success">Pelatihan Pertanian</span>';
                     },
                 },

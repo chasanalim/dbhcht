@@ -43,6 +43,7 @@ class HomeController extends Controller
         $pencarikerja = LampiranFile::where('kategori', 'pencari-kerja')->get();
         $umkm = LampiranFile::where('kategori', 'umkm')->get();
         $pertanian = LampiranFile::where('kategori', 'pertanian')->get();
+        $ekraf = LampiranFile::where('kategori', 'ekraf')->get();
 
 
         return Inertia::render('Home/File', [
@@ -53,7 +54,8 @@ class HomeController extends Controller
             'pelatihanbanmod' => $pelatihanbanmod,
             'pencarikerja' => $pencarikerja,
             'umkm' => $umkm,
-            'pertanian' => $pertanian
+            'pertanian' => $pertanian,
+            'ekraf' => $ekraf
         ]);
     }
     public function download($filename)
