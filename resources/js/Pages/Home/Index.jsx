@@ -33,7 +33,7 @@ const trainings = [
         duration: "2 Minggu",
         location: "Balai Latihan Usaha",
         jenis: "penerimabanmod",
-        comingSoon: true,
+        comingSoon: false,
     },
     {
         id: 3,
