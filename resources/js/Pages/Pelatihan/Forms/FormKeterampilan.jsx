@@ -1,5 +1,6 @@
 import { Form, Button, ListGroup, InputGroup, Spinner } from "react-bootstrap";
 import React, { useState } from "react";
+import axios from "axios";
 
 import SelectAlasanPelatihan from "@/Components/Select/SelectAlasanPelatihan";
 import SelectJenisPelatihanKeterampilan from "@/Components/Select/SelectJenisPelatihanKeterampilan";
@@ -60,7 +61,6 @@ export default function FormKeterampilan() {
             const response = await axios.get(
                 `/pelatihan/kerja/cek-nik/${data.nik}`
             );
-            // console.log(response);
 
             // Handle success response
             if (response.data.success === true) {
@@ -83,10 +83,32 @@ export default function FormKeterampilan() {
         }
     };
 
+    // Fungsi untuk format ukuran file
+    const formatFileSize = (bytes) => {
+        if (bytes === 0) return "0 Bytes";
+        const k = 1024;
+        const sizes = ["Bytes", "KB", "MB", "GB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+    };
+
     const handleUploadFoto = (e, field_name, preview_name) => {
-        // const choosenFiles = Array.prototype.slice.call(e.target.files);
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validasi ukuran file (2MB)
+        const maxFileSize = 2 * 1024 * 1024; // 2MB
+        if (file.size > maxFileSize) {
+            alert(
+                `Ukuran file terlalu besar: ${formatFileSize(file.size)}\n` +
+                `Maksimal ukuran file: 2MB\n` +
+                `Silakan kompres atau pilih file yang lebih kecil.`
+            );
+            e.target.value = ''; // Reset input
+            return;
+        }
+
         let reader = new FileReader();
-        let file = e.target.files[0];
 
         reader.onloadend = () => {
             setData((prevState) => ({
@@ -100,11 +122,28 @@ export default function FormKeterampilan() {
     };
 
     const handleUploadFile = (e, field_name, multiple) => {
-        const choosenFiles = Array.prototype.slice.call(e.target.files);
+        const rawFiles = e.target.files;
+        if (!rawFiles || rawFiles.length === 0) return;
+
+        const files = Array.from(rawFiles);
+        const maxFileSize = 2 * 1024 * 1024; // 2MB
+
+        // Validasi setiap file
+        for (let file of files) {
+            if (file.size > maxFileSize) {
+                alert(
+                    `File "${file.name}" terlalu besar: ${formatFileSize(file.size)}\n` +
+                    `Maksimal ukuran file: 2MB\n` +
+                    `Silakan kompres atau pilih file yang lebih kecil.`
+                );
+                e.target.value = '';
+                return;
+            }
+        }
 
         setData((prevState) => ({
             ...prevState,
-            [field_name]: multiple ? choosenFiles : e.target.files[0],
+            [field_name]: multiple ? files : files[0],
         }));
     };
 
@@ -140,12 +179,30 @@ export default function FormKeterampilan() {
         }));
     };
 
+    // Component untuk panduan kompresi file
+    const FileCompressionGuide = () => (
+        <div className="alert alert-info mb-4">
+            <h6 className="fw-bold">📋 Panduan Upload File:</h6>
+            <ul className="mb-0 small">
+                <li>Maksimal ukuran per file: <strong>2MB</strong></li>
+                <li>Jika file terlalu besar, gunakan tools kompresi online:
+                    <ul>
+                        <li>Untuk gambar: <a href="https://tinypng.com" target="_blank" rel="noopener noreferrer">TinyPNG</a> atau <a href="https://compressjpeg.com" target="_blank" rel="noopener noreferrer">CompressJPEG</a></li>
+                        <li>Untuk PDF: <a href="https://www.ilovepdf.com/compress_pdf" target="_blank" rel="noopener noreferrer">ILovePDF</a> atau <a href="https://smallpdf.com/compress-pdf" target="_blank" rel="noopener noreferrer">SmallPDF</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    );
+
     const renderFileUpload = (
         label,
         fieldName,
         accept = ".pdf",
         multiple = false,
-        imagePreviewKey = null
+        imagePreviewKey = null,
+        downloadLink = null,
+        description = ""
     ) => {
         const indexLabel = `${fileIndex++}.`;
 
@@ -161,6 +218,7 @@ export default function FormKeterampilan() {
                     Format:{" "}
                     {accept === ".pdf" ? "*.pdf" : "*.png, *.jpg, *.jpeg"}
                 </Form.Label>
+
                 <Form.Control
                     type="file"
                     accept={accept}
@@ -175,6 +233,28 @@ export default function FormKeterampilan() {
                 <Form.Control.Feedback type="invalid">
                     {errors[fieldName]}
                 </Form.Control.Feedback>
+
+                {/* Deskripsi tambahan */}
+                {description && (
+                    <div className="text-muted mt-1" style={{ fontSize: "12px" }}>
+                        {description}
+                    </div>
+                )}
+
+                {/* Link untuk unduh template dokumen */}
+                {downloadLink && (
+                    <div className="mt-2">
+                        <a
+                            href={downloadLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-decoration-none text-danger fw-semibold"
+                            style={{ fontSize: "12px" }}
+                        >
+                            📥 Unduh Template Dokumen (PDF)
+                        </a>
+                    </div>
+                )}
 
                 {/* Image Preview with Remove */}
                 {imagePreviewKey && data[imagePreviewKey] && (
@@ -213,12 +293,10 @@ export default function FormKeterampilan() {
                                         className="d-flex justify-content-between align-items-center"
                                     >
                                         <span>
-                                            📄 {file.name}
+                                            📄 {file.name} ({formatFileSize(file.size)})
                                             {file instanceof File && (
                                                 <a
-                                                    href={URL.createObjectURL(
-                                                        file
-                                                    )}
+                                                    href={URL.createObjectURL(file)}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="ms-2 text-decoration-underline"
@@ -242,12 +320,10 @@ export default function FormKeterampilan() {
                             ) : (
                                 <ListGroup.Item className="d-flex justify-content-between align-items-center">
                                     <span>
-                                        📄 {data[fieldName].name}
+                                        📄 {data[fieldName].name} ({formatFileSize(data[fieldName].size)})
                                         {data[fieldName] instanceof File && (
                                             <a
-                                                href={URL.createObjectURL(
-                                                    data[fieldName]
-                                                )}
+                                                href={URL.createObjectURL(data[fieldName])}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="ms-2 text-decoration-underline"
@@ -297,6 +373,24 @@ export default function FormKeterampilan() {
 
     return (
         <Form onSubmit={handleSubmit} encType="multipart/form-data">
+            {/* Form Title */}
+            <h4 className="text-center fw-bold mb-4">
+                FORM PENDAFTARAN PELATIHAN KETERAMPILAN KERJA
+            </h4>
+
+            {/* Form Description */}
+            <div className="alert alert-info mb-4">
+                <strong>DESKRIPSI PELATIHAN:</strong>
+                <p className="mb-2">
+                    Pelatihan teknis dan soft skill untuk meningkatkan daya saing pencari kerja.
+                </p>
+                <ul className="mb-0">
+                    <li><strong>Usia Min:</strong> 18 tahun</li>
+                    <li><strong>Usia Maks:</strong> 45 tahun</li>
+                    <li><strong>Durasi pelatihan:</strong> 10 hari</li>
+                </ul>
+            </div>
+
             <div className="big-text text-muted mb-4">
                 Data Peserta
                 <div className="underline"></div>
@@ -353,9 +447,9 @@ export default function FormKeterampilan() {
                     {nikLength}/16 digit
                 </small>
             </Form.Group>
-            {errorMessage && <div className="text-danger">{errorMessage}</div>}
+            {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
 
-            {nikStatus && <div className="text-success mb-3">{nikStatus}</div>}
+            {nikStatus && <div className="alert alert-success">{nikStatus}</div>}
 
             {/* Data Penerima */}
             {dataPenerima && (
@@ -445,6 +539,7 @@ export default function FormKeterampilan() {
                             </div>
                         </div>
                     </Form.Group>
+
                     {/* Alamat Sesuai KTP */}
                     <Form.Group className="row mb-1">
                         <div className="col-md-6 col-12 mb-3">
@@ -543,6 +638,7 @@ export default function FormKeterampilan() {
                                 })
                             }
                             isInvalid={!!errors.phone_number}
+                            placeholder="628XXXXXXXXXX"
                         />
                         <Form.Control.Feedback type="invalid">
                             {errors.phone_number}
@@ -691,48 +787,78 @@ export default function FormKeterampilan() {
                     </Form.Group>
 
                     <div className="big-text text-muted mb-4">
-                        Upload Berkas
+                        Upload Berkas (Max 2MB per File)
                         <div className="underline"></div>
                     </div>
+
+                    {/* Error display untuk file size */}
+                    {errors.error && (
+                        <div className="alert alert-danger mb-3">
+                            <strong>Error:</strong> {errors.error}
+                        </div>
+                    )}
+
+                    {/* Panduan Kompresi */}
+                    <FileCompressionGuide />
 
                     {renderFileUpload(
                         "Foto KTP",
                         "file_ktp",
                         ".png,.jpg,.jpeg",
                         false,
-                        "imagePreviewKTP"
+                        "imagePreviewKTP",
+                        null,
+                        "Maksimal 2MB. Format: PNG, JPG, JPEG"
                     )}
+                    
                     {renderFileUpload(
                         "Foto Kartu Keluarga (KK)",
                         "file_kk",
                         ".png,.jpg,.jpeg",
                         false,
-                        "imagePreviewKK"
+                        "imagePreviewKK",
+                        null,
+                        "Maksimal 2MB. Format: PNG, JPG, JPEG"
                     )}
+                    
                     {renderFileUpload(
                         "Pas Foto",
                         "file_pasfoto",
                         ".png,.jpg,.jpeg",
                         false,
-                        "imagePreviewPasFoto"
+                        "imagePreviewPasFoto",
+                        null,
+                        "Maksimal 2MB. Format: PNG, JPG, JPEG"
                     )}
+                    
                     {renderFileUpload(
                         "Surat Pernyataan Tidak Mengikuti Pelatihan Lain",
                         "file_surat_pernyataan_tidak_ikut",
                         ".pdf",
-                        false
+                        false,
+                        null,
+                        "https://sultan.kedirikota.go.id/storage/files/P1n9LnkfWqiJHWTRaI82DqDIZcS9vEwMcQit5762.pdf",
+                        "Maksimal 2MB. Format: PDF"
                     )}
+                    
                     {renderFileUpload(
                         "Surat Pernyataan Kesanggupan Mengikuti Pelatihan Secara Penuh",
                         "file_surat_kesanggupan",
                         ".pdf",
-                        false
+                        false,
+                        null,
+                        "https://sultan.kedirikota.go.id/storage/files/35KIXRx55JFg4M3H1laVMMhLE6yZ0EMvbhIf85d7.pdf",
+                        "Maksimal 2MB. Format: PDF"
                     )}
+                    
                     {renderFileUpload(
                         "Fotokopi Ijazah",
                         "file_fotokopi_ijazah",
                         ".pdf",
-                        false
+                        false,
+                        null,
+                        null,
+                        "Maksimal 2MB. Format: PDF"
                     )}
 
                     <div className="big-text text-muted mb-4">
@@ -741,7 +867,7 @@ export default function FormKeterampilan() {
                     </div>
                     <Form.Check
                         type="checkbox"
-                        label="Saya menyatakan bahwa data yang saya isi adalah benar dan dapat dipertanggungjawabkan serta menyetujui penggunaannya oleh penyelenggara untuk keperluan verifikasi dan pelaksanaan program sesuai kebijakan privasi yang berlaku."
+                        label="Saya menyatakan bahwa data yang saya isi adalah benar dan dapat dipertanggungjawabkan serta menyetujui penggunaannya oleh penyelenggara untuk keperluan verifikasi dan pelaksanaan program sesuai kebijakan privasi yang berlaku."
                         checked={isKomitmenChecked}
                         onChange={(e) => setIsKomitmenChecked(e.target.checked)}
                     />
@@ -780,6 +906,4 @@ export default function FormKeterampilan() {
             )}
         </Form>
     );
-
-    return <></>;
 }
