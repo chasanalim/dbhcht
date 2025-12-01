@@ -1015,24 +1015,35 @@ export default function FormPenerimaBanmod() {
                     </Form.Group>
 
                     {/* Submit Button */}
-                    <div className="d-flex justify-content-center mt-4">
-                    <Button
-                        type="submit"
-                        disabled={!data.komitmen || isSubmitting}
-                        className={!data.komitmen || isSubmitting ? "opacity-50" : ""}
-                    >
-                        {isSubmitting ? (
-                            <>
-                                Loading...{" "}
-                                <span className="spinner-border spinner-border-sm" />
-                            </>
-                        ) : (
-                            <>
-                                Kirim <i className="fa fa-paper-plane ms-1"></i>
-                            </>
-                        )}
-                    </Button>
-                </div>
+                    <div className="card-footer d-flex justify-content-center mt-4 gap-2">
+                        <Button
+                            type="submit"
+                            disabled={!isKomitmenChecked || processing}
+                            className={(!isKomitmenChecked || processing) ? "opacity-50" : ""}
+                        >
+                            {processing ? (
+                                <>
+                                    <Spinner
+                                        as="span"
+                                        animation="border"
+                                        size="sm"
+                                        role="status"
+                                        aria-hidden="true"
+                                        className="me-2"
+                                    />
+                                    Sedang Menyimpan...
+                                </>
+                            ) : (
+                                <>
+                                    Simpan{" "}
+                                    <i
+                                        className="fa fa-paper-plane ms-1"
+                                        aria-hidden="true"
+                                    ></i>
+                                </>
+                            )}
+                        </Button>
+                    </div>
                 </>
             )}
 

@@ -10,7 +10,7 @@ const SelectJenisPelatihan = ({ value, onChange, errors }) => {
         },
         {
             value: "penerimabanmod",
-            label: "Pelatihan Keterampilan Penerima Banmod (Coming Soon)",
+            label: "Pelatihan Keterampilan Penerima Banmod",
             isDisabled: false,
         },
         {

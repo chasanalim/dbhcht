@@ -1009,16 +1009,28 @@ export default function FormEkonomiKreatif({
                             <div className="d-flex justify-content-center mt-4">
                                 <Button
                                     type="submit"
-                                    disabled={!data.komitmen || isSubmitting}
-                                    className={!data.komitmen || isSubmitting ? "opacity-50" : ""}
+                                    disabled={!isKomitmenChecked || processing}
+                                    className={(!isKomitmenChecked || processing) ? "opacity-50" : ""}
                                 >
-                                    {isSubmitting ? (
+                                    {processing ? (
                                         <>
-                                            Loading... <span className="spinner-border spinner-border-sm" />
+                                            <Spinner
+                                                as="span"
+                                                animation="border"
+                                                size="sm"
+                                                role="status"
+                                                aria-hidden="true"
+                                                className="me-2"
+                                            />
+                                            Sedang Menyimpan...
                                         </>
                                     ) : (
                                         <>
-                                            Kirim <i className="fa fa-paper-plane ms-1"></i>
+                                            Simpan{" "}
+                                            <i
+                                                className="fa fa-paper-plane ms-1"
+                                                aria-hidden="true"
+                                            ></i>
                                         </>
                                     )}
                                 </Button>
