@@ -1,7 +1,7 @@
 import Layout from "@/Layouts/Layout";
 import { Head, Link } from "@inertiajs/react";
 import { Col, Container, Image, Row } from "react-bootstrap";
-import React from "react";
+import React, { useState } from "react";
 import TrainingCarousel from "@/Components/TrainingCarousel";
 import CountUp from "react-countup";
 import VisibilitySensor from "react-visibility-sensor";
@@ -71,17 +71,6 @@ const trainings = [
         jenis: "petani",
         comingSoon: true,
     },
-    // {
-    //     id: 5,
-    //     title: "Pelatihan Digital Marketing",
-    //     description:
-    //         "Pelatihan untuk memperluas pasar secara online dan memanfaatkan media sosial.",
-    //     image: "/assets/top-viewtop-view-manager-employee-doing-teamwork-business-office-looking-charts-laptop-display.jpg",
-    //     requirements: [],
-    //     duration: "",
-    //     location: "",
-    //     comingSoon: true,
-    // },
 ];
 
 export default function Index({
@@ -93,6 +82,8 @@ export default function Index({
     pertanian,
     ekraf,
 }) {
+    const [visibleStats, setVisibleStats] = useState({});
+
     return (
         <Layout>
             <Head title={meta.title} />
@@ -413,33 +404,51 @@ export default function Index({
                                         className={`bi ${stat.icon} fs-1 mb-3`}
                                         style={{ color: stat.color }}
                                     ></i>
-                                    <h1
-                                        className="m-2"
+                                    <div
                                         style={{
-                                            fontWeight: 700,
-                                            color: stat.color,
+                                            height: 50,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            margin: '8px 0',
                                         }}
                                     >
                                         <VisibilitySensor
                                             partialVisibility
                                             offset={{ bottom: 10 }}
+                                            onChange={(isVisible) => {
+                                                if (isVisible && !visibleStats[index]) {
+                                                    setVisibleStats(prev => ({
+                                                        ...prev,
+                                                        [index]: true
+                                                    }));
+                                                }
+                                            }}
                                         >
-                                            {({ isVisible }) => (
-                                                <div style={{ height: 50 }}>
-                                                    {isVisible ? (
-                                                        <CountUp
-                                                            start={0}
-                                                            end={stat.value}
-                                                            duration={2.5}
-                                                            separator="."
-                                                        />
-                                                    ) : (
-                                                        0
-                                                    )}
-                                                </div>
-                                            )}
+                                            <h1
+                                                style={{
+                                                    fontWeight: 700,
+                                                    color: stat.color,
+                                                    margin: 0,
+                                                    minHeight: 40,
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                }}
+                                            >
+                                                {visibleStats[index] ? (
+                                                    <CountUp
+                                                        start={0}
+                                                        end={stat.value || 0}
+                                                        duration={2.5}
+                                                        separator="."
+                                                        preserveValue
+                                                    />
+                                                ) : (
+                                                    0
+                                                )}
+                                            </h1>
                                         </VisibilitySensor>
-                                    </h1>
+                                    </div>
                                     <p
                                         className="mb-0 text-muted"
                                         style={{ fontSize: "0.9rem" }}
