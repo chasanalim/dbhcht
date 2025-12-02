@@ -33,7 +33,7 @@ const trainings = [
         duration: "2 Minggu",
         location: "Kota Kediri",
         jenis: "penerimabanmod",
-        comingSoon: false,
+        comingSoon: true,
     },
     {
         id: 3,
@@ -45,7 +45,7 @@ const trainings = [
         duration: "2 Minggu",
         location: "Kota Kediri",
         jenis: "ekraf",
-        comingSoon: false,
+        comingSoon: true,
     },
     {
         id: 4,
