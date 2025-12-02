@@ -30,7 +30,7 @@ const SelectJenisPelatihan = ({ value, onChange, errors }) => {
         },
         {
             value: "ekraf",
-            label: "Pelatihan Ekonomi Kreatif (Coming Soon)",
+            label: "Pelatihan Ekonomi Kreatif",
             isDisabled: true,
         },
 

@@ -12,7 +12,7 @@ const trainings = [
         title: "Pelatihan Keterampilan untuk Pencari Kerja",
         description:
             "Pelatihan teknis dan soft skill untuk meningkatkan daya saing pencari kerja.",
-        image: "https://cdn.antaranews.com/cache/1200x800/2024/01/28/17064193727897.jpeg",
+        image: "https://i.ibb.co.com/Gj6G9bm/Chat-GPT-Image-Dec-2-2025-09-30-58-AM.png",
         requirements: [
             { label: "Usia Min", value: "18 tahun" },
             { label: "Usia Maks", value: "45 tahun" },
@@ -28,15 +28,27 @@ const trainings = [
         title: "Pelatihan Keterampilan untuk Penerima Banmod",
         description:
             "Pelatihan lanjutan bagi penerima bantuan modal untuk mengembangkan usahanya.",
-        image: "https://mcc.or.id/wp-content/uploads/2025/02/n209-3.webp",
+        image: "https://i.ibb.co.com/GQQnMLSr/Chat-GPT-Image-Dec-2-2025-09-28-04-AM.png",
         requirements: [{ label: "Penerima", value: "Program Banmod DBHCHT" }],
         duration: "2 Minggu",
-        location: "Balai Latihan Usaha",
+        location: "Kota Kediri",
         jenis: "penerimabanmod",
         comingSoon: false,
     },
     {
         id: 3,
+        title: "Pelatihan Ekonomi Kreatif",
+        description:
+            "Peningkatan kapasitas pelaku Ekonomi Kreatif.",
+        image: "https://i.ibb.co.com/SD3jXSM8/Chat-GPT-Image-Dec-2-2025-09-21-16-AM.png",
+        requirements: [{ label: "Status", value: "Pelaku Ekonomi Kreatif" }],
+        duration: "2 Minggu",
+        location: "Kota Kediri",
+        jenis: "ekraf",
+        comingSoon: false,
+    },
+    {
+        id: 4,
         title: "Pelatihan UMKM",
         description:
             "Peningkatan kapasitas pelaku UMKM dalam manajemen usaha dan pemasaran.",
@@ -48,7 +60,7 @@ const trainings = [
         comingSoon: true,
     },
     {
-        id: 4,
+        id: 5,
         title: "Pelatihan Pertanian",
         description:
             "Teknik pertanian modern dan pemanfaatan alat pertanian terbaru.",
@@ -79,6 +91,7 @@ export default function Index({
     pencarikerja,
     umkm,
     pertanian,
+    ekraf,
 }) {
     return (
         <Layout>
@@ -378,7 +391,7 @@ export default function Index({
                             },
                             {
                                 label: "Ekonomi Kreatif",
-                                value: 0,
+                                value: ekraf,
                                 icon: "bi-brush",
                                 color: "#6f42c1",
                             },
