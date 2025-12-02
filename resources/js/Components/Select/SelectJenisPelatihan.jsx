@@ -11,7 +11,12 @@ const SelectJenisPelatihan = ({ value, onChange, errors }) => {
         {
             value: "penerimabanmod",
             label: "Pelatihan Keterampilan Penerima Banmod",
-            isDisabled: false,
+            isDisabled: true,
+        },
+        {
+            value: "ekraf",
+            label: "Pelatihan Ekonomi Kreatif",
+            isDisabled: true,
         },
         {
             value: "umkm",
@@ -26,11 +31,6 @@ const SelectJenisPelatihan = ({ value, onChange, errors }) => {
         {
             value: "petani",
             label: "Pelatihan Pertanian (Coming Soon)",
-            isDisabled: true,
-        },
-        {
-            value: "ekraf",
-            label: "Pelatihan Ekonomi Kreatif",
             isDisabled: true,
         },
 
