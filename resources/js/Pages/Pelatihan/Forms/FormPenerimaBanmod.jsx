@@ -20,7 +20,8 @@ export default function FormPenerimaBanmod() {
     const [editMode, setEditMode] = useState(false);
     const [nikLength, setNikLength] = useState(0);
 
-    const { data, setData, errors, post, reset } = useForm({
+    // Add processing to useForm destructuring
+    const { data, setData, errors, post, reset, processing } = useForm({
         tahun_penerimaan: "",
         nik: "",
         nama_lengkap: "",
@@ -58,16 +59,18 @@ export default function FormPenerimaBanmod() {
         skor_mengisi_waktu: "",
         skor_diajak_teman: "",
 
-        // Files - Updated structure (removed file_domisili, added new fields)
+        // Files - Updated structure
         file_ktp: null,
         file_kk: null,
         file_pasfoto: null,
         file_surat_pernyataan_tidak_ikut: null,
-        // file_surat_kesanggupan: null,
         file_nib: null,
 
         komitmen: false,
     });
+
+    // Add isKomitmenChecked computed value
+    const isKomitmenChecked = data.komitmen;
 
     // Fungsi untuk mengecek NIK
     const cekNik = async () => {
@@ -1014,23 +1017,22 @@ export default function FormPenerimaBanmod() {
                         </Form.Control.Feedback>
                     </Form.Group>
 
-                    {/* Submit Button */}
+                    {/* Submit Button - Replace the existing submit button section */}
                     <div className="card-footer d-flex justify-content-center mt-4 gap-2">
                         <Button
                             type="submit"
-                            disabled={!isKomitmenChecked || processing}
-                            className={(!isKomitmenChecked || processing) ? "opacity-50" : ""}
+                            disabled={!isKomitmenChecked || processing || isSubmitting}
+                            className={(!isKomitmenChecked || processing || isSubmitting) ? "opacity-50" : ""}
+                            variant="primary"
+                            size="lg"
                         >
-                            {processing ? (
+                            {processing || isSubmitting ? (
                                 <>
-                                    <Spinner
-                                        as="span"
-                                        animation="border"
-                                        size="sm"
+                                    <span
+                                        className="spinner-border spinner-border-sm me-2"
                                         role="status"
                                         aria-hidden="true"
-                                        className="me-2"
-                                    />
+                                    ></span>
                                     Sedang Menyimpan...
                                 </>
                             ) : (
