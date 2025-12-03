@@ -28,7 +28,7 @@ export default function FormEkonomiKreatif({
 
     const [skorAlasanOptions, setSkorAlasanOptions] = useState([]);
 
-    const { data, setData, errors, post, reset } = useForm({
+    const { data, setData, errors, post, reset, processing } = useForm({
         kategori_pendaftar: "",
         nik: "",
         no_kk: "",
@@ -147,6 +147,8 @@ export default function FormEkonomiKreatif({
 
         return age;
     };
+
+    const isKomitmenChecked = data.komitmen;
 
     const currentAge = calculateAge(data.tanggal_lahir);
 
@@ -1005,23 +1007,22 @@ export default function FormEkonomiKreatif({
                                 </Form.Control.Feedback>
                             </Form.Group>
 
-                            {/* Submit Button */}
+                            {/* Submit Button - Replace the existing submit button section with this: */}
                             <div className="d-flex justify-content-center mt-4">
                                 <Button
                                     type="submit"
-                                    disabled={!isKomitmenChecked || processing}
-                                    className={(!isKomitmenChecked || processing) ? "opacity-50" : ""}
+                                    disabled={!isKomitmenChecked || processing || isSubmitting}
+                                    className={(!isKomitmenChecked || processing || isSubmitting) ? "opacity-50" : ""}
+                                    variant="primary"
+                                    size="lg"
                                 >
-                                    {processing ? (
+                                    {processing || isSubmitting ? (
                                         <>
-                                            <Spinner
-                                                as="span"
-                                                animation="border"
-                                                size="sm"
+                                            <span
+                                                className="spinner-border spinner-border-sm me-2"
                                                 role="status"
                                                 aria-hidden="true"
-                                                className="me-2"
-                                            />
+                                            ></span>
                                             Sedang Menyimpan...
                                         </>
                                     ) : (
