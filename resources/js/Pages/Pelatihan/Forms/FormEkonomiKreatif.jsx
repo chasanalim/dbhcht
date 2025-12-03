@@ -264,7 +264,8 @@ export default function FormEkonomiKreatif({
         accept = ".pdf",
         imagePreviewKey = null,
         description = "",
-        fileIndex = 1
+        fileIndex = 1,
+        downloadLink = null
     ) => {
         return (
             <Form.Group className="mb-4" key={fieldName}>
@@ -295,6 +296,21 @@ export default function FormEkonomiKreatif({
                 {description && (
                     <div className="text-muted mt-1" style={{ fontSize: "12px" }}>
                         {description}
+                    </div>
+                )}
+
+                {/* Link untuk unduh template dokumen */}
+                {downloadLink && (
+                    <div className="mt-2">
+                        <a
+                            href={downloadLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-decoration-none text-danger fw-semibold"
+                            style={{ fontSize: "12px" }}
+                        >
+                            📥 Unduh Template Dokumen (PDF)
+                        </a>
                     </div>
                 )}
 
@@ -892,7 +908,8 @@ export default function FormEkonomiKreatif({
                                 ".pdf",
                                 null,
                                 "Maksimal 2MB. Format: PDF",
-                                4
+                                4,
+                                "https://sultan.kedirikota.go.id/storage/files/jG8YSc7E11f1vCyMtwpA63pzzsqVmiIEPghYd4ZR.pdf" // Tambah parameter ini
                             )}
 
                             {renderFileUpload(
