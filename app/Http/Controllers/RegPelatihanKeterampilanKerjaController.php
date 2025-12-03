@@ -47,10 +47,10 @@ class RegPelatihanKeterampilanKerjaController extends Controller
             "status_bekerja" => ['required', 'integer', 'in:1,2,3'],
             "pernah_pelatihan" => ['required', 'integer', 'in:1,3'],
             "status_domisili" => ['required', 'integer', 'in:1,2,3'],
-            "file_pasfoto" => ['nullable', 'file'],
-            "file_surat_pernyataan_tidak_ikut" => ['nullable', 'file'],
-            "file_surat_kesanggupan" => ['nullable', 'file'],
-            "file_fotokopi_ijazah" => ['nullable', 'file'],
+            "file_pasfoto" => ['required', 'file'],
+            "file_surat_pernyataan_tidak_ikut" => ['required', 'file'],
+            "file_surat_kesanggupan" => ['required', 'file'],
+            "file_fotokopi_ijazah" => ['required', 'file'],
         ]);
 
         $fileFields = [
