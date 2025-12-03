@@ -946,7 +946,7 @@ export default function FormEkonomiKreatif({
                             {/* Info box sebelum Surat Pekerja */}
                             <div className="alert alert-info mb-3 py-2">
                                 <small>
-                                    <strong>📋 Keterangan:</strong> Khusus bagi pegawai yang bekerja di usaha ekonomi kreatif. Apabila anda adalah pemilik usaha ekonomi kreatif, cukup upload NIB saja (Bisa Dilewati).
+                                    <strong>📋 Keterangan:</strong> Khusus bagi pegawai yang bekerja di usaha ekonomi kreatif. Apabila anda adalah pemilik usaha ekonomi kreatif, cukup upload NIB saja.
                                 </small>
                             </div>
 
