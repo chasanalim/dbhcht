@@ -902,6 +902,8 @@ export default function FormEkonomiKreatif({
                                 3
                             )}
 
+                            
+
                             {renderFileUpload(
                                 "Surat Pernyataan",
                                 "file_surat_pernyataan",
@@ -912,6 +914,8 @@ export default function FormEkonomiKreatif({
                                 "https://sultan.kedirikota.go.id/storage/files/jG8YSc7E11f1vCyMtwpA63pzzsqVmiIEPghYd4ZR.pdf" // Tambah parameter ini
                             )}
 
+                            
+
                             {renderFileUpload(
                                 "NIB",
                                 "file_nib",
@@ -921,6 +925,15 @@ export default function FormEkonomiKreatif({
                                 5
                             )}
 
+                            {/* Info box sebelum NIB */}
+                            <div className="alert alert-info mb-3 py-2">
+                                <small>
+                                    <strong>📋 Keterangan:</strong> Wajib upload NIB bagi pemilik usaha ekonomi kreatif dan pegawai yang bekerja di usaha ekonomi kreatif (pegawai upload NIB dari usaha tempat dia bekerja)
+                                </small>
+                            </div>
+
+                             
+
                             {renderFileUpload(
                                 "Surat Keterangan Pekerja Ekonomi Kreatif",
                                 "file_surat_pekerja_ekraf",
@@ -929,6 +942,13 @@ export default function FormEkonomiKreatif({
                                 "Maksimal 2MB. Format: PDF",
                                 6
                             )}
+
+                            {/* Info box sebelum Surat Pekerja */}
+                            <div className="alert alert-info mb-3 py-2">
+                                <small>
+                                    <strong>📋 Keterangan:</strong> Khusus bagi pegawai yang bekerja di usaha ekonomi kreatif. Apabila anda adalah pemilik usaha ekonomi kreatif, cukup upload NIB saja (Bisa Dilewati).
+                                </small>
+                            </div>
 
                             {/* Conditional files based on category */}
                             {data.kategori_pendaftar === "buruh_tani_tembakau" && renderFileUpload(
