@@ -51,8 +51,8 @@ const trainings = [
         id: 4,
         title: "Pelatihan UMKM",
         description:
-            "Peningkatan kapasitas pelaku UMKM dalam manajemen usaha dan pemasaran.",
-        image: "https://uny.ac.id/sites/default/files/styles/large/public/2024-09/proses%20membuat.jpg?itok=4BsuWSUJ",
+            "Peningkatan kapasitas pelaku UMKM dalam peningkatan kualitas produk.",
+        image: "https://i.ibb.co.com/v6zWczyX/Chat-GPT-Image-Dec-3-2025-10-45-27-AM.jpg",
         requirements: [{ label: "Status", value: "Pelaku UMKM aktif" }],
         duration: "1 Minggu",
         location: "Gedung UMKM Center",
