@@ -57,7 +57,7 @@ const trainings = [
         duration: "1 Minggu",
         location: "Gedung UMKM Center",
         jenis: "umkm",
-        comingSoon: true,
+        comingSoon: false,
     },
     {
         id: 5,

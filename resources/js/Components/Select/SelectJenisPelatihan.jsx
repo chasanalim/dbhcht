@@ -20,8 +20,8 @@ const SelectJenisPelatihan = ({ value, onChange, errors }) => {
         },
         {
             value: "umkm",
-            label: "Pelatihan UMKM (Coming Soon)",
-            isDisabled: true,
+            label: "Pelatihan UMKM ( 3 - 4 Desember 2025 )",
+            isDisabled: false,
         },
         // {
         //     value: "penyuluh",
