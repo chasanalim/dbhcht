@@ -69,8 +69,8 @@ export default function FormUMKM() {
         file_nib: null,
 
         prioritas_1: "",
-        prioritas_2: "",
-        prioritas_3: "",
+        // prioritas_2: "",
+        // prioritas_3: "",
 
         alasan: "",
         kesesuaian: "",
@@ -165,10 +165,10 @@ export default function FormUMKM() {
     // Fungsi untuk validasi total ukuran file
     const getTotalFileSize = () => {
         let totalSize = 0;
-        
+
         const fileFields = [
-            'file_ktp', 'file_kk', 'file_pasfoto', 
-            'file_surat_pernyataan_tidak_ikut', 
+            'file_ktp', 'file_kk', 'file_pasfoto',
+            'file_surat_pernyataan_tidak_ikut',
             'file_surat_kesanggupan', 'file_nib'
         ];
 
@@ -255,10 +255,10 @@ export default function FormUMKM() {
         // Validasi total ukuran
         const currentTotalSize = getTotalFileSize();
         const newFilesSize = files.reduce((sum, file) => sum + file.size, 0);
-        const oldFileSize = Array.isArray(data[field_name]) 
+        const oldFileSize = Array.isArray(data[field_name])
             ? data[field_name].reduce((sum, file) => sum + (file.size || 0), 0)
             : (data[field_name]?.size || 0);
-        
+
         const newTotalSize = currentTotalSize + newFilesSize - oldFileSize;
         const maxTotalSize = 8 * 1024 * 1024; // 8MB
 
@@ -294,7 +294,7 @@ export default function FormUMKM() {
     //                 </span>
     //             </div>
     //             <div className="progress" style={{ height: '8px' }}>
-    //                 <div 
+    //                 <div
     //                     className={`progress-bar ${percentage > 80 ? 'bg-danger' : percentage > 60 ? 'bg-warning' : 'bg-success'}`}
     //                     style={{ width: `${Math.min(percentage, 100)}%` }}
     //                 ></div>
@@ -313,7 +313,7 @@ export default function FormUMKM() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         setIsSubmitting(true);
-        
+
         try {
             await post(route("pelatihan.umkm.store"), {
                 forceFormData: true,
@@ -384,7 +384,7 @@ export default function FormUMKM() {
                 <Form.Label className="text-primary" style={{ fontSize: "11px" }}>
                     Format: {accept === ".pdf" ? "*.pdf" : "*.png, *.jpg, *.jpeg"}
                 </Form.Label>
-                
+
                 <Form.Control
                     type="file"
                     accept={accept}
@@ -396,7 +396,7 @@ export default function FormUMKM() {
                     }
                     isInvalid={!!errors[fieldName]}
                 />
-                
+
                 {/* Error display */}
                 {errors[fieldName] && (
                     <Form.Control.Feedback type="invalid">
@@ -416,6 +416,8 @@ export default function FormUMKM() {
                     <div className="mt-2">
                         <a
                             href={downloadLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             download
                             className="text-decoration-none text-danger fw-semibold"
                             style={{ fontSize: "12px" }}
@@ -1149,7 +1151,7 @@ export default function FormUMKM() {
                         accept: ".pdf",
                         index: 4,
                         description: "Maksimal 2MB. Format: PDF",
-                        downloadLink: "/storage/templates/surat_pernyataan_tidak_ikut.pdf",
+                        downloadLink: "https://sultan.kedirikota.go.id/storage/files/ACnkVFsu9Fl8yi6pNan4SfQFNIVmcN95qhXKOtqy.pdf",
                     })}
 
                     {renderFileUpload({
@@ -1158,7 +1160,7 @@ export default function FormUMKM() {
                         accept: ".pdf",
                         index: 5,
                         description: "Maksimal 2MB. Format: PDF",
-                        downloadLink: "/storage/templates/surat_kesanggupan.pdf",
+                        downloadLink: "https://sultan.kedirikota.go.id/storage/files/ACnkVFsu9Fl8yi6pNan4SfQFNIVmcN95qhXKOtqy.pdf",
                     })}
 
                     {renderFileUpload({
@@ -1182,14 +1184,14 @@ export default function FormUMKM() {
                             prioritasKe={1}
                             value={data.prioritas_1}
                             onChange={(val) => setData("prioritas_1", val)}
-                            selectedValues={[
-                                data.prioritas_2,
-                                data.prioritas_3,
-                            ]}
+                            // selectedValues={[
+                            //     data.prioritas_2,
+                            //     data.prioritas_3,
+                            // ]}
                             errors={errors.prioritas_1}
                         />
 
-                        <SelectPrioritasPelatihan
+                        {/* <SelectPrioritasPelatihan
                             prioritasKe={2}
                             value={data.prioritas_2}
                             onChange={(val) => setData("prioritas_2", val)}
@@ -1209,7 +1211,7 @@ export default function FormUMKM() {
                                 data.prioritas_2,
                             ]}
                             errors={errors.prioritas_3}
-                        />
+                        /> */}
                     </Form.Group>
 
                     <div className="big-text text-muted mb-4">
