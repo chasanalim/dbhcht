@@ -12,7 +12,7 @@ const trainings = [
         title: "Pelatihan Keterampilan untuk Pencari Kerja",
         description:
             "Pelatihan teknis dan soft skill untuk meningkatkan daya saing pencari kerja.",
-        image: "https://i.ibb.co.com/Gj6G9bm/Chat-GPT-Image-Dec-2-2025-09-30-58-AM.png",
+        image: "https://i.ibb.co.com/hxsTSvp4/Chat-GPT-Image-Dec-2-2025-09-30-58-AM.jpg",
         requirements: [
             { label: "Usia Min", value: "18 tahun" },
             { label: "Usia Maks", value: "45 tahun" },
@@ -28,7 +28,7 @@ const trainings = [
         title: "Pelatihan Keterampilan untuk Penerima Banmod",
         description:
             "Pelatihan lanjutan bagi penerima bantuan modal untuk mengembangkan usahanya.",
-        image: "https://i.ibb.co.com/GQQnMLSr/Chat-GPT-Image-Dec-2-2025-09-28-04-AM.png",
+        image: "https://i.ibb.co.com/m54dMcfy/Chat-GPT-Image-Dec-2-2025-09-28-04-AM.jpg",
         requirements: [{ label: "Penerima", value: "Program Banmod DBHCHT" }],
         duration: "2 Minggu",
         location: "Kota Kediri",
@@ -40,7 +40,7 @@ const trainings = [
         title: "Pelatihan Ekonomi Kreatif",
         description:
             "Peningkatan kapasitas pelaku Ekonomi Kreatif.",
-        image: "https://i.ibb.co.com/SD3jXSM8/Chat-GPT-Image-Dec-2-2025-09-21-16-AM.png",
+        image: "https://i.ibb.co.com/93zWWdfg/Chat-GPT-Image-Dec-2-2025-09-21-16-AM.jpg",
         requirements: [{ label: "Status", value: "Pelaku Ekonomi Kreatif" }],
         duration: "2 Minggu",
         location: "Kota Kediri",
