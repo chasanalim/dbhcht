@@ -103,7 +103,7 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
                 $status = $request->verification_status;
                 $data = $data->filter(function ($item) use ($status) {
                     $verifications = $item->documentVerifications;
-                    $requiredDocs = ['ktp', 'kk', 'pasfoto', 'surat_pernyataan_tidak_ikut','nib'];
+                    $requiredDocs = ['ktp', 'kk', 'pasfoto', 'surat_pernyataan_tidak_ikut', 'nib'];
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
                         return $verification->status === 1;
@@ -332,7 +332,7 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
         $allVerified = count($verifications) === count($requiredDocs);
         $allApproved = $verifications->every(fn($v) => $v->status === 1);
 
-        if (!$allVerified ) {
+        if (!$allVerified) {
             return response()->json([
                 'message' => 'Dokumen belum terverifikasi lengkap'
             ], 422);
@@ -343,6 +343,8 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
         if (!empty($validated['notes'])) {
             $data->keterangan = $validated['notes'];
         }
+
+        $data->save();
 
         $statusMessage = match ($request->status) {
             1 => 'Peserta berhasil diloloskan',
