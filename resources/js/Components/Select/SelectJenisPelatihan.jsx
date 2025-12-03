@@ -10,13 +10,13 @@ const SelectJenisPelatihan = ({ value, onChange, errors }) => {
         },
         {
             value: "penerimabanmod",
-            label: "Pelatihan Keterampilan Penerima Banmod",
-            isDisabled: true,
+            label: "Pelatihan Keterampilan Penerima Banmod ( 3 - 4 Desember 2025 )",
+            isDisabled: false,
         },
         {
             value: "ekraf",
-            label: "Pelatihan Ekonomi Kreatif",
-            isDisabled: true,
+            label: "Pelatihan Ekonomi Kreatif ( 3 - 4 Desember 2025 )",
+            isDisabled: false,
         },
         {
             value: "umkm",
