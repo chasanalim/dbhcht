@@ -1,6 +1,7 @@
 import AdminLayout from "@/Layouts/admin/AdminLayout";
 import { Head, router } from "@inertiajs/react";
 import { useEffect, useState } from "react";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 export default function Show({ title, data, type = "PELATIHAN_PERTANIAN" }) {
     const [showModal, setShowModal] = useState(false);
@@ -8,14 +9,21 @@ export default function Show({ title, data, type = "PELATIHAN_PERTANIAN" }) {
     const [activeFile, setActiveFile] = useState(null);
     const [rejectNote, setRejectNote] = useState("");
     const [showRejectForm, setShowRejectForm] = useState(false);
+    const [zoomLevel, setZoomLevel] = useState(1);
 
     const DOCUMENT_TYPES = {
         PELATIHAN_PERTANIAN: [
             { key: "foto", label: "Pas Foto" },
             { key: "ktp", label: "KTP" },
             { key: "kk", label: "Kartu Keluarga" },
-            { key: "pernyataan", label: "Surat Pernyataan Tidak Mengikuti Pelatihan Lain" },
-            { key: "kesanggupan", label: "Surat Kesanggupan Mengikuti Pelatihan" },
+            {
+                key: "pernyataan",
+                label: "Surat Pernyataan Tidak Mengikuti Pelatihan Lain",
+            },
+            {
+                key: "kesanggupan",
+                label: "Surat Kesanggupan Mengikuti Pelatihan",
+            },
             {
                 key: "pengukuhan_penyuluh_swadaya",
                 label: "SK Pengukuhan Penyuluh Swadaya",
@@ -95,7 +103,9 @@ export default function Show({ title, data, type = "PELATIHAN_PERTANIAN" }) {
         if (!fileData?.url) return null;
 
         const extension = fileData.url.split(".").pop().toLowerCase();
-        const isImage = ["jpg", "jpeg", "png", "gif"].includes(extension);
+        const isImage = ["jpg", "jpeg", "png", "gif", "webp"].includes(
+            extension
+        );
         const isVerified = fileData.verification?.verified;
         const status = fileData.verification?.status;
 
@@ -156,8 +166,10 @@ export default function Show({ title, data, type = "PELATIHAN_PERTANIAN" }) {
                                     label,
                                     fileType,
                                     verification: fileData.verification,
+                                    isImage,
                                 });
                                 setShowModal(true);
+                                setZoomLevel(1);
                             }}
                         >
                             <i
@@ -210,7 +222,71 @@ export default function Show({ title, data, type = "PELATIHAN_PERTANIAN" }) {
     return (
         <AdminLayout>
             <Head title={title} />
+            <style>{`
+                .zoom-controls {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    z-index: 10;
+                    background: rgba(0, 0, 0, 0.7);
+                    border-radius: 4px;
+                    padding: 8px;
+                    display: flex;
+                    gap: 4px;
+                }
 
+                .zoom-controls button {
+                    background: #fff;
+                    border: none;
+                    padding: 6px 10px;
+                    cursor: pointer;
+                    border-radius: 3px;
+                    font-size: 14px;
+                    font-weight: bold;
+                    transition: all 0.2s;
+                }
+
+                .zoom-controls button:hover {
+                    background: #f0f0f0;
+                }
+
+                .zoom-controls button:active {
+                    transform: scale(0.95);
+                }
+
+                .modal-body-zoom {
+                    position: relative;
+                    overflow: hidden;
+                    max-height: 600px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: #f5f5f5;
+                }
+
+                .zoom-info {
+                    position: absolute;
+                    bottom: 10px;
+                    left: 10px;
+                    background: rgba(0, 0, 0, 0.7);
+                    color: white;
+                    padding: 8px 12px;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    z-index: 10;
+                }
+
+                .react-transform-wrapper {
+                    width: 100%;
+                    height: 100%;
+                }
+
+                .react-transform-component {
+                    width: 100%;
+                    height: 100%;
+                }
+            `}</style>
+            
             <div className="container-fluid py-4">
                 <div>
                     <button
@@ -347,9 +423,7 @@ export default function Show({ title, data, type = "PELATIHAN_PERTANIAN" }) {
                                         </tr>
                                         <tr>
                                             <td>Mempunyai Legalitas</td>
-                                            <td>
-                                                : Ya
-                                            </td>
+                                            <td>: Ya</td>
                                             <td className="text-danger text-bold">
                                                 Skor :{" "}
                                                 {
@@ -373,7 +447,6 @@ export default function Show({ title, data, type = "PELATIHAN_PERTANIAN" }) {
                                                 :{" "}
                                                 {data.kelompok_tani.masa_aktif}
                                             </td>
-
                                         </tr>
                                         <tr>
                                             <td>Bidang Usaha</td>
@@ -504,19 +577,93 @@ export default function Show({ title, data, type = "PELATIHAN_PERTANIAN" }) {
                                                             }
                                                         ></button>
                                                     </div>
-                                                    <div className="modal-body">
-                                                        {activeFile.url.match(
-                                                            /\.(jpg|jpeg|png|gif)$/i
-                                                        ) ? (
-                                                            <img
-                                                                src={
-                                                                    activeFile.url
+                                                    <div className="modal-body modal-body-zoom">
+                                                        {activeFile.isImage ? (
+                                                            <TransformWrapper
+                                                                initialScale={1}
+                                                                initialX={0}
+                                                                initialY={0}
+                                                                minScale={0.5}
+                                                                maxScale={4}
+                                                                centerOnInit={
+                                                                    true
                                                                 }
-                                                                className="img-fluid"
-                                                                alt={
-                                                                    activeFile.label
-                                                                }
-                                                            />
+                                                                wheel={{
+                                                                    step: 100,
+                                                                }}
+                                                                panning={{
+                                                                    velocityDisabled: false,
+                                                                }}
+                                                                doubleClick={{
+                                                                    mode: "zoomIn",
+                                                                }}
+                                                            >
+                                                                {({
+                                                                    zoomIn,
+                                                                    zoomOut,
+                                                                    resetTransform,
+                                                                    state,
+                                                                }) => (
+                                                                    <>
+                                                                        <div className="zoom-controls">
+                                                                            <button
+                                                                                onClick={() =>
+                                                                                    zoomIn()
+                                                                                }
+                                                                                title="Zoom In"
+                                                                            >
+                                                                                <i className="bi bi-zoom-in"></i>
+                                                                            </button>
+                                                                            <button
+                                                                                onClick={() =>
+                                                                                    zoomOut()
+                                                                                }
+                                                                                title="Zoom Out"
+                                                                            >
+                                                                                <i className="bi bi-zoom-out"></i>
+                                                                            </button>
+                                                                            <button
+                                                                                onClick={() =>
+                                                                                    resetTransform()
+                                                                                }
+                                                                                title="Reset"
+                                                                            >
+                                                                                <i className="bi bi-arrow-counterclockwise"></i>
+                                                                            </button>
+                                                                        </div>
+
+                                                                        <TransformComponent>
+                                                                            <img
+                                                                                src={
+                                                                                    activeFile.url
+                                                                                }
+                                                                                alt={
+                                                                                    activeFile.label
+                                                                                }
+                                                                                style={{
+                                                                                    maxWidth:
+                                                                                        "100%",
+                                                                                    maxHeight:
+                                                                                        "100%",
+                                                                                    objectFit:
+                                                                                        "contain",
+                                                                                }}
+                                                                            />
+                                                                        </TransformComponent>
+
+                                                                        <div className="zoom-info">
+                                                                            Zoom:{" "}
+                                                                            {state
+                                                                                ? Math.round(
+                                                                                      state.scale *
+                                                                                          100
+                                                                                  )
+                                                                                : 100}
+                                                                            %
+                                                                        </div>
+                                                                    </>
+                                                                )}
+                                                            </TransformWrapper>
                                                         ) : (
                                                             <embed
                                                                 src={
