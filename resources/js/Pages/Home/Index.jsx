@@ -21,7 +21,8 @@ const trainings = [
         duration: "2 Minggu",
         location: "Kota Kediri",
         jenis: "keterampilan",
-        comingSoon: true,
+        comingSoon: false,
+        closed: true,
     },
     {
         id: 2,
@@ -34,6 +35,7 @@ const trainings = [
         location: "Kota Kediri",
         jenis: "penerimabanmod",
         comingSoon: false,
+        closed: false,
     },
     {
         id: 3,
@@ -46,6 +48,7 @@ const trainings = [
         location: "Kota Kediri",
         jenis: "ekraf",
         comingSoon: false,
+        closed: false,
     },
     {
         id: 4,
@@ -58,6 +61,7 @@ const trainings = [
         location: "Gedung UMKM Center",
         jenis: "umkm",
         comingSoon: false,
+        closed: false,
     },
     {
         id: 5,
@@ -70,6 +74,7 @@ const trainings = [
         location: "Balai Pertanian",
         jenis: "petani",
         comingSoon: true,
+        closed: false,
     },
 ];
 
