@@ -109,7 +109,8 @@ class HomeController extends Controller
             'Pelatihan Penerima Banmod' => PelatihanBanmod::class,
             'Pelatihan Pencari Kerja' => PelatihanKerjas::class,
             'Pelatihan Pertanian' => PelatihanPetani::class,
-            'Bantuan Modal Usaha' => PendaftaranBanmod::class
+            'Bantuan Modal Usaha' => PendaftaranBanmod::class,
+            'Pelatihan Ekonomi Kreatif' => PelatihanEkonomiKreatif::class,
         ];
 
         foreach ($models as $type => $model) {
