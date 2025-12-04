@@ -6,7 +6,7 @@ const SelectJenisPelatihan = ({ value, onChange, errors }) => {
         {
             value: "keterampilan",
             label: "Pelatihan Keterampilan untuk Pencari Kerja",
-            isDisabled: false,
+            isDisabled: true,
         },
         {
             value: "penerimabanmod",

@@ -21,7 +21,7 @@ const trainings = [
         duration: "2 Minggu",
         location: "Kota Kediri",
         jenis: "keterampilan",
-        comingSoon: false,
+        comingSoon: true,
     },
     {
         id: 2,
