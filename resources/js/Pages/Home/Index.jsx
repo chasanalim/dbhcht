@@ -9,7 +9,7 @@ import VisibilitySensor from "react-visibility-sensor";
 const trainings = [
     {
         id: 1,
-        title: "Pelatihan Keterampilan untuk Pencari Kerja",
+        title: "Pelatihan Keterampilan untuk Pencari Kerja (closed)",
         description:
             "Pelatihan teknis dan soft skill untuk meningkatkan daya saing pencari kerja.",
         image: "https://i.ibb.co.com/hxsTSvp4/Chat-GPT-Image-Dec-2-2025-09-30-58-AM.jpg",

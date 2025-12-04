@@ -5,7 +5,7 @@ const SelectJenisPelatihan = ({ value, onChange, errors }) => {
     const options = [
         {
             value: "keterampilan",
-            label: "Pelatihan Keterampilan untuk Pencari Kerja",
+            label: "Pelatihan Keterampilan untuk Pencari Kerja (Closed)",
             isDisabled: true,
         },
         {
