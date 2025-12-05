@@ -39,6 +39,13 @@ export default function TrainingCard({ training }) {
                         </span>
                     </div>
                 )}
+                {training.closed && (
+                    <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50">
+                        <span className="badge bg-danger fs-5 px-4 py-2">
+                            Pendaftaran Berakhir
+                        </span>
+                    </div>
+                )}
             </div>
 
             <div
@@ -103,6 +110,7 @@ export default function TrainingCard({ training }) {
                 </div>
 
                 <div className="mt-auto">
+
                     {training.comingSoon ? (
                         <button
                             className="btn w-100"
@@ -118,6 +126,22 @@ export default function TrainingCard({ training }) {
                             disabled
                         >
                             Segera Hadir
+                        </button>
+                    ) : training.closed ? (
+                        <button
+                            className="btn w-100"
+                            style={{
+                                background: "#e9ecef",
+                                color: "#6c757d",
+                                borderRadius: "2rem",
+                                fontWeight: 700,
+                                fontSize: "1.05rem",
+                                border: "none",
+                                cursor: "not-allowed",
+                            }}
+                            disabled
+                        >
+                            Pendaftaran Berakhir
                         </button>
                     ) : (
                         <Link

@@ -59,7 +59,7 @@ export default function BanmodPage({ meta }) {
                     ...prev,
                     name: d.nama,
                     alamat: d.alamat,
-                    phone_number : d.no_hp
+                    phone_number: d.no_hp,
                 }));
                 // setTampilKonfirmasi(true);
             } else {
@@ -569,6 +569,7 @@ export default function BanmodPage({ meta }) {
                                             }
                                             errors={errors.nama_kecamatan}
                                         />
+                                        
                                     </div>
                                     <div className="col-md-6 col-12 mb-3">
                                         <Form.Label className="required">
@@ -1042,7 +1043,7 @@ export default function BanmodPage({ meta }) {
                                             "file_kk"
                                         )}
                                         {renderFileUpload(
-                                            "Surat Keterangan Domisili (jika berbeda KTP)",
+                                            "Surat Keterangan Domisili",
                                             "file_skd"
                                         )}
                                         {renderFileUpload(

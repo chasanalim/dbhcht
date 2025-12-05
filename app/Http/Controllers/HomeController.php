@@ -7,6 +7,7 @@ use App\Models\LampiranFile;
 use Illuminate\Http\Request;
 use App\Models\PelatihanUmkm;
 use App\Models\PelatihanBanmod;
+use App\Models\PelatihanEkonomiKreatif;
 use App\Models\PelatihanKerjas;
 use App\Models\PelatihanPetani;
 use App\Models\PendaftaranBanmod;
@@ -21,6 +22,7 @@ class HomeController extends Controller
         $pencarikerja = PelatihanKerjas::count();
         $umkm = PelatihanUmkm::count();
         $pertanian = PelatihanPetani::count();
+        $ekraf = PelatihanEkonomiKreatif::count();
 
 
         return Inertia::render('Home/Index', [
@@ -31,7 +33,8 @@ class HomeController extends Controller
             'pelatihanbanmod' => $pelatihanbanmod,
             'pencarikerja' => $pencarikerja,
             'umkm' => $umkm,
-            'pertanian' => $pertanian
+            'pertanian' => $pertanian,
+            'ekraf' => $ekraf
         ]);
     }
 
@@ -106,7 +109,8 @@ class HomeController extends Controller
             'Pelatihan Penerima Banmod' => PelatihanBanmod::class,
             'Pelatihan Pencari Kerja' => PelatihanKerjas::class,
             'Pelatihan Pertanian' => PelatihanPetani::class,
-            'Bantuan Modal Usaha' => PendaftaranBanmod::class
+            'Bantuan Modal Usaha' => PendaftaranBanmod::class,
+            'Pelatihan Ekonomi Kreatif' => PelatihanEkonomiKreatif::class,
         ];
 
         foreach ($models as $type => $model) {

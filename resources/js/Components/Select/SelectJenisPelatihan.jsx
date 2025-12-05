@@ -5,13 +5,13 @@ const SelectJenisPelatihan = ({ value, onChange, errors }) => {
     const options = [
         {
             value: "keterampilan",
-            label: "Pelatihan Keterampilan untuk Pencari Kerja",
-            isDisabled: false,
+            label: "Pelatihan Keterampilan untuk Pencari Kerja (Closed)",
+            isDisabled: true,
         },
         {
             value: "penerimabanmod",
-            label: "Pelatihan Keterampilan Penerima Banmod ( 3 - 4 Desember 2025 )",
-            isDisabled: false,
+            label: "Pelatihan Keterampilan Penerima Banmod (Closed)",
+            isDisabled: true,
         },
         {
             value: "ekraf",

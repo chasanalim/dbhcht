@@ -9,7 +9,7 @@ import VisibilitySensor from "react-visibility-sensor";
 const trainings = [
     {
         id: 1,
-        title: "Pelatihan Keterampilan untuk Pencari Kerja",
+        title: "Pelatihan Keterampilan untuk Pencari Kerja (closed)",
         description:
             "Pelatihan teknis dan soft skill untuk meningkatkan daya saing pencari kerja.",
         image: "https://i.ibb.co.com/hxsTSvp4/Chat-GPT-Image-Dec-2-2025-09-30-58-AM.jpg",
@@ -22,6 +22,7 @@ const trainings = [
         location: "Kota Kediri",
         jenis: "keterampilan",
         comingSoon: false,
+        closed: true,
     },
     {
         id: 2,
@@ -34,6 +35,7 @@ const trainings = [
         location: "Kota Kediri",
         jenis: "penerimabanmod",
         comingSoon: false,
+        closed: true,
     },
     {
         id: 3,
@@ -46,6 +48,7 @@ const trainings = [
         location: "Kota Kediri",
         jenis: "ekraf",
         comingSoon: false,
+        closed: false,
     },
     {
         id: 4,
@@ -58,6 +61,7 @@ const trainings = [
         location: "Gedung UMKM Center",
         jenis: "umkm",
         comingSoon: false,
+        closed: false,
     },
     {
         id: 5,
@@ -70,6 +74,7 @@ const trainings = [
         location: "Balai Pertanian",
         jenis: "petani",
         comingSoon: true,
+        closed: false,
     },
 ];
 
