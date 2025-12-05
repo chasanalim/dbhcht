@@ -61,7 +61,7 @@ const trainings = [
         location: "Gedung UMKM Center",
         jenis: "umkm",
         comingSoon: false,
-        closed: false,
+        closed: true,
     },
     {
         id: 5,
