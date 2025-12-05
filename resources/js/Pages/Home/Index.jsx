@@ -35,7 +35,7 @@ const trainings = [
         location: "Kota Kediri",
         jenis: "penerimabanmod",
         comingSoon: false,
-        closed: false,
+        closed: true,
     },
     {
         id: 3,

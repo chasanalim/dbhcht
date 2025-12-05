@@ -18,8 +18,8 @@ class BanmodController extends Controller
 
     public function index()
     {
-         return Inertia::render('404/BelumTersedia', [
-        // return Inertia::render('Banmod/Create', [
+        //  return Inertia::render('404/BelumTersedia', [
+        return Inertia::render('Banmod/Create', [
             'meta' => [
                 'title' => 'Pendaftaran Banmod',
             ],
@@ -202,14 +202,14 @@ class BanmodController extends Controller
             }
 
             // Jika NIK ada di PKL, tetap cek apakah sudah pernah daftar banmod
-            $existingBanmod = PenerimaBanmod::where('nik', $nik)->first();
+            // $existingBanmod = PenerimaBanmod::where('nik', $nik)->first();
 
-            if ($existingBanmod) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'NIK Anda sudah pernah terdaftar sebagai penerima bantuan modal'
-                ], 403);
-            }
+            // if ($existingBanmod) {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'NIK Anda sudah pernah terdaftar sebagai penerima bantuan modal'
+            //     ], 403);
+            // }
 
             return response()->json([
                 'success' => true,

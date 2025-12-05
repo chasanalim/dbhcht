@@ -10,8 +10,8 @@ const SelectJenisPelatihan = ({ value, onChange, errors }) => {
         },
         {
             value: "penerimabanmod",
-            label: "Pelatihan Keterampilan Penerima Banmod ( 3 - 4 Desember 2025 )",
-            isDisabled: false,
+            label: "Pelatihan Keterampilan Penerima Banmod (Closed)",
+            isDisabled: true,
         },
         {
             value: "ekraf",
