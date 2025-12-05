@@ -28,6 +28,7 @@ export default function BanmodPage({ meta }) {
     const [isKomitmenChecked, setIsKomitmenChecked] = useState(false);
     const [nikLength, setNikLength] = useState(0);
     const [kkLength, setKkLength] = useState(0);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // const { auth } = usePage().props;
 
@@ -272,9 +273,16 @@ export default function BanmodPage({ meta }) {
     });
 
     const handleUploadFoto = (e, field_name, preview_name) => {
-        // const choosenFiles = Array.prototype.slice.call(e.target.files);
-        let reader = new FileReader();
         let file = e.target.files[0];
+
+        const MAX_SIZE = 2 * 1024 * 1024;
+        if (file.size > MAX_SIZE) {
+            alert("Ukuran file terlalu besar! Maksimal 2MB. Ukuran file Anda: " + (file.size / (1024 * 1024)).toFixed(2) + "MB");
+            e.target.value = ""; 
+            return;
+        }
+
+        let reader = new FileReader();
 
         reader.onloadend = () => {
             setData((prevState) => ({
@@ -289,16 +297,29 @@ export default function BanmodPage({ meta }) {
 
     const handleUploadFile = (e, field_name, multiple) => {
         const choosenFiles = Array.prototype.slice.call(e.target.files);
+        const MAX_SIZE = 2 * 1024 * 1024; // 2MB
+
+        // Validasi ukuran setiap file
+        const invalidFiles = choosenFiles.filter(file => file.size > MAX_SIZE);
+        if (invalidFiles.length > 0) {
+            alert("Beberapa file terlalu besar! Maksimal 2MB per file.\n\nFile yang berukuran terlalu besar:\n" + 
+                invalidFiles.map(f => `${f.name} (${(f.size / (1024 * 1024)).toFixed(2)}MB)`).join("\n"));
+            e.target.value = ""; // Reset input
+            return;
+        }
+
         setData((prevState) => ({
             ...prevState,
             [field_name]: multiple ? choosenFiles : choosenFiles[0],
         }));
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
+        setIsSubmitting(true);
         post(route("banmod.store"), {
             forceFormData: true,
+            onFinish: () => setIsSubmitting(false),
         });
     };
 
@@ -1036,6 +1057,19 @@ export default function BanmodPage({ meta }) {
                                             "file_pernyataan"
                                         )}
 
+                                        {/* Download link untuk template */}
+                                        <div className="mb-3">
+                                            <a
+                                                href="https://sultan.kedirikota.go.id/storage/files/2AwGvjYESu1vQLSAfgOkGT1KAXE23R7BuMOBjrbj.pdf"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-decoration-none text-danger fw-semibold"
+                                                style={{ fontSize: "12px" }}
+                                            >
+                                                📥 Unduh Template Surat Pernyataan Komitmen (PDF)
+                                            </a>
+                                        </div>
+
                                         {data.kategori != 5 && (
                                             <>
                                                 {renderFileUpload(
@@ -1086,6 +1120,9 @@ export default function BanmodPage({ meta }) {
                                     Pernyataan Komitmen
                                     <div className="underline"></div>
                                 </div>
+
+                                
+
                                 <Form.Check
                                     type="checkbox"
                                     label="Saya menyatakan bahwa data yang saya isi adalah benar dan dapat dipertanggungjawabkan serta menyetujui penggunaannya oleh penyelenggara untuk keperluan verifikasi dan pelaksanaan program sesuai kebijakan privasi yang berlaku."
@@ -1098,18 +1135,31 @@ export default function BanmodPage({ meta }) {
                                 <div className="card-footer d-flex justify-content-center mt-4 gap-2">
                                     <Button
                                         type="submit"
-                                        disabled={!isKomitmenChecked}
+                                        disabled={!isKomitmenChecked || isSubmitting}
                                         className={
-                                            !isKomitmenChecked
+                                            !isKomitmenChecked || isSubmitting
                                                 ? "opacity-50"
                                                 : ""
                                         }
                                     >
-                                        Simpan{" "}
-                                        <i
-                                            className="fa fa-paper-plane ms-1"
-                                            aria-hidden="true"
-                                        ></i>
+                                        {isSubmitting ? (
+                                            <>
+                                                <span
+                                                    className="spinner-border spinner-border-sm me-2"
+                                                    role="status"
+                                                    aria-hidden="true"
+                                                ></span>
+                                                Sedang Menyimpan...
+                                            </>
+                                        ) : (
+                                            <>
+                                                Simpan{" "}
+                                                <i
+                                                    className="fa fa-paper-plane ms-1"
+                                                    aria-hidden="true"
+                                                ></i>
+                                            </>
+                                        )}
                                     </Button>
                                 </div>
                             </>
