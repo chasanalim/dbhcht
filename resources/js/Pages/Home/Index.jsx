@@ -48,7 +48,7 @@ const trainings = [
         location: "Kota Kediri",
         jenis: "ekraf",
         comingSoon: false,
-        closed: false,
+        closed: true,
     },
     {
         id: 4,
