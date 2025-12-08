@@ -15,12 +15,12 @@ const SelectJenisPelatihan = ({ value, onChange, errors }) => {
         },
         {
             value: "ekraf",
-            label: "Pelatihan Ekonomi Kreatif ( 3 - 4 Desember 2025 )",
-            isDisabled: false,
+            label: "Pelatihan Ekonomi Kreatif (Closed)",
+            isDisabled: true,
         },
         {
             value: "umkm",
-            label: "Pelatihan UMKM ( Closed )",
+            label: "Pelatihan UMKM (Closed)",
             isDisabled: true,
         },
         // {
