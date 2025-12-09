@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Barryvdh\DomPDF\PDF;
 use App\Ekports\UmkmExport;
+use App\Ekports\EkrafExport;
 use App\Ekports\KerjaExport;
 use Illuminate\Http\Request;
 use App\Ekports\BanmodExport;
@@ -18,6 +19,7 @@ use App\Models\PendaftaranBanmod;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Models\PelatihanEkonomiKreatif;
 
 class EksportController extends Controller
 {
@@ -554,5 +556,91 @@ class EksportController extends Controller
         ]);
 
         return $pdf->stream('rekap-blacklist.pdf');
+    }
+
+    public function exportEkraf(Request $request)
+    {
+        $query = PelatihanEkonomiKreatif::with(['documentVerifications']);
+
+        if ($request->has('jenis_pelatihan') && $request->jenis_pelatihan !== 'Semua Pelatihan') {
+            $query->where('jenis_pelatihan', $request->jenis_pelatihan);
+        }
+
+        // Original DataTable logic
+        if ($request->has('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+        // Apply verification status filter
+        if ($request->has('verification_status') && $request->verification_status !== 'all') {
+            $status = $request->verification_status;
+            $query = $this->applyVerificationFilterEkraf($query, $status);
+        }
+
+
+        $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor')->values() // Reset keys after sorting
+            ->map(function ($item, $index) {
+                $item->row_num = $index + 1; // Add row number
+                return $item;
+            });
+
+
+        // return response()->json($data);
+        // Handle export type
+        if ($request->ext === 'excel') {
+            return Excel::download(new EkrafExport($data), 'Pelatihan-Ekraf.xlsx');
+        }
+
+        $pdf = app(PDF::class);
+        $pdf->setPaper('a4', 'landscape');
+        $pdf->loadView('exports.ekraf-pdf', [
+            'data' => $data,
+        ]);
+
+        return $pdf->stream('rekap-ekraf.pdf');
+    }
+
+    private function applyVerificationFilterEkraf($query, $status)
+    {
+        switch ($status) {
+            case 'verified':
+                return $query->whereExists(function ($query) {
+                    $query->selectRaw('1')
+                        ->from('verifikasi_dokumen as v')
+                        ->whereColumn('v.pelatihan_id', 'pelatihan_ekonomi_kreatif.id')
+                        ->where('v.pelatihan_type', PelatihanEkonomiKreatif::class)
+                        ->where('v.status', 1)
+                        ->groupBy('v.pelatihan_id')
+                        ->havingRaw('COUNT(*) = 4');
+                });
+
+            case 'rejected':
+                return $query->whereExists(function ($query) {
+                    $query->selectRaw('1')
+                        ->from('verifikasi_dokumen as v')
+                        ->whereColumn('v.pelatihan_id', 'pelatihan_ekonomi_kreatif.id')
+                        ->where('v.pelatihan_type', PelatihanEkonomiKreatif::class)
+                        ->groupBy('v.pelatihan_id')
+                        ->havingRaw('
+                COUNT(*) = 4
+                AND
+                SUM(CASE WHEN v.status = 1 THEN 1 ELSE 0 END) < 4
+            ');
+                });
+
+
+            case 'pending':
+                return $query->where(function ($q) {
+                    $q->whereRaw('(
+                    SELECT COUNT(*)
+                    FROM verifikasi_dokumen
+                    WHERE pelatihan_id = pelatihan_ekonomi_kreatif.id
+                    AND pelatihan_type = ?
+                ) < 4', [PelatihanEkonomiKreatif::class])
+                        ->orWhereDoesntHave('documentVerifications');
+                });
+
+            default:
+                return $query;
+        }
     }
 }

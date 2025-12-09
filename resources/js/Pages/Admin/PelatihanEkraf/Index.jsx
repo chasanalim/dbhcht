@@ -327,9 +327,9 @@ export default function Index({ title, can, flash, pelatihan }) {
     }, [flash, selectedCategory, verificationFilter, selectedStatus]);
 
     const handleExport = (type) => {
-        const url = route("admin.export.pelatihanbanmod", {
+        const url = route("admin.export.ekraf", {
             verification_status: verificationFilter,
-            jenis_pelatihan_industri: selectedCategory,
+            jenis_pelatihan: selectedCategory,
             status: selectedStatus,
             ext: type,
         });

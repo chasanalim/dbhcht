@@ -113,6 +113,8 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
         ->name('export.pelatihanbanmod');
     Route::get('export/pertanian', [EksportController::class, 'exportPertanian'])
         ->name('export.pertanian');
+    Route::get('export/ekraf', [EksportController::class, 'exportEkraf'])
+        ->name('export.ekraf');
     Route::get('export/blacklist', [EksportController::class, 'exportBlacklist'])
         ->name('export.blacklist');
 });
