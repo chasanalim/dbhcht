@@ -12,9 +12,11 @@ use App\Http\Controllers\Controller;
 
 class PelatihanLolosController extends Controller
 {
+    private $perPage = 10;
+
     /**
      * Get all training recipients with status = 1 (lolos)
-     * Combines data from all training types
+     * Combines data from all training types with pagination
      */
     public function index(): JsonResponse
     {
@@ -23,18 +25,11 @@ class PelatihanLolosController extends Controller
                 'success' => true,
                 'message' => 'Data penerima pelatihan dengan status lolos',
                 'data' => [
-                    'pelatihan_umkm' => $this->getPelatihanUmkmLolos(),
-                    'pelatihan_banmod' => $this->getPelatihanBanmodLolos(),
-                    'pelatihan_kerja' => $this->getPelatihanKerjaLolos(),
-                    'pelatihan_ekonomi_kreatif' => $this->getPelatihanEkonomiKreatifLolos(),
-                    'pelatihan_petani' => $this->getPelatihanPetaniLolos(),
-                ],
-                'summary' => [
-                    'total_umkm' => PelatihanUmkm::where('status', 1)->count(),
-                    'total_banmod' => PelatihanBanmod::where('status', 1)->count(),
-                    'total_kerja' => PelatihanKerjas::where('status', 1)->count(),
-                    'total_ekonomi_kreatif' => PelatihanEkonomiKreatif::where('status', 1)->count(),
-                    'total_petani' => PelatihanPetani::where('status', 1)->count(),
+                    'pelatihan_umkm' => $this->getPelatihanUmkmLolos(1),
+                    'pelatihan_banmod' => $this->getPelatihanBanmodLolos(1),
+                    'pelatihan_kerja' => $this->getPelatihanKerjaLolos(1),
+                    'pelatihan_ekonomi_kreatif' => $this->getPelatihanEkonomiKreatifLolos(1),
+                    'pelatihan_petani' => $this->getPelatihanPetaniLolos(1),
                 ],
                 'timestamp' => now(),
             ]);
@@ -49,9 +44,9 @@ class PelatihanLolosController extends Controller
     /**
      * Get UMKM training recipients with status = 1
      */
-    public function getPelatihanUmkmLolos()
+    public function getPelatihanUmkmLolos($page = 1)
     {
-        return PelatihanUmkm::where('status', 1)
+        $query = PelatihanUmkm::where('status', 1)
             ->select([
                 'id',
                 'nik',
@@ -71,20 +66,31 @@ class PelatihanLolosController extends Controller
                 'status',
                 'created_at',
                 'updated_at',
-            ])
-            ->get()
-            ->map(function ($item) {
-                $item['jenis_pelatihan'] = 'UMKM';
-                return $item;
-            });
+            ]);
+
+        $total = $query->count();
+        $data = $query->paginate($this->perPage, ['*'], 'page', $page);
+
+        return [
+            'data' => $data->items(),
+            'total' => $total,
+            'pagination' => [
+                'current_page' => $data->currentPage(),
+                'per_page' => $data->perPage(),
+                'total' => $total,
+                'last_page' => $data->lastPage(),
+                'from' => $data->firstItem(),
+                'to' => $data->lastItem(),
+            ]
+        ];
     }
 
     /**
      * Get Banmod training recipients with status = 1
      */
-    public function getPelatihanBanmodLolos()
+    public function getPelatihanBanmodLolos($page = 1)
     {
-        return PelatihanBanmod::where('status', 1)
+        $query = PelatihanBanmod::where('status', 1)
             ->select([
                 'id',
                 'tahun_penerimaan',
@@ -101,20 +107,31 @@ class PelatihanLolosController extends Controller
                 'status',
                 'created_at',
                 'updated_at',
-            ])
-            ->get()
-            ->map(function ($item) {
-                $item['jenis_pelatihan'] = 'Penerima Bantuan Modal';
-                return $item;
-            });
+            ]);
+
+        $total = $query->count();
+        $data = $query->paginate($this->perPage, ['*'], 'page', $page);
+
+        return [
+            'data' => $data->items(),
+            'total' => $total,
+            'pagination' => [
+                'current_page' => $data->currentPage(),
+                'per_page' => $data->perPage(),
+                'total' => $total,
+                'last_page' => $data->lastPage(),
+                'from' => $data->firstItem(),
+                'to' => $data->lastItem(),
+            ]
+        ];
     }
 
     /**
      * Get Job Seeker training recipients with status = 1
      */
-    public function getPelatihanKerjaLolos()
+    public function getPelatihanKerjaLolos($page = 1)
     {
-        return PelatihanKerjas::where('status', 1)
+        $query = PelatihanKerjas::where('status', 1)
             ->select([
                 'id',
                 'nik',
@@ -126,26 +143,37 @@ class PelatihanLolosController extends Controller
                 'alamat',
                 'nama_kecamatan',
                 'nama_kelurahan',
-                'no_hp' => 'phone_number',
+                'phone_number',
                 'pendidikan',
                 'jenis_pelatihan',
                 'status',
                 'created_at',
                 'updated_at',
-            ])
-            ->get()
-            ->map(function ($item) {
-                $item['jenis_pelatihan'] = 'Pencari Kerja';
-                return $item;
-            });
+            ]);
+
+        $total = $query->count();
+        $data = $query->paginate($this->perPage, ['*'], 'page', $page);
+
+        return [
+            'data' => $data->items(),
+            'total' => $total,
+            'pagination' => [
+                'current_page' => $data->currentPage(),
+                'per_page' => $data->perPage(),
+                'total' => $total,
+                'last_page' => $data->lastPage(),
+                'from' => $data->firstItem(),
+                'to' => $data->lastItem(),
+            ]
+        ];
     }
 
     /**
      * Get Creative Economy training recipients with status = 1 (lolos)
      */
-    public function getPelatihanEkonomiKreatifLolos()
+    public function getPelatihanEkonomiKreatifLolos($page = 1)
     {
-        return PelatihanEkonomiKreatif::where('status', 1)
+        $query = PelatihanEkonomiKreatif::where('status', 1)
             ->select([
                 'id',
                 'kategori_pendaftar',
@@ -165,20 +193,31 @@ class PelatihanLolosController extends Controller
                 'status',
                 'created_at',
                 'updated_at',
-            ])
-            ->get()
-            ->map(function ($item) {
-                $item['jenis_pelatihan'] = 'Ekonomi Kreatif';
-                return $item;
-            });
+            ]);
+
+        $total = $query->count();
+        $data = $query->paginate($this->perPage, ['*'], 'page', $page);
+
+        return [
+            'data' => $data->items(),
+            'total' => $total,
+            'pagination' => [
+                'current_page' => $data->currentPage(),
+                'per_page' => $data->perPage(),
+                'total' => $total,
+                'last_page' => $data->lastPage(),
+                'from' => $data->firstItem(),
+                'to' => $data->lastItem(),
+            ]
+        ];
     }
 
     /**
      * Get Farmer training recipients with status = 1
      */
-    public function getPelatihanPetaniLolos()
+    public function getPelatihanPetaniLolos($page = 1)
     {
-        return PelatihanPetani::where('status', 1)
+        $query = PelatihanPetani::where('status', 1)
             ->select([
                 'id',
                 'nik',
@@ -202,36 +241,56 @@ class PelatihanLolosController extends Controller
                 'status',
                 'created_at',
                 'updated_at',
-            ])
-            ->get()
-            ->map(function ($item) {
-                $item['jenis_pelatihan'] = 'Petani';
-                return $item;
-            });
+            ]);
+
+        $total = $query->count();
+        $data = $query->paginate($this->perPage, ['*'], 'page', $page);
+
+        return [
+            'data' => $data->items(),
+            'total' => $total,
+            'pagination' => [
+                'current_page' => $data->currentPage(),
+                'per_page' => $data->perPage(),
+                'total' => $total,
+                'last_page' => $data->lastPage(),
+                'from' => $data->firstItem(),
+                'to' => $data->lastItem(),
+            ]
+        ];
     }
 
     /**
      * Get specific training type recipients with status = 1
      * @param string $type - Type of training (umkm, banmod, kerja, ekraf, petani)
+     * @param int $page - Page number for pagination
      */
-    public function getByType(string $type): JsonResponse
+    public function getByType(string $type, int $page = 1): JsonResponse
     {
         try {
             $data = match (strtolower($type)) {
-                'umkm' => $this->getPelatihanUmkmLolos(),
-                'banmod' => $this->getPelatihanBanmodLolos(),
-                'kerja' => $this->getPelatihanKerjaLolos(),
-                'ekraf' => $this->getPelatihanEkonomiKreatifLolos(),
-                'petani' => $this->getPelatihanPetaniLolos(),
-                default => []
+                'umkm' => $this->getPelatihanUmkmLolos($page),
+                'banmod' => $this->getPelatihanBanmodLolos($page),
+                'kerja' => $this->getPelatihanKerjaLolos($page),
+                'ekraf' => $this->getPelatihanEkonomiKreatifLolos($page),
+                'petani' => $this->getPelatihanPetaniLolos($page),
+                default => null
             };
+
+            if ($data === null) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Tipe pelatihan '{$type}' tidak ditemukan. Gunakan: umkm, banmod, kerja, ekraf, atau petani",
+                ], 404);
+            }
 
             return response()->json([
                 'success' => true,
                 'message' => "Data penerima pelatihan {$type} dengan status lolos",
                 'type' => $type,
-                'total' => count($data),
-                'data' => $data,
+                'data' => $data['data'],
+                'total' => $data['total'],
+                'pagination' => $data['pagination'],
                 'timestamp' => now(),
             ]);
         } catch (\Exception $e) {
