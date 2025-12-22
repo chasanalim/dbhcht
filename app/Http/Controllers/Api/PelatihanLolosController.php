@@ -155,7 +155,6 @@ class PelatihanLolosController extends Controller
         $data = $query->paginate($this->perPage, ['*'], 'page', $page);
 
         return [
-
             'total' => $total,
             'pagination' => [
                 'current_page' => $data->currentPage(),
@@ -291,9 +290,9 @@ class PelatihanLolosController extends Controller
                 'success' => true,
                 'message' => "Data penerima pelatihan {$type} dengan status lolos",
                 'type' => $type,
-                'data' => $data['data'],
                 'total' => $data['total'],
                 'pagination' => $data['pagination'],
+                'data' => $data['data'],
                 'timestamp' => now(),
             ]);
         } catch (\Exception $e) {
