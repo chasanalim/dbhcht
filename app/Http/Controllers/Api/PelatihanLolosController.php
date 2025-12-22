@@ -72,7 +72,6 @@ class PelatihanLolosController extends Controller
         $data = $query->paginate($this->perPage, ['*'], 'page', $page);
 
         return [
-            'data' => $data->items(),
             'total' => $total,
             'pagination' => [
                 'current_page' => $data->currentPage(),
@@ -81,7 +80,8 @@ class PelatihanLolosController extends Controller
                 'last_page' => $data->lastPage(),
                 'from' => $data->firstItem(),
                 'to' => $data->lastItem(),
-            ]
+            ],
+            'data' => $data->items()
         ];
     }
 
@@ -113,7 +113,6 @@ class PelatihanLolosController extends Controller
         $data = $query->paginate($this->perPage, ['*'], 'page', $page);
 
         return [
-            'data' => $data->items(),
             'total' => $total,
             'pagination' => [
                 'current_page' => $data->currentPage(),
@@ -122,7 +121,8 @@ class PelatihanLolosController extends Controller
                 'last_page' => $data->lastPage(),
                 'from' => $data->firstItem(),
                 'to' => $data->lastItem(),
-            ]
+            ],
+            'data' => $data->items(),
         ];
     }
 
@@ -155,7 +155,7 @@ class PelatihanLolosController extends Controller
         $data = $query->paginate($this->perPage, ['*'], 'page', $page);
 
         return [
-            'data' => $data->items(),
+
             'total' => $total,
             'pagination' => [
                 'current_page' => $data->currentPage(),
@@ -164,7 +164,8 @@ class PelatihanLolosController extends Controller
                 'last_page' => $data->lastPage(),
                 'from' => $data->firstItem(),
                 'to' => $data->lastItem(),
-            ]
+            ],
+            'data' => $data->items()
         ];
     }
 
@@ -199,7 +200,7 @@ class PelatihanLolosController extends Controller
         $data = $query->paginate($this->perPage, ['*'], 'page', $page);
 
         return [
-            'data' => $data->items(),
+
             'total' => $total,
             'pagination' => [
                 'current_page' => $data->currentPage(),
@@ -208,7 +209,8 @@ class PelatihanLolosController extends Controller
                 'last_page' => $data->lastPage(),
                 'from' => $data->firstItem(),
                 'to' => $data->lastItem(),
-            ]
+            ],
+            'data' => $data->items(),
         ];
     }
 
@@ -247,7 +249,7 @@ class PelatihanLolosController extends Controller
         $data = $query->paginate($this->perPage, ['*'], 'page', $page);
 
         return [
-            'data' => $data->items(),
+            
             'total' => $total,
             'pagination' => [
                 'current_page' => $data->currentPage(),
@@ -256,7 +258,8 @@ class PelatihanLolosController extends Controller
                 'last_page' => $data->lastPage(),
                 'from' => $data->firstItem(),
                 'to' => $data->lastItem(),
-            ]
+            ],
+            'data' => $data->items(),
         ];
     }
 
