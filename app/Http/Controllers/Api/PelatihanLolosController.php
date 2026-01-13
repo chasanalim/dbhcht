@@ -134,23 +134,25 @@ class PelatihanLolosController extends Controller
     public function getPelatihanKerjaLolos($page = 1)
     {
         $query = PelatihanKerjas::where('status', 1)
+            ->join('ref_pendidikans', 'pelatihan_kerjas.pendidikan', '=', 'ref_pendidikans.id')
+            ->join('jenis_pelatihan_ket_kerjas', 'pelatihan_kerjas.jenis_pelatihan', '=', 'jenis_pelatihan_ket_kerjas.id')
             ->select([
-                'id',
-                'nik',
-                'no_kk',
-                'nama_lengkap',
-                'tmp_lhr',
-                'tgl_lhr',
-                'jenis_kelamin',
-                'alamat',
-                'nama_kecamatan',
-                'nama_kelurahan',
-                'phone_number',
-                'pendidikan',
-                'jenis_pelatihan',
-                'status',
-                'created_at',
-                'updated_at',
+                'pelatihan_kerjas.id',
+                'pelatihan_kerjas.nik',
+                'pelatihan_kerjas.no_kk',
+                'pelatihan_kerjas.nama_lengkap',
+                'pelatihan_kerjas.tmp_lhr',
+                'pelatihan_kerjas.tgl_lhr',
+                'pelatihan_kerjas.jenis_kelamin',
+                'pelatihan_kerjas.alamat',
+                'pelatihan_kerjas.nama_kecamatan',
+                'pelatihan_kerjas.nama_kelurahan',
+                'pelatihan_kerjas.phone_number',
+                'ref_pendidikans.nama_pendidikan as pendidikan',
+                'jenis_pelatihan_ket_kerjas.nama_jenis_pelatihan as jenis_pelatihan',
+                'pelatihan_kerjas.status',
+                'pelatihan_kerjas.created_at',
+                'pelatihan_kerjas.updated_at',
             ]);
 
         $total = $query->count();
