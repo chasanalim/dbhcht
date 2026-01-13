@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use App\Models\PelatihanUmkm;
 use App\Models\PelatihanBanmod;
 use App\Models\PelatihanKerjas;
@@ -18,18 +19,19 @@ class PelatihanLolosController extends Controller
      * Get all training recipients with status = 1 (lolos)
      * Combines data from all training types with pagination
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         try {
+            $page = $request->query('page', 1);
             return response()->json([
                 'success' => true,
                 'message' => 'Data penerima pelatihan dengan status lolos',
                 'data' => [
-                    'pelatihan_umkm' => $this->getPelatihanUmkmLolos(1),
-                    'pelatihan_banmod' => $this->getPelatihanBanmodLolos(1),
-                    'pelatihan_kerja' => $this->getPelatihanKerjaLolos(1),
-                    'pelatihan_ekonomi_kreatif' => $this->getPelatihanEkonomiKreatifLolos(1),
-                    'pelatihan_petani' => $this->getPelatihanPetaniLolos(1),
+                    'pelatihan_umkm' => $this->getPelatihanUmkmLolos($page),
+                    'pelatihan_banmod' => $this->getPelatihanBanmodLolos($page),
+                    'pelatihan_kerja' => $this->getPelatihanKerjaLolos($page),
+                    'pelatihan_ekonomi_kreatif' => $this->getPelatihanEkonomiKreatifLolos($page),
+                    'pelatihan_petani' => $this->getPelatihanPetaniLolos($page),
                 ],
                 'timestamp' => now(),
             ]);
@@ -265,11 +267,12 @@ class PelatihanLolosController extends Controller
     /**
      * Get specific training type recipients with status = 1
      * @param string $type - Type of training (umkm, banmod, kerja, ekraf, petani)
-     * @param int $page - Page number for pagination
+     * @param Request $request - HTTP request with page parameter
      */
-    public function getByType(string $type, int $page = 1): JsonResponse
+    public function getByType(string $type, Request $request): JsonResponse
     {
         try {
+            $page = $request->query('page', 1);
             $data = match (strtolower($type)) {
                 'umkm' => $this->getPelatihanUmkmLolos($page),
                 'banmod' => $this->getPelatihanBanmodLolos($page),
@@ -294,6 +297,7 @@ class PelatihanLolosController extends Controller
                 'pagination' => $data['pagination'],
                 'data' => $data['data'],
                 'timestamp' => now(),
+                
             ]);
         } catch (\Exception $e) {
             return response()->json([
