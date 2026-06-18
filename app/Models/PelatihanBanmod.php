@@ -17,6 +17,7 @@ class PelatihanBanmod extends Model
         'nik',
         'nama_lengkap',
         'no_kk',
+        'desil',
         'kecamatan_ktp',
         'kelurahan_ktp',
         'rw_ktp',

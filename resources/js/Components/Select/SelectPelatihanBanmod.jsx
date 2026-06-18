@@ -3,7 +3,12 @@ import { Form } from "react-bootstrap";
 import Select from "react-select";
 
 const options = [
-    { value: "Bakery and Cake", label: "Bakery and Cake" },
+    { value: "Penjahit Pemula", label: "Penjahit Pemula" },
+    { value: "Penjahit Naik Kelas", label: "Penjahit Naik Kelas" },
+    { value: "Makanan Tradisional", label: "Makanan Tradisional" },
+    { value: "Digma Kerajinan", label: "Digma Kerajinan" },
+    { value: "Kewirausahaan Kuliner", label: "Kewirausahaan Kuliner" },
+    { value: "Kewirausahaan MUA", label: "Kewirausahaan MUA" },
 ];
 
 export default function SelectJenisPelatihan({

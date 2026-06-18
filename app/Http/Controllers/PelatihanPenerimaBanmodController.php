@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Traits\GeneralTrait;
-use Illuminate\Http\Request;
-use App\Models\PelatihanUmkm;
-use App\Models\PenerimaBanmod;
 use App\Models\PelatihanBanmod;
 use App\Models\PelatihanKerjas;
 use App\Models\PelatihanPetani;
+use App\Models\PelatihanUmkm;
+use App\Models\PenerimaBanmod;
+use App\Traits\GeneralTrait;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
@@ -38,6 +39,7 @@ class PelatihanPenerimaBanmodController extends Controller
                 'nama_lengkap' => 'required|string|max:255',
                 'no_kk' => 'required|string|size:16',
                 'no_hp' => 'required|string|min:10|max:15',
+                'desil' => 'required|string',
 
                 'kecamatan_ktp' => 'required|string',
                 'kelurahan_ktp' => 'required|string',
@@ -219,64 +221,85 @@ class PelatihanPenerimaBanmodController extends Controller
         }
 
         // Cek blacklist dari semua jenis pelatihan
-        $blacklistModels = [
-            PelatihanUmkm::class,
-            PelatihanBanmod::class,
-            PelatihanKerjas::class,
-            PelatihanPetani::class
-        ];
+        // $blacklistModels = [
+        //     PelatihanUmkm::class,
+        //     PelatihanBanmod::class,
+        //     PelatihanKerjas::class,
+        //     PelatihanPetani::class
+        // ];
 
-        foreach ($blacklistModels as $model) {
-            $blacklisted = $model::where('status', 3)
-                ->where('nik', $nik)
-                ->exists();
+        // foreach ($blacklistModels as $model) {
+        //     $blacklisted = $model::where('status', 3)
+        //         ->where('nik', $nik)
+        //         ->exists();
 
-            if ($blacklisted) {
-                return response()->json([
-                    'success' => false,
-                    'blacklisted' => true,
-                    'message' => 'NIK Anda telah dimasukkan blacklist dalam pelatihan karena melanggar ketentuan yang berlaku.'
-                ], 403);
-            }
-        }
+        //     if ($blacklisted) {
+        //         return response()->json([
+        //             'success' => false,
+        //             'blacklisted' => true,
+        //             'message' => 'NIK Anda telah dimasukkan blacklist dalam pelatihan karena melanggar ketentuan yang berlaku.'
+        //         ], 403);
+        //     }
+        // }
 
-        $doneModels = [
-            PelatihanUmkm::class,
-            PelatihanKerjas::class,
-            PelatihanPetani::class
-        ];
+        // $doneModels = [
+        //     PelatihanUmkm::class,
+        //     PelatihanKerjas::class,
+        //     PelatihanPetani::class
+        // ];
 
-        foreach ($doneModels as $model) {
-            $done = $model::where('status', 1)
-                ->where('nik', $nik)
-                ->exists();
+        // foreach ($doneModels as $model) {
+        //     $done = $model::where('status', 1)
+        //         ->where('nik', $nik)
+        //         ->exists();
 
-            if ($done) {
-                $jenisPelatihan = (new $model)->getJenisPelatihan();
-                return response()->json([
-                    'success' => false,
-                    'blacklisted' => true,
-                    'message' => "Mohon maaf, NIK Anda telah menerima pelatihan {$jenisPelatihan} pada periode tahun ini."
-                ], 403);
-            }
-        }
+        //     if ($done) {
+        //         $jenisPelatihan = (new $model)->getJenisPelatihan();
+        //         return response()->json([
+        //             'success' => false,
+        //             'blacklisted' => true,
+        //             'message' => "Mohon maaf, NIK Anda telah menerima pelatihan {$jenisPelatihan} pada periode tahun ini."
+        //         ], 403);
+        //     }
+        // }
 
         // Cek apakah terdaftar sebagai penerima banmod
         $data = PenerimaBanmod::where('nik', $nik)->first();
 
+        $response = Http::get(
+            'https://walidata.kedirikota.go.id/api/dtks/check?nik=' . $nik
+        );
+
+        $dtks = $response->json();
+
+        // Ambil desil jika ada, jika tidak null
+        $desil = $dtks['desil'] ?? '>5';
+
+
+        // return response()->json([
+        //     'success' => true,
+        //     'blacklisted' => false,
+        //     'data' => $data,
+        //     'message' => 'NIK Valid'
+        // ]);
         if ($data) {
+            $data->desil = $desil;
+
             return response()->json([
                 'success' => true,
                 'blacklisted' => false,
                 'data' => $data,
-                'message' => 'NIK ditemukan sebagai penerima bantuan modal usaha.'
+                'message' => 'NIK Valid ✓, Anda terdaftar sebagai penerima Banmod sebelumnya.'
             ]);
         }
 
         return response()->json([
-            'success' => false,
-            'blacklisted' => false,
-            'message' => 'Mohon Maaf, NIK tidak ditemukan sebagai penerima bantuan modal.'
-        ], 404);
+            'success' => true,
+            'data' => [
+                'desil' => $desil,
+                'tahun_dapat_bantuan' => '-',
+            ],
+            'message' => 'NIK tidak ditemukan sebagai penerima Banmod sebelumnya, silahkan mengisikan formulir .'
+        ]);
     }
 }

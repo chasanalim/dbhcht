@@ -5,22 +5,22 @@ const SelectJenisPelatihan = ({ value, onChange, errors }) => {
     const options = [
         {
             value: "keterampilan",
-            label: "Pelatihan Keterampilan untuk Pencari Kerja (Closed)",
+            label: "Pelatihan Keterampilan untuk Pencari Kerja",
             isDisabled: true,
         },
         {
             value: "penerimabanmod",
-            label: "Pelatihan Keterampilan Penerima Banmod (Closed)",
+            label: "Pelatihan Keterampilan Penerima Banmod (22 - 24 Juni 2026) ",
             isDisabled: true,
         },
         {
             value: "ekraf",
-            label: "Pelatihan Ekonomi Kreatif (Closed)",
+            label: "Pelatihan Ekonomi Kreatif ",
             isDisabled: true,
         },
         {
             value: "umkm",
-            label: "Pelatihan UMKM (Closed)",
+            label: "Pelatihan UMKM ",
             isDisabled: true,
         },
         // {
@@ -30,7 +30,7 @@ const SelectJenisPelatihan = ({ value, onChange, errors }) => {
         // },
         {
             value: "petani",
-            label: "Pelatihan Pertanian (Coming Soon)",
+            label: "Pelatihan Pertanian ",
             isDisabled: true,
         },
 

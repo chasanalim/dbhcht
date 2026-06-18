@@ -19,6 +19,7 @@ export default function FormPenerimaBanmod() {
     const [tampilKonfirmasi, setTampilKonfirmasi] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [nikLength, setNikLength] = useState(0);
+    const [dataFound, setDataFound] = useState(false);
 
     // Add processing to useForm destructuring
     const { data, setData, errors, post, reset, processing } = useForm({
@@ -27,6 +28,7 @@ export default function FormPenerimaBanmod() {
         nama_lengkap: "",
         no_kk: "",
         no_hp: "",
+        desil: "",
 
         // Alamat KTP
         kecamatan_ktp: "",
@@ -72,42 +74,70 @@ export default function FormPenerimaBanmod() {
     // Add isKomitmenChecked computed value
     const isKomitmenChecked = data.komitmen;
 
+    // Helper function untuk menentukan apakah field should readonly
+    const isFieldReadOnly = (fieldName) => {
+        if (!dataPenerima) return false;
+        
+        // tahun_penerimaan dan desil always readonly
+        if (['tahun_penerimaan', 'desil'].includes(fieldName)) return true;
+        
+        // no_hp always editable
+        if (fieldName === 'no_hp') return false;
+        
+        // Jika data ditemukan dan tidak dalam edit mode, field readonly (kecuali no_hp)
+        if (dataFound && !editMode) return true;
+        
+        return false;
+    };
+
     // Fungsi untuk mengecek NIK
     const cekNik = async () => {
         setErrorMessage("");
         setNikStatus("");
         try {
             const response = await axios.get(
-                `/pelatihan/banmod/cek-nik/${data.nik}`
+                `/pelatihan/banmod/cek-nik/${data.nik}`,
             );
 
             // Handle success response
             if (response.data.success) {
                 const d = response.data.data;
+                // Deteksi apakah data ditemukan atau tidak
+                // Data ditemukan jika ada property 'nama' atau tahun_dapat_bantuan bukan '-'
+                const found = !!d.nama || d.tahun_dapat_bantuan !== '-';
+                setDataFound(found);
+                
                 setDataPenerima(d);
-                setNikStatus("NIK valid!");
+                setNikStatus(response.data.message || "NIK Valid ✓");
                 setData((prev) => ({
                     ...prev,
-                    nama_lengkap: d.nama,
-                    no_kk: d.kk,
-                    kecamatan_ktp: d.kec,
-                    kelurahan_ktp: d.kel,
-                    rw_ktp: d.rw,
-                    rt_ktp: d.rt,
-                    jalan_ktp: d.alamat,
+                    nama_lengkap: d.nama || "",
+                    no_kk: d.kk || "",
+                    kecamatan_ktp: d.kec || "",
+                    kelurahan_ktp: d.kel || "",
+                    rw_ktp: d.rw || "",
+                    rt_ktp: d.rt || "",
+                    jalan_ktp: d.alamat || "",
+                    desil: d.desil,
+                    tahun_penerimaan: d.tahun_dapat_bantuan,
                 }));
-                setTampilKonfirmasi(true);
+                setTampilKonfirmasi(found); // Hanya tampil konfirmasi jika data ditemukan
             } else {
                 setErrorMessage(response.data.message);
                 setDataPenerima(null);
             }
         } catch (error) {
             // Handle error response
-            if (error.response?.status === 403 || error.response?.status === 400) {
+            if (
+                error.response?.status === 403 ||
+                error.response?.status === 400
+            ) {
                 setErrorMessage(error.response.data.message);
                 setDataPenerima(null);
             } else if (error.response?.status === 404) {
-                setErrorMessage("NIK tidak ditemukan sebagai penerima bantuan modal.");
+                setErrorMessage(
+                    "NIK tidak ditemukan sebagai penerima bantuan modal.",
+                );
                 setDataPenerima(null);
             } else {
                 setErrorMessage("Terjadi kesalahan saat cek NIK.");
@@ -155,10 +185,10 @@ export default function FormPenerimaBanmod() {
         if (file.size > maxFileSize) {
             alert(
                 `Ukuran file terlalu besar: ${formatFileSize(file.size)}\n` +
-                `Maksimal ukuran file: 2MB\n` +
-                `Silakan kompres atau pilih file yang lebih kecil.`
+                    `Maksimal ukuran file: 2MB\n` +
+                    `Silakan kompres atau pilih file yang lebih kecil.`,
             );
-            e.target.value = ''; // Reset input
+            e.target.value = ""; // Reset input
             return;
         }
 
@@ -187,10 +217,10 @@ export default function FormPenerimaBanmod() {
             if (file.size > maxFileSize) {
                 alert(
                     `File "${file.name}" terlalu besar: ${formatFileSize(file.size)}\n` +
-                    `Maksimal ukuran file: 2MB\n` +
-                    `Silakan kompres atau pilih file yang lebih kecil.`
+                        `Maksimal ukuran file: 2MB\n` +
+                        `Silakan kompres atau pilih file yang lebih kecil.`,
                 );
-                e.target.value = '';
+                e.target.value = "";
                 return;
             }
         }
@@ -205,11 +235,48 @@ export default function FormPenerimaBanmod() {
         <div className="alert alert-info mb-4">
             <h6 className="fw-bold">📋 Panduan Upload File:</h6>
             <ul className="mb-0 small">
-                <li>Maksimal ukuran per file: <strong>2MB</strong></li>
-                <li>Jika file terlalu besar, gunakan tools kompresi online:
+                <li>
+                    Maksimal ukuran per file: <strong>2MB</strong>
+                </li>
+                <li>
+                    Jika file terlalu besar, gunakan tools kompresi online:
                     <ul>
-                        <li>Untuk gambar: <a href="https://tinypng.com" target="_blank" rel="noopener noreferrer">TinyPNG</a> atau <a href="https://compressjpeg.com" target="_blank" rel="noopener noreferrer">CompressJPEG</a></li>
-                        <li>Untuk PDF: <a href="https://www.ilovepdf.com/compress_pdf" target="_blank" rel="noopener noreferrer">ILovePDF</a> atau <a href="https://smallpdf.com/compress-pdf" target="_blank" rel="noopener noreferrer">SmallPDF</a></li>
+                        <li>
+                            Untuk gambar:{" "}
+                            <a
+                                href="https://tinypng.com"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                TinyPNG
+                            </a>{" "}
+                            atau{" "}
+                            <a
+                                href="https://compressjpeg.com"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                CompressJPEG
+                            </a>
+                        </li>
+                        <li>
+                            Untuk PDF:{" "}
+                            <a
+                                href="https://www.ilovepdf.com/compress_pdf"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                ILovePDF
+                            </a>{" "}
+                            atau{" "}
+                            <a
+                                href="https://smallpdf.com/compress-pdf"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                SmallPDF
+                            </a>
+                        </li>
                     </ul>
                 </li>
             </ul>
@@ -224,12 +291,12 @@ export default function FormPenerimaBanmod() {
         imagePreviewKey = null,
         downloadLink = null,
         description = "",
-        fileIndex = 1
+        fileIndex = 1,
     ) => {
         return (
             <Form.Group className="mb-4" key={fieldName}>
                 <div className="mb-2 fw-semibold">
-                    {fileIndex}. {label}  {/* ✅ GANTI index dengan fileIndex */}
+                    {fileIndex}. {label} {/* ✅ GANTI index dengan fileIndex */}
                 </div>
                 <Form.Label
                     className="text-primary"
@@ -260,7 +327,10 @@ export default function FormPenerimaBanmod() {
 
                 {/* Deskripsi tambahan */}
                 {description && (
-                    <div className="text-muted mt-1" style={{ fontSize: "12px" }}>
+                    <div
+                        className="text-muted mt-1"
+                        style={{ fontSize: "12px" }}
+                    >
                         {description}
                     </div>
                 )}
@@ -312,7 +382,8 @@ export default function FormPenerimaBanmod() {
                                     className="d-flex justify-content-between align-items-center"
                                 >
                                     <span>
-                                        📄 {file.name} ({formatFileSize(file.size)})
+                                        📄 {file.name} (
+                                        {formatFileSize(file.size)})
                                         <a
                                             href={URL.createObjectURL(file)}
                                             target="_blank"
@@ -336,9 +407,12 @@ export default function FormPenerimaBanmod() {
                         ) : (
                             <ListGroup.Item className="d-flex justify-content-between align-items-center">
                                 <span>
-                                    📄 {data[fieldName].name} ({formatFileSize(data[fieldName].size)})
+                                    📄 {data[fieldName].name} (
+                                    {formatFileSize(data[fieldName].size)})
                                     <a
-                                        href={URL.createObjectURL(data[fieldName])}
+                                        href={URL.createObjectURL(
+                                            data[fieldName],
+                                        )}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="ms-2 text-decoration-underline"
@@ -349,7 +423,9 @@ export default function FormPenerimaBanmod() {
                                 <Button
                                     size="sm"
                                     variant="outline-danger"
-                                    onClick={() => handleRemovePdfFile(fieldName)}
+                                    onClick={() =>
+                                        handleRemovePdfFile(fieldName)
+                                    }
                                 >
                                     Hapus
                                 </Button>
@@ -378,7 +454,7 @@ export default function FormPenerimaBanmod() {
                 },
                 onError: (errors) => {
                     console.error("Form errors:", errors);
-                }
+                },
             });
         } catch (error) {
             console.error("Submit error:", error);
@@ -396,7 +472,7 @@ export default function FormPenerimaBanmod() {
             </h4>
 
             {/* Form Description */}
-            <div className="alert alert-info mb-4">
+            {/* <div className="alert alert-info mb-4">
                 <strong>DESKRIPSI PELATIHAN:</strong>
                 <p className="mb-2">
                     Pelatihan akan dilaksanakan selama 10 hari, meliputi:
@@ -407,25 +483,13 @@ export default function FormPenerimaBanmod() {
                     <li>Peningkatan Mutu Produk (3 hari termasuk praktek)</li>
                     <li>Pendampingan di Lokasi Usaha (5 hari)</li>
                 </ul>
-            </div>
+            </div> */}
 
             {/* Section A: Identitas Pendaftar */}
             <div className="big-text text-muted mb-4">
                 A. Identitas Pendaftar
                 <div className="underline"></div>
             </div>
-
-            {/* Tahun Penerimaan */}
-            <Form.Group className="mb-3">
-                <Form.Label className="required">
-                    Tahun Penerimaan Bantuan
-                </Form.Label>
-                <SelectTahun
-                    value={data.tahun_penerimaan}
-                    onChange={(item) => setData("tahun_penerimaan", item.value)}
-                    errors={errors.tahun_penerimaan}
-                />
-            </Form.Group>
 
             {/* NIK & Pengecekan */}
             <Form.Group className="mb-3">
@@ -445,10 +509,13 @@ export default function FormPenerimaBanmod() {
                                 setNikStatus("");
                                 setErrorMessage("");
                                 setDataPenerima(null);
+                                setDataFound(false);
                             }
                         }}
                         className={`${
-                            nikLength === 16 ? "border-success text-success" : "border-warning"
+                            nikLength === 16
+                                ? "border-success text-success"
+                                : "border-warning"
                         }`}
                         maxLength={16}
                     />
@@ -469,8 +536,8 @@ export default function FormPenerimaBanmod() {
                         nikLength === 16
                             ? "text-success"
                             : nikLength > 0
-                            ? "text-warning"
-                            : "text-muted"
+                              ? "text-warning"
+                              : "text-muted"
                     }`}
                 >
                     {nikLength}/16 digit
@@ -494,11 +561,29 @@ export default function FormPenerimaBanmod() {
                             onChange={(e) =>
                                 setData("nama_lengkap", e.target.value)
                             }
-                            readOnly={!editMode}
+                            readOnly={isFieldReadOnly('nama_lengkap')}
                             isInvalid={!!errors.nama_lengkap}
                         />
                         <Form.Control.Feedback type="invalid">
                             {errors.nama_lengkap}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+                    {/* Tahun Penerimaan */}
+                    <Form.Group className="mb-3">
+                        <Form.Label>
+                            Tahun Penerimaan Bantuan
+                        </Form.Label>
+                        <Form.Control
+                            type="text"
+                            value={data.tahun_penerimaan}
+                            onChange={(e) =>
+                                setData("tahun_penerimaan", e.target.value)
+                            }
+                            readOnly
+                            isInvalid={!!errors.tahun_penerimaan}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errors.tahun_penerimaan}
                         </Form.Control.Feedback>
                     </Form.Group>
 
@@ -507,12 +592,24 @@ export default function FormPenerimaBanmod() {
                         <Form.Control
                             type="text"
                             value={data.no_kk}
-                            readOnly={!editMode}
+                            readOnly={isFieldReadOnly('no_kk')}
                             onChange={(e) => setData("no_kk", e.target.value)}
                             isInvalid={!!errors.no_kk}
                         />
                         <Form.Control.Feedback type="invalid">
                             {errors.no_kk}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label className="required">Desil</Form.Label>
+                        <Form.Control
+                            type="text"
+                            value={data.desil}
+                            readOnly
+                            isInvalid={!!errors.desil}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errors.desil}
                         </Form.Control.Feedback>
                     </Form.Group>
 
@@ -526,7 +623,14 @@ export default function FormPenerimaBanmod() {
                             <Form.Label className="required">
                                 Kecamatan
                             </Form.Label>
-                            {editMode ? (
+                            {isFieldReadOnly('kecamatan_ktp') ? (
+                                <Form.Control
+                                    type="text"
+                                    value={data.kecamatan_ktp}
+                                    readOnly
+                                    isInvalid={!!errors.kecamatan_ktp}
+                                />
+                            ) : (
                                 <SelectKecamatan
                                     value={{
                                         id: data.kode_kecamatan_ktp,
@@ -541,13 +645,6 @@ export default function FormPenerimaBanmod() {
                                     }
                                     errors={errors.kecamatan_ktp}
                                 />
-                            ) : (
-                                <Form.Control
-                                    type="text"
-                                    value={data.kecamatan_ktp}
-                                    readOnly
-                                    isInvalid={!!errors.kecamatan_ktp}
-                                />
                             )}
                             <Form.Control.Feedback type="invalid">
                                 {errors.kecamatan_ktp}
@@ -557,7 +654,14 @@ export default function FormPenerimaBanmod() {
                             <Form.Label className="required">
                                 Kelurahan
                             </Form.Label>
-                            {editMode ? (
+                            {isFieldReadOnly('kelurahan_ktp') ? (
+                                <Form.Control
+                                    type="text"
+                                    value={data.kelurahan_ktp}
+                                    readOnly
+                                    isInvalid={!!errors.kelurahan_ktp}
+                                />
+                            ) : (
                                 <SelectKelurahan
                                     kodeKecamatan={data.kode_kecamatan_ktp}
                                     value={{
@@ -573,13 +677,6 @@ export default function FormPenerimaBanmod() {
                                     }
                                     errors={errors.kelurahan_ktp}
                                 />
-                            ) : (
-                                <Form.Control
-                                    type="text"
-                                    value={data.kelurahan_ktp}
-                                    readOnly
-                                    isInvalid={!!errors.kelurahan_ktp}
-                                />
                             )}
                             <Form.Control.Feedback type="invalid">
                                 {errors.kelurahan_ktp}
@@ -590,7 +687,14 @@ export default function FormPenerimaBanmod() {
                     <Form.Group className="row mb-3">
                         <div className="col-md-6 col-12 mb-3">
                             <Form.Label className="required">RW</Form.Label>
-                            {editMode ? (
+                            {isFieldReadOnly('rw_ktp') ? (
+                                <Form.Control
+                                    type="text"
+                                    value={data.rw_ktp}
+                                    readOnly
+                                    isInvalid={!!errors.rw_ktp}
+                                />
+                            ) : (
                                 <SelectRw
                                     kodeKelurahan={data.kode_kelurahan_ktp}
                                     value={{
@@ -601,17 +705,10 @@ export default function FormPenerimaBanmod() {
                                         setData((prev) => ({
                                             ...prev,
                                             kode_rw_ktp: item.id,
-                                            rw_ktp: item.text,
+                                            rw_ktp: item.rw,
                                         }))
                                     }
                                     errors={errors.rw_ktp}
-                                />
-                            ) : (
-                                <Form.Control
-                                    type="text"
-                                    value={data.rw_ktp}
-                                    readOnly
-                                    isInvalid={!!errors.rw_ktp}
                                 />
                             )}
                             <Form.Control.Feedback type="invalid">
@@ -620,7 +717,14 @@ export default function FormPenerimaBanmod() {
                         </div>
                         <div className="col-md-6 col-12 mb-3">
                             <Form.Label className="required">RT</Form.Label>
-                            {editMode ? (
+                            {isFieldReadOnly('rt_ktp') ? (
+                                <Form.Control
+                                    type="text"
+                                    value={data.rt_ktp}
+                                    readOnly
+                                    isInvalid={!!errors.rt_ktp}
+                                />
+                            ) : (
                                 <SelectRt
                                     kodeKelurahan={data.kode_kelurahan_ktp}
                                     kodeRw={data.rw_ktp}
@@ -632,17 +736,10 @@ export default function FormPenerimaBanmod() {
                                         setData((prev) => ({
                                             ...prev,
                                             kode_rt_ktp: item.id,
-                                            rt_ktp: item.text,
+                                            rt_ktp: item.rt,
                                         }))
                                     }
                                     errors={errors.rt_ktp}
-                                />
-                            ) : (
-                                <Form.Control
-                                    type="text"
-                                    value={data.rt_ktp}
-                                    readOnly
-                                    isInvalid={!!errors.rt_ktp}
                                 />
                             )}
                             <Form.Control.Feedback type="invalid">
@@ -659,7 +756,7 @@ export default function FormPenerimaBanmod() {
                             as="textarea"
                             rows={3}
                             value={data.jalan_ktp}
-                            readOnly={!editMode}
+                            readOnly={isFieldReadOnly('jalan_ktp')}
                             onChange={(e) =>
                                 setData("jalan_ktp", e.target.value)
                             }
@@ -686,7 +783,7 @@ export default function FormPenerimaBanmod() {
                                         setTampilKonfirmasi(false); // Hide confirmation after choice
                                         // Show success message
                                         setNikStatus(
-                                            "Data telah dikonfirmasi ✓"
+                                            "Data telah dikonfirmasi ✓",
                                         );
                                     }}
                                 >
@@ -700,7 +797,7 @@ export default function FormPenerimaBanmod() {
                                         setTampilKonfirmasi(false); // Hide confirmation
                                         // Show edit message
                                         setNikStatus(
-                                            "Silakan edit data yang perlu diubah"
+                                            "Silakan edit data yang perlu diubah",
                                         );
                                     }}
                                 >
@@ -725,7 +822,7 @@ export default function FormPenerimaBanmod() {
                                     onClick={() => {
                                         setEditMode(false);
                                         setNikStatus(
-                                            "Perubahan data telah disimpan ✓"
+                                            "Perubahan data telah disimpan ✓",
                                         );
                                     }}
                                 >
@@ -799,7 +896,7 @@ export default function FormPenerimaBanmod() {
                                     setData((prev) => ({
                                         ...prev,
                                         kode_rw_usaha: item.id,
-                                        rw_usaha: item.text,
+                                        rw_usaha: item.rw,
                                     }))
                                 }
                                 errors={errors.rw_usaha}
@@ -848,14 +945,14 @@ export default function FormPenerimaBanmod() {
 
                     <Form.Group className="mb-3">
                         <Form.Label className="required">
-                            Jenis Pelatihan Industri
+                            Jenis Pelatihan 
                         </Form.Label>
                         <SelectJenisPelatihan
                             value={data.jenis_pelatihan_industri}
                             onChange={(item) =>
                                 setData(
                                     "jenis_pelatihan_industri",
-                                    item?.value || ""
+                                    item?.value || "",
                                 )
                             }
                             errors={errors.jenis_pelatihan_industri}
@@ -937,7 +1034,7 @@ export default function FormPenerimaBanmod() {
                         "imagePreviewKTP",
                         null,
                         "Maksimal 2MB. Format: PNG, JPG, JPEG",
-                        1
+                        1,
                     )}
 
                     {renderFileUpload(
@@ -948,7 +1045,7 @@ export default function FormPenerimaBanmod() {
                         "imagePreviewKK",
                         null,
                         "Maksimal 2MB. Format: PNG, JPG, JPEG",
-                        2
+                        2,
                     )}
 
                     {renderFileUpload(
@@ -959,7 +1056,7 @@ export default function FormPenerimaBanmod() {
                         "imagePreviewPasFoto",
                         null,
                         "Maksimal 2MB. Format: PNG, JPG, JPEG",
-                        3
+                        3,
                     )}
 
                     {renderFileUpload(
@@ -970,7 +1067,7 @@ export default function FormPenerimaBanmod() {
                         null,
                         "https://sultan.kedirikota.go.id/storage/files/jG8YSc7E11f1vCyMtwpA63pzzsqVmiIEPghYd4ZR.pdf",
                         "Maksimal 2MB. Format: PDF",
-                        4
+                        4,
                     )}
 
                     {/* {renderFileUpload(
@@ -992,7 +1089,7 @@ export default function FormPenerimaBanmod() {
                         null,
                         null,
                         "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
-                        5
+                        5,
                     )}
 
                     {/* Komitmen Section */}
@@ -1005,7 +1102,7 @@ export default function FormPenerimaBanmod() {
                         <Form.Check
                             type="checkbox"
                             id="komitmen"
-                            label="Saya menyatakan bahwa data yang saya isi adalah benar dan dapat dipertanggungjawabkan serta menyetujui penggunaannya oleh penyelenggara untuk keperluan verifikasi dan pelaksanaan program sesuai kebijakan privasi yang berlaku."
+                            label="Saya menyatakan bahwa data yang saya isi adalah benar dan dapat dipertanggungjawabkan serta menyetujui penggunaannya oleh penyelenggara untuk keperluan verifikasi dan pelaksanaan program sesuai kebijakan privasi yang berlaku."
                             checked={data.komitmen}
                             onChange={(e) =>
                                 setData("komitmen", e.target.checked)
@@ -1021,8 +1118,14 @@ export default function FormPenerimaBanmod() {
                     <div className="card-footer d-flex justify-content-center mt-4 gap-2">
                         <Button
                             type="submit"
-                            disabled={!isKomitmenChecked || processing || isSubmitting}
-                            className={(!isKomitmenChecked || processing || isSubmitting) ? "opacity-50" : ""}
+                            disabled={
+                                !isKomitmenChecked || processing || isSubmitting
+                            }
+                            className={
+                                !isKomitmenChecked || processing || isSubmitting
+                                    ? "opacity-50"
+                                    : ""
+                            }
                             variant="primary"
                             size="lg"
                         >

@@ -314,6 +314,10 @@ export default function Show({ title, data, type = "PELATIHAN_BANMOD" }) {
                                             <td>: {data.no_kk}</td>
                                         </tr>
                                         <tr>
+                                            <td>Desil</td>
+                                            <td>: {data.desil}</td>
+                                        </tr>
+                                        <tr>
                                             <td>No. HP</td>
                                             <td>: {data.no_hp}</td>
                                         </tr>

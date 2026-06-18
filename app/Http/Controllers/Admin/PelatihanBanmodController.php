@@ -50,7 +50,8 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
     {
         if ($request->wantsJson()) {
 
-            $query = PelatihanBanmod::with(['documentVerifications']);
+            $query = PelatihanBanmod::with(['documentVerifications'])
+                ->whereYear('created_at', now()->year);
 
             if ($request->has('jenis_pelatihan_industri') && $request->jenis_pelatihan_industri !== 'Semua Pelatihan') {
                 $query->where('jenis_pelatihan_industri', $request->jenis_pelatihan_industri);
@@ -151,26 +152,12 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
 
         $pelatihan = [
             ['name' => 'Semua Pelatihan'],
-            ['name' => 'Tenun'],
-            ['name' => 'Batik/Ecoprint'],
-            ['name' => 'Sulam/Bordir'],
-            ['name' => 'Rajut'],
-            ['name' => 'Aksesoris (Gelang, Kalung)'],
-            ['name' => 'Anyaman'],
-            ['name' => 'Kerajinan Lainnya'],
-            ['name' => 'Penjahitan Pakaian'],
-            ['name' => 'Penjahitan Tas, Dompet, dll'],
-            ['name' => 'Bengkel'],
-            ['name' => 'Makanan (Roti)'],
-            ['name' => 'Makanan (Kue Kering)'],
-            ['name' => 'Makanan (Kue Basah)'],
-            ['name' => 'Makanan (Catering)'],
-            ['name' => 'Makanan (Olahan Daging/Ikan)'],
-            ['name' => 'Makanan (Keripik, Krupuk, Rempeyek)'],
-            ['name' => 'Minuman (Jamu)'],
-            ['name' => 'Minuman (Kekinian)'],
-            ['name' => 'Fotokopi/Percetakan'],
-            ['name' => 'Sablon Kaos'],
+            ['name' => 'Penjahit Pemula'],
+            ['name' => 'Penjahit Naik Kelas'],
+            ['name' => 'Makanan Tradisional'],
+            ['name' => 'Digma Kerajinan'],
+            ['name' => 'Kewirausahaan Kuliner'],
+            ['name' => 'Kewirausahaan MUA'],
         ];
 
         return inertia('Admin/PelatihanBanmod/Index', [
@@ -227,6 +214,7 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
                 'nama_lengkap' => $data->nama_lengkap,
                 'no_kk' => $data->no_kk,
                 'no_hp' => $data->no_hp,
+                'desil' => $data->desil,
 
                 // Alamat KTP
                 'alamat_ktp' => [

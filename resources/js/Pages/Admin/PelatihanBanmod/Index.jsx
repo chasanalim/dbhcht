@@ -177,14 +177,16 @@ export default function Index({ title, can, flash, pelatihan }) {
                     searchable: true,
                 },
                 {
+                    data: "desil",
+                    name: "desil",
+                    orderable: true,
+                    className: "text-center",
+                },
+                {
                     data: "nik",
                     name: "nik",
                     orderable: true,
                     searchable: true,
-                },
-                {
-                    data: "no_kk",
-                    name: "no_kk",
                 },
                 {
                     data: "nama_lengkap",
@@ -197,10 +199,12 @@ export default function Index({ title, can, flash, pelatihan }) {
                 {
                     data: "rt_ktp",
                     name: "rt_ktp",
+                    className: "text-center",
                 },
                 {
                     data: "rw_ktp",
                     name: "rw_ktp",
+                    className: "text-center",
                 },
                 {
                     data: "kelurahan_ktp",
@@ -540,7 +544,7 @@ export default function Index({ title, can, flash, pelatihan }) {
                     <div className="col-12">
                         <div className="card">
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
-                                <h5 className="my-2 fw-bold">{title} 2025</h5>
+                                <h5 className="my-2 fw-bold">{title} 2026</h5>
                             </div>
                             <div className="row g-3 p-3">
                                 <div className="col-12 col-md-6 col-xl-3">
@@ -693,8 +697,8 @@ export default function Index({ title, can, flash, pelatihan }) {
                                                 <th>No</th>
                                                 <th>AKSI</th>
                                                 <th>TAHUN PENERIMAAN</th>
+                                                <th>DESIL</th>
                                                 <th>NIK</th>
-                                                <th>NO KK</th>
                                                 <th>NAMA</th>
                                                 <th>ALAMAT</th>
                                                 <th>RT</th>
