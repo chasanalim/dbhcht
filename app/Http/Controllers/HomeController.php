@@ -27,7 +27,7 @@ class HomeController extends Controller
 
         return Inertia::render('Home/Index', [
             'meta' => [
-                'title' => 'Landing Page',
+                'title' => 'Sultan - Sukses Bantuan Modal UsahaBantuan Modal Usaha dan Pelatihan Kota Kediri ',
             ],
             'banmod' => $banmod,
             'pelatihanbanmod' => $pelatihanbanmod,

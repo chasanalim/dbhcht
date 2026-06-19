@@ -1065,7 +1065,7 @@ export default function FormPenerimaBanmod() {
                         ".pdf",
                         false,
                         null,
-                        "https://sultan.kedirikota.go.id/storage/files/jG8YSc7E11f1vCyMtwpA63pzzsqVmiIEPghYd4ZR.pdf",
+                        "https://sultan.kedirikota.go.id/storage/files/ea73rWhs22Facatiw2jBVXbjU79DJp5JJEgnVvQL.pdf",
                         "Maksimal 2MB. Format: PDF",
                         4,
                     )}
@@ -1153,7 +1153,7 @@ export default function FormPenerimaBanmod() {
             )}
 
             {/* Error Message for Invalid NIK */}
-            {!dataPenerima && errorMessage && (
+            {/* {!dataPenerima && errorMessage && (
                 <div className="alert alert-warning mt-3">
                     NIK YANG ANDA MASUKKAN SALAH ATAU ANDA BUKAN PENERIMA
                     BANTUAN MODAL. INFO LEBIH LANJUT KIRIM WA KE{" "}
@@ -1161,7 +1161,7 @@ export default function FormPenerimaBanmod() {
                     <br />
                     <strong>NIK_NAMA_KELURAHAN_KELUHAN/PERTANYAAN</strong>
                 </div>
-            )}
+            )} */}
         </Form>
     );
 }
