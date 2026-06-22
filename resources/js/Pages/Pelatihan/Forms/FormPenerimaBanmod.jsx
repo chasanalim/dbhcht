@@ -601,7 +601,7 @@ export default function FormPenerimaBanmod() {
                         </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group className="mb-3">
-                        <Form.Label className="required">Desil</Form.Label>
+                        <Form.Label className="required">Desil *(Data Terintregasi dengan Walidata Dinas Sosial)</Form.Label>
                         <Form.Control
                             type="text"
                             value={data.desil}
