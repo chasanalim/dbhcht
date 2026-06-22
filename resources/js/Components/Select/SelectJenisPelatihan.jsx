@@ -1,5 +1,6 @@
 import React from "react";
 import Select from "react-select";
+import { TRUE } from "sass";
 
 const SelectJenisPelatihan = ({ value, onChange, errors }) => {
     const options = [
@@ -11,7 +12,7 @@ const SelectJenisPelatihan = ({ value, onChange, errors }) => {
         {
             value: "penerimabanmod",
             label: "Pelatihan Keterampilan Penerima Banmod (22 - 24 Juni 2026) ",
-            isDisabled: false,
+            isDisabled: true,
         },
         {
             value: "ekraf",

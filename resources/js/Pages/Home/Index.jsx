@@ -6,6 +6,7 @@ import TrainingCarousel from "@/Components/TrainingCarousel";
 import CountUp from "react-countup";
 import VisibilitySensor from "react-visibility-sensor";
 import WelcomePopup from "@/Components/WelcomePupUp";
+import { TRUE } from "sass";
 
 const trainings = [
     {
@@ -35,7 +36,7 @@ const trainings = [
         duration: "-",
         location: "Disperdagin Kota Kediri",
         jenis: "penerimabanmod",
-        comingSoon: false,
+        comingSoon: true,
         closed: false,
     },
     {
