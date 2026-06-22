@@ -35,7 +35,7 @@ const trainings = [
         duration: "-",
         location: "Disperdagin Kota Kediri",
         jenis: "penerimabanmod",
-        comingSoon: true,
+        comingSoon: false,
         closed: false,
     },
     {

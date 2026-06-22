@@ -11,7 +11,7 @@ const SelectJenisPelatihan = ({ value, onChange, errors }) => {
         {
             value: "penerimabanmod",
             label: "Pelatihan Keterampilan Penerima Banmod (22 - 24 Juni 2026) ",
-            isDisabled: true,
+            isDisabled: false,
         },
         {
             value: "ekraf",
