@@ -2,8 +2,9 @@ import React from "react";
 import Select from "react-select";
 import { TRUE } from "sass";
 
-const SelectJenisPelatihan = ({ value, onChange, errors }) => {
-    const options = [
+const SelectJenisPelatihan = ({ value, onChange, errors, options = [] }) => {
+    // Fallback ke hardcoded options jika prop options kosong
+    const defaultOptions = [
         {
             value: "keterampilan",
             label: "Pelatihan Keterampilan untuk Pencari Kerja",
@@ -24,18 +25,14 @@ const SelectJenisPelatihan = ({ value, onChange, errors }) => {
             label: "Pelatihan UMKM ",
             isDisabled: true,
         },
-        // {
-        //     value: "penyuluh",
-        //     label: "Pelatihan Penyuluh (Coming Soon)",
-        //     isDisabled: true,
-        // },
         {
             value: "petani",
             label: "Pelatihan Pertanian ",
             isDisabled: true,
         },
-
     ];
+
+    const selectOptions = options.length > 0 ? options : defaultOptions;
 
     const customStyles = {
         option: (provided, state) => ({
@@ -77,9 +74,9 @@ const SelectJenisPelatihan = ({ value, onChange, errors }) => {
         <div className="mb-3">
             <Select
                 name="jenis_pelatihan"
-                options={options}
+                options={selectOptions}
                 value={
-                    options.find((option) => option.value === value) || null
+                    selectOptions.find((option) => option.value === value) || null
                 }
                 onChange={(item) => {
                     if (!item.isDisabled) {

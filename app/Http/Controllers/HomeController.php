@@ -7,6 +7,7 @@ use App\Models\LampiranFile;
 use Illuminate\Http\Request;
 use App\Models\PelatihanUmkm;
 use App\Models\PelatihanBanmod;
+use App\Models\TrainingType;
 use App\Models\PelatihanEkonomiKreatif;
 use App\Models\PelatihanKerjas;
 use App\Models\PelatihanPetani;
@@ -24,6 +25,32 @@ class HomeController extends Controller
         $pertanian = PelatihanPetani::count();
         $ekraf = PelatihanEkonomiKreatif::count();
 
+        // Ambil data training types dari database
+        $trainings = TrainingType::orderBy('order')->get()->map(function($training) {
+            return [
+                'id' => $training->id,
+                'title' => $training->title,
+                'description' => $training->description,
+                'image' => $training->image,
+                'requirements' => is_string($training->requirements) 
+                    ? json_decode($training->requirements, true) 
+                    : $training->requirements,
+                'duration' => $training->duration,
+                'location' => $training->location,
+                'jenis' => $training->value,
+                'comingSoon' => $training->coming_soon,
+                'closed' => $training->closed,
+            ];
+        });
+
+        // Ambil options untuk select
+        $trainingOptions = TrainingType::orderBy('order')->get()->map(function($training) {
+            return [
+                'value' => $training->value,
+                'label' => $training->label,
+                'isDisabled' => $training->is_disabled,
+            ];
+        });
 
         return Inertia::render('Home/Index', [
             'meta' => [
@@ -34,7 +61,9 @@ class HomeController extends Controller
             'pencarikerja' => $pencarikerja,
             'umkm' => $umkm,
             'pertanian' => $pertanian,
-            'ekraf' => $ekraf
+            'ekraf' => $ekraf,
+            'trainings' => $trainings,
+            'trainingOptions' => $trainingOptions,
         ]);
     }
 
@@ -75,12 +104,22 @@ class HomeController extends Controller
 
     public function pelatihan(Request $request)
     {
+        // Ambil options untuk select
+        $trainingOptions = TrainingType::orderBy('order')->get()->map(function($training) {
+            return [
+                'value' => $training->value,
+                'label' => $training->label,
+                'isDisabled' => $training->is_disabled,
+            ];
+        });
+
         // return Inertia::render('404/BelumTersedia', [
         return Inertia::render('Pelatihan/FormPelatihan', [
             'meta' => [
                 'title' => 'Form Pendaftaran Pelatihan',
             ],
-            'jenis' => $request->query('jenis')
+            'jenis' => $request->query('jenis'),
+            'trainingOptions' => $trainingOptions
         ]);
     }
 

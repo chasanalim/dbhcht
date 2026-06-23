@@ -3,6 +3,19 @@ import { Clock, MapPin, BadgeCheck } from "lucide-react";
 import { Link } from "@inertiajs/react";
 
 export default function TrainingCard({ training }) {
+    // Parse requirements jika masih string JSON
+    const requirements = (() => {
+        if (!training.requirements) return [];
+        if (typeof training.requirements === "string") {
+            try {
+                return JSON.parse(training.requirements);
+            } catch (e) {
+                return [];
+            }
+        }
+        return Array.isArray(training.requirements) ? training.requirements : [];
+    })();
+
     return (
         <div
             className={`card border-0 h-100 ${
@@ -72,13 +85,13 @@ export default function TrainingCard({ training }) {
                     {training.description}
                 </p>
 
-                {training.requirements?.length > 0 && (
+                {requirements?.length > 0 && (
                     <div className="mb-2">
                         <h6 className="text-muted small fw-semibold mb-1">
                             Persyaratan:
                         </h6>
                         <ul className="list-unstyled mb-2">
-                            {training.requirements.map((req, i) => (
+                            {requirements.map((req, i) => (
                                 <li
                                     key={i}
                                     className="d-flex align-items-center small text-primary"
@@ -110,7 +123,6 @@ export default function TrainingCard({ training }) {
                 </div>
 
                 <div className="mt-auto">
-
                     {training.comingSoon ? (
                         <button
                             className="btn w-100"

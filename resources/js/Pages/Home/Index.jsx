@@ -8,77 +8,6 @@ import VisibilitySensor from "react-visibility-sensor";
 import WelcomePopup from "@/Components/WelcomePupUp";
 import { TRUE } from "sass";
 
-const trainings = [
-    {
-        id: 1,
-        title: "Pelatihan Keterampilan untuk Pencari Kerja",
-        description:
-            "Pelatihan teknis dan soft skill untuk meningkatkan daya saing pencari kerja.",
-        image: "https://i.ibb.co.com/hxsTSvp4/Chat-GPT-Image-Dec-2-2025-09-30-58-AM.jpg",
-        requirements: [
-            { label: "Usia Min", value: "18 tahun" },
-            { label: "Usia Maks", value: "45 tahun" },
-            // { label: "Status", value: "-" },
-        ],
-        duration: "-",
-        location: "Kota Kediri",
-        jenis: "keterampilan",
-        comingSoon: false,
-        closed: true,
-    },
-    {
-        id: 2,
-        title: "Pelatihan Keterampilan untuk Penerima Banmod",
-        description:
-            "Pelatihan lanjutan bagi penerima bantuan modal untuk mengembangkan usahanya.",
-        image: "https://i.ibb.co.com/m54dMcfy/Chat-GPT-Image-Dec-2-2025-09-28-04-AM.jpg",
-        requirements: [{ label: "Penerima", value: "Program Banmod DBHCHT" }],
-        duration: "-",
-        location: "Disperdagin Kota Kediri",
-        jenis: "penerimabanmod",
-        comingSoon: true,
-        closed: false,
-    },
-    {
-        id: 3,
-        title: "Pelatihan Ekonomi Kreatif",
-        description: "Peningkatan kapasitas pelaku Ekonomi Kreatif.",
-        image: "https://i.ibb.co.com/93zWWdfg/Chat-GPT-Image-Dec-2-2025-09-21-16-AM.jpg",
-        requirements: [{ label: "Status", value: "Pelaku Ekonomi Kreatif" }],
-        duration: "-",
-        location: "Kota Kediri",
-        jenis: "ekraf",
-        comingSoon: false,
-        closed: true,
-    },
-    {
-        id: 4,
-        title: "Pelatihan UMKM",
-        description:
-            "Peningkatan kapasitas pelaku UMKM dalam peningkatan kualitas produk.",
-        image: "https://i.ibb.co.com/v6zWczyX/Chat-GPT-Image-Dec-3-2025-10-45-27-AM.jpg",
-        requirements: [{ label: "Status", value: "Pelaku UMKM aktif" }],
-        duration: "-",
-        location: "Gedung UMKM Center",
-        jenis: "umkm",
-        comingSoon: false,
-        closed: true,
-    },
-    {
-        id: 5,
-        title: "Pelatihan Pertanian",
-        description:
-            "Teknik pertanian modern dan pemanfaatan alat pertanian terbaru.",
-        image: "https://dokar.kendalkab.go.id/upload/berita/1688524912IMG_20230704_163951.jpg",
-        requirements: [{ label: "Pekerjaan", value: "Petani aktif" }],
-        duration: "-",
-        location: "Balai Pertanian",
-        jenis: "petani",
-        comingSoon: false,
-        closed: true,
-    },
-];
-
 export default function Index({
     meta,
     banmod,
@@ -87,6 +16,8 @@ export default function Index({
     umkm,
     pertanian,
     ekraf,
+    trainings,
+    trainingOptions,
 }) {
     const [visibleStats, setVisibleStats] = useState({});
 

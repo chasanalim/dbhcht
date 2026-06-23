@@ -15,7 +15,7 @@ import FormEkonomiKreatif from "./Forms/FormEkonomiKreatif";
 import { useState } from "react";
 
 export default function FormPelatihan() {
-    const { meta, jenis } = usePage().props;
+    const { meta, jenis, trainingOptions } = usePage().props;
     const [jenisPelatihan, setJenisPelatihan] = useState(jenis || "");
 
     // const [jenisPelatihan, setJenisPelatihan] = useState("");
@@ -42,6 +42,7 @@ export default function FormPelatihan() {
                                         setJenisPelatihan(item.value)
                                     }
                                     errors={null}
+                                    options={trainingOptions || []}
                                 />
                             </div>
                         </Form.Group>
