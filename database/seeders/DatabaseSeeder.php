@@ -7,7 +7,7 @@ use App\Models\LamaUsaha;
 use App\Models\PenerimaBanmod;
 use App\Models\SkorPelatihanBanmod;
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Database\Seeders\TahunPelaksanaanSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserRoleSeeder::class,
             UserSeeder::class,
+            TrainingTypeSeeder::class,
             KategoriBanmodSeeder::class,
             KlasterUsahaSeeder::class,
             LamaUsahaSeeder::class,
@@ -52,6 +53,7 @@ class DatabaseSeeder extends Seeder
             RefPendidikanSeeder::class,
             MasterPKLSeeder::class,
             SkorPelatihanEkonomiKreatifSeeder::class,
+            TahunPelaksanaanSeeder::class,
         ]);
     }
 }

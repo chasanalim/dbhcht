@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\FiltersBySelectedYear;
+use App\Models\SkorPelatihanEkonomiKreatif;
+use App\Traits\HasVerifikasiDokumen;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Traits\HasVerifikasiDokumen;
-use App\Models\SkorPelatihanEkonomiKreatif;
 
 class PelatihanEkonomiKreatif extends Model
 {
-    use HasFactory, HasVerifikasiDokumen;
+    use HasFactory, HasVerifikasiDokumen,FiltersBySelectedYear;
 
     protected $table = 'pelatihan_ekonomi_kreatif';
 

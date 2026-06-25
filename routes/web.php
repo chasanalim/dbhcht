@@ -1,49 +1,50 @@
 <?php
 
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\BrutoController;
-use App\Http\Controllers\BanmodController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\LamaUsahaController;
-use App\Http\Controllers\PendidikanController;
-use App\Http\Controllers\KlasterUsahaController;
-use App\Http\Controllers\Admin\EksportController;
-use App\Http\Controllers\SkorPelatihanController;
-use App\Http\Controllers\KategoriBanmodController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\MasterPKLController;
-use App\Http\Controllers\Admin\UserAdminController;
-use App\Http\Controllers\JumlahLegalitasController;
 use App\Http\Controllers\Admin\AutoRejectController;
-use App\Http\Controllers\Admin\PrivilegesController;
-use App\Http\Controllers\RegPelatihanUmkmController;
-use App\Http\Controllers\JumlahTenagaKerjaController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EksportController;
 use App\Http\Controllers\Admin\LampiranFileController;
-use App\Http\Controllers\RegPelatihanPetaniController;
-use App\Http\Controllers\RegPelatihanEkonomiKreatifController;
-use App\Http\Controllers\TanggunganKeluargaController;
-use App\Http\Controllers\Admin\PelatihanUMKMController;
-use App\Http\Controllers\SkorPelatihanBanmodController;
-use App\Http\Controllers\StatusTempatTinggalController;
+use App\Http\Controllers\Admin\MasterKelompokTaniController;
+use App\Http\Controllers\Admin\MasterPKLController;
+use App\Http\Controllers\Admin\PelatihanBanmodController;
 use App\Http\Controllers\Admin\PelatihanEkrafController;
 use App\Http\Controllers\Admin\PelatihanKerjaController;
-use App\Http\Controllers\Admin\PelatihanBanmodController;
-use App\Http\Controllers\JenisPelatihanKetKerjaController;
-use App\Http\Controllers\JumlahTeknologiDigitalController;
-use App\Http\Controllers\PenyerapanTenagaMiskinController;
-use App\Http\Controllers\RegSkorPelatihanPetaniController;
-use App\Http\Controllers\Admin\PendaftaranBanmodController;
-use App\Http\Controllers\Admin\VerifikasiDokumenController;
-use App\Http\Controllers\AlasanPelatihanKetKerjaController;
-use App\Http\Controllers\PelatihanPenerimaBanmodController;
-use App\Http\Controllers\Admin\MasterKelompokTaniController;
 use App\Http\Controllers\Admin\PelatihanPertanianController;
+use App\Http\Controllers\Admin\PelatihanUMKMController;
+use App\Http\Controllers\Admin\PendaftaranBanmodController;
 use App\Http\Controllers\Admin\PenerimaBanmodLamaController;
 use App\Http\Controllers\Admin\PenerimaPelatihanBanmodController;
+use App\Http\Controllers\Admin\PrivilegesController;
+use App\Http\Controllers\Admin\TipePelatihanController;
+use App\Http\Controllers\Admin\UserAdminController;
+use App\Http\Controllers\Admin\VerifikasiDokumenController;
+use App\Http\Controllers\AlasanPelatihanKetKerjaController;
+use App\Http\Controllers\BanmodController;
+use App\Http\Controllers\BrutoController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\JenisPelatihanKetKerjaController;
+use App\Http\Controllers\JumlahLegalitasController;
+use App\Http\Controllers\JumlahTeknologiDigitalController;
+use App\Http\Controllers\JumlahTenagaKerjaController;
+use App\Http\Controllers\KategoriBanmodController;
+use App\Http\Controllers\KlasterUsahaController;
+use App\Http\Controllers\LamaUsahaController;
+use App\Http\Controllers\PelatihanPenerimaBanmodController;
+use App\Http\Controllers\PendidikanController;
+use App\Http\Controllers\PenyerapanTenagaMiskinController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RegPelatihanEkonomiKreatifController;
 use App\Http\Controllers\RegPelatihanKeterampilanKerjaController;
+use App\Http\Controllers\RegPelatihanPetaniController;
+use App\Http\Controllers\RegPelatihanUmkmController;
+use App\Http\Controllers\RegSkorPelatihanPetaniController;
+use App\Http\Controllers\SkorPelatihanBanmodController;
+use App\Http\Controllers\SkorPelatihanController;
+use App\Http\Controllers\StatusTempatTinggalController;
+use App\Http\Controllers\TanggunganKeluargaController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/download', [HomeController::class, 'file'])->name('download');
@@ -53,7 +54,7 @@ Route::get('/pelatihan/form', [HomeController::class, 'pelatihan'])->name('pelat
 Route::get('cek-nik/{nik}', [HomeController::class, 'cekNIK'])->name('cek-nik');
 Route::get('cek-status', [HomeController::class, 'cekStatus'])->name('cek-status');
 
-Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
+Route::prefix('admin')->as('admin.')->middleware(['auth', 'year.filter'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -93,6 +94,7 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::resource('banmodwirausaha', PenerimaPelatihanBanmodController::class);
     Route::resource('kelompoktani', MasterKelompokTaniController::class);
     Route::resource('pkl', MasterPKLController::class);
+    Route::resource('pelatihan', TipePelatihanController::class);
 
     Route::resource('privileges', PrivilegesController::class);
     Route::post('admin/verify-document', [VerifikasiDokumenController::class, 'verify'])

@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\FiltersBySelectedYear;
 use App\Traits\HasVerifikasiDokumen;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class PelatihanPetani extends Model
 {
     use HasFactory,
-        HasVerifikasiDokumen;
+        HasVerifikasiDokumen,FiltersBySelectedYear;
 
     protected $table = 'pelatihan_petanis';
 

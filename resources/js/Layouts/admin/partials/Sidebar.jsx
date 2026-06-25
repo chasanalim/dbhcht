@@ -1,13 +1,27 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import { Link, usePage } from "@inertiajs/react";
+import { Link, usePage, router } from "@inertiajs/react";
 import NavLink from "@/Components/NavLink";
 import { Nav, NavDropdown } from "react-bootstrap";
 
 export default function Sidebar() {
-    const { auth, userProfileImage, can } = usePage().props;
+    const { auth, userProfileImage, can, available_years, selected_year } =
+        usePage().props;
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const handleYearChange = (e) => {
+        const year = e.target.value;
 
+        const params = Object.fromEntries(
+            new URLSearchParams(window.location.search),
+        );
+
+        params.year = year;
+
+        router.get(window.location.pathname, params, {
+            preserveScroll: true,
+            replace: true,
+        });
+    };
     // Add null checks
     if (!auth?.user) {
         return null;
@@ -54,6 +68,28 @@ export default function Sidebar() {
                         </span>
                     </div>
                     </div> */}
+                <hr className="text-white border-2" />
+                <div className="px-3 mb-3">
+                    <label className="form-label text-white-50 small mb-1">
+                        Tahun Pelaksanaan
+                    </label>
+
+                    <select
+                        className="form-select form-select-sm"
+                        value={String(
+                            selected_year ?? new Date().getFullYear(),
+                        )}
+                        onChange={handleYearChange}
+                    >
+                        {(available_years ?? [new Date().getFullYear()]).map(
+                            (year) => (
+                                <option key={year} value={year}>
+                                    {year}
+                                </option>
+                            ),
+                        )}
+                    </select>
+                </div>
                 <hr className="text-white border-2" />
                 <div className="sidebarnav">
                     <ul className="list-unstyled text-white mt-3">
@@ -114,14 +150,14 @@ export default function Sidebar() {
                                                 as={Link}
                                                 method="get"
                                                 href={route(
-                                                    "admin.banmod.index"
+                                                    "admin.banmod.index",
                                                 )}
                                                 active={route().current(
-                                                    "admin.banmod.index"
+                                                    "admin.banmod.index",
                                                 )}
                                                 className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                                     route().current(
-                                                        "admin.banmod.index"
+                                                        "admin.banmod.index",
                                                     )
                                                         ? "active"
                                                         : ""
@@ -133,14 +169,14 @@ export default function Sidebar() {
                                                 as={Link}
                                                 method="get"
                                                 href={route(
-                                                    "admin.banmod.buruh-pabrik-rokok"
+                                                    "admin.banmod.buruh-pabrik-rokok",
                                                 )}
                                                 active={route().current(
-                                                    "admin.banmod.buruh-pabrik-rokok"
+                                                    "admin.banmod.buruh-pabrik-rokok",
                                                 )}
                                                 className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                                     route().current(
-                                                        "admin.banmod.buruh-pabrik-rokok"
+                                                        "admin.banmod.buruh-pabrik-rokok",
                                                     )
                                                         ? "active"
                                                         : ""
@@ -152,14 +188,14 @@ export default function Sidebar() {
                                                 as={Link}
                                                 method="get"
                                                 href={route(
-                                                    "admin.banmod.buruh-tani-tembakau"
+                                                    "admin.banmod.buruh-tani-tembakau",
                                                 )}
                                                 active={route().current(
-                                                    "admin.banmod.buruh-tani-tembakau"
+                                                    "admin.banmod.buruh-tani-tembakau",
                                                 )}
                                                 className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                                     route().current(
-                                                        "admin.banmod.buruh-tani-tembakau"
+                                                        "admin.banmod.buruh-tani-tembakau",
                                                     )
                                                         ? "active"
                                                         : ""
@@ -171,14 +207,14 @@ export default function Sidebar() {
                                                 as={Link}
                                                 method="get"
                                                 href={route(
-                                                    "admin.banmod.pekerja-pabrik-rokok"
+                                                    "admin.banmod.pekerja-pabrik-rokok",
                                                 )}
                                                 active={route().current(
-                                                    "admin.banmod.pekerja-pabrik-rokok"
+                                                    "admin.banmod.pekerja-pabrik-rokok",
                                                 )}
                                                 className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                                     route().current(
-                                                        "admin.banmod.pekerja-pabrik-rokok"
+                                                        "admin.banmod.pekerja-pabrik-rokok",
                                                     )
                                                         ? "active"
                                                         : ""
@@ -193,11 +229,11 @@ export default function Sidebar() {
                                                 method="get"
                                                 href={route("admin.banmod.ikm")}
                                                 active={route().current(
-                                                    "admin.banmod.ikm"
+                                                    "admin.banmod.ikm",
                                                 )}
                                                 className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                                     route().current(
-                                                        "admin.banmod.ikm"
+                                                        "admin.banmod.ikm",
                                                     )
                                                         ? "active"
                                                         : ""
@@ -211,14 +247,14 @@ export default function Sidebar() {
                                                 as={Link}
                                                 method="get"
                                                 href={route(
-                                                    "admin.banmod.masyarakat-miskin"
+                                                    "admin.banmod.masyarakat-miskin",
                                                 )}
                                                 active={route().current(
-                                                    "admin.banmod.masyarakat-miskin"
+                                                    "admin.banmod.masyarakat-miskin",
                                                 )}
                                                 className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                                     route().current(
-                                                        "admin.banmod.masyarakat-miskin"
+                                                        "admin.banmod.masyarakat-miskin",
                                                     )
                                                         ? "active"
                                                         : ""
@@ -229,15 +265,13 @@ export default function Sidebar() {
                                             <NavDropdown.Item
                                                 as={Link}
                                                 method="get"
-                                                href={route(
-                                                    "admin.banmod.pkl"
-                                                )}
+                                                href={route("admin.banmod.pkl")}
                                                 active={route().current(
-                                                    "admin.banmod.pkl"
+                                                    "admin.banmod.pkl",
                                                 )}
                                                 className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                                     route().current(
-                                                        "admin.banmod.pkl"
+                                                        "admin.banmod.pkl",
                                                     )
                                                         ? "active"
                                                         : ""
@@ -262,7 +296,7 @@ export default function Sidebar() {
                                     <NavLink
                                         href={route("admin.umkm.index")}
                                         active={route().current(
-                                            "admin.umkm.index"
+                                            "admin.umkm.index",
                                         )}
                                         className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                             route().current("admin.umkm.index")
@@ -289,7 +323,7 @@ export default function Sidebar() {
                                     <NavLink
                                         href={route("admin.kerja.index")}
                                         active={route().current(
-                                            "admin.kerja.index"
+                                            "admin.kerja.index",
                                         )}
                                         className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                             route().current("admin.kerja.index")
@@ -316,14 +350,14 @@ export default function Sidebar() {
                                 <li>
                                     <NavLink
                                         href={route(
-                                            "admin.pelatihan-banmod.index"
+                                            "admin.pelatihan-banmod.index",
                                         )}
                                         active={route().current(
-                                            "admin.pelatihan-banmod.index"
+                                            "admin.pelatihan-banmod.index",
                                         )}
                                         className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                             route().current(
-                                                "admin.pelatihan-banmod.index"
+                                                "admin.pelatihan-banmod.index",
                                             )
                                                 ? "active"
                                                 : ""
@@ -347,16 +381,12 @@ export default function Sidebar() {
 
                                 <li>
                                     <NavLink
-                                        href={route(
-                                            "admin.ekraf.index"
-                                        )}
+                                        href={route("admin.ekraf.index")}
                                         active={route().current(
-                                            "admin.ekraf.index"
+                                            "admin.ekraf.index",
                                         )}
                                         className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
-                                            route().current(
-                                                "admin.ekraf.index"
-                                            )
+                                            route().current("admin.ekraf.index")
                                                 ? "active"
                                                 : ""
                                         }`}
@@ -380,11 +410,11 @@ export default function Sidebar() {
                                     <NavLink
                                         href={route("admin.pertanian.index")}
                                         active={route().current(
-                                            "admin.pertanian.index"
+                                            "admin.pertanian.index",
                                         )}
                                         className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                             route().current(
-                                                "admin.pertanian.index"
+                                                "admin.pertanian.index",
                                             )
                                                 ? "active"
                                                 : ""
@@ -407,9 +437,7 @@ export default function Sidebar() {
                             <li>
                                 <NavLink
                                     href={route("admin.blacklist")}
-                                    active={route().current(
-                                        "admin.blacklist"
-                                    )}
+                                    active={route().current("admin.blacklist")}
                                     className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                         route().current("admin.blacklist")
                                             ? "active"
@@ -440,11 +468,11 @@ export default function Sidebar() {
                                     <NavLink
                                         href={route("admin.downloads.index")}
                                         active={route().current(
-                                            "admin.downloads.index"
+                                            "admin.downloads.index",
                                         )}
                                         className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                             route().current(
-                                                "admin.downloads.index"
+                                                "admin.downloads.index",
                                             )
                                                 ? "active"
                                                 : ""
@@ -456,6 +484,27 @@ export default function Sidebar() {
                                         </span>
                                     </NavLink>
                                 </li>
+                            
+                                <li>
+                                    <NavLink
+                                        href={route("admin.pelatihan.index")}
+                                        active={route().current(
+                                            "admin.pelatihan.index",
+                                        )}
+                                        className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                            route().current(
+                                                "admin.pelatihan.index",
+                                            )
+                                                ? "active"
+                                                : ""
+                                        }`}
+                                    >
+                                        <i className="bi bi-list-ol fs-5"></i>
+                                        <span className="text-white mt-1 ms-2">
+                                            Tipe Pelatihan
+                                        </span>
+                                    </NavLink>
+                                </li>
                             </>
                         )}
                         {can.viewMasterBanmod && (
@@ -464,11 +513,11 @@ export default function Sidebar() {
                                     <NavLink
                                         href={route("admin.banmodlama.index")}
                                         active={route().current(
-                                            "admin.banmodlama.index"
+                                            "admin.banmodlama.index",
                                         )}
                                         className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                             route().current(
-                                                "admin.banmodlama.index"
+                                                "admin.banmodlama.index",
                                             )
                                                 ? "active"
                                                 : ""
@@ -484,14 +533,14 @@ export default function Sidebar() {
                                 <li>
                                     <NavLink
                                         href={route(
-                                            "admin.banmodwirausaha.index"
+                                            "admin.banmodwirausaha.index",
                                         )}
                                         active={route().current(
-                                            "admin.banmodwirausaha.index"
+                                            "admin.banmodwirausaha.index",
                                         )}
                                         className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                             route().current(
-                                                "admin.banmodwirausaha.index"
+                                                "admin.banmodwirausaha.index",
                                             )
                                                 ? "active"
                                                 : ""
@@ -505,16 +554,12 @@ export default function Sidebar() {
                                 </li>
                                 <li>
                                     <NavLink
-                                        href={route(
-                                            "admin.pkl.index"
-                                        )}
+                                        href={route("admin.pkl.index")}
                                         active={route().current(
-                                            "admin.pkl.index"
+                                            "admin.pkl.index",
                                         )}
                                         className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
-                                            route().current(
-                                                "admin.pkl.index"
-                                            )
+                                            route().current("admin.pkl.index")
                                                 ? "active"
                                                 : ""
                                         }`}
@@ -534,11 +579,11 @@ export default function Sidebar() {
                                     <NavLink
                                         href={route("admin.kelompoktani.index")}
                                         active={route().current(
-                                            "admin.kelompoktani.index"
+                                            "admin.kelompoktani.index",
                                         )}
                                         className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                             route().current(
-                                                "admin.kelompoktani.index"
+                                                "admin.kelompoktani.index",
                                             )
                                                 ? "active"
                                                 : ""
@@ -565,7 +610,7 @@ export default function Sidebar() {
                                     <NavLink
                                         href={route("admin.user.index")}
                                         active={route().current(
-                                            "admin.user.index"
+                                            "admin.user.index",
                                         )}
                                         className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                             route().current("admin.user.index")
@@ -583,11 +628,11 @@ export default function Sidebar() {
                                     <NavLink
                                         href={route("admin.privileges.index")}
                                         active={route().current(
-                                            "admin.privileges.index"
+                                            "admin.privileges.index",
                                         )}
                                         className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                             route().current(
-                                                "admin.privileges.index"
+                                                "admin.privileges.index",
                                             )
                                                 ? "active"
                                                 : ""

@@ -50,8 +50,7 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
     {
         if ($request->wantsJson()) {
 
-            $query = PelatihanBanmod::with(['documentVerifications'])
-                ->whereYear('created_at', now()->year);
+            $query = PelatihanBanmod::with(['documentVerifications']);
 
             if ($request->has('jenis_pelatihan_industri') && $request->jenis_pelatihan_industri !== 'Semua Pelatihan') {
                 $query->where('jenis_pelatihan_industri', $request->jenis_pelatihan_industri);

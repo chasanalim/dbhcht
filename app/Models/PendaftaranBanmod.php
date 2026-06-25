@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\FiltersBySelectedYear;
 use App\Traits\HasVerifikasiDokumen;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PendaftaranBanmod extends Model
 {
-    use HasFactory, HasVerifikasiDokumen;
+    use HasFactory, HasVerifikasiDokumen,FiltersBySelectedYear;
 
     protected $fillable = [
         "nik",

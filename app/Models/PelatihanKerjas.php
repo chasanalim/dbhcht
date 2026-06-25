@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\FiltersBySelectedYear;
 use App\Traits\HasVerifikasiDokumen;
 use Illuminate\Database\Eloquent\Model;
 
 class PelatihanKerjas extends Model
 {
-    use HasVerifikasiDokumen;
+    use HasVerifikasiDokumen,FiltersBySelectedYear;
 
     protected $fillable = [
         "nik",
