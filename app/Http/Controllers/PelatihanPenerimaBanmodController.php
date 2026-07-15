@@ -220,49 +220,6 @@ class PelatihanPenerimaBanmodController extends Controller
             ], 400);
         }
 
-        // Cek blacklist dari semua jenis pelatihan
-        // $blacklistModels = [
-        //     PelatihanUmkm::class,
-        //     PelatihanBanmod::class,
-        //     PelatihanKerjas::class,
-        //     PelatihanPetani::class
-        // ];
-
-        // foreach ($blacklistModels as $model) {
-        //     $blacklisted = $model::where('status', 3)
-        //         ->where('nik', $nik)
-        //         ->exists();
-
-        //     if ($blacklisted) {
-        //         return response()->json([
-        //             'success' => false,
-        //             'blacklisted' => true,
-        //             'message' => 'NIK Anda telah dimasukkan blacklist dalam pelatihan karena melanggar ketentuan yang berlaku.'
-        //         ], 403);
-        //     }
-        // }
-
-        // $doneModels = [
-        //     PelatihanUmkm::class,
-        //     PelatihanKerjas::class,
-        //     PelatihanPetani::class
-        // ];
-
-        // foreach ($doneModels as $model) {
-        //     $done = $model::where('status', 1)
-        //         ->where('nik', $nik)
-        //         ->exists();
-
-        //     if ($done) {
-        //         $jenisPelatihan = (new $model)->getJenisPelatihan();
-        //         return response()->json([
-        //             'success' => false,
-        //             'blacklisted' => true,
-        //             'message' => "Mohon maaf, NIK Anda telah menerima pelatihan {$jenisPelatihan} pada periode tahun ini."
-        //         ], 403);
-        //     }
-        // }
-
         // Cek apakah terdaftar sebagai penerima banmod
         $data = PenerimaBanmod::where('nik', $nik)->first();
 
@@ -275,13 +232,6 @@ class PelatihanPenerimaBanmodController extends Controller
         // Ambil desil jika ada, jika tidak null
         $desil = $dtks['desil'] ?? '>5';
 
-
-        // return response()->json([
-        //     'success' => true,
-        //     'blacklisted' => false,
-        //     'data' => $data,
-        //     'message' => 'NIK Valid'
-        // ]);
         if ($data) {
             $data->desil = $desil;
 

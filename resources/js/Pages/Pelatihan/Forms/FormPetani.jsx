@@ -56,6 +56,7 @@ export default function FormPetani() {
         file_ktp: null,
         file_pengukuhan_penyuluh_swadaya: null,
         file_rekomendasi_kelompok: null,
+        file_legalitas_kelompok: null,
         kategori: "",
         jenis_pelatihan_petani: "",
         alasan: "",
@@ -68,7 +69,7 @@ export default function FormPetani() {
         setNikStatus("");
         try {
             const response = await axios.get(
-                `/pelatihan/petani/cek-nik/${data.nik}`
+                `/pelatihan/petani/cek-nik/${data.nik}`,
             );
 
             // Handle success response
@@ -94,7 +95,7 @@ export default function FormPetani() {
                 setDataPenerima(null);
             } else if (error.response?.status === 404) {
                 setErrorMessage(
-                    "NIK tidak ditemukan sebagai anggota kelompok tani."
+                    "NIK tidak ditemukan sebagai anggota kelompok tani.",
                 );
                 setDataPenerima(null);
             } else {
@@ -159,7 +160,8 @@ export default function FormPetani() {
         description = "",
         multiple = false,
         imagePreviewKey = null,
-        downloadLink = null
+        downloadLink = null,
+        required = true,
     ) => {
         const indexLabel = `${fileIndex++}.`;
 
@@ -167,10 +169,26 @@ export default function FormPetani() {
             <Form.Group className="mb-4" key={fieldName}>
                 <div className="mb-2 fw-semibold">
                     {indexLabel} {label}
+                    {required ? (
+                        <span
+                            className="text-danger ms-1"
+                            style={{ fontSize: "11px" }}
+                        >
+                            (Wajib)
+                        </span>
+                    ) : (
+                        <span
+                            className="text-muted ms-1"
+                            style={{ fontSize: "11px" }}
+                        >
+                            (Opsional)
+                        </span>
+                    )}
                 </div>
                 <Form.Label
                     className="text-primary"
                     style={{ fontSize: "11px" }}
+
                 >
                     Format:{" "}
                     {accept === ".pdf" ? "*.pdf" : "*.png, *.jpg, *.jpeg"}
@@ -274,7 +292,7 @@ export default function FormPetani() {
                                     📄 {data[fieldName][0]?.name}
                                     <a
                                         href={URL.createObjectURL(
-                                            data[fieldName][0]
+                                            data[fieldName][0],
                                         )}
                                         target="_blank"
                                         rel="noopener noreferrer"
@@ -353,8 +371,8 @@ export default function FormPetani() {
                         nikLength === 16
                             ? "text-success"
                             : nikLength > 0
-                            ? "text-warning"
-                            : "text-muted"
+                              ? "text-warning"
+                              : "text-muted"
                     }`}
                 >
                     {nikLength}/16 digit
@@ -473,7 +491,7 @@ export default function FormPetani() {
                                     setData((prevState) => ({
                                         ...prevState,
                                         kode_rw: item.id,
-                                        nama_rw: item.text,
+                                        nama_rw: item.rw,
                                     }))
                                 }
                                 errors={errors.nama_rw}
@@ -488,7 +506,7 @@ export default function FormPetani() {
                                     setData((prevState) => ({
                                         ...prevState,
                                         kode_rt: item.id,
-                                        nama_rt: item.text,
+                                        nama_rt: item.rt,
                                     }))
                                 }
                                 errors={errors.nama_rt}
@@ -533,7 +551,7 @@ export default function FormPetani() {
                                     onChange={(e) =>
                                         setData(
                                             "alamat_domisili",
-                                            e.target.value
+                                            e.target.value,
                                         )
                                     }
                                     as="textarea"
@@ -758,7 +776,7 @@ export default function FormPetani() {
                                     setData((prevState) => ({
                                         ...prevState,
                                         kode_rw_kelompok: item.id,
-                                        nama_rw_kelompok: item.text,
+                                        nama_rw_kelompok: item.rw,
                                     }))
                                 }
                                 errors={errors.nama_rw_kelompok}
@@ -773,7 +791,7 @@ export default function FormPetani() {
                                     setData((prevState) => ({
                                         ...prevState,
                                         kode_rt_kelompok: item.id,
-                                        nama_rt_kelompok: item.text,
+                                        nama_rt_kelompok: item.rt,
                                     }))
                                 }
                                 errors={errors.nama_rt_kelompok}
@@ -811,7 +829,7 @@ export default function FormPetani() {
                         ".png,.jpg,.jpeg",
                         "",
                         false,
-                        "imagePreviewFotoProfil"
+                        "imagePreviewFotoProfil",
                     )}
                     {renderFileUpload(
                         "Foto KK",
@@ -819,7 +837,7 @@ export default function FormPetani() {
                         ".png,.jpg,.jpeg",
                         "",
                         false,
-                        "imagePreviewKK"
+                        "imagePreviewKK",
                     )}
                     {renderFileUpload(
                         "Foto KTP",
@@ -827,7 +845,7 @@ export default function FormPetani() {
                         ".png,.jpg,.jpeg",
                         "",
                         false,
-                        "imagePreviewKTP"
+                        "imagePreviewKTP",
                     )}
                     {renderFileUpload(
                         "Surat Pernyataan Tidak Mengikuti Pelatihan Lain",
@@ -836,7 +854,7 @@ export default function FormPetani() {
                         "*Keterangan: -",
                         false,
                         null,
-                        "/storage/files/fkRcQoD10CYOoZigoqOZihIHMgNgeLrXzKMbEzBX.pdf"
+                        "/storage/files/fkRcQoD10CYOoZigoqOZihIHMgNgeLrXzKMbEzBX.pdf",
                     )}
                     {renderFileUpload(
                         "Surat Pernyataan Kesanggupan Mengikuti Pelatihan Secara Penuh",
@@ -845,22 +863,15 @@ export default function FormPetani() {
                         "*Keterangan: -",
                         false,
                         null,
-                        "/storage/files/Lu5raNNSz02Si6sn4rptJBb77kyllhsAyNRkQzzj.pdf"
+                        "/storage/files/Lu5raNNSz02Si6sn4rptJBb77kyllhsAyNRkQzzj.pdf",
                     )}
-                    {renderFileUpload(
+                    {/* {renderFileUpload(
                         "SK Pengukuhan Penyuluh Swadaya",
                         "file_pengukuhan_penyuluh_swadaya",
                         ".pdf",
                         "*Keterangan: Khusus Untuk Calon Peserta Peningkatan Kapasitas Kelembagaan Penyuluhan Pertanian",
                         false
-                    )}
-                    {renderFileUpload(
-                        "Surat Legalitas Kelompok",
-                        "file_legalitas_kelompok",
-                        ".pdf",
-                        "*Keterangan: -",
-                        false
-                    )}
+                    )} */}
                     {renderFileUpload(
                         "Rekomendasi Kelompok",
                         "file_rekomendasi_kelompok",
@@ -868,7 +879,17 @@ export default function FormPetani() {
                         "*Keterangan: Khusus Untuk Calon Peserta Pengembangan Kapasitas Kelembagaan Petani",
                         false,
                         null,
-                        "/storage/files/28wqa5tO8fkjN9ajwlBY3dCWBO2utzzrxJi8zb2p.pdf"
+                        "/storage/files/28wqa5tO8fkjN9ajwlBY3dCWBO2utzzrxJi8zb2p.pdf",
+                    )}
+                    {renderFileUpload(
+                        "Surat Legalitas Kelompok",
+                        "file_legalitas_kelompok",
+                        ".pdf",
+                        "*Keterangan: -",
+                        false,
+                        null,
+                        null,
+                        false,
                     )}
 
                     <div className="big-text text-muted mb-4">

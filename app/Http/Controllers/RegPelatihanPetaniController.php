@@ -78,8 +78,8 @@ class RegPelatihanPetaniController extends Controller
             'file_ktp' => 'required|file|mimes:jpg,jpeg,png|max:2048',
             'file_pernyataan_tidak_mengikuti_pelatihan_lain' => 'required|file|mimes:pdf|max:2048',
             'file_pernyataan_kesanggupan_ikut_pelatihan' => 'required|file|mimes:pdf|max:2048',
-            'file_pengukuhan_penyuluh_swadaya' => 'required|file|mimes:pdf|max:2048',
-            'file_legalitas_kelompok' => 'required|file|mimes:pdf|max:2048',
+            'file_pengukuhan_penyuluh_swadaya' => 'nullable|file|mimes:pdf|max:2048',
+            'file_legalitas_kelompok' => 'nullable|file|mimes:pdf|max:2048',
             'file_rekomendasi_kelompok' => 'required|file|mimes:pdf|max:2048',
         ]);
 
@@ -96,10 +96,14 @@ class RegPelatihanPetaniController extends Controller
             $this->saveAndCompressPdf($request->file('file_pernyataan_kesanggupan_ikut_pelatihan'), 'petani/file_pernyataan_kesanggupan_ikut_pelatihan');
 
         $data['file_pengukuhan_penyuluh_swadaya'] =
-            $this->saveAndCompressPdf($request->file('file_pengukuhan_penyuluh_swadaya'), 'petani/file_pengukuhan_penyuluh_swadaya');
+            $request->hasFile('file_pengukuhan_penyuluh_swadaya')
+                ? $this->saveAndCompressPdf($request->file('file_pengukuhan_penyuluh_swadaya'), 'petani/file_pengukuhan_penyuluh_swadaya')
+                : null;
 
         $data['file_legalitas_kelompok'] =
-            $this->saveAndCompressPdf($request->file('file_legalitas_kelompok'), 'petani/file_legalitas_kelompok');
+            $request->hasFile('file_legalitas_kelompok')
+                ? $this->saveAndCompressPdf($request->file('file_legalitas_kelompok'), 'petani/file_legalitas_kelompok')
+                : null;
 
         $data['file_rekomendasi_kelompok'] =
             $this->saveAndCompressPdf($request->file('file_rekomendasi_kelompok'), 'petani/file_rekomendasi_kelompok');
