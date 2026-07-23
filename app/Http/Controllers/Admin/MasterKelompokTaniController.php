@@ -22,7 +22,7 @@ class MasterKelompokTaniController extends Controller
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     return [
-                        'edit_url' => route('admin.kelompoktani.edit', $row->id),
+                        'edit_url' => route('admin.kelompoktani.edit', $row->id)
                     ];
                 })
                 ->make(true);
@@ -42,7 +42,12 @@ class MasterKelompokTaniController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Admin/MasterKelompokTani/Create', [
+            'title' => 'Tambah Master Kelompok Tani',
+            'kelompokTani' => null,
+            'action' => route('admin.kelompoktani.store'),
+            'method' => 'POST',
+        ]);
     }
 
     /**
@@ -50,7 +55,35 @@ class MasterKelompokTaniController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'kecamatan' => ['nullable', 'string', 'max:255'],
+            'kelurahan' => ['nullable', 'string', 'max:255'],
+            'nama_kelompok' => ['required', 'string', 'max:255'],
+            'no_register' => ['nullable', 'string', 'max:255'],
+            'nik_ketua' => ['nullable', 'numeric', 'digits:16', 'unique:kelompok_tanis,nik_ketua'],
+            'nama_ketua' => ['nullable', 'string', 'max:255'],
+            'nik_anggota' => ['required', 'numeric', 'digits:16', 'unique:kelompok_tanis,nik_anggota'],
+            'nama_anggota' => ['required', 'string', 'max:255'],
+            'tahun_berdiri' => ['nullable', 'digits:4', 'integer', 'min:1900', 'max:' . date('Y')],
+            'tingkat_kemampuan' => ['nullable', 'string', 'max:255'],
+            'keterangan' => ['nullable', 'string'],
+        ]);
+
+        KelompokTani::create([
+            'kecamatan' => $request->kecamatan,
+            'kelurahan' => $request->kelurahan,
+            'nama_kelompok' => $request->nama_kelompok,
+            'no_register' => $request->no_register,
+            'nik_ketua' => $request->nik_ketua,
+            'nama_ketua' => $request->nama_ketua,
+            'nik_anggota' => $request->nik_anggota,
+            'nama_anggota' => $request->nama_anggota,
+            'tahun_berdiri' => $request->tahun_berdiri,
+            'tingkat_kemampuan' => $request->tingkat_kemampuan,
+            'keterangan' => $request->keterangan,
+        ]);
+
+        return redirect()->route('admin.kelompoktani.index')->with('message', 'Master Kelompok Tani berhasil ditambahkan');
     }
 
     /**
@@ -81,18 +114,37 @@ class MasterKelompokTaniController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $kelompokTani = KelompokTani::find($id);
+        $kelompokTani = KelompokTani::findOrFail($id);
 
         $request->validate([
+            'kecamatan' => ['nullable', 'string', 'max:255'],
+            'kelurahan' => ['nullable', 'string', 'max:255'],
+            'nama_kelompok' => ['required', 'string', 'max:255'],
+            'no_register' => ['nullable', 'string', 'max:255'],
+            'nik_ketua' => ['nullable', 'numeric', 'digits:16', 'unique:kelompok_tanis,nik_ketua,' . $id],
+            'nama_ketua' => ['nullable', 'string', 'max:255'],
             'nik_anggota' => ['required', 'numeric', 'digits:16', 'unique:kelompok_tanis,nik_anggota,' . $id],
+            'nama_anggota' => ['required', 'string', 'max:255'],
+            'tahun_berdiri' => ['nullable', 'digits:4', 'integer', 'min:1900', 'max:' . date('Y')],
+            'tingkat_kemampuan' => ['nullable', 'string', 'max:255'],
+            'keterangan' => ['nullable', 'string'],
         ]);
 
         $kelompokTani->update([
+            'kecamatan' => $request->kecamatan,
+            'kelurahan' => $request->kelurahan,
+            'nama_kelompok' => $request->nama_kelompok,
+            'no_register' => $request->no_register,
+            'nik_ketua' => $request->nik_ketua,
+            'nama_ketua' => $request->nama_ketua,
             'nik_anggota' => $request->nik_anggota,
-
+            'nama_anggota' => $request->nama_anggota,
+            'tahun_berdiri' => $request->tahun_berdiri,
+            'tingkat_kemampuan' => $request->tingkat_kemampuan,
+            'keterangan' => $request->keterangan,
         ]);
 
-        return redirect()->route('admin.kelompoktani.index')->with('message', 'Master Kelompok Tani updated successfully');
+        return redirect()->route('admin.kelompoktani.index')->with('message', 'Master Kelompok Tani berhasil diperbarui');
     }
 
     /**
@@ -100,6 +152,9 @@ class MasterKelompokTaniController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $kelompokTani = KelompokTani::findOrFail($id);
+        $kelompokTani->delete();
+
+        return redirect()->route('admin.kelompoktani.index')->with('message', 'Master Kelompok Tani berhasil dihapus');
     }
 }

@@ -46,7 +46,8 @@ export default function Index({ title, flash }) {
                     data-bs-toggle="tooltip"
                     title="Edit Data">
                     <i class="bi bi-pencil-square"></i>
-                </button>`;
+                </button>
+                `;
                         return buttons;
                     },
                 },
@@ -152,6 +153,18 @@ export default function Index({ title, flash }) {
         };
     }, [flash]);
 
+    const deleteItem = (url) => {
+        if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
+            router.delete(url, {
+                onSuccess: () => {
+                    $(tableRef.current).DataTable().ajax.reload();
+                },
+            });
+        }
+    };
+
+    window.deleteItem = deleteItem;
+
     return (
         <AdminLayout>
             <Head title={title} />
@@ -162,6 +175,13 @@ export default function Index({ title, flash }) {
                         <div className="card">
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
                                 <h5 className="mb-2 fw-bold">{title}</h5>
+                                <Link
+                                    href={route("admin.kelompoktani.create")}
+                                    className="btn btn-primary btn-sm"
+                                >
+                                    <i className="bi bi-plus-circle me-1"></i>
+                                    Tambah Data
+                                </Link>
                             </div>
                             <div className="card-body">
                                 <div className="table-responsive">
