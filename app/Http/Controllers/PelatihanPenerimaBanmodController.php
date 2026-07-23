@@ -224,7 +224,7 @@ class PelatihanPenerimaBanmodController extends Controller
         $data = PenerimaBanmod::where('nik', $nik)->first();
 
         $response = Http::get(
-            'http://10.100.200.3/api/dtks/check?nik=' . $nik
+            'https://api-splp.layanan.go.id:443/t/kedirikota.go.id/walidata/0.1/api/dtks/check?nik=' . $nik
         );
 
         $dtks = $response->json();
