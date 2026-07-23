@@ -1023,18 +1023,12 @@ export default function FormPetani() {
             {!dataPenerima && errorMessage && (
                 <div className="alert alert-warning mt-3">
                     NIK YANG ANDA MASUKKAN SALAH ATAU ANDA BUKAN ANGGOTA
-                    KELOMPOK TANI. INFO LEBIH LANJUT KIRIM WA KE <br />
-                    <strong>NOMOR CP :</strong>
+                    KELOMPOK TANI<br />
+                   
                     <br />
-                    Koord. Kec. Pesantren : <strong>081331324303</strong>
+                    <strong>INFO LEBIH LANJUT TERKAIT PELATIHAN BISA LANGSUNG DATANG KE KANTOR DINAS KETAHANAN PANGAN DAN PERTANIAN</strong>
                     <br />
-                    Koord. Kec. Kota : <strong>081556967250</strong>
-                    <br />
-                    Koord. Kec. Mojoroto : <strong>082341703033</strong>
-                    <br />
-                    <strong>DENGAN FORMAT :</strong>
-                    <br />
-                    <strong>NIK_NAMA_KELURAHAN_KELUHAN/PERTANYAAN</strong>
+                  
                 </div>
             )}
         </Form>

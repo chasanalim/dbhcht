@@ -224,10 +224,11 @@ class PelatihanPenerimaBanmodController extends Controller
         $data = PenerimaBanmod::where('nik', $nik)->first();
 
         $response = Http::get(
-            'https://walidata.kedirikota.go.id/api/dtks/check?nik=' . $nik
+            'http://10.100.200.3/api/dtks/check?nik=' . $nik
         );
 
         $dtks = $response->json();
+     
 
         // Ambil desil jika ada, jika tidak null
         $desil = $dtks['desil'] ?? '>5';
