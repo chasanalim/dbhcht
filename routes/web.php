@@ -78,6 +78,8 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'year.filter'])->group
     Route::resource('pertanian', PelatihanPertanianController::class);
     Route::post('pertanian/{id}/status', [PelatihanPertanianController::class, 'updateStatus'])
         ->name('pertanian.status');
+    Route::post('pertanian/{id}/replace-document', [PelatihanPertanianController::class, 'replaceDocument'])
+        ->name('pertanian.replace-document');
     Route::resource('pelatihan-banmod', PelatihanBanmodController::class);
     Route::post('pelatihan-banmod/{id}/status', [PelatihanBanmodController::class, 'updateStatus'])
         ->name('pelatihan-banmod.status');
@@ -103,6 +105,8 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'year.filter'])->group
         ->name('tolak-document');
     Route::delete('admin/reset-document-verification', [VerifikasiDokumenController::class, 'resetDocumentVerification'])
     ->name('reset-document-verification');
+    Route::post('admin/replace-document', [VerifikasiDokumenController::class, 'replaceDocument'])
+        ->name('replace-document');
 
     // EKSPORT EXCELL
     Route::get('export/banmod', [EksportController::class, 'exportBanmod'])

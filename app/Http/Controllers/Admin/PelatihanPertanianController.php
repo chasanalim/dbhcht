@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Models\JenisPelatihanPetani;
 use App\Traits\HasVerifikasiDokumen;
 use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Support\Facades\Storage;
 
 class PelatihanPertanianController extends Controller implements HasMiddleware
 {
@@ -358,5 +359,65 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
     public function destroy(string $id)
     {
         //
+    }
+
+    /**
+     * Replace document file for a participant (Pertanian role only).
+     */
+    public function replaceDocument(Request $request, string $id)
+    {
+        $request->validate([
+            'document_type' => 'required|string|in:foto,ktp,kk,pernyataan,kesanggupan,pengukuhan_penyuluh_swadaya,legalitas_kelompok,rekomendasi_kelompok',
+            'file' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+        ]);
+
+        $data = PelatihanPetani::findOrFail($id);
+
+        $documentType = $request->document_type;
+        $file = $request->file('file');
+
+        // Mapping document_type ke kolom database
+        $columnMap = [
+            'foto' => 'file_foto',
+            'ktp' => 'file_ktp',
+            'kk' => 'file_kk',
+            'pernyataan' => 'file_pernyataan_tidak_mengikuti_pelatihan_lain',
+            'kesanggupan' => 'file_pernyataan_kesanggupan_ikut_pelatihan',
+            'pengukuhan_penyuluh_swadaya' => 'file_pengukuhan_penyuluh_swadaya',
+            'legalitas_kelompok' => 'file_legalitas_kelompok',
+            'rekomendasi_kelompok' => 'file_rekomendasi_kelompok',
+        ];
+
+        $column = $columnMap[$documentType];
+        $isImage = in_array($documentType, ['foto', 'ktp', 'kk']);
+        $folder = $isImage ? "petani/{$documentType}" : "petani/file_{$documentType}";
+
+        // Hapus file lama dari storage
+        $oldFile = $data->$column;
+        if ($oldFile && Storage::disk('public')->exists(str_replace('storage/', '', $oldFile))) {
+            Storage::disk('public')->delete(str_replace('storage/', '', $oldFile));
+        }
+
+        // Simpan file baru
+        if ($isImage) {
+            $webpName = pathinfo($file->hashName(), PATHINFO_FILENAME) . '.webp';
+            Storage::disk('public')->makeDirectory($folder);
+            $image = \Intervention\Image\Laravel\Facades\Image::read($file)->toWebp(80);
+            Storage::disk('public')->put("$folder/$webpName", (string) $image);
+            $data->$column = "storage/$folder/$webpName";
+        } else {
+            $fileName = $file->hashName();
+            $file->storeAs($folder, $fileName, 'public');
+            $data->$column = "storage/$folder/$fileName";
+        }
+
+        $data->save();
+
+        // Reset verifikasi dokumen agar perlu diverifikasi ulang
+        $data->documentVerifications()
+            ->where('document_type', $documentType)
+            ->delete();
+
+        return redirect()->back()->with('message', 'Dokumen berhasil diganti');
     }
 }

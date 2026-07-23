@@ -11,6 +11,7 @@ use App\Models\PendaftaranBanmod;
 use App\Http\Controllers\Controller;
 use App\Traits\HasVerifikasiDokumen;
 use App\Models\PelatihanEkonomiKreatif;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Testing\Fluent\Concerns\Has;
 
 class VerifikasiDokumenController extends Controller
@@ -82,6 +83,93 @@ class VerifikasiDokumenController extends Controller
         ]);
 
         return redirect()->back()->with('message', 'Dokumen berhasil ditolak');
+    }
+
+    /**
+     * Replace/re-upload document file for any training type
+     */
+    public function replaceDocument(Request $request)
+    {
+        $request->validate([
+            'training_type' => 'required|string',
+            'id' => 'required',
+            'document_type' => 'required|string',
+            'file' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+        ]);
+
+        $modelClass = $this->modelMap[$request->training_type] ?? null;
+        if (!$modelClass) {
+            return redirect()->back()->with('error', 'Invalid training type');
+        }
+
+        $data = $modelClass::findOrFail($request->id);
+        $documentType = $request->document_type;
+        $file = $request->file('file');
+
+        // Mapping for each training type
+        $columnMap = $this->getColumnMap($request->training_type);
+        $column = $columnMap[$documentType] ?? ('file_' . $documentType);
+
+        if (!isset($data->$column)) {
+            return redirect()->back()->with('error', 'Dokumen tidak ditemukan');
+        }
+
+        $isImage = in_array($file->extension(), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+
+        // Hapus file lama dari storage
+        $oldFile = $data->$column;
+        if ($oldFile && Storage::disk('public')->exists(str_replace('storage/', '', $oldFile))) {
+            Storage::disk('public')->delete(str_replace('storage/', '', $oldFile));
+        }
+
+        // Simpan file baru - use same pattern as registration controllers
+        $folder = $request->training_type === 'PELATIHAN_PERTANIAN'
+            ? ($isImage ? "petani/{$documentType}" : "petani/file_{$documentType}")
+            : "pelatihan/{$request->training_type}";
+
+        Storage::disk('public')->makeDirectory($folder);
+
+        if ($isImage && $request->training_type === 'PELATIHAN_PERTANIAN') {
+            // Pertanian images: convert to webp
+            $webpName = pathinfo($file->hashName(), PATHINFO_FILENAME) . '.webp';
+            $image = \Intervention\Image\Laravel\Facades\Image::read($file)->toWebp(80);
+            Storage::disk('public')->put("$folder/$webpName", (string) $image);
+            $data->$column = "storage/$folder/$webpName";
+        } else {
+            $fileName = $file->hashName();
+            $file->storeAs($folder, $fileName, 'public');
+            $data->$column = "storage/$folder/$fileName";
+        }
+
+        $data->save();
+
+        // Reset verifikasi dokumen
+        $data->documentVerifications()
+            ->where('document_type', $documentType)
+            ->delete();
+
+        return redirect()->back()->with('message', 'Dokumen berhasil diganti');
+    }
+
+    /**
+     * Get column mapping for a training type
+     */
+    private function getColumnMap(string $trainingType): array
+    {
+        $maps = [
+            'PELATIHAN_PERTANIAN' => [
+                'foto' => 'file_foto',
+                'ktp' => 'file_ktp',
+                'kk' => 'file_kk',
+                'pernyataan' => 'file_pernyataan_tidak_mengikuti_pelatihan_lain',
+                'kesanggupan' => 'file_pernyataan_kesanggupan_ikut_pelatihan',
+                'pengukuhan_penyuluh_swadaya' => 'file_pengukuhan_penyuluh_swadaya',
+                'legalitas_kelompok' => 'file_legalitas_kelompok',
+                'rekomendasi_kelompok' => 'file_rekomendasi_kelompok',
+            ],
+        ];
+
+        return $maps[$trainingType] ?? [];
     }
 
     /**

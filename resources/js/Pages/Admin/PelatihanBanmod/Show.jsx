@@ -1,15 +1,24 @@
 import AdminLayout from "@/Layouts/admin/AdminLayout";
-import { Head, router } from "@inertiajs/react";
-import { useEffect, useState } from "react";
+import { Head, router, usePage } from "@inertiajs/react";
+import { useEffect, useState, useRef } from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 export default function Show({ title, data, type = "PELATIHAN_BANMOD" }) {
+    const { auth } = usePage().props;
+    const userRoles = auth?.user?.roles || [];
+    const canReplace = userRoles.includes("pertanian") || userRoles.includes("admin");
     const [showModal, setShowModal] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [activeFile, setActiveFile] = useState(null);
     const [rejectNote, setRejectNote] = useState("");
     const [showRejectForm, setShowRejectForm] = useState(false);
     const [zoomLevel, setZoomLevel] = useState(1);
+    const [showReplaceModal, setShowReplaceModal] = useState(false);
+    const [replaceTarget, setReplaceTarget] = useState(null);
+    const [replaceFile, setReplaceFile] = useState(null);
+    const [replacePreview, setReplacePreview] = useState(null);
+    const [replaceUploading, setReplaceUploading] = useState(false);
+    const fileInputRef = useRef(null);
 
     const DOCUMENT_TYPES = {
         PELATIHAN_BANMOD: [
@@ -66,6 +75,13 @@ export default function Show({ title, data, type = "PELATIHAN_BANMOD" }) {
         };
     }, [showModal]);
 
+    useEffect(() => {
+        const html = document.documentElement;
+        if (showReplaceModal) { html.style.overflow = "hidden"; }
+        else { html.style.overflow = ""; }
+        return () => { html.style.overflow = ""; };
+    }, [showReplaceModal]);
+
     const handleTolak = async (fileType) => {
         router.post(
             route("admin.tolak-document"),
@@ -86,6 +102,45 @@ export default function Show({ title, data, type = "PELATIHAN_BANMOD" }) {
                 },
             }
         );
+    };
+
+    const openReplaceModal = (fileData, label, fileType) => {
+        setReplaceTarget({ url: fileData.url, label, fileType, isImage: fileData.isImage });
+        setReplaceFile(null);
+        setReplacePreview(null);
+        setShowReplaceModal(true);
+    };
+
+    const handleReplaceFileSelect = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        setReplaceFile(file);
+        const reader = new FileReader();
+        reader.onload = (evt) => setReplacePreview(evt.target.result);
+        reader.readAsDataURL(file);
+    };
+
+    const handleReplaceSubmit = () => {
+        if (!replaceFile || !replaceTarget) return;
+        setReplaceUploading(true);
+        const formData = new FormData();
+        formData.append("training_type", type);
+        formData.append("id", data.id);
+        formData.append("document_type", replaceTarget.fileType);
+        formData.append("file", replaceFile);
+        router.post(route("admin.replace-document"), formData, {
+            preserveScroll: true,
+            headers: { "Content-Type": "multipart/form-data" },
+            onSuccess: () => {
+                setShowReplaceModal(false);
+                setReplaceFile(null);
+                setReplacePreview(null);
+                setReplaceTarget(null);
+                setReplaceUploading(false);
+                router.reload();
+            },
+            onError: () => { setReplaceUploading(false); },
+        });
     };
 
     const renderFilePreview = (fileData, label, fileType) => {
@@ -116,6 +171,13 @@ export default function Show({ title, data, type = "PELATIHAN_BANMOD" }) {
                                 {fileData.verification.verified_by}
                             </small>
                         </div>
+                    )}
+                    {canReplace && (!isVerified || status === 0) && (
+                        <button type="button" className="btn btn-outline-secondary btn-sm"
+                            onClick={() => openReplaceModal({ url: fileData.url, isImage }, label, fileType)}
+                            title="Ganti Dokumen">
+                            <i className="bi bi-arrow-repeat me-1"></i>Ganti
+                        </button>
                     )}
                 </div>
                 <div className="card-body d-flex flex-column">
@@ -275,6 +337,25 @@ export default function Show({ title, data, type = "PELATIHAN_BANMOD" }) {
                     width: 100%;
                     height: 100%;
                 }
+
+                .modal-overlay {
+                    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                    background: rgba(0,0,0,0.5); z-index: 1040;
+                }
+                .modal-container {
+                    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                    z-index: 1050; display: flex; align-items: center; justify-content: center;
+                }
+                .replace-preview {
+                    max-width: 100%; max-height: 250px; object-fit: contain;
+                    border: 2px dashed #dee2e6; border-radius: 8px; padding: 8px;
+                }
+                .file-drop-zone {
+                    border: 2px dashed #dee2e6; border-radius: 8px; padding: 32px;
+                    text-align: center; cursor: pointer; transition: all 0.2s; background: #f8f9fa;
+                }
+                .file-drop-zone:hover { border-color: #0d6efd; background: #e9ecef; }
+                .file-drop-zone.has-file { border-color: #198754; background: #f0fff4; }
             `}</style>
                 <button
                     onClick={() => window.history.back()}
@@ -849,6 +930,66 @@ export default function Show({ title, data, type = "PELATIHAN_BANMOD" }) {
                                                             )}
                                                         </div>
                                                     </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {showReplaceModal && replaceTarget && (
+                            <div>
+                                <div className="modal-overlay" onClick={() => setShowReplaceModal(false)}></div>
+                                <div className="modal-container">
+                                    <div className="modal fade show d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+                                        <div className="modal-dialog modal-dialog-centered">
+                                            <div className="modal-content">
+                                                <div className="modal-header">
+                                                    <h5 className="modal-title">Ganti Dokumen - {replaceTarget.label}</h5>
+                                                    <button type="button" className="btn-close" onClick={() => setShowReplaceModal(false)}></button>
+                                                </div>
+                                                <div className="modal-body">
+                                                    <p className="text-muted mb-3">
+                                                        Unggah file baru untuk mengganti dokumen <strong>{replaceTarget.label}</strong>.
+                                                        Verifikasi dokumen akan direset dan perlu diverifikasi ulang.
+                                                    </p>
+                                                    <div className={`file-drop-zone ${replaceFile ? "has-file" : ""}`}
+                                                        onClick={() => fileInputRef.current?.click()}>
+                                                        {replacePreview ? (
+                                                            <div>
+                                                                {replaceTarget.isImage ? (
+                                                                    <img src={replacePreview} alt="Preview" className="replace-preview mb-2" />
+                                                                ) : (
+                                                                    <div className="mb-2">
+                                                                        <i className="bi bi-file-earmark-pdf" style={{ fontSize: "48px", color: "#dc3545" }}></i>
+                                                                        <p className="mt-2 fw-bold">{replaceFile.name}</p>
+                                                                    </div>
+                                                                )}
+                                                                <p className="text-success mb-0"><i className="bi bi-check-circle me-1"></i>File siap diunggah</p>
+                                                            </div>
+                                                        ) : (
+                                                            <div>
+                                                                <i className="bi bi-cloud-upload" style={{ fontSize: "48px", color: "#6c757d" }}></i>
+                                                                <p className="mt-2 fw-bold">Klik untuk memilih file</p>
+                                                                <p className="text-muted small">Format: JPG, PNG, atau PDF (max 5MB)</p>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <input ref={fileInputRef} type="file" className="d-none"
+                                                        accept={replaceTarget?.isImage ? ".jpg,.jpeg,.png" : ".pdf"}
+                                                        onChange={handleReplaceFileSelect} />
+                                                </div>
+                                                <div className="modal-footer">
+                                                    <button type="button" className="btn btn-secondary" onClick={() => setShowReplaceModal(false)}>Batal</button>
+                                                    <button type="button" className="btn btn-primary" onClick={handleReplaceSubmit}
+                                                        disabled={!replaceFile || replaceUploading}>
+                                                        {replaceUploading ? (
+                                                            <><span className="spinner-border spinner-border-sm me-2" role="status"></span>Mengunggah...</>
+                                                        ) : (
+                                                            <><i className="bi bi-upload me-1"></i>Unggah & Ganti</>
+                                                        )}
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
