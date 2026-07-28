@@ -45,7 +45,7 @@ class BanmodExport implements FromCollection, WithHeadings, WithStyles
     {
         return [
             ['DAFTAR PESERTA BANTUAN MODAL KOTA KEDIRI'],
-            ['TAHUN ANGGARAN 2025'],
+            ['TAHUN ANGGARAN '],
             [''],
             [
                 'NO',

@@ -30,7 +30,7 @@ class KirimPendaftar extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Data Pendaftar Banmod 2025',
+            subject: 'Data Pendaftar Banmod ',
         );
     }
 

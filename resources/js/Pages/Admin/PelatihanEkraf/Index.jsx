@@ -525,7 +525,7 @@ export default function Index({ title, can, flash, pelatihan }) {
                     <div className="col-12">
                         <div className="card">
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
-                                <h5 className="my-2 fw-bold">{title} 2025</h5>
+                                <h5 className="my-2 fw-bold">{title} </h5>
                             </div>
                             <div className="row g-3 p-3">
                                 <div className="col-12 col-md-6 col-xl-3">

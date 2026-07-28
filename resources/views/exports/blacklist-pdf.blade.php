@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Peserta Daftar Hitam DBHCHT 2025</title>
+    <title>Peserta Daftar Hitam DBHCHT </title>
     <style>
         @page {
             size: landscape;
@@ -70,7 +70,7 @@
 <body>
     <div class="header">
         <h4 style="margin: 0;">DAFTAR PESERTA DAFTAR HITAM</h4>
-        <h4 style="margin: 0;">TAHUN ANGGARAN 2025</h4>
+        <h4 style="margin: 0;">TAHUN ANGGARAN </h4>
     </div>
 
     <table autosize="1">

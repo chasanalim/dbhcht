@@ -51,7 +51,7 @@ class EkrafExport implements FromCollection, WithHeadings, WithStyles
     {
         return [
             ['DAFTAR PESERTA PELATIHAN EKONOMI KREATIF KOTA KEDIRI'],
-            ['TAHUN ANGGARAN 2025'],
+            ['TAHUN ANGGARAN '],
             [''],
             [
                 'NO',

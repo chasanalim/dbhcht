@@ -40,7 +40,7 @@ class BlacklistExport implements FromCollection, WithHeadings, WithStyles
     {
         return [
             ['DAFTAR PESERTA DAFTAR HITAM DBHCHT KOTA KEDIRI'],
-            ['TAHUN ANGGARAN 2025'],
+            ['TAHUN ANGGARAN'],
             [''],
             [
                 'NO',

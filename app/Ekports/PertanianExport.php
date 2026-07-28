@@ -51,7 +51,7 @@ class PertanianExport implements FromCollection, WithHeadings, WithStyles
     {
         return [
             ['DAFTAR PESERTA PELATIHAN PERTANIAN KOTA KEDIRI'],
-            ['TAHUN ANGGARAN 2025'],
+            ['TAHUN ANGGARAN '],
             [''],
             [
                 'NO',

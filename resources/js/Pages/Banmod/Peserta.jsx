@@ -101,7 +101,7 @@ export default function PesertaPage({ meta }) {
                                         className="my-2 fw-bold"
                                         style={{ color: "#fff" }}
                                     >
-                                        {meta.title} 2025
+                                        {meta.title} 
                                     </h5>
                                 </div>
                                 <div

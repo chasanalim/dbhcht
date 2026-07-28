@@ -12,7 +12,7 @@ export default function File({ meta, banmod, pelatihanbanmod ,pencarikerja, umkm
                     <div className="card shadow-sm">
                         <div className="card-body">
                             <h2 className="fs-3 fw-bold mb-3">
-                                Daftar File Banmod 2025
+                                Daftar File Banmod 
                             </h2>
                             <hr className="py-0" />
                             <div className="row g-4">
@@ -35,7 +35,7 @@ export default function File({ meta, banmod, pelatihanbanmod ,pencarikerja, umkm
                     <div className="card shadow-sm">
                         <div className="card-body">
                             <h2 className="fs-3 fw-bold mb-3">
-                                Daftar File Pelatihan Penerima Banmod 2025
+                                Daftar File Pelatihan Penerima Banmod 
                             </h2>
                             <hr className="py-0"/>
                             <div className="row g-4">
@@ -57,7 +57,7 @@ export default function File({ meta, banmod, pelatihanbanmod ,pencarikerja, umkm
                     <div className="card shadow-sm">
                         <div className="card-body">
                             <h2 className="fs-3 fw-bold mb-3">
-                                Daftar File Pelatihan Pencari Kerja 2025
+                                Daftar File Pelatihan Pencari Kerja 
                             </h2>
                             <hr className="py-0"/>
                             <div className="row g-4">
@@ -79,7 +79,7 @@ export default function File({ meta, banmod, pelatihanbanmod ,pencarikerja, umkm
                     <div className="card shadow-sm">
                         <div className="card-body">
                             <h2 className="fs-3 fw-bold mb-3">
-                                Daftar File Pelatihan UMKM 2025
+                                Daftar File Pelatihan UMKM 
                             </h2>
                             <hr className="py-0"/>
                             <div className="row g-4">
@@ -101,7 +101,7 @@ export default function File({ meta, banmod, pelatihanbanmod ,pencarikerja, umkm
                     <div className="card shadow-sm">
                         <div className="card-body">
                             <h2 className="fs-3 fw-bold mb-3">
-                                Daftar File Pelatihan Pertanian 2025
+                                Daftar File Pelatihan Pertanian 
                             </h2>
                             <hr className="py-0"/>
                             <div className="row g-4">
@@ -123,7 +123,7 @@ export default function File({ meta, banmod, pelatihanbanmod ,pencarikerja, umkm
                     <div className="card shadow-sm">
                         <div className="card-body">
                             <h2 className="fs-3 fw-bold mb-3">
-                                Daftar File Pelatihan Ekonomi Kreatif 2025
+                                Daftar File Pelatihan Ekonomi Kreatif 
                             </h2>
                             <hr className="py-0"/>
                             <div className="row g-4">

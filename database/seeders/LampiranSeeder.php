@@ -16,31 +16,31 @@ class LampiranSeeder extends Seeder
         $lampiran = [
             [
                 'nama' => 'Buku Pedoman',
-                'deskripsi' => 'Buku Pedoman Banmod 2025.pdf',
+                'deskripsi' => 'Buku Pedoman Banmod .pdf',
                 'file_name' => 'buku-pedoman.pdf',
                 'kategori' => 'banmod',
             ],
             [
                 'nama' => 'Surat Pernyataan',
-                'deskripsi' => 'Surat Pernyataan Penerima Banmod 2025.pdf',
+                'deskripsi' => 'Surat Pernyataan Penerima Banmod .pdf',
                 'file_name' => 'surat-pernyataan.pdf',
                 'kategori' => 'banmod',
             ],
             [
                 'nama' => 'RAB Banmod',
-                'deskripsi' => 'RAB Banmod 2025.pdf',
+                'deskripsi' => 'RAB Banmod .pdf',
                 'file_name' => 'rab.pdf',
                 'kategori' => 'banmod',
             ],
             [
                 'nama' => 'Pencairan Banmod',
-                'deskripsi' => 'Petunjuk Pencairan Banmod 2025.pdf',
+                'deskripsi' => 'Petunjuk Pencairan Banmod .pdf',
                 'file_name' => 'pencairan.pdf',
                 'kategori' => 'banmod',
             ],
             [
                 'nama' => 'Panduan Banmod',
-                'deskripsi' => 'Panduan Banmod 2025.pdf',
+                'deskripsi' => 'Panduan Banmod .pdf',
                 'file_name' => 'panduan.pdf',
                 'kategori' => 'pelatihan',
             ],

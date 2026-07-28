@@ -51,7 +51,7 @@ class UmkmExport implements FromCollection, WithHeadings, WithStyles
     {
         return [
             ['DAFTAR PESERTA PELATIHAN UMKM KOTA KEDIRI'],
-            ['TAHUN ANGGARAN 2025'],
+            ['TAHUN ANGGARAN '],
             [''],
             [
                 'NO',

@@ -49,7 +49,7 @@ class KerjaExport implements FromCollection, WithHeadings, WithStyles
     {
         return [
             ['DAFTAR PESERTA PELATIHAN PENCARI KERJA KOTA KEDIRI'],
-            ['TAHUN ANGGARAN 2025'],
+            ['TAHUN ANGGARAN '],
             [''],
             [
                 'NO',

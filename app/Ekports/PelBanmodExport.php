@@ -51,7 +51,7 @@ class PelBanmodExport implements FromCollection, WithHeadings, WithStyles
     {
         return [
             ['DAFTAR PESERTA PELATIHAN BANTUAN MODAL KOTA KEDIRI'],
-            ['TAHUN ANGGARAN 2025'],
+            ['TAHUN ANGGARAN'],
             [''],
             [
                 'NO',
