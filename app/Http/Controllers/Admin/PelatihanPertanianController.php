@@ -32,7 +32,7 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
             'kk' => 'Kartu Keluarga',
             'pernyataan' => 'Surat Pernyataan Tidak Mengikuti Pelatihan Lain',
             'kesanggupan' => 'Surat Pernyataan Kesanggupan Mengikuti Pelatihan Secara Penuh',
-            'pengukuhan_penyuluh_swadaya' => 'SK Pengukuhan Penyuluh Swadaya',
+            // 'pengukuhan_penyuluh_swadaya' => 'SK Pengukuhan Penyuluh Swadaya',
             'legalitas_kelompok' => 'Surat Legalitas Kelompok Tani',
             'rekomendasi_kelompok' => 'Surat Rekomendasi Ketua Kelompok Tani',
         ];
@@ -63,7 +63,7 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
                     $status = $request->verification_status;
                     $data = $data->filter(function ($item) use ($status) {
                         $verifications = $item->documentVerifications;
-                        $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan', 'kesanggupan', 'pengukuhan_penyuluh_swadaya', 'legalitas_kelompok', 'rekomendasi_kelompok'];
+                        $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan', 'kesanggupan', 'legalitas_kelompok', 'rekomendasi_kelompok'];
                         $allVerified = count($verifications) === count($requiredDocs);
                         $allApproved = $verifications->every(function ($verification) {
                             return $verification->status === 1;
@@ -95,12 +95,12 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
             if ($request->has('status') && $request->status !== 'all') {
                 $query->where('status', $request->status);
             }
-            $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor');
+            $data = $query->orderBy('created_at', 'desc')->get();
             if ($request->has('verification_status')) {
                 $status = $request->verification_status;
                 $data = $data->filter(function ($item) use ($status) {
                     $verifications = $item->documentVerifications;
-                    $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan', 'kesanggupan', 'pengukuhan_penyuluh_swadaya', 'legalitas_kelompok', 'rekomendasi_kelompok'];
+                    $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan', 'kesanggupan', 'legalitas_kelompok', 'rekomendasi_kelompok'];
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
                         return $verification->status === 1;
@@ -120,6 +120,9 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
 
             return DataTables::of($data)
                 ->addIndexColumn()
+                ->addColumn('tanggal_pendaftaran', function ($row) {
+                    return $row->created_at ? $row->created_at->format('d/m/Y H:i') : '-';
+                })
                 ->addColumn('action', function ($row) {
                     return [
                         'edit_url' => route('admin.pertanian.edit', $row->id),
@@ -129,7 +132,7 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
-                    $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan', 'kesanggupan', 'pengukuhan_penyuluh_swadaya', 'legalitas_kelompok', 'rekomendasi_kelompok'];
+                    $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan', 'kesanggupan', 'legalitas_kelompok', 'rekomendasi_kelompok'];
                     $verifications = $row->documentVerifications;
 
                     $allVerified = count($verifications) === count($requiredDocs);
@@ -274,10 +277,10 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
                         'url' => asset($data->file_pernyataan_kesanggupan_ikut_pelatihan),
                         'verification' => $verifiedDocuments['kesanggupan'] ?? null
                     ],
-                    'pengukuhan_penyuluh_swadaya' => [
-                        'url' => asset($data->file_pengukuhan_penyuluh_swadaya),
-                        'verification' => $verifiedDocuments['pengukuhan_penyuluh_swadaya'] ?? null
-                    ],
+                    // 'pengukuhan_penyuluh_swadaya' => [
+                    //     'url' => asset($data->file_pengukuhan_penyuluh_swadaya),
+                    //     'verification' => $verifiedDocuments['pengukuhan_penyuluh_swadaya'] ?? null
+                    // ],
                     'legalitas_kelompok' => [
                         'url' => asset($data->file_legalitas_kelompok),
                         'verification' => $verifiedDocuments['legalitas_kelompok'] ?? null
@@ -320,7 +323,7 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
 
         // Validate if document is verified
         $verifications = $data->documentVerifications;
-        $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan', 'kesanggupan', 'pengukuhan_penyuluh_swadaya', 'legalitas_kelompok', 'rekomendasi_kelompok'];
+        $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan', 'kesanggupan', 'legalitas_kelompok', 'rekomendasi_kelompok'];
         $allVerified = count($verifications) === count($requiredDocs);
         $allApproved = $verifications->every(fn($v) => $v->status === 1);
 
@@ -383,7 +386,7 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
             'kk' => 'file_kk',
             'pernyataan' => 'file_pernyataan_tidak_mengikuti_pelatihan_lain',
             'kesanggupan' => 'file_pernyataan_kesanggupan_ikut_pelatihan',
-            'pengukuhan_penyuluh_swadaya' => 'file_pengukuhan_penyuluh_swadaya',
+            // 'pengukuhan_penyuluh_swadaya' => 'file_pengukuhan_penyuluh_swadaya',
             'legalitas_kelompok' => 'file_legalitas_kelompok',
             'rekomendasi_kelompok' => 'file_rekomendasi_kelompok',
         ];

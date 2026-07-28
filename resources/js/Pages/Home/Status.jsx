@@ -178,6 +178,19 @@ export default function Index({ meta }) {
                                                                     }
                                                                 </span>
                                                             </p>
+                                                            {item.catatan && Array.isArray(item.catatan) && (
+                                                                <p className="mb-1">
+                                                                    <strong className="text-dark">
+                                                                        Alasan:
+                                                                    </strong>
+                                                                    <br />
+                                                                    <ul className="text-danger fst-italic mb-0 ps-3">
+                                                                        {item.catatan.map((note, i) => (
+                                                                            <li key={i}>{note}</li>
+                                                                        ))}
+                                                                    </ul>
+                                                                </p>
+                                                            )}
                                                         </Card.Body>
                                                     </Card>
                                                 </Col>

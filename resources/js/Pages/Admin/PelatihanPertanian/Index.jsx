@@ -222,12 +222,10 @@ export default function Index({ title, can, flash, categories }) {
                     name: "jenis_pelatihan_petani.nama",
                 },
                 {
-                    data: "skor",
-                    name: "skor",
+                    data: "tanggal_pendaftaran",
+                    name: "created_at",
                     render: function (data) {
-                        return `<span class="badge bg-success">${parseFloat(
-                            data
-                        ).toFixed(2)}</span>`;
+                        return data || '-';
                     },
                 },
                 {
@@ -707,7 +705,7 @@ export default function Index({ title, can, flash, categories }) {
                                                 <th>KECAMATAN</th>
                                                 <th>NO HP</th>
                                                 <th>PELATIHAN</th>
-                                                <th>SKOR</th>
+                                                <th>TGL. PENDAFTARAN</th>
                                                 <th>VERIFIKASI DOKUMEN</th>
                                                 <th>STATUS</th>
                                             </tr>

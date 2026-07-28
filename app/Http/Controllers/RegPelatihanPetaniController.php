@@ -179,15 +179,15 @@ class RegPelatihanPetaniController extends Controller
                 'success' => true,
                 'blacklisted' => false,
                 'data' => $data,
-                'message' => 'NIK ditemukan sebagai Kelompok Tani.'
+                'message' => 'NIK ditemukan sebagai Kelompok Tani / PWT / Komunitas.'
             ]);
         }
 
         return response()->json([
-            'success' => false,
+            'success' => true,
             'blacklisted' => false,
-            'message' => 'NIK tidak ditemukan sebagai Kelompok Tani.'
-        ], 404);
+            'message' => 'NIK tidak ditemukan sebagai Kelompok Tani / PWT / Komunitas. Silahkan mengisikan formulir pendaftaran pelatihan petani.'
+        ]);
     }
 
     protected function sendNotifications($phoneNumber)

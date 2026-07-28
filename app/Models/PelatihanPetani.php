@@ -110,7 +110,7 @@ class PelatihanPetani extends Model
             'kk' => 'Kartu Keluarga',
             'pernyataan' => 'Surat Pernyataan Tidak Mengikuti Pelatihan Lain',
             'kesanggupan' => 'Surat Pernyataan Kesanggupan Mengikuti Pelatihan Secara Penuh',
-            'pengukuhan_penyuluh_swadaya' => 'SK Pengukuhan Penyuluh Swadaya',
+            // 'pengukuhan_penyuluh_swadaya' => 'SK Pengukuhan Penyuluh Swadaya',
             'legalitas_kelompok' => 'Surat Legalitas Kelompok Tani',
             'rekomendasi_kelompok' => 'Surat Rekomendasi Ketua Kelompok Tani',
         ];

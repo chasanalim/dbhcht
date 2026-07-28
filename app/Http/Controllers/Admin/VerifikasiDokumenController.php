@@ -163,7 +163,7 @@ class VerifikasiDokumenController extends Controller
                 'kk' => 'file_kk',
                 'pernyataan' => 'file_pernyataan_tidak_mengikuti_pelatihan_lain',
                 'kesanggupan' => 'file_pernyataan_kesanggupan_ikut_pelatihan',
-                'pengukuhan_penyuluh_swadaya' => 'file_pengukuhan_penyuluh_swadaya',
+                // 'pengukuhan_penyuluh_swadaya' => 'file_pengukuhan_penyuluh_swadaya',
                 'legalitas_kelompok' => 'file_legalitas_kelompok',
                 'rekomendasi_kelompok' => 'file_rekomendasi_kelompok',
             ],

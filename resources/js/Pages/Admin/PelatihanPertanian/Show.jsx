@@ -34,10 +34,10 @@ export default function Show({ title, data, type = "PELATIHAN_PERTANIAN" }) {
                 key: "kesanggupan",
                 label: "Surat Kesanggupan Mengikuti Pelatihan",
             },
-            {
-                key: "pengukuhan_penyuluh_swadaya",
-                label: "SK Pengukuhan Penyuluh Swadaya",
-            },
+            // {
+            //     key: "pengukuhan_penyuluh_swadaya",
+            //     label: "SK Pengukuhan Penyuluh Swadaya",
+            // },
             {
                 key: "legalitas_kelompok",
                 label: "Surat Legalitas Kelompok",
@@ -200,23 +200,7 @@ export default function Show({ title, data, type = "PELATIHAN_PERTANIAN" }) {
                                 </small>
                             </>
                         )}
-                        {canReplace && (!isVerified || status === 0) && (
-                            <button
-                                type="button"
-                                className="btn btn-outline-secondary btn-sm"
-                                onClick={() =>
-                                    openReplaceModal(
-                                        { url: fileData.url, isImage },
-                                        label,
-                                        fileType
-                                    )
-                                }
-                                title="Ganti Dokumen"
-                            >
-                                <i className="bi bi-arrow-repeat me-1"></i>
-                                Ganti
-                            </button>
-                        )}
+                        {/* Ganti button hidden sesuai permintaan */}
                     </div>
                 </div>
                 <div className="card-body d-flex flex-column">
@@ -565,22 +549,6 @@ export default function Show({ title, data, type = "PELATIHAN_PERTANIAN" }) {
                                         <tr>
                                             <td>Mempunyai Legalitas</td>
                                             <td>: Ya</td>
-                                            <td className="text-danger text-bold">
-                                                Skor :{" "}
-                                                {
-                                                    data.kelompok_tani
-                                                        .skor_masa_aktif
-                                                }
-                                            </td>
-                                            <td className="text-danger text-bold">
-                                                NA :{" "}
-                                                {parseFloat(
-                                                    (data.kelompok_tani
-                                                        .skor_masa_aktif /
-                                                        3) *
-                                                        50
-                                                ).toFixed(2)}
-                                            </td>
                                         </tr>
                                         <tr>
                                             <td>Masa Aktif</td>
@@ -647,30 +615,19 @@ export default function Show({ title, data, type = "PELATIHAN_PERTANIAN" }) {
                                             <td width={"50%"}>
                                                 : {data.alasan}
                                             </td>
-                                            <td className="text-danger text-bold">
-                                                Skor : {data.skor_alasan}
-                                            </td>
-                                            <td className="text-danger text-bold">
-                                                NA :{" "}
-                                                {parseFloat(
-                                                    (data.skor_alasan / 3) * 50
-                                                ).toFixed(2)}
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <h6 className="fw-bold">SKORING</h6>
-                                <table className="table table-sm">
-                                    <tbody>
-                                        <tr>
-                                            <td>Skor Sementara </td>
-                                            <td>
-                                                {" "}
-                                                :{" "}
-                                                {parseFloat(data.skor).toFixed(
-                                                    2
-                                                )}
-                                            </td>
+                                            {data.skor_alasan !== null && data.skor_alasan !== undefined && (
+                                                <>
+                                                    <td className="text-danger text-bold">
+                                                        Skor : {data.skor_alasan}
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA :{" "}
+                                                        {parseFloat(
+                                                            (data.skor_alasan / 3) * 50
+                                                        ).toFixed(2)}
+                                                    </td>
+                                                </>
+                                            )}
                                         </tr>
                                     </tbody>
                                 </table>

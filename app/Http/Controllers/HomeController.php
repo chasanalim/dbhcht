@@ -156,13 +156,25 @@ class HomeController extends Controller
             $data = $model::where('nik', $nik)->first();
 
             if ($data) {
+                $notes = null;
+                if ($data->status == 2) {
+                    $verifications = $data->documentVerifications()
+                        ->where('status', 0)
+                        ->whereNotNull('notes')
+                        ->get();
+                    if ($verifications->isNotEmpty()) {
+                        $notes = $verifications->pluck('notes')->unique()->values()->toArray();
+                    }
+                }
+
                 $results[] = [
                     'jenis_pelatihan' => $type,
                     'nama' => $data->nama_lengkap ?? $data->name,
                     'nik' => $data->nik,
-                    // 'verifikasi_dokumen' => $data->documentVerifications()->count(),
                     'status' => $this->getStatus($data->status),
                     'created_at' => $data->created_at->format('d-m-Y') ?? 'NULL',
+                    'catatan' => $notes,
+                    'status_code' => $data->status,
                 ];
             }
         }

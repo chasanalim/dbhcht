@@ -22,9 +22,9 @@ export default function FormPetani() {
     const [dataPenerima, setDataPenerima] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
     const [tampilKonfirmasi, setTampilKonfirmasi] = useState(false);
-    const [editMode, setEditMode] = useState(false);
     const [nikLength, setNikLength] = useState(0);
     const [kkLength, setKkLength] = useState(0);
+    const [nikChecked, setNikChecked] = useState(false);
     const { data, setData, errors, post, processing, reset } = useForm({
         nik: "",
         kk: "",
@@ -75,32 +75,37 @@ export default function FormPetani() {
             // Handle success response
             if (response.data.success) {
                 const d = response.data.data;
-                setDataPenerima(d);
-                setNikStatus("NIK valid!");
-                setData((prev) => ({
-                    ...prev,
-                    nama_lengkap: d.nama_anggota,
-                    nama_kelompok: d.nama_kelompok,
-                    id_kelompok: d.id,
-                }));
+                if (d) {
+                    setDataPenerima(d);
+                    setNikStatus("NIK Anda ditemukan sebagai anggota Kelompok Tani / PWT / Komunitas terdaftar. Sebagian data akan terisi otomatis.");
+                    setData((prev) => ({
+                        ...prev,
+                        nama_lengkap: d.nama_anggota,
+                        nama_kelompok: d.nama_kelompok,
+                        id_kelompok: d.id,
+                    }));
+                } else {
+                    setDataPenerima(null);
+                    setNikStatus("NIK tidak ditemukan sebagai anggota Kelompok Tani / PWT / Komunitas terdaftar. Silahkan isi data secara manual pada form di bawah..");
+                }
+                setNikChecked(true);
                 setTampilKonfirmasi(true);
             } else {
-                setErrorMessage(response.data.message);
+                // NIK tidak ditemukan - form tetap terbuka untuk isi manual
                 setDataPenerima(null);
+                setNikChecked(true);
+                setTampilKonfirmasi(true);
             }
         } catch (error) {
             // Handle error response
+            setNikChecked(true);
+            setTampilKonfirmasi(true);
             if (error.response?.status === 403) {
                 setErrorMessage(error.response.data.message);
                 setDataPenerima(null);
-            } else if (error.response?.status === 404) {
-                setErrorMessage(
-                    "NIK tidak ditemukan sebagai anggota kelompok tani.",
-                );
-                setDataPenerima(null);
             } else {
-                setErrorMessage("Terjadi kesalahan saat cek NIK.");
-                console.error("Error checking NIK:", error);
+                setErrorMessage("NIK tidak ditemukan. Silahkan isi data secara manual.");
+                setDataPenerima(null);
             }
         }
     };
@@ -345,6 +350,8 @@ export default function FormPetani() {
                                 setNikStatus("");
                                 setErrorMessage("");
                                 setDataPenerima(null);
+                                setNikChecked(false);
+                                setTampilKonfirmasi(false);
                             }
                         }}
                         className={`${
@@ -383,8 +390,8 @@ export default function FormPetani() {
 
             {nikStatus && <div className="text-success mb-3">{nikStatus}</div>}
 
-            {/* Data Penerima */}
-            {dataPenerima && (
+            {/* Data Penerima / Form Manual */}
+            {nikChecked && (
                 <>
                     {/* Nomor KK */}
                     <Form.Group className="mb-3">
@@ -424,7 +431,10 @@ export default function FormPetani() {
                         <Form.Control
                             type="text"
                             value={data.nama_lengkap || ""}
-                            readOnly // Supaya user tidak bisa mengubah data hasil cek NIK
+                            readOnly={!!dataPenerima} // ReadOnly jika data dari master, editable jika isi manual
+                            onChange={(e) =>
+                                setData({ ...data, nama_lengkap: e.target.value })
+                            }
                             isInvalid={!!errors.nama_lengkap}
                         />
                         <Form.Control.Feedback type="invalid">
@@ -663,7 +673,10 @@ export default function FormPetani() {
                         </Form.Label>
                         <Form.Control
                             value={data.nama_kelompok || ""}
-                            readOnly // Supaya user tidak bisa ubah manual
+                            readOnly={!!dataPenerima} // ReadOnly jika data dari master, editable jika isi manual
+                            onChange={(e) =>
+                                setData({ ...data, nama_kelompok: e.target.value })
+                            }
                             isInvalid={!!errors.nama_kelompok}
                         />
                         <Form.Control.Feedback type="invalid">
@@ -889,7 +902,7 @@ export default function FormPetani() {
                         false,
                         null,
                         null,
-                        false,
+                        true,
                     )}
 
                     <div className="big-text text-muted mb-4">
@@ -1019,16 +1032,13 @@ export default function FormPetani() {
                 </>
             )}
 
-            {/* Error Message for Invalid NIK */}
-            {!dataPenerima && errorMessage && (
+            
+
+            {!dataPenerima && errorMessage && nikChecked && (
                 <div className="alert alert-warning mt-3">
-                    NIK YANG ANDA MASUKKAN SALAH ATAU ANDA BUKAN ANGGOTA
-                    KELOMPOK TANI<br />
-                   
-                    <br />
+                    {errorMessage}
+                    <br /><br />
                     <strong>INFO LEBIH LANJUT TERKAIT PELATIHAN BISA LANGSUNG DATANG KE KANTOR DINAS KETAHANAN PANGAN DAN PERTANIAN</strong>
-                    <br />
-                  
                 </div>
             )}
         </Form>
