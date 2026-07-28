@@ -95,7 +95,7 @@ class PelatihanPertanianController extends Controller implements HasMiddleware
             if ($request->has('status') && $request->status !== 'all') {
                 $query->where('status', $request->status);
             }
-            $data = $query->orderBy('created_at', 'desc')->get();
+            $data = $query->orderBy('created_at', 'asc')->get();
             if ($request->has('verification_status')) {
                 $status = $request->verification_status;
                 $data = $data->filter(function ($item) use ($status) {
