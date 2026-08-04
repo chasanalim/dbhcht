@@ -209,17 +209,7 @@ export default function Show({ title, data, type = "PELATIHAN_UMKM" }) {
                             </small>
                         </div>
                     )}
-                    {canReplace && (!isVerified || status === 0) && (
-                        <button
-                            type="button"
-                            className="btn btn-outline-secondary btn-sm"
-                            onClick={() => openReplaceModal({ url: fileData.url, isImage }, label, fileType)}
-                            title="Ganti Dokumen"
-                        >
-                            <i className="bi bi-arrow-repeat me-1"></i>
-                            Ganti
-                        </button>
-                    )}
+                    {/* Ganti button hidden sesuai permintaan */}
                 </div>
                 <div className="card-body d-flex flex-column">
                     {isImage ? (

@@ -289,13 +289,7 @@ export default function Show({ title, data, type = "PELATIHAN_EKRAF" }) {
                             </small>
                         </div>
                     )}
-                    {canReplace && (!isVerified || status === 0) && (
-                        <button type="button" className="btn btn-outline-secondary btn-sm"
-                            onClick={() => openReplaceModal({ url: fileData.url, isImage }, label, fileType)}
-                            title="Ganti Dokumen">
-                            <i className="bi bi-arrow-repeat me-1"></i>Ganti
-                        </button>
-                    )}
+                    {/* Ganti button hidden sesuai permintaan */}
                 </div>
                 <div className="card-body d-flex flex-column">
                     {isImage ? (
@@ -852,8 +846,16 @@ export default function Show({ title, data, type = "PELATIHAN_EKRAF" }) {
                                             <td>No. HP</td>
                                             <td>: {data.no_hp}</td>
                                         </tr>
+                                        <tr>
+                                            <td>Desil</td>
+                                            <td>
+                                                : {data.desil || "-"}
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
+
+                                
 
                                 <h6 className="fw-bold mt-4">Alamat KTP</h6>
                                 <table className="table table-sm">
@@ -955,6 +957,47 @@ export default function Show({ title, data, type = "PELATIHAN_EKRAF" }) {
                                         )}
                                     </tbody>
                                 </table>
+
+                                <h6 className="fw-bold mt-4 text-warning">
+                                    <i className="bi bi-exclamation-triangle-fill me-1"></i>
+                                    Pelatihan Sebelumnya
+                                </h6>
+                                <div className="table-responsive">
+                                    <table className="table table-sm table-warning table-bordered">
+                                        <tbody>
+                                            {data.pelatihan_sebelumnya?.length > 0 ? (
+                                                data.pelatihan_sebelumnya.map(
+                                                    (item, index) => (
+                                                        <tr key={index}>
+                                                            <td
+                                                                style={{
+                                                                    width: "200px",
+                                                                }}
+                                                                className="fw-bold"
+                                                            >
+                                                                {item.nama_pelatihan}
+                                                            </td>
+                                                            <td>
+                                                                :{" "}
+                                                                <span className="badge bg-warning text-dark">
+                                                                    {item.jenis}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    )
+                                                )
+                                            ) : (
+                                                <tr>
+                                                    <td className="text-success fw-bold">
+                                                        <i className="bi bi-check-circle-fill me-1"></i>
+                                                        Tidak menerima pelatihan
+                                                        sebelumnya
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
 

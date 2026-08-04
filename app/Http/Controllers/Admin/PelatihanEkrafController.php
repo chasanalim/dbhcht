@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
 use App\Traits\HasVerifikasiDokumen;
+use App\Models\PelatihanBanmod;
 use App\Models\PelatihanEkonomiKreatif;
 use Illuminate\Routing\Controllers\HasMiddleware;
 
@@ -208,6 +209,29 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
     {
         $data = PelatihanEkonomiKreatif::with(['documentVerifications'])->findOrFail($id);
 
+        // Data pelatihan sebelumnya dari Pelatihan Ekraf (selain record ini) dan Banmod yang berstatus lolos (1)
+        $pelatihanSebelumnya = collect()
+            ->merge(
+                PelatihanEkonomiKreatif::where('nik', $data->nik)
+                    ->where('id', '!=', $data->id)
+                    ->where('status', PelatihanEkonomiKreatif::STATUS_LOLOS)
+                    ->withoutSelectedYearFilter()
+                    ->get(['jenis_pelatihan'])
+                    ->map(function ($row) {
+                        return ['jenis' => $row->jenis_pelatihan, 'nama_pelatihan' => 'Ekonomi Kreatif'];
+                    })
+            )
+            ->merge(
+                PelatihanBanmod::where('nik', $data->nik)
+                    ->where('status', 1)
+                    ->withoutSelectedYearFilter()
+                    ->get(['jenis_pelatihan_industri'])
+                    ->map(function ($row) {
+                        return ['jenis' => $row->jenis_pelatihan_industri, 'nama_pelatihan' => 'Penerima Banmod'];
+                    })
+            )
+            ->values();
+
         // Ambil dokumen yang diperlukan berdasarkan kategori
         $requiredDocs = $this->getRequiredDocumentsByKategori($data->kategori_pendaftar);
 
@@ -261,8 +285,10 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
                 'nama_lengkap' => $data->nama_lengkap,
                 'no_kk' => $data->no_kk,
                 'no_hp' => $data->no_hp,
+                'desil' => $data->desil ?? null,
                 'tanggal_lahir' => $data->tanggal_lahir,
                 'umur' => \Carbon\Carbon::parse($data->tanggal_lahir)->diffInYears(now()),
+                'pelatihan_sebelumnya' => $pelatihanSebelumnya,
 
                 // Alamat KTP
                 'alamat_ktp' => [
