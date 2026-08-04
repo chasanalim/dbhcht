@@ -188,6 +188,8 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
             ['name' => 'Semua Pelatihan'],
             ['name' => 'fotografi'],
             ['name' => 'videografi'],
+            ['name' => 'desain_grafis'],
+            ['name' => 'editing_video'],
         ];
 
         return inertia('Admin/PelatihanEkraf/Index', [

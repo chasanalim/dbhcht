@@ -12,30 +12,11 @@ use App\Traits\GeneralTrait;
 use App\Mail\KirimPendaftar;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 
 class RegPelatihanEkonomiKreatifController extends Controller
 {
     use GeneralTrait;
-
-    /**
-     * API endpoint untuk mendapatkan info kuota real-time
-     */
-    public function getQuotaInfo()
-    {
-        try {
-            $quotaInfo = PelatihanEkonomiKreatif::getAllQuotaInfo();
-
-            return response()->json([
-                'success' => true,
-                'data' => $quotaInfo
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error fetching quota info: ' . $e->getMessage()
-            ], 500);
-        }
-    }
 
     /**
      * Display the registration form
@@ -46,7 +27,6 @@ class RegPelatihanEkonomiKreatifController extends Controller
             'title' => 'Pendaftaran Pelatihan Ekonomi Kreatif',
             'kategori_options' => PelatihanEkonomiKreatif::getKategoriPendaftar(),
             'jenis_pelatihan_options' => $this->getJenisPelatihanOptions(),
-            'quota_info' => PelatihanEkonomiKreatif::getAllQuotaInfo(), // Pass quota info
         ]);
     }
 
@@ -187,6 +167,21 @@ class RegPelatihanEkonomiKreatifController extends Controller
             ], 400);
         }
 
+        // Ambil data DTKS dari Walidata Dinas Sosial untuk menentukan desil
+        try {
+            $response = Http::get(
+                'https://api-splp.layanan.go.id:443/t/kedirikota.go.id/walidata/0.1/api/dtks/check?nik=' . $nik
+            );
+
+            $dtks = $response->json();
+        } catch (\Exception $e) {
+            $dtks = [];
+            Log::error('DTKS check failed for NIK ' . $nik . ': ' . $e->getMessage());
+        }
+
+        // Ambil desil jika ada, jika tidak null
+        $desil = $dtks['desil'] ?? '>5';
+
         // Cek blacklist dari semua jenis pelatihan
         $blacklistModels = [
             \App\Models\PelatihanUmkm::class,
@@ -236,6 +231,11 @@ class RegPelatihanEkonomiKreatifController extends Controller
         return response()->json([
             'success' => true,
             'blacklisted' => false,
+            'data' => [
+                'desil' => $desil,
+                'no_kk' => $dtks['no_kk'] ?? null,
+                'nama' => $dtks['nama'] ?? null,
+            ],
             'message' => 'NIK tidak ditemukan dalam blacklist.'
         ]);
     }
@@ -279,18 +279,7 @@ class RegPelatihanEkonomiKreatifController extends Controller
             'komitmen' => 'required|boolean|accepted',
         ];
 
-        // ✅ Tambah validasi kuota sebelum jenis_pelatihan
-        $baseRules['jenis_pelatihan'] = [
-            'required',
-            'string',
-            'max:255',
-            function ($attribute, $value, $fail) {
-                if (!PelatihanEkonomiKreatif::isQuotaAvailable($value)) {
-                    $quota = PelatihanEkonomiKreatif::getAvailableQuota($value);
-                    $fail("Maaf, kuota untuk jenis pelatihan {$value} sudah penuh. ({$quota['terpakai']}/{$quota['total_kuota']})");
-                }
-            },
-        ];
+        $baseRules['jenis_pelatihan'] = 'required|string|max:255';
 
         // ✅ ADD: Conditional validation untuk domisili jika berbeda dengan KTP
         if ($request->isDomisili) {
@@ -411,30 +400,13 @@ class RegPelatihanEkonomiKreatifController extends Controller
     }
 
     /**
-     * ✅ Update jenis pelatihan options dengan info kuota
+     * Jenis pelatihan options
      */
     private function getJenisPelatihanOptions()
     {
-        $baseOptions = [
+        return [
             'fotografi' => 'Fotografi',
             'videografi' => 'Videografi',
         ];
-
-        $quotaInfo = PelatihanEkonomiKreatif::getAllQuotaInfo();
-        $result = [];
-
-        foreach ($baseOptions as $value => $label) {
-            $quota = $quotaInfo[$value] ?? ['sisa' => 0, 'total_kuota' => 0, 'penuh' => true];
-            $result[$value] = [
-                'label' => $label,
-                'quota_info' => $quota,
-                'display_text' => $quota['penuh']
-                    ? "{$label} (KUOTA PENUH)"
-                    : "{$label} (Sisa: {$quota['sisa']}/{$quota['total_kuota']})",
-                'available' => !$quota['penuh']
-            ];
-        }
-
-        return $result;
     }
 }

@@ -170,9 +170,9 @@ class PelatihanEkonomiKreatif extends Model
             'file_ktp' => 'Foto KTP',
             'file_kk' => 'Foto KK',
             'file_pasfoto' => 'Pas Foto',
-            'file_surat_pernyataan' => 'Surat Pernyataan',
-            'file_nib' => 'NIB',
-            'file_surat_pekerja_ekraf' => 'Surat Keterangan Pekerja Ekraf',
+            'file_surat_pernyataan' => 'Surat Pernyataan ',
+            'file_nib' => 'NIB (untuk pemilik usaha Ekraf)',
+            'file_surat_pekerja_ekraf' => 'Surat Keterangan Pekerja Ekraf (untuk pekerja Perusahaan Ekraf)',
         ];
 
         $additionalFiles = [];

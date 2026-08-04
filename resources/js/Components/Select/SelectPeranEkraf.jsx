@@ -2,32 +2,27 @@ import React, { Fragment } from "react";
 import { Form } from "react-bootstrap";
 import Select from "react-select";
 
-export default function SelectJenisPelatihanEkraf({
+export default function SelectPeranEkraf({
     value = "",
     onChange = (item) => {},
     errors
 }) {
     const options = [
-        { value: "fotografi", label: "Fotografi" },
-        { value: "videografi", label: "Videografi" },
-        { value: "desain_grafis", label: "Desain Grafis" },
-        { value: "editing_video", label: "Editing Video" },
+        { value: "pemilik_usaha", label: "Pemilik Usaha" },
+        { value: "pekerja", label: "Pekerja Ekonomi Kreatif" },
     ];
 
     return (
         <Fragment>
-            <Form.Label className="required mb-2">Jenis Pelatihan</Form.Label>
-
             <Select
                 options={options}
                 value={options.find(option => option.value === value)}
                 onChange={(selectedOption) => onChange(selectedOption?.value || "")}
-                placeholder="Pilih jenis pelatihan..."
+                placeholder="Pilih peran Anda..."
                 isClearable
             />
-
             {!!errors && (
-                <Form.Text className="text-danger d-block mt-1">{errors}</Form.Text>
+                <Form.Text className="text-danger">{errors}</Form.Text>
             )}
         </Fragment>
     );

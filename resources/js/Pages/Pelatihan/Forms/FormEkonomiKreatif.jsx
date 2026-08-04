@@ -10,12 +10,12 @@ import SelectRt from "@/Components/Select/SelectRt";
 import SelectRw from "@/Components/Select/SelectRw";
 import SelectKategoriPendaftar from "@/Components/Select/SelectKategoriPendaftar";
 import SelectJenisPelatihanEkraf from "@/Components/Select/SelectJenisPelatihanEkraf";
+import SelectPeranEkraf from "@/Components/Select/SelectPeranEkraf";
 
 export default function FormEkonomiKreatif({
     title = "Pendaftaran Pelatihan Ekonomi Kreatif",
     kategori_options = {},
-    jenis_pelatihan_options = {},
-    quota_info = {}
+    jenis_pelatihan_options = {}
 }) {
     // State untuk NIK checking (sama seperti UMKM)
     const [nikStatus, setNikStatus] = useState(null);
@@ -35,6 +35,7 @@ export default function FormEkonomiKreatif({
         nama_lengkap: "",
         tanggal_lahir: "",
         no_hp: "",
+        desil: "",
 
         // Alamat KTP
         alamat_ktp: "",
@@ -56,6 +57,7 @@ export default function FormEkonomiKreatif({
 
         // Pelatihan
         jenis_pelatihan: "",
+        peran_ekraf: "",
         alasan: "",
 
         // Files Wajib
@@ -91,6 +93,13 @@ export default function FormEkonomiKreatif({
             if (response.data.success === true) {
                 setNikStatus("NIK valid!");
                 setDataPenerima(true);
+                // Set data dari DTKS
+                setData((prev) => ({
+                    ...prev,
+                    desil: response.data.data?.desil || ">5",
+                    no_kk: response.data.data?.no_kk || prev.no_kk,
+                    nama_lengkap: response.data.data?.nama || prev.nama_lengkap,
+                }));
             } else {
                 setErrorMessage(response.data.message);
             }
@@ -382,42 +391,6 @@ export default function FormEkonomiKreatif({
                 </ul>
             </div>
 
-            {/* Kuota Info Section */}
-            {Object.keys(quota_info).length > 0 && (
-                <div className="alert alert-warning mb-4">
-                    <h6 className="fw-bold mb-3">📊 Informasi Kuota Pelatihan Real-time:</h6>
-                    <div className="row">
-                        {Object.entries(quota_info).map(([jenis, quota]) => (
-                            <div key={jenis} className="col-md-6 mb-2">
-                                <div className={`card border-${quota.penuh ? 'danger' : 'success'}`}>
-                                    <div className="card-body py-2 px-3">
-                                        <div className="d-flex justify-content-between align-items-center">
-                                            <span className="fw-semibold text-capitalize">
-                                                {jenis.replace('_', ' ')}
-                                            </span>
-                                            <span className={`badge bg-${quota.penuh ? 'danger' : 'success'}`}>
-                                                {quota.penuh
-                                                    ? 'PENUH'
-                                                    : `${quota.sisa}/${quota.total_kuota} tersisa`
-                                                }
-                                            </span>
-                                        </div>
-                                        {quota.penuh && (
-                                            <small className="text-danger d-block mt-1">
-                                                ⚠️ Kuota sudah habis - tidak dapat memilih jenis ini
-                                            </small>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    <small className="text-muted d-block mt-2">
-                        * Kuota dihitung berdasarkan pendaftar yang sudah diterima. Data diupdate secara real-time.
-                    </small>
-                </div>
-            )}
-
             {/* NIK Checking Section */}
             <div className="big-text text-muted mb-4">
                 Data Peserta
@@ -529,7 +502,21 @@ export default function FormEkonomiKreatif({
                                 <div className="underline"></div>
                             </div>
 
-                            {/* Nomor KK */}
+                            {/* Data dari DTKS: Desil, No KK, Nama */}
+                            <Form.Group className="mb-3">
+                                <Form.Label className="required">Desil *(Data Terintegrasi dengan Walidata Dinas Sosial)</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={data.desil}
+                                    readOnly
+                                    placeholder="Menunggu data desil..."
+                                    isInvalid={!!errors.desil}
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.desil}
+                                </Form.Control.Feedback>
+                            </Form.Group>
+
                             <Form.Group className="mb-3">
                                 <Form.Label className="required">Nomor KK</Form.Label>
                                 <Form.Control
@@ -834,37 +821,8 @@ export default function FormEkonomiKreatif({
                                     value={data.jenis_pelatihan}
                                     onChange={(value) => setData("jenis_pelatihan", value)}
                                     errors={errors.jenis_pelatihan}
-                                    quotaInfo={quota_info}
                                 />
                             </Form.Group>
-
-                            {/* Warning jika user pilih jenis pelatihan yang hampir habis */}
-                            {data.jenis_pelatihan && quota_info[data.jenis_pelatihan] && (
-                                <div className={`alert mb-4 ${
-                                    quota_info[data.jenis_pelatihan].penuh
-                                        ? 'alert-danger'
-                                        : quota_info[data.jenis_pelatihan].sisa <= 5
-                                            ? 'alert-warning'
-                                            : 'alert-success'
-                                }`}>
-                                    {quota_info[data.jenis_pelatihan].penuh ? (
-                                        <>
-                                            <i className="fa fa-times-circle me-2"></i>
-                                            <strong>Kuota Penuh!</strong> Jenis pelatihan {data.jenis_pelatihan} sudah tidak tersedia.
-                                        </>
-                                    ) : quota_info[data.jenis_pelatihan].sisa <= 5 ? (
-                                        <>
-                                            <i className="fa fa-exclamation-triangle me-2"></i>
-                                            <strong>Kuota Terbatas!</strong> Hanya tersisa {quota_info[data.jenis_pelatihan].sisa} tempat untuk {data.jenis_pelatihan}. Segera selesaikan pendaftaran!
-                                        </>
-                                    ) : (
-                                        <>
-                                            <i className="fa fa-check-circle me-2"></i>
-                                            <strong>Kuota Tersedia!</strong> Masih tersedia {quota_info[data.jenis_pelatihan].sisa} tempat untuk {data.jenis_pelatihan}.
-                                        </>
-                                    )}
-                                </div>
-                            )}
 
                             {/* Upload Section */}
                             <div className="big-text text-muted mb-4">
@@ -914,41 +872,63 @@ export default function FormEkonomiKreatif({
                                 "https://sultan.kedirikota.go.id/storage/files/jG8YSc7E11f1vCyMtwpA63pzzsqVmiIEPghYd4ZR.pdf" // Tambah parameter ini
                             )}
 
-                            
+                            {/* Peran Ekraf - menentukan berkas nomor 5 */}
+                            <Form.Group className="mb-4">
+                                <div className="mb-2 fw-semibold">
+                                    5. Peran Anda pada Ekonomi Kreatif
+                                </div>
+                                <SelectPeranEkraf
+                                    value={data.peran_ekraf}
+                                    onChange={(value) => {
+                                        setData("peran_ekraf", value);
+                                        // Reset berkas yang tidak relevan saat peran berubah
+                                        setData(prev => ({
+                                            ...prev,
+                                            file_nib: null,
+                                            file_surat_pekerja_ekraf: null,
+                                        }));
+                                    }}
+                                    errors={errors.peran_ekraf}
+                                />
+                            </Form.Group>
 
-                            {renderFileUpload(
-                                "NIB",
-                                "file_nib",
-                                ".pdf,.png,.jpg,.jpeg",
-                                null,
-                                "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
-                                5
+                            {/* Upload NIB - khusus pemilik usaha */}
+                            {data.peran_ekraf === "pemilik_usaha" && (
+                                <>
+                                    {renderFileUpload(
+                                        "NIB (Nomor Induk Berusaha)",
+                                        "file_nib",
+                                        ".pdf,.png,.jpg,.jpeg",
+                                        null,
+                                        "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
+                                        6
+                                    )}
+                                    <div className="alert alert-info mb-3 py-2">
+                                        <small>
+                                            <strong>📋 Keterangan:</strong> NIB (Nomor Induk Berusaha) wajib diupload bagi pemilik usaha ekonomi kreatif.
+                                        </small>
+                                    </div>
+                                </>
                             )}
 
-                            {/* Info box sebelum NIB */}
-                            <div className="alert alert-info mb-3 py-2">
-                                <small>
-                                    <strong>📋 Keterangan:</strong> Wajib upload NIB bagi pemilik usaha ekonomi kreatif dan pegawai yang bekerja di usaha ekonomi kreatif (pegawai upload NIB dari usaha tempat dia bekerja)
-                                </small>
-                            </div>
-
-                             
-
-                            {renderFileUpload(
-                                "Surat Keterangan Pekerja Ekonomi Kreatif",
-                                "file_surat_pekerja_ekraf",
-                                ".pdf",
-                                null,
-                                "Maksimal 2MB. Format: PDF",
-                                6
+                            {/* Upload Surat Keterangan - khusus pekerja */}
+                            {data.peran_ekraf === "pekerja" && (
+                                <>
+                                    {renderFileUpload(
+                                        "Surat Keterangan Pekerja Ekonomi Kreatif",
+                                        "file_surat_pekerja_ekraf",
+                                        ".pdf",
+                                        null,
+                                        "Maksimal 2MB. Format: PDF",
+                                        6
+                                    )}
+                                    <div className="alert alert-info mb-3 py-2">
+                                        <small>
+                                            <strong>📋 Keterangan:</strong> Surat keterangan wajib diupload bagi pekerja ekonomi kreatif. Apabila anda adalah pemilik usaha ekonomi kreatif, cukup upload NIB saja.
+                                        </small>
+                                    </div>
+                                </>
                             )}
-
-                            {/* Info box sebelum Surat Pekerja */}
-                            <div className="alert alert-info mb-3 py-2">
-                                <small>
-                                    <strong>📋 Keterangan:</strong> Khusus bagi pegawai yang bekerja di usaha ekonomi kreatif. Apabila anda adalah pemilik usaha ekonomi kreatif, cukup upload NIB saja.
-                                </small>
-                            </div>
 
                             {/* Conditional files based on category */}
                             {data.kategori_pendaftar === "buruh_tani_tembakau" && renderFileUpload(

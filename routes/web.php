@@ -234,9 +234,6 @@ Route::get('/skor-ekraf/alasan', function () {
     return \App\Models\SkorPelatihanEkonomiKreatif::orderBy('skor', 'desc')->get();
 });
 
-Route::get('/pelatihan/ekonomi-kreatif/quota-info', [RegPelatihanEkonomiKreatifController::class, 'getQuotaInfo'])
-    ->name('pelatihan-ekonomi-kreatif.quota-info');
-
 Route::prefix('regpelatihanpetani')->as('regpelatihanpetani.')->group(function () {
     Route::prefix('kelompokpelatihanpetani')->as('kelompokpelatihanpetani.')->group(function () {
         Route::get('/', [RegPelatihanPetaniController::class, 'kelompokpelatihanpetani'])->name('kelompokpelatihanpetani');
