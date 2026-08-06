@@ -129,6 +129,10 @@ class HandleInertiaRequests extends Middleware
                 'viewMasterPertanian' => $request->user()->can('view-master-pertanian'),
                 'editMasterPertanian' => $request->user()->can('edit-master-pertanian'),
 
+                'viewMasterPencariKerja' => $request->user()->can('view-master-pencari-kerja'),
+                'createMasterPencariKerja' => $request->user()->can('add-master-pencari-kerja'),
+                'editMasterPencariKerja' => $request->user()->can('edit-master-pencari-kerja'),
+
                 'viewUser' => $request->user()->can('view-user'),
                 'createUser' => $request->user()->can('add-user'),
                 'editUser' => $request->user()->can('edit-user'),

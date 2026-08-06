@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
 use App\Traits\HasVerifikasiDokumen;
+use App\Models\MasterPencariKerja;
 use App\Models\PelatihanBanmod;
 use App\Models\PelatihanEkonomiKreatif;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -235,6 +236,17 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
                             'jenis' => $row->jenis_pelatihan_industri,
                             'nama_pelatihan' => 'Penerima Banmod',
                             'tahun' => $row->created_at?->format('Y') ?? '-',
+                        ];
+                    })
+            )
+            ->merge(
+                MasterPencariKerja::where('nik', $data->nik)
+                    ->get(['jenis_pelatihan', 'tahun'])
+                    ->map(function ($row) {
+                        return [
+                            'jenis' => $row->jenis_pelatihan,
+                            'nama_pelatihan' => 'Pencari Kerja',
+                            'tahun' => $row->tahun ?? '-',
                         ];
                     })
             )

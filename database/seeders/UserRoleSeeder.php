@@ -33,62 +33,70 @@ class UserRoleSeeder extends Seeder
         // $role_walikota->syncPermissions($permissions_walikota);
 
 
-        //Permission
-        Permission::create(['name' => 'view-dashboard', 'guard_name' => 'web']);
+        //Permission (idempoten - tidak error jika dijalankan ulang)
+        $permissions = [
+            'view-dashboard',
 
-        Permission::create(['name' => 'view-banmod', 'guard_name' => 'web']);
-        Permission::create(['name' => 'add-banmod', 'guard_name' => 'web']);
-        Permission::create(['name' => 'edit-banmod', 'guard_name' => 'web']);
-        Permission::create(['name' => 'delete-banmod', 'guard_name' => 'web']);
+            'view-banmod',
+            'add-banmod',
+            'edit-banmod',
+            'delete-banmod',
 
-        Permission::create(['name' => 'view-pelatihan-banmod', 'guard_name' => 'web']);
-        Permission::create(['name' => 'add-pelatihan-banmod', 'guard_name' => 'web']);
-        Permission::create(['name' => 'edit-pelatihan-banmod', 'guard_name' => 'web']);
-        Permission::create(['name' => 'delete-pelatihan-banmod', 'guard_name' => 'web']);
+            'view-pelatihan-banmod',
+            'add-pelatihan-banmod',
+            'edit-pelatihan-banmod',
+            'delete-pelatihan-banmod',
 
-        Permission::create(['name' => 'view-pelatihan-kerja', 'guard_name' => 'web']);
-        Permission::create(['name' => 'add-pelatihan-kerja', 'guard_name' => 'web']);
-        Permission::create(['name' => 'edit-pelatihan-kerja', 'guard_name' => 'web']);
-        Permission::create(['name' => 'delete-pelatihan-kerja', 'guard_name' => 'web']);
+            'view-pelatihan-kerja',
+            'add-pelatihan-kerja',
+            'edit-pelatihan-kerja',
+            'delete-pelatihan-kerja',
 
-        Permission::create(['name' => 'view-pelatihan-umkm', 'guard_name' => 'web']);
-        Permission::create(['name' => 'add-pelatihan-umkm', 'guard_name' => 'web']);
-        Permission::create(['name' => 'edit-pelatihan-umkm', 'guard_name' => 'web']);
-        Permission::create(['name' => 'delete-pelatihan-umkm', 'guard_name' => 'web']);
+            'view-pelatihan-umkm',
+            'add-pelatihan-umkm',
+            'edit-pelatihan-umkm',
+            'delete-pelatihan-umkm',
 
-        Permission::create(['name' => 'view-pelatihan-pertanian', 'guard_name' => 'web']);
-        Permission::create(['name' => 'add-pelatihan-pertanian', 'guard_name' => 'web']);
-        Permission::create(['name' => 'edit-pelatihan-pertanian', 'guard_name' => 'web']);
-        Permission::create(['name' => 'delete-pelatihan-pertanian', 'guard_name' => 'web']);
+            'view-pelatihan-pertanian',
+            'add-pelatihan-pertanian',
+            'edit-pelatihan-pertanian',
+            'delete-pelatihan-pertanian',
 
-        Permission::create(['name' => 'view-lampiran-file', 'guard_name' => 'web']);
-        Permission::create(['name' => 'add-lampiran-file', 'guard_name' => 'web']);
-        Permission::create(['name' => 'edit-lampiran-file', 'guard_name' => 'web']);
-        Permission::create(['name' => 'delete-lampiran-file', 'guard_name' => 'web']);
+            'view-lampiran-file',
+            'add-lampiran-file',
+            'edit-lampiran-file',
+            'delete-lampiran-file',
 
-        Permission::create(['name' => 'view-master-banmod', 'guard_name' => 'web']);
-        Permission::create(['name' => 'edit-master-banmod', 'guard_name' => 'web']);
+            'view-master-banmod',
+            'edit-master-banmod',
 
-        Permission::create(['name' => 'view-master-pertanian', 'guard_name' => 'web']);
-        Permission::create(['name' => 'edit-master-pertanian', 'guard_name' => 'web']);
+            'view-master-pencari-kerja',
+            'add-master-pencari-kerja',
+            'edit-master-pencari-kerja',
 
-        Permission::create(['name' => 'view-user', 'guard_name' => 'web']);
-        Permission::create(['name' => 'add-user', 'guard_name' => 'web']);
-        Permission::create(['name' => 'edit-user', 'guard_name' => 'web']);
-        Permission::create(['name' => 'delete-user', 'guard_name' => 'web']);
-        Permission::create(['name' => 'restore-user', 'guard_name' => 'web']);
+            'view-master-pertanian',
+            'edit-master-pertanian',
 
-        Permission::create(['name' => 'view-role', 'guard_name' => 'web']);
-        Permission::create(['name' => 'add-role', 'guard_name' => 'web']);
-        Permission::create(['name' => 'edit-role', 'guard_name' => 'web']);
-        Permission::create(['name' => 'delete-role', 'guard_name' => 'web']);
+            'view-user',
+            'add-user',
+            'edit-user',
+            'delete-user',
+            'restore-user',
 
-        //Role
-        Role::create(['name' => 'admin', 'guard_name' => 'web']);
-        Role::create(['name' => 'dinkop', 'guard_name' => 'web']);
-        Role::create(['name' => 'disperindag', 'guard_name' => 'web']);
-        Role::create(['name' => 'pertanian', 'guard_name' => 'web']);
-        Role::create(['name' => 'walikota', 'guard_name' => 'web']);
+            'view-role',
+            'add-role',
+            'edit-role',
+            'delete-role',
+        ];
+
+        foreach ($permissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
+        }
+
+        //Role (idempoten)
+        foreach (['admin', 'dinkop', 'disperindag', 'pertanian', 'walikota'] as $role) {
+            Role::firstOrCreate(['name' => $role, 'guard_name' => 'web']);
+        }
 
         $roleAdmin = Role::findByName('admin');
         $roleAdmin->givePermissionTo([
@@ -119,6 +127,9 @@ class UserRoleSeeder extends Seeder
             'delete-lampiran-file',
             'view-master-banmod',
             'edit-master-banmod',
+            'view-master-pencari-kerja',
+            'add-master-pencari-kerja',
+            'edit-master-pencari-kerja',
             'view-master-pertanian',
             'edit-master-pertanian',
             'view-user',
@@ -143,6 +154,9 @@ class UserRoleSeeder extends Seeder
             'add-pelatihan-umkm',
             'edit-pelatihan-umkm',
             'delete-pelatihan-umkm',
+            'view-master-pencari-kerja',
+            'add-master-pencari-kerja',
+            'edit-master-pencari-kerja',
         ]);
 
         $roleDisperindag = Role::findByName('disperindag');

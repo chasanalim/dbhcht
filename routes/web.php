@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\EksportController;
 use App\Http\Controllers\Admin\LampiranFileController;
 use App\Http\Controllers\Admin\MasterKelompokTaniController;
 use App\Http\Controllers\Admin\MasterPKLController;
+use App\Http\Controllers\Admin\MasterPencariKerjaController;
 use App\Http\Controllers\Admin\PelatihanBanmodController;
 use App\Http\Controllers\Admin\PelatihanEkrafController;
 use App\Http\Controllers\Admin\PelatihanKerjaController;
@@ -96,6 +97,7 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'year.filter'])->group
     Route::resource('banmodwirausaha', PenerimaPelatihanBanmodController::class);
     Route::resource('kelompoktani', MasterKelompokTaniController::class);
     Route::resource('pkl', MasterPKLController::class);
+    Route::resource('master-pencari-kerja', MasterPencariKerjaController::class);
     Route::resource('pelatihan', TipePelatihanController::class);
 
     Route::resource('privileges', PrivilegesController::class);

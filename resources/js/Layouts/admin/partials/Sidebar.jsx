@@ -453,7 +453,8 @@ export default function Sidebar() {
                         </>
                         {(can.viewMasterLampiranFile ||
                             can.viewMasterPertanian ||
-                            can.viewMasterBanmod) && (
+                            can.viewMasterBanmod ||
+                            can.viewMasterPencariKerja) && (
                             <>
                                 <li>
                                     <h6 className="text-uppercase mt-3 menu">
@@ -567,6 +568,33 @@ export default function Sidebar() {
                                         <i className="bi bi-person-fill-lock fs-5"></i>
                                         <span className="text-white mt-1 ms-2">
                                             Master PKL
+                                        </span>
+                                    </NavLink>
+                                </li>
+                            </>
+                        )}
+
+                        {can.viewMasterPencariKerja && (
+                            <>
+                                <li>
+                                    <NavLink
+                                        href={route(
+                                            "admin.master-pencari-kerja.index"
+                                        )}
+                                        active={route().current(
+                                            "admin.master-pencari-kerja.index",
+                                        )}
+                                        className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                            route().current(
+                                                "admin.master-pencari-kerja.index",
+                                            )
+                                                ? "active"
+                                                : ""
+                                        }`}
+                                    >
+                                        <i className="bi bi-person-fill-lock fs-5"></i>
+                                        <span className="text-white mt-1 ms-2">
+                                            Master Pencari Kerja
                                         </span>
                                     </NavLink>
                                 </li>
