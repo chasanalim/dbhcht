@@ -8,6 +8,7 @@ use App\Models\PelatihanUmkm;
 use App\Models\PelatihanBanmod;
 use App\Models\PelatihanKerjas;
 use App\Models\PelatihanPetani;
+use App\Models\PelatihanEkonomiKreatif;
 use Yajra\DataTables\DataTables;
 use App\Models\PendaftaranBanmod;
 use Illuminate\Support\Facades\DB;
@@ -18,8 +19,12 @@ class DashboardController extends Controller
 {
     public function dashboard()
     {
+        // Tahun dari session (sidebar) untuk filter dinamis
+        $tahun = (int) session('selected_year', now()->year);
+
         // return response()->json($this->getBanmodSummary());
         return Inertia::render('Admin/Dashboard/Dashboard', [
+            'selected_year' => $tahun,
             // Banmod Data
             'banmod' => [
                 'summary' => $this->getBanmodSummary(),
@@ -65,10 +70,164 @@ class DashboardController extends Controller
                 'byVerifikasiDokumen' => $this->getPertanianByVerifikasi(),
                 'byKelurahan' => $this->getPertanianByKelurahan()
             ],
+            // Ekonomi Kreatif Data
+            'ekraf' => [
+                'summary' => $this->getEkrafSummary(),
+                'byKecamatan' => $this->getEkrafByKecamatan(),
+                'byJenisPelatihan' => $this->getEkrafByJenisPelatihan(),
+                'byVerifikasiDokumen' => $this->getEkrafByVerifikasi(),
+                'byKelurahan' => $this->getEkrafByKelurahan()
+            ],
         ]);
     }
 
-    // Banmod Methods
+    // ============================================================
+    // Helper: ringkas query status per tabel pelatihan
+    // ============================================================
+    private function yearScope($table)
+    {
+        $tahun = (int) session('selected_year', now()->year);
+        $tabel = str_contains($table, ' as ') ? explode(' as ', $table)[1] : $table;
+        return "{$tabel}.created_at >= '{$tahun}-01-01 00:00:00' AND {$tabel}.created_at <= '{$tahun}-12-31 23:59:59'";
+    }
+
+    // status: 0=Menunggu, 1=Lolos, 2=Tidak Lolos, 3=Blacklist, 4=Lolos di pelatihan lain
+    private function statusSummary($table, $totalAlias = 'total_pendaftar')
+    {
+        return "count(*) as {$totalAlias},
+            SUM(CASE WHEN {$table}.status = 1 THEN 1 ELSE 0 END) as total_lolos,
+            SUM(CASE WHEN {$table}.status = 2 THEN 1 ELSE 0 END) as total_tidak_lolos,
+            SUM(CASE WHEN {$table}.status = 4 THEN 1 ELSE 0 END) as total_diterima_lain,
+            SUM(CASE WHEN {$table}.status = 3 THEN 1 ELSE 0 END) as total_blacklist,
+            SUM(CASE WHEN {$table}.status = 0 THEN 1 ELSE 0 END) as total_belum_diputuskan";
+    }
+
+    private function buildSummary($table, $type, $totalAlias = 'total_pendaftar')
+    {
+        $year = $this->yearScope($table);
+        $tabel = str_contains($table, ' as ') ? explode(' as ', $table)[1] : $table;
+        $result = DB::table($table)
+            ->select(DB::raw($this->statusSummary($tabel, $totalAlias)))
+            ->whereRaw($year)
+            ->first();
+
+        return [
+            'total_pendaftar' => (int) ($result->total_pendaftar ?? 0),
+            'total_pendaftar_lulus' => (int) ($result->total_lolos ?? 0),
+            'total_pendaftar_tidak_lulus' => (int) ($result->total_tidak_lolos ?? 0),
+            'total_pendaftar_belum_verifikasi' => (int) ($result->total_belum_diputuskan ?? 0),
+            'total_diterima_lain' => (int) ($result->total_diterima_lain ?? 0),
+            'total_blacklist' => (int) ($result->total_blacklist ?? 0),
+        ];
+    }
+
+    private function buildByKecamatan($table, $kecColumn, $lolosCondition)
+    {
+        $year = $this->yearScope($table);
+        return DB::table($table)
+            ->select(
+                $kecColumn . ' as name',
+                DB::raw('count(*) as total'),
+                DB::raw('SUM(CASE WHEN ' . $lolosCondition . ' THEN 1 ELSE 0 END) as lolos'),
+                DB::raw('SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END) as tidak_lolos')
+            )
+            ->whereNotNull($kecColumn)
+            ->whereRaw($year)
+            ->groupBy($kecColumn)
+            ->orderBy('total', 'desc')
+            ->get()
+            ->map(fn($item) => [
+                'name' => $item->name,
+                'pendaftar' => (int) $item->total,
+                'lolos' => (int) $item->lolos,
+                'tidak_lolos' => (int) $item->tidak_lolos,
+            ]);
+    }
+
+    private function buildByKelurahan($table, $kecColumn, $kelColumn, $lolosCondition)
+    {
+        $year = $this->yearScope($table);
+        return DB::table($table)
+            ->select(
+                $kecColumn . ' as kecamatan',
+                $kelColumn . ' as kelurahan',
+                DB::raw('count(*) as total'),
+                DB::raw('SUM(CASE WHEN ' . $lolosCondition . ' THEN 1 ELSE 0 END) as lolos'),
+                DB::raw('SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END) as tidak_lolos')
+            )
+            ->whereNotNull($kecColumn)
+            ->whereNotNull($kelColumn)
+            ->whereRaw($year)
+            ->groupBy($kecColumn, $kelColumn)
+            ->orderBy($kecColumn)
+            ->orderBy('total', 'desc')
+            ->get()
+            ->groupBy('kecamatan')
+            ->map(function ($kelurahan) {
+                return [
+                    'name' => $kelurahan->first()->kecamatan,
+                    'kelurahan' => $kelurahan->map(fn($item) => [
+                        'name' => $item->kelurahan,
+                        'total' => (int) $item->total,
+                        'lolos' => (int) $item->lolos,
+                        'tidak_lolos' => (int) $item->tidak_lolos,
+                    ])->values()
+                ];
+            })
+            ->values();
+    }
+
+    private function buildByVerifikasi($table, $type)
+    {
+        return $this->getVerifikasiDataRaw($table, $type);
+    }
+
+    private function getVerifikasiDataRaw($tableName, $type)
+    {
+        $year = $this->yearScope($tableName . ' as m');
+        $result = DB::table($tableName . ' as m')
+            ->select(DB::raw('
+            CASE
+                WHEN vd.total_docs = vd.required_docs
+                    AND vd.verified_docs = vd.required_docs THEN "Terverifikasi"
+                WHEN vd.total_docs = vd.required_docs
+                    AND vd.verified_docs < vd.required_docs THEN "Ditolak"
+                WHEN vd.total_docs IS NULL THEN "Belum Diverifikasi"
+            END as status,
+            COUNT(*) as total
+        '))
+            ->leftJoin(DB::raw('(
+            SELECT
+                pelatihan_id,
+                COUNT(*) as total_docs,
+                SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) as verified_docs,
+                (SELECT COUNT(*) FROM verifikasi_dokumen v2 WHERE v2.pelatihan_type = ? AND v2.pelatihan_id = vd_inner.pelatihan_id) as required_docs
+            FROM verifikasi_dokumen vd_inner
+            WHERE pelatihan_type = ?
+            GROUP BY pelatihan_id
+        ) as vd'), 'm.id', '=', 'vd.pelatihan_id')
+            ->whereRaw($year)
+            ->setBindings([$type, $type])
+            ->groupBy('status')
+            ->get();
+
+        if ($result->isEmpty()) {
+            return [
+                ['name' => 'Belum Diverifikasi', 'y' => 0],
+                ['name' => 'Ditolak', 'y' => 0],
+                ['name' => 'Terverifikasi', 'y' => 0]
+            ];
+        }
+
+        return $result->map(fn($item) => [
+            'name' => $item->status,
+            'y' => $item->total
+        ]);
+    }
+
+    // ============================================================
+    // Banmod (PendaftaranBanmod) Methods — tetap tanpa filter tahun (belum punya created_at)
+    // ============================================================
     private function getBanmodSummary()
     {
         $result = DB::table('pendaftaran_banmods as pb')
@@ -128,7 +287,9 @@ class DashboardController extends Controller
             'total_pendaftar' => $result->total_pendaftar,
             'total_pendaftar_lulus' => $result->total_pendaftar_lulus,
             'total_pendaftar_tidak_lulus' => $result->total_pendaftar_tidak_lulus,
-            'total_pendaftar_belum_verifikasi' => $result->total_pendaftar_belum_verifikasi
+            'total_pendaftar_belum_verifikasi' => $result->total_pendaftar_belum_verifikasi,
+            'total_diterima_lain' => 0,
+            'total_blacklist' => 0,
         ];
     }
 
@@ -149,7 +310,7 @@ class DashboardController extends Controller
     {
         return PendaftaranBanmod::select(
             'nama_kecamatan',
-            DB::raw('count(*) as total'),
+            DB::raw('count(*) as total')
         )
             ->whereNotNull('nama_kecamatan') // Tambahkan filter
             ->groupBy('nama_kecamatan')
@@ -158,7 +319,9 @@ class DashboardController extends Controller
             ->map(function ($item) {
                 return [
                     'name' => $item->nama_kecamatan,
-                    'pendaftar' => $item->total,
+                    'pendaftar' => (int) $item->total,
+                    'lolos' => 0,
+                    'tidak_lolos' => 0,
                 ];
             });
     }
@@ -267,65 +430,26 @@ class DashboardController extends Controller
                     'name' => $kelurahan->first()->nama_kecamatan,
                     'kelurahan' => $kelurahan->map(fn($item) => [
                         'name' => $item->nama_kelurahan,
-                        'total' => $item->total
+                        'total' => (int) $item->total,
+                        'lolos' => 0,
+                        'tidak_lolos' => 0,
                     ])->values()
                 ];
             })
             ->values();
     }
+
+    // ============================================================
     // UMKM Methods
+    // ============================================================
     private function getUmkmSummary()
     {
-        $requiredDocs = count(PelatihanUmkm::getDocumentTypes());
-
-        $result = DB::table('pelatihan_umkm as pu')
-            ->select(DB::raw('
-            count(*) as total_pendaftar,
-            SUM(CASE
-                WHEN vd.total_docs = ' . $requiredDocs . '
-                AND vd.verified_docs = ' . $requiredDocs . '
-                THEN 1 ELSE 0
-            END) as total_pendaftar_lulus,
-            SUM(CASE
-                WHEN vd.total_docs = ' . $requiredDocs . '
-                AND vd.verified_docs < ' . $requiredDocs . '
-                THEN 1 ELSE 0
-            END) as total_pendaftar_tidak_lulus,
-            SUM(CASE
-                WHEN vd.total_docs IS NULL THEN 1 ELSE 0
-            END) as total_pendaftar_belum_verifikasi
-        '))
-            ->leftJoin(DB::raw('(
-            SELECT
-                pelatihan_id,
-                COUNT(*) as total_docs,
-                SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) as verified_docs
-            FROM verifikasi_dokumen
-            WHERE pelatihan_type = ?
-            GROUP BY pelatihan_id
-        ) as vd'), 'pu.id', '=', 'vd.pelatihan_id')
-            ->setBindings([PelatihanUmkm::class])
-            ->first();
-
-        return [
-            'total_pendaftar' => $result->total_pendaftar,
-            'total_pendaftar_lulus' => $result->total_pendaftar_lulus,
-            'total_pendaftar_tidak_lulus' => $result->total_pendaftar_tidak_lulus,
-            'total_pendaftar_belum_verifikasi' => $result->total_pendaftar_belum_verifikasi
-        ];
+        return $this->buildSummary('pelatihan_umkm', 'umkm');
     }
 
     private function getUmkmByKecamatan()
     {
-        return PelatihanUmkm::select('kecamatan', DB::raw('count(*) as total'))
-            ->whereNotNull('kecamatan')
-            ->groupBy('kecamatan')
-            ->orderBy('total', 'desc')
-            ->get()
-            ->map(fn($item) => [
-                'name' => $item->kecamatan,
-                'y' => $item->total
-            ]);
+        return $this->buildByKecamatan('pelatihan_umkm', 'kecamatan', 'status = 1');
     }
 
     private function getUmkmByPrioritas1()
@@ -368,81 +492,20 @@ class DashboardController extends Controller
 
     private function getUmkmByKelurahan()
     {
-        return PelatihanUmkm::select(
-            'kecamatan',
-            'kelurahan',
-            DB::raw('count(*) as total')
-        )
-            ->whereNotNull('kecamatan')
-            ->whereNotNull('kelurahan')
-            ->groupBy('kecamatan', 'kelurahan')
-            ->orderBy('kecamatan')
-            ->orderBy('total', 'desc')
-            ->get()
-            ->groupBy('kecamatan')
-            ->map(function ($kelurahan) {
-                return [
-                    'name' => $kelurahan->first()->kecamatan,
-                    'kelurahan' => $kelurahan->map(fn($item) => [
-                        'name' => $item->kelurahan,
-                        'total' => $item->total
-                    ])->values()
-                ];
-            })
-            ->values();
+        return $this->buildByKelurahan('pelatihan_umkm', 'kecamatan', 'kelurahan', 'status = 1');
     }
 
+    // ============================================================
     // Kerja Methods
+    // ============================================================
     private function getKerjaSummary()
     {
-        $requiredDocs = count(PelatihanKerjas::getDocumentTypes());
-
-        $result = DB::table('pelatihan_kerjas as pk')
-            ->select(DB::raw('
-            count(*) as total_pendaftar,
-            SUM(CASE
-                WHEN vd.total_docs = ' . $requiredDocs . '
-                AND vd.verified_docs = ' . $requiredDocs . '
-                THEN 1 ELSE 0
-            END) as total_pendaftar_lulus,
-            SUM(CASE
-                WHEN vd.total_docs = ' . $requiredDocs . '
-                AND vd.verified_docs < ' . $requiredDocs . '
-                THEN 1 ELSE 0
-            END) as total_pendaftar_tidak_lulus,
-            SUM(CASE
-                WHEN vd.total_docs IS NULL THEN 1 ELSE 0
-            END) as total_pendaftar_belum_verifikasi
-        '))
-            ->leftJoin(DB::raw('(
-            SELECT
-                pelatihan_id,
-                COUNT(*) as total_docs,
-                SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) as verified_docs
-            FROM verifikasi_dokumen
-            WHERE pelatihan_type = ?
-            GROUP BY pelatihan_id
-        ) as vd'), 'pk.id', '=', 'vd.pelatihan_id')
-            ->setBindings([PelatihanKerjas::class])
-            ->first();
-
-        return [
-            'total_pendaftar' => $result->total_pendaftar,
-            'total_pendaftar_lulus' => $result->total_pendaftar_lulus,
-            'total_pendaftar_tidak_lulus' => $result->total_pendaftar_tidak_lulus,
-            'total_pendaftar_belum_verifikasi' => $result->total_pendaftar_belum_verifikasi
-        ];
+        return $this->buildSummary('pelatihan_kerjas', 'kerja');
     }
 
     private function getKerjaByKecamatan()
     {
-        return PelatihanKerjas::select('nama_kecamatan', DB::raw('count(*) as total'))
-            ->groupBy('nama_kecamatan')
-            ->get()
-            ->map(fn($item) => [
-                'name' => $item->nama_kecamatan,
-                'y' => $item->total
-            ]);
+        return $this->buildByKecamatan('pelatihan_kerjas', 'nama_kecamatan', 'status = 1');
     }
 
     private function getKerjaByPendidikan()
@@ -473,82 +536,23 @@ class DashboardController extends Controller
     {
         return $this->getVerifikasiData(PelatihanKerjas::class);
     }
+
     private function getKerjaByKelurahan()
     {
-        return PelatihanKerjas::select(
-            'nama_kecamatan',
-            'nama_kelurahan',
-            DB::raw('count(*) as total')
-        )
-            ->whereNotNull('nama_kecamatan')
-            ->whereNotNull('nama_kelurahan')
-            ->groupBy('nama_kecamatan', 'nama_kelurahan')
-            ->orderBy('nama_kecamatan')
-            ->orderBy('total', 'desc')
-            ->get()
-            ->groupBy('nama_kecamatan')
-            ->map(function ($kelurahan) {
-                return [
-                    'name' => $kelurahan->first()->nama_kecamatan,
-                    'kelurahan' => $kelurahan->map(fn($item) => [
-                        'name' => $item->nama_kelurahan,
-                        'total' => $item->total
-                    ])->values()
-                ];
-            })
-            ->values();
+        return $this->buildByKelurahan('pelatihan_kerjas', 'nama_kecamatan', 'nama_kelurahan', 'status = 1');
     }
+
+    // ============================================================
     // Pertanian Methods
+    // ============================================================
     private function getPelatihanBanmodSummary()
     {
-        $requiredDocs = count(PelatihanBanmod::getDocumentTypes());
-
-        $result = DB::table('pelatihan_banmod as pb')
-            ->select(DB::raw('
-            count(*) as total_pendaftar,
-            SUM(CASE
-                WHEN vd.total_docs = ' . $requiredDocs . '
-                AND vd.verified_docs = ' . $requiredDocs . '
-                THEN 1 ELSE 0
-            END) as total_pendaftar_lulus,
-            SUM(CASE
-                WHEN vd.total_docs = ' . $requiredDocs . '
-                AND vd.verified_docs < ' . $requiredDocs . '
-                THEN 1 ELSE 0
-            END) as total_pendaftar_tidak_lulus,
-            SUM(CASE
-                WHEN vd.total_docs IS NULL THEN 1 ELSE 0
-            END) as total_pendaftar_belum_verifikasi
-        '))
-            ->leftJoin(DB::raw('(
-            SELECT
-                pelatihan_id,
-                COUNT(*) as total_docs,
-                SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) as verified_docs
-            FROM verifikasi_dokumen
-            WHERE pelatihan_type = ?
-            GROUP BY pelatihan_id
-        ) as vd'), 'pb.id', '=', 'vd.pelatihan_id')
-            ->setBindings([PelatihanBanmod::class])
-            ->first();
-
-        return [
-            'total_pendaftar' => $result->total_pendaftar,
-            'total_pendaftar_lulus' => $result->total_pendaftar_lulus,
-            'total_pendaftar_tidak_lulus' => $result->total_pendaftar_tidak_lulus,
-            'total_pendaftar_belum_verifikasi' => $result->total_pendaftar_belum_verifikasi
-        ];
+        return $this->buildSummary('pelatihan_banmod', 'pelatihan_banmod');
     }
 
     private function getPelatihanBanmodByKecamatan()
     {
-        return PelatihanBanmod::select('kecamatan_ktp', DB::raw('count(*) as total'))
-            ->groupBy('kecamatan_ktp')
-            ->get()
-            ->map(fn($item) => [
-                'name' => $item->kecamatan_ktp,
-                'y' => $item->total
-            ]);
+        return $this->buildByKecamatan('pelatihan_banmod', 'kecamatan_ktp', 'status = 1');
     }
 
     private function getPelatihanBanmodByJenisPelatihan()
@@ -566,30 +570,10 @@ class DashboardController extends Controller
     {
         return $this->getVerifikasiData(PelatihanBanmod::class);
     }
+
     private function getPelatihanBanmodByKelurahan()
     {
-        return PelatihanBanmod::select(
-            'kecamatan_ktp as nama_kecamatan',
-            'kelurahan_ktp as nama_kelurahan',
-            DB::raw('count(*) as total')
-        )
-            ->whereNotNull('kecamatan_ktp')
-            ->whereNotNull('kelurahan_ktp')
-            ->groupBy('kecamatan_ktp', 'kelurahan_ktp')
-            ->orderBy('kecamatan_ktp')
-            ->orderBy('total', 'desc')
-            ->get()
-            ->groupBy('nama_kecamatan')
-            ->map(function ($kelurahan) {
-                return [
-                    'name' => $kelurahan->first()->nama_kecamatan,
-                    'kelurahan' => $kelurahan->map(fn($item) => [
-                        'name' => $item->nama_kelurahan,
-                        'total' => $item->total
-                    ])->values()
-                ];
-            })
-            ->values();
+        return $this->buildByKelurahan('pelatihan_banmod', 'kecamatan_ktp', 'kelurahan_ktp', 'status = 1');
     }
 
     private function getPelatihanBanmodByTahunPenerimaan()
@@ -605,54 +589,12 @@ class DashboardController extends Controller
 
     private function getPertanianSummary()
     {
-        $requiredDocs = count(PelatihanPetani::getDocumentTypes());
-
-        $result = DB::table('pelatihan_petanis as pp')
-            ->select(DB::raw('
-            count(*) as total_pendaftar,
-            SUM(CASE
-                WHEN vd.total_docs = ' . $requiredDocs . '
-                AND vd.verified_docs = ' . $requiredDocs . '
-                THEN 1 ELSE 0
-            END) as total_pendaftar_lulus,
-            SUM(CASE
-                WHEN vd.total_docs = ' . $requiredDocs . '
-                AND vd.verified_docs < ' . $requiredDocs . '
-                THEN 1 ELSE 0
-            END) as total_pendaftar_tidak_lulus,
-            SUM(CASE
-                WHEN vd.total_docs IS NULL THEN 1 ELSE 0
-            END) as total_pendaftar_belum_verifikasi
-        '))
-            ->leftJoin(DB::raw('(
-            SELECT
-                pelatihan_id,
-                COUNT(*) as total_docs,
-                SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) as verified_docs
-            FROM verifikasi_dokumen
-            WHERE pelatihan_type = ?
-            GROUP BY pelatihan_id
-        ) as vd'), 'pp.id', '=', 'vd.pelatihan_id')
-            ->setBindings([PelatihanPetani::class])
-            ->first();
-
-        return [
-            'total_pendaftar' => $result->total_pendaftar,
-            'total_pendaftar_lulus' => $result->total_pendaftar_lulus,
-            'total_pendaftar_tidak_lulus' => $result->total_pendaftar_tidak_lulus,
-            'total_pendaftar_belum_verifikasi' => $result->total_pendaftar_belum_verifikasi
-        ];
+        return $this->buildSummary('pelatihan_petanis', 'pertanian');
     }
 
     private function getPertanianByKecamatan()
     {
-        return PelatihanPetani::select('nama_kecamatan', DB::raw('count(*) as total'))
-            ->groupBy('nama_kecamatan')
-            ->get()
-            ->map(fn($item) => [
-                'name' => $item->nama_kecamatan,
-                'y' => $item->total
-            ]);
+        return $this->buildByKecamatan('pelatihan_petanis', 'nama_kecamatan', 'status = 1');
     }
 
     private function getPertanianByJenisPelatihan()
@@ -672,7 +614,48 @@ class DashboardController extends Controller
         return $this->getVerifikasiData(PelatihanPetani::class);
     }
 
-    // Helper Methods
+    private function getPertanianByKelurahan()
+    {
+        return $this->buildByKelurahan('pelatihan_petanis', 'nama_kecamatan', 'nama_kelurahan', 'status = 1');
+    }
+
+    // ============================================================
+    // Ekonomi Kreatif Methods
+    // ============================================================
+    private function getEkrafSummary()
+    {
+        return $this->buildSummary('pelatihan_ekonomi_kreatif', 'ekraf');
+    }
+
+    private function getEkrafByKecamatan()
+    {
+        return $this->buildByKecamatan('pelatihan_ekonomi_kreatif', 'kecamatan_ktp', 'status = 1');
+    }
+
+    private function getEkrafByJenisPelatihan()
+    {
+        return PelatihanEkonomiKreatif::select('jenis_pelatihan', DB::raw('count(*) as total'))
+            ->groupBy('jenis_pelatihan')
+            ->get()
+            ->map(fn($item) => [
+                'name' => $item->jenis_pelatihan ?? 'Tidak ada',
+                'y' => $item->total
+            ]);
+    }
+
+    private function getEkrafByVerifikasi()
+    {
+        return $this->getVerifikasiData(PelatihanEkonomiKreatif::class);
+    }
+
+    private function getEkrafByKelurahan()
+    {
+        return $this->buildByKelurahan('pelatihan_ekonomi_kreatif', 'kecamatan_ktp', 'kelurahan_ktp', 'status = 1');
+    }
+
+    // ============================================================
+    // Helper Methods (verifikasi dengan model class)
+    // ============================================================
     private function getVerifikasiData($modelClass)
     {
         $model = new $modelClass;
@@ -717,32 +700,6 @@ class DashboardController extends Controller
             'y' => $item->total
         ]);
     }
-    private function getPertanianByKelurahan()
-    {
-        return PelatihanPetani::select(
-            'nama_kecamatan',
-            'nama_kelurahan',
-            DB::raw('count(*) as total')
-        )
-            ->whereNotNull('nama_kecamatan')
-            ->whereNotNull('nama_kelurahan')
-            ->groupBy('nama_kecamatan', 'nama_kelurahan')
-            ->orderBy('nama_kecamatan')
-            ->orderBy('total', 'desc')
-            ->get()
-            ->groupBy('nama_kecamatan')
-            ->map(function ($kelurahan) {
-                return [
-                    'name' => $kelurahan->first()->nama_kecamatan,
-                    'kelurahan' => $kelurahan->map(fn($item) => [
-                        'name' => $item->nama_kelurahan,
-                        'total' => $item->total
-                    ])->values()
-                ];
-            })
-            ->values();
-    }
-
 
     public function blacklist(Request $request)
     {

@@ -116,6 +116,7 @@ class HandleInertiaRequests extends Middleware
                 'viewKerja' => $request->user()->can('view-pelatihan-kerja'),
                 'viewPelatihanBanmod' => $request->user()->can('view-pelatihan-banmod'),
                 'viewPertanian' => $request->user()->can('view-pelatihan-pertanian'),
+                'viewEkraf' => $request->user()->can('view-pelatihan-banmod'),
 
                 'viewMasterLampiranFile' => $request->user()->can('view-lampiran-file'),
                 'createMasterLampiranFile' => $request->user()->can('add-lampiran-file'),

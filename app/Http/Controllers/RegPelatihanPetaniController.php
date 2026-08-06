@@ -45,7 +45,7 @@ class RegPelatihanPetaniController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'nik' => 'required|numeric|digits:16|unique:pelatihan_petanis,nik',
+            'nik' => 'required|numeric|digits:16',
             'kk' => 'required|numeric|digits:16',
             'jenis_kelamin' => 'required|string',
             'nama_lengkap' => 'required|string|max:255',
@@ -108,6 +108,19 @@ class RegPelatihanPetaniController extends Controller
         $data['file_rekomendasi_kelompok'] =
             $this->saveAndCompressPdf($request->file('file_rekomendasi_kelompok'), 'petani/file_rekomendasi_kelompok');
 
+        // Check NIK sudah pernah daftar di tahun yang sama
+        $tahunPendaftaran = date('Y');
+        $existing = PelatihanPetani::where('nik', $data['nik'])
+            ->whereYear('created_at', $tahunPendaftaran)
+            ->first();
+        if ($existing) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'nik' => "NIK sudah pernah mendaftar pelatihan pertanian tahun {$tahunPendaftaran}."
+                ]);
+        }
+
         // Format array ke json
         $data['jenis_disabilitas'] = json_encode($data['jenis_disabilitas'] ?? []);
         $data['status'] = 0;
@@ -128,7 +141,10 @@ class RegPelatihanPetaniController extends Controller
             ], 400);
         }
 
-        // Cek blacklist dari semua jenis pelatihan
+        $tahunSekarang = (int) date('Y');
+        $tahunSebelumnya = $tahunSekarang - 1;
+
+        // Cek blacklist dari semua jenis pelatihan (berlaku untuk pendaftaran tahun berikutnya)
         $blacklistModels = [
             PelatihanUmkm::class,
             PelatihanBanmod::class,
@@ -139,6 +155,7 @@ class RegPelatihanPetaniController extends Controller
         foreach ($blacklistModels as $model) {
             $blacklisted = $model::where('status', 3)
                 ->where('nik', $nik)
+                ->whereYear('created_at', $tahunSebelumnya)
                 ->exists();
 
             if ($blacklisted) {
@@ -159,6 +176,7 @@ class RegPelatihanPetaniController extends Controller
         foreach ($doneModels as $model) {
             $done = $model::where('status', 1)
                 ->where('nik', $nik)
+                ->whereYear('created_at', $tahunSekarang)
                 ->exists();
 
             if ($done) {

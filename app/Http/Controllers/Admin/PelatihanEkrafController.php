@@ -216,18 +216,26 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
                     ->where('id', '!=', $data->id)
                     ->where('status', PelatihanEkonomiKreatif::STATUS_LOLOS)
                     ->withoutSelectedYearFilter()
-                    ->get(['jenis_pelatihan'])
+                    ->get(['jenis_pelatihan', 'created_at'])
                     ->map(function ($row) {
-                        return ['jenis' => $row->jenis_pelatihan, 'nama_pelatihan' => 'Ekonomi Kreatif'];
+                        return [
+                            'jenis' => $row->jenis_pelatihan,
+                            'nama_pelatihan' => 'Ekonomi Kreatif',
+                            'tahun' => $row->created_at?->format('Y') ?? '-',
+                        ];
                     })
             )
             ->merge(
                 PelatihanBanmod::where('nik', $data->nik)
                     ->where('status', 1)
                     ->withoutSelectedYearFilter()
-                    ->get(['jenis_pelatihan_industri'])
+                    ->get(['jenis_pelatihan_industri', 'created_at'])
                     ->map(function ($row) {
-                        return ['jenis' => $row->jenis_pelatihan_industri, 'nama_pelatihan' => 'Penerima Banmod'];
+                        return [
+                            'jenis' => $row->jenis_pelatihan_industri,
+                            'nama_pelatihan' => 'Penerima Banmod',
+                            'tahun' => $row->created_at?->format('Y') ?? '-',
+                        ];
                     })
             )
             ->values();

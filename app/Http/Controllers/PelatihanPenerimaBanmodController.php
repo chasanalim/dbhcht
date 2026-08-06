@@ -72,6 +72,17 @@ class PelatihanPenerimaBanmodController extends Controller
                 'komitmen' => 'required|accepted'
             ]);
 
+            // Check NIK sudah pernah daftar di tahun yang sama
+            $tahunPendaftaran = date('Y');
+            $existing = PelatihanBanmod::where('nik', $validated['nik'])
+                ->whereYear('created_at', $tahunPendaftaran)
+                ->first();
+            if ($existing) {
+                throw ValidationException::withMessages([
+                    'nik' => "NIK sudah pernah mendaftar pelatihan penerima bantuan modal tahun {$tahunPendaftaran}."
+                ]);
+            }
+
             DB::beginTransaction();
 
             try {
@@ -220,6 +231,55 @@ class PelatihanPenerimaBanmodController extends Controller
             ], 400);
         }
 
+        $tahunSekarang = (int) date('Y');
+        $tahunSebelumnya = $tahunSekarang - 1;
+
+        // Cek blacklist dari semua jenis pelatihan (berlaku untuk pendaftaran tahun berikutnya)
+        $blacklistModels = [
+            \App\Models\PelatihanUmkm::class,
+            \App\Models\PelatihanBanmod::class,
+            \App\Models\PelatihanKerjas::class,
+            \App\Models\PelatihanPetani::class
+        ];
+
+        foreach ($blacklistModels as $model) {
+            $blacklisted = $model::where('status', 3)
+                ->where('nik', $nik)
+                ->whereYear('created_at', $tahunSebelumnya)
+                ->exists();
+
+            if ($blacklisted) {
+                return response()->json([
+                    'success' => false,
+                    'blacklisted' => true,
+                    'message' => 'NIK Anda telah dimasukkan blacklist dalam pelatihan karena melanggar ketentuan yang berlaku.'
+                ], 403);
+            }
+        }
+
+        // Cek sudah pernah ikut pelatihan lain (berlaku hanya di tahun yang sama)
+        $doneModels = [
+            \App\Models\PelatihanUmkm::class,
+            \App\Models\PelatihanKerjas::class,
+            \App\Models\PelatihanPetani::class
+        ];
+
+        foreach ($doneModels as $model) {
+            $done = $model::where('status', 1)
+                ->where('nik', $nik)
+                ->whereYear('created_at', $tahunSekarang)
+                ->exists();
+
+            if ($done) {
+                $jenisPelatihan = (new $model)->getJenisPelatihan();
+                return response()->json([
+                    'success' => false,
+                    'blacklisted' => true,
+                    'message' => "Mohon maaf, NIK Anda telah menerima pelatihan {$jenisPelatihan} pada periode tahun ini."
+                ], 403);
+            }
+        }
+
         // Cek apakah terdaftar sebagai penerima banmod
         $data = PenerimaBanmod::where('nik', $nik)->first();
 
@@ -228,7 +288,7 @@ class PelatihanPenerimaBanmodController extends Controller
         );
 
         $dtks = $response->json();
-     
+
 
         // Ambil desil jika ada, jika tidak null
         $desil = $dtks['desil'] ?? '>5';

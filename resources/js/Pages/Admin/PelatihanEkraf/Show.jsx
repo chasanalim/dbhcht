@@ -983,6 +983,12 @@ export default function Show({ title, data, type = "PELATIHAN_EKRAF" }) {
                                                                     {item.jenis}
                                                                 </span>
                                                             </td>
+                                                            <td>
+                                                                Tahun :{" "}
+                                                                <strong>
+                                                                    {item.tahun}
+                                                                </strong>
+                                                            </td>
                                                         </tr>
                                                     )
                                                 )

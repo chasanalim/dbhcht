@@ -10,7 +10,9 @@ export default function Dashboard({
     kerja,
     pertanian,
     pelatihan_banmod,
+    ekraf,
     can,
+    selected_year,
 }) {
     const getStatusColor = (status) => {
         switch (status.toLowerCase()) {
@@ -73,6 +75,25 @@ export default function Dashboard({
                 name: "Pendaftar",
                 data: data.map((item) => item.pendaftar || item.y),
             },
+            // Tampilkan jumlah Lolos & Tidak Lolos jika tersedia
+            ...(data[0]?.lolos !== undefined
+                ? [
+                      {
+                          name: "Lolos",
+                          data: data.map((item) => item.lolos),
+                          color: "#28a745",
+                      },
+                  ]
+                : []),
+            ...(data[0]?.tidak_lolos !== undefined
+                ? [
+                      {
+                          name: "Tidak Lolos",
+                          data: data.map((item) => item.tidak_lolos),
+                          color: "#dc3545",
+                      },
+                  ]
+                : []),
             // Hanya tampilkan RAB jika ada datanya
             ...(data[0]?.rab
                 ? [
@@ -92,6 +113,12 @@ export default function Dashboard({
     return (
         <AdminLayout header={<h2 className="h3 mb-0">Dashboard</h2>}>
             <Head title="Dashboard" />
+
+            {selected_year && (
+                <div className="alert alert-info mb-0 py-2 small">
+                    <strong>Tahun Pelaksanaan:</strong> {selected_year}
+                </div>
+            )}
 
             {/* Banmod Section */}
             {can.viewBanmod && (
@@ -298,6 +325,40 @@ export default function Dashboard({
                     data={pertanian.byKelurahan}
                 />
             )}
+
+            {/* Ekraf Section */}
+            {can.viewEkraf && (
+                <DashboardSection
+                    type="ekraf"
+                    title="Dashboard Pelatihan Ekonomi Kreatif"
+                    summary={ekraf.summary}
+                    charts={[
+                        {
+                            title: "Sebaran Kecamatan",
+                            options: createBarChartOptions(
+                                "Sebaran per Kecamatan",
+                                ekraf.byKecamatan,
+                                true
+                            ),
+                        },
+                        {
+                            title: "Jenis Pelatihan",
+                            options: createBarChartOptions(
+                                "Jenis Pelatihan",
+                                ekraf.byJenisPelatihan
+                            ),
+                        },
+                        {
+                            title: "Status Verifikasi",
+                            options: createPieChartOptions(
+                                "Status Verifikasi Dokumen",
+                                ekraf.byVerifikasiDokumen
+                            ),
+                        },
+                    ]}
+                    data={ekraf.byKelurahan}
+                />
+            )}
         </AdminLayout>
     );
 }
@@ -322,6 +383,10 @@ const DASHBOARD_THEMES = {
     pertanian: {
         headerBg: "bg-danger-head",
         sectionBg: "bg-danger-subtle",
+    },
+    ekraf: {
+        headerBg: "bg-primary-head",
+        sectionBg: "bg-primary-subtle",
     },
 };
 const CircularProgress = ({ value, color, size = 60 }) => {
@@ -525,6 +590,61 @@ const DashboardSection = ({
                 </Col>
             </Row>
 
+            {/* Status summary: Lolos / Tidak Lolos / Diterima Pelatihan Lain */}
+            <Row className="g-4 mb-4">
+                <Col md={4}>
+                    <Card className="border-0 shadow-sm rounded-4 stat-card">
+                        <Card.Body className="p-4">
+                            <div className="d-flex align-items-center mb-2">
+                                <div className="stat-icon bg-success p-3 rounded-3 mb-3 me-2">
+                                    <i className="bi bi-trophy fs-4 text-white"></i>
+                                </div>
+                                <h6 className="text-muted text-uppercase small">
+                                    Peserta Lolos
+                                </h6>
+                            </div>
+                            <h1 className="fw-bold text-success mb-0">
+                                {summary.total_pendaftar_lulus}
+                            </h1>
+                        </Card.Body>
+                    </Card>
+                </Col>
+                <Col md={4}>
+                    <Card className="border-0 shadow-sm rounded-4 stat-card">
+                        <Card.Body className="p-4">
+                            <div className="d-flex align-items-center mb-2">
+                                <div className="stat-icon bg-danger p-3 rounded-3 mb-3 me-2">
+                                    <i className="bi bi-x-octagon fs-4 text-white"></i>
+                                </div>
+                                <h6 className="text-muted text-uppercase small">
+                                    Peserta Tidak Lolos
+                                </h6>
+                            </div>
+                            <h1 className="fw-bold text-danger mb-0">
+                                {summary.total_pendaftar_tidak_lulus}
+                            </h1>
+                        </Card.Body>
+                    </Card>
+                </Col>
+                <Col md={4}>
+                    <Card className="border-0 shadow-sm rounded-4 stat-card">
+                        <Card.Body className="p-4">
+                            <div className="d-flex align-items-center mb-2">
+                                <div className="stat-icon bg-primary p-3 rounded-3 mb-3 me-2">
+                                    <i className="bi bi-arrow-left-right fs-4 text-white"></i>
+                                </div>
+                                <h6 className="text-muted text-uppercase small">
+                                    Diterima Pelatihan Lain
+                                </h6>
+                            </div>
+                            <h1 className="fw-bold text-primary mb-0">
+                                {summary.total_diterima_lain ?? 0}
+                            </h1>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
+
             {/* Charts */}
             <Row className="g-4 mb-4">
                 {charts.map((chart, index) => (
@@ -565,7 +685,13 @@ const DashboardSection = ({
                                                         Kelurahan
                                                     </th>
                                                     <th className="border-0 text-end">
-                                                        Jumlah
+                                                        Pendaftar
+                                                    </th>
+                                                    <th className="border-0 text-end">
+                                                        Lolos
+                                                    </th>
+                                                    <th className="border-0 text-end">
+                                                        Tidak Lolos
                                                     </th>
                                                 </tr>
                                             </thead>
@@ -579,6 +705,12 @@ const DashboardSection = ({
                                                             <td>{kel.name}</td>
                                                             <td className="text-end fw-semibold">
                                                                 {kel.total}
+                                                            </td>
+                                                            <td className="text-end fw-semibold text-success">
+                                                                {kel.lolos ?? 0}
+                                                            </td>
+                                                            <td className="text-end fw-semibold text-danger">
+                                                                {kel.tidak_lolos ?? 0}
                                                             </td>
                                                         </tr>
                                                     )
@@ -596,6 +728,20 @@ const DashboardSection = ({
                                                         {kecamatan.kelurahan.reduce(
                                                             (sum, kel) =>
                                                                 sum + kel.total,
+                                                            0
+                                                        )}
+                                                    </td>
+                                                    <td className="text-end fw-bold text-success">
+                                                        {kecamatan.kelurahan.reduce(
+                                                            (sum, kel) =>
+                                                                sum + (kel.lolos ?? 0),
+                                                            0
+                                                        )}
+                                                    </td>
+                                                    <td className="text-end fw-bold text-danger">
+                                                        {kecamatan.kelurahan.reduce(
+                                                            (sum, kel) =>
+                                                                sum + (kel.tidak_lolos ?? 0),
                                                             0
                                                         )}
                                                     </td>

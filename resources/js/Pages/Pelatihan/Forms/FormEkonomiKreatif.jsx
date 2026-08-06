@@ -644,7 +644,7 @@ export default function FormEkonomiKreatif({
                                         kodeKelurahan={data.kode_kelurahan_ktp}
                                         onChange={(item) => setData(prev => ({
                                             ...prev,
-                                            rw_ktp: item.text,
+                                            rw_ktp: item.rw,
                                         }))}
                                         errors={errors.rw_ktp}
                                     />
@@ -656,7 +656,7 @@ export default function FormEkonomiKreatif({
                                         kodeRw={data.rw_ktp}
                                         onChange={(item) => setData(prev => ({
                                             ...prev,
-                                            rt_ktp: item.text,
+                                            rt_ktp: item.rt,
                                         }))}
                                         errors={errors.rt_ktp}
                                     />
@@ -764,7 +764,7 @@ export default function FormEkonomiKreatif({
                                                 value={data.rw_domisili ? {text: data.rw_domisili} : null}
                                                 onChange={(item) => setData(prev => ({
                                                     ...prev,
-                                                    rw_domisili: item.text,
+                                                    rw_domisili: item.rw,
                                                     rt_domisili: "",
                                                 }))}
                                                 errors={errors.rw_domisili}
@@ -778,7 +778,7 @@ export default function FormEkonomiKreatif({
                                                 value={data.rt_domisili ? {text: data.rt_domisili} : null}
                                                 onChange={(item) => setData(prev => ({
                                                     ...prev,
-                                                    rt_domisili: item.text,
+                                                    rt_domisili: item.rt,
                                                 }))}
                                                 errors={errors.rt_domisili}
                                             />

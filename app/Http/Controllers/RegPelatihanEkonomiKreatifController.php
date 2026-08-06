@@ -66,11 +66,14 @@ class RegPelatihanEkonomiKreatifController extends Controller
                 $validatedData['kode_kecamatan_domisili'] = $validatedData['kode_kecamatan_ktp'];
             }
 
-            // Check NIK sudah pernah daftar
-            $existing = PelatihanEkonomiKreatif::where('nik', $validatedData['nik'])->first();
+            // Check NIK sudah pernah daftar di tahun yang sama
+            $tahunPendaftaran = date('Y');
+            $existing = PelatihanEkonomiKreatif::where('nik', $validatedData['nik'])
+                ->whereYear('created_at', $tahunPendaftaran)
+                ->first();
             if ($existing) {
                 return back()->withErrors([
-                    'nik' => 'NIK sudah pernah mendaftar pelatihan ekonomi kreatif.'
+                    'nik' => "NIK sudah pernah mendaftar pelatihan ekonomi kreatif tahun {$tahunPendaftaran}."
                 ])->withInput();
             }
 
@@ -170,7 +173,8 @@ class RegPelatihanEkonomiKreatifController extends Controller
         // Ambil data DTKS dari Walidata Dinas Sosial untuk menentukan desil
         try {
             $response = Http::get(
-                'https://api-splp.layanan.go.id:443/t/kedirikota.go.id/walidata/0.1/api/dtks/check?nik=' . $nik
+                // 'https://api-splp.layanan.go.id:443/t/kedirikota.go.id/walidata/0.1/api/dtks/check?nik=' . $nik
+                'https://walidata.kedirikota.go.id/api/dtks/check?nik=' . $nik
             );
 
             $dtks = $response->json();
@@ -182,7 +186,10 @@ class RegPelatihanEkonomiKreatifController extends Controller
         // Ambil desil jika ada, jika tidak null
         $desil = $dtks['desil'] ?? '>5';
 
-        // Cek blacklist dari semua jenis pelatihan
+        $tahunSekarang = (int) date('Y');
+        $tahunSebelumnya = $tahunSekarang - 1;
+
+        // Cek blacklist dari semua jenis pelatihan (berlaku untuk pendaftaran tahun berikutnya)
         $blacklistModels = [
             \App\Models\PelatihanUmkm::class,
             \App\Models\PelatihanBanmod::class,
@@ -194,6 +201,7 @@ class RegPelatihanEkonomiKreatifController extends Controller
         foreach ($blacklistModels as $model) {
             $blacklisted = $model::where('status', 3)
                 ->where('nik', $nik)
+                ->whereYear('created_at', $tahunSebelumnya)
                 ->exists();
 
             if ($blacklisted) {
@@ -205,7 +213,7 @@ class RegPelatihanEkonomiKreatifController extends Controller
             }
         }
 
-        // Cek sudah pernah ikut pelatihan lain
+        // Cek sudah pernah ikut pelatihan lain (berlaku hanya di tahun yang sama)
         $doneModels = [
             \App\Models\PelatihanBanmod::class,
             \App\Models\PelatihanKerjas::class,
@@ -216,6 +224,7 @@ class RegPelatihanEkonomiKreatifController extends Controller
         foreach ($doneModels as $model) {
             $done = $model::where('status', 1)
                 ->where('nik', $nik)
+                ->whereYear('created_at', $tahunSekarang)
                 ->exists();
 
             if ($done) {
@@ -296,9 +305,22 @@ class RegPelatihanEkonomiKreatifController extends Controller
             'file_kk' => 'required|file|mimes:jpg,jpeg,png|max:2048',
             'file_pasfoto' => 'required|file|mimes:jpg,jpeg,png|max:2048',
             'file_surat_pernyataan' => 'required|file|mimes:pdf|max:2048',
-            'file_nib' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'file_surat_pekerja_ekraf' => 'nullable|file|mimes:pdf|max:2048',
+            'peran_ekraf' => 'required|in:pemilik_usaha,pekerja',
         ];
+
+        // File NIB / Surat Keterangan Pekerja Ekraf - wajib sesuai peran pendaftar
+        // Pemilik usaha wajib upload NIB, pekerja wajib upload surat keterangan pekerja
+        if ($request->peran_ekraf === 'pemilik_usaha') {
+            $fileRules['file_nib'] = 'required|file|mimes:pdf,jpg,jpeg,png|max:2048';
+            $fileRules['file_surat_pekerja_ekraf'] = 'nullable|file|mimes:pdf|max:2048';
+        } elseif ($request->peran_ekraf === 'pekerja') {
+            $fileRules['file_nib'] = 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048';
+            $fileRules['file_surat_pekerja_ekraf'] = 'required|file|mimes:pdf|max:2048';
+        } else {
+            // Peran tidak valid/belum dipilih - kedua file tidak wajib
+            $fileRules['file_nib'] = 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048';
+            $fileRules['file_surat_pekerja_ekraf'] = 'nullable|file|mimes:pdf|max:2048';
+        }
 
         // Additional file validation berdasarkan kategori
         $kategori = $request->kategori_pendaftar;
@@ -349,8 +371,10 @@ class RegPelatihanEkonomiKreatifController extends Controller
             'file_kk.required' => 'File KK wajib diupload.',
             'file_pasfoto.required' => 'File pas foto wajib diupload.',
             'file_surat_pernyataan.required' => 'File surat pernyataan wajib diupload.',
-            'file_nib.required' => 'File NIB wajib diupload.',
-            'file_surat_pekerja_ekraf.required' => 'File surat keterangan pekerja ekonomi kreatif wajib diupload.',
+            'peran_ekraf.required' => 'Pilih peran Anda terlebih dahulu (Pemilik Usaha / Pekerja Ekonomi Kreatif).',
+            'peran_ekraf.in' => 'Pilihan peran tidak valid.',
+            'file_nib.required' => 'File NIB wajib diupload untuk pemilik usaha ekonomi kreatif.',
+            'file_surat_pekerja_ekraf.required' => 'File surat keterangan pekerja ekonomi kreatif wajib diupload untuk pekerja ekonomi kreatif.',
             'file_surat_pemilik_lahan.required' => 'File surat dari pemilik lahan wajib diupload untuk kategori buruh tani tembakau.',
             'file_id_card_iht.required' => 'File ID Card/surat keterangan dari IHT wajib diupload untuk kategori buruh pabrik rokok.',
             'file_surat_phk.required' => 'File surat pemberhentian kerja wajib diupload untuk kategori buruh PHK.',

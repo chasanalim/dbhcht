@@ -160,8 +160,8 @@ export default function Index({ title, can, flash, pelatihan }) {
                     searchable: true,
                 },
                 {
-                    data: "no_kk",
-                    name: "no_kk",
+                    data: "desil",
+                    name: "desil",
                 },
                 {
                     data: "nama_lengkap",
@@ -680,7 +680,7 @@ export default function Index({ title, can, flash, pelatihan }) {
                                                 <th>AKSI</th>
                                                 <th>KATEGORI</th>
                                                 <th>NIK</th>
-                                                <th>NO KK</th>
+                                                <th>DESIL</th>
                                                 <th>NAMA</th>
                                                 <th>ALAMAT</th>
                                                 <th>RT</th>

@@ -118,6 +118,19 @@ class RegPelatihanKeterampilanKerjaController extends Controller
             }
         }
 
+        // Check NIK sudah pernah daftar di tahun yang sama
+        $tahunPendaftaran = date('Y');
+        $existing = PelatihanKerjas::where('nik', $validated['nik'])
+            ->whereYear('created_at', $tahunPendaftaran)
+            ->first();
+        if ($existing) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'nik' => "NIK sudah pernah mendaftar pelatihan keterampilan kerja tahun {$tahunPendaftaran}."
+                ]);
+        }
+
         $validated['status'] = 0;
 
         $storedPendaftaran = PelatihanKerjas::create($validated);
@@ -154,7 +167,10 @@ class RegPelatihanKeterampilanKerjaController extends Controller
             ], 400);
         }
 
-        // Cek blacklist dari semua jenis pelatihan
+        $tahunSekarang = (int) date('Y');
+        $tahunSebelumnya = $tahunSekarang - 1;
+
+        // Cek blacklist dari semua jenis pelatihan (berlaku untuk pendaftaran tahun berikutnya)
         $blacklistModels = [
             PelatihanUmkm::class,
             PelatihanBanmod::class,
@@ -165,6 +181,7 @@ class RegPelatihanKeterampilanKerjaController extends Controller
         foreach ($blacklistModels as $model) {
             $blacklisted = $model::where('status', 3)
                 ->where('nik', $nik)
+                ->whereYear('created_at', $tahunSebelumnya)
                 ->exists();
 
             if ($blacklisted) {
@@ -185,6 +202,7 @@ class RegPelatihanKeterampilanKerjaController extends Controller
         foreach ($doneModels as $model) {
             $done = $model::where('status', 1)
                 ->where('nik', $nik)
+                ->whereYear('created_at', $tahunSekarang)
                 ->exists();
 
             if ($done) {
