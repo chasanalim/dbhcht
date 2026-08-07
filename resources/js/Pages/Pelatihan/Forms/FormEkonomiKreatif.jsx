@@ -15,7 +15,7 @@ import SelectPeranEkraf from "@/Components/Select/SelectPeranEkraf";
 export default function FormEkonomiKreatif({
     title = "Pendaftaran Pelatihan Ekonomi Kreatif",
     kategori_options = {},
-    jenis_pelatihan_options = {}
+    jenis_pelatihan_options = {},
 }) {
     // State untuk NIK checking (sama seperti UMKM)
     const [nikStatus, setNikStatus] = useState(null);
@@ -86,7 +86,7 @@ export default function FormEkonomiKreatif({
         setNikStatus("");
         try {
             const response = await axios.get(
-                `/pelatihan/ekonomi-kreatif/cek-nik/${data.nik}`
+                `/pelatihan/ekonomi-kreatif/cek-nik/${data.nik}`,
             );
 
             // Handle success response
@@ -105,7 +105,10 @@ export default function FormEkonomiKreatif({
             }
         } catch (error) {
             // Handle error response
-            if (error.response?.status === 403 || error.response?.status === 400) {
+            if (
+                error.response?.status === 403 ||
+                error.response?.status === 400
+            ) {
                 setErrorMessage(error.response.data.message);
             } else {
                 setErrorMessage("Terjadi kesalahan saat cek NIK.");
@@ -120,24 +123,30 @@ export default function FormEkonomiKreatif({
                 setSkorAlasanOptions(
                     data.map((item) => ({
                         value: item.id,
-                        label: item.jawaban
-                    }))
+                        label: item.jawaban,
+                    })),
                 );
             })
-            .catch(error => {
-                console.error('Error loading skor options:', error);
+            .catch((error) => {
+                console.error("Error loading skor options:", error);
             });
     }, []);
 
     // Fetch required files when kategori changes
     useEffect(() => {
         if (data.kategori_pendaftar) {
-            axios.get(route('pelatihan-ekonomi-kreatif.requirements', data.kategori_pendaftar))
-                .then(response => {
+            axios
+                .get(
+                    route(
+                        "pelatihan-ekonomi-kreatif.requirements",
+                        data.kategori_pendaftar,
+                    ),
+                )
+                .then((response) => {
                     setRequiredFiles(response.data.data.required_files || {});
                 })
-                .catch(error => {
-                    console.error('Error fetching requirements:', error);
+                .catch((error) => {
+                    console.error("Error fetching requirements:", error);
                 });
         }
     }, [data.kategori_pendaftar]);
@@ -150,7 +159,10 @@ export default function FormEkonomiKreatif({
         let age = today.getFullYear() - birth.getFullYear();
         const monthDiff = today.getMonth() - birth.getMonth();
 
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+        if (
+            monthDiff < 0 ||
+            (monthDiff === 0 && today.getDate() < birth.getDate())
+        ) {
             age--;
         }
 
@@ -177,10 +189,10 @@ export default function FormEkonomiKreatif({
         if (file.size > maxFileSize) {
             alert(
                 `Ukuran file terlalu besar: ${formatFileSize(file.size)}\n` +
-                `Maksimal ukuran file: 2MB\n` +
-                `Silakan kompres atau pilih file yang lebih kecil.`
+                    `Maksimal ukuran file: 2MB\n` +
+                    `Silakan kompres atau pilih file yang lebih kecil.`,
             );
-            e.target.value = '';
+            e.target.value = "";
             return;
         }
 
@@ -203,10 +215,10 @@ export default function FormEkonomiKreatif({
         if (file.size > maxFileSize) {
             alert(
                 `File terlalu besar: ${formatFileSize(file.size)}\n` +
-                `Maksimal ukuran file: 2MB\n` +
-                `Silakan kompres atau pilih file yang lebih kecil.`
+                    `Maksimal ukuran file: 2MB\n` +
+                    `Silakan kompres atau pilih file yang lebih kecil.`,
             );
-            e.target.value = '';
+            e.target.value = "";
             return;
         }
 
@@ -243,7 +255,7 @@ export default function FormEkonomiKreatif({
                 },
                 onError: (errors) => {
                     console.error("Form errors:", errors);
-                }
+                },
             });
         } catch (error) {
             console.error("Submit error:", error);
@@ -256,11 +268,48 @@ export default function FormEkonomiKreatif({
         <div className="alert alert-info mb-4">
             <h6 className="fw-bold">📋 Panduan Upload File:</h6>
             <ul className="mb-0 small">
-                <li>Maksimal ukuran per file: <strong>2MB</strong></li>
-                <li>Jika file terlalu besar, gunakan tools kompresi online:
+                <li>
+                    Maksimal ukuran per file: <strong>2MB</strong>
+                </li>
+                <li>
+                    Jika file terlalu besar, gunakan tools kompresi online:
                     <ul>
-                        <li>Untuk gambar: <a href="https://tinypng.com" target="_blank" rel="noopener noreferrer">TinyPNG</a> atau <a href="https://compressjpeg.com" target="_blank" rel="noopener noreferrer">CompressJPEG</a></li>
-                        <li>Untuk PDF: <a href="https://www.ilovepdf.com/compress_pdf" target="_blank" rel="noopener noreferrer">ILovePDF</a> atau <a href="https://smallpdf.com/compress-pdf" target="_blank" rel="noopener noreferrer">SmallPDF</a></li>
+                        <li>
+                            Untuk gambar:{" "}
+                            <a
+                                href="https://tinypng.com"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                TinyPNG
+                            </a>{" "}
+                            atau{" "}
+                            <a
+                                href="https://compressjpeg.com"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                CompressJPEG
+                            </a>
+                        </li>
+                        <li>
+                            Untuk PDF:{" "}
+                            <a
+                                href="https://www.ilovepdf.com/compress_pdf"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                ILovePDF
+                            </a>{" "}
+                            atau{" "}
+                            <a
+                                href="https://smallpdf.com/compress-pdf"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                SmallPDF
+                            </a>
+                        </li>
                     </ul>
                 </li>
             </ul>
@@ -274,15 +323,19 @@ export default function FormEkonomiKreatif({
         imagePreviewKey = null,
         description = "",
         fileIndex = 1,
-        downloadLink = null
+        downloadLink = null,
     ) => {
         return (
             <Form.Group className="mb-4" key={fieldName}>
                 <div className="mb-2 fw-semibold">
                     {fileIndex}. {label}
                 </div>
-                <Form.Label className="text-primary" style={{ fontSize: "11px" }}>
-                    Format: {accept === ".pdf" ? "*.pdf" : "*.png, *.jpg, *.jpeg"}
+                <Form.Label
+                    className="text-primary"
+                    style={{ fontSize: "11px" }}
+                >
+                    Format:{" "}
+                    {accept === ".pdf" ? "*.pdf" : "*.png, *.jpg, *.jpeg"}
                 </Form.Label>
 
                 <Form.Control
@@ -303,7 +356,10 @@ export default function FormEkonomiKreatif({
                 )}
 
                 {description && (
-                    <div className="text-muted mt-1" style={{ fontSize: "12px" }}>
+                    <div
+                        className="text-muted mt-1"
+                        style={{ fontSize: "12px" }}
+                    >
                         {description}
                     </div>
                 )}
@@ -337,7 +393,9 @@ export default function FormEkonomiKreatif({
                             size="sm"
                             variant="danger"
                             className="position-absolute top-0 end-0"
-                            onClick={() => handleRemoveImage(fieldName, imagePreviewKey)}
+                            onClick={() =>
+                                handleRemoveImage(fieldName, imagePreviewKey)
+                            }
                         >
                             ✕
                         </Button>
@@ -349,7 +407,8 @@ export default function FormEkonomiKreatif({
                     <ListGroup className="mt-3">
                         <ListGroup.Item className="d-flex justify-content-between align-items-center">
                             <span>
-                                📄 {data[fieldName].name} ({formatFileSize(data[fieldName].size)})
+                                📄 {data[fieldName].name} (
+                                {formatFileSize(data[fieldName].size)})
                                 <a
                                     href={URL.createObjectURL(data[fieldName])}
                                     target="_blank"
@@ -382,12 +441,20 @@ export default function FormEkonomiKreatif({
             <div className="alert alert-info mb-4">
                 <strong>INFORMASI PELATIHAN:</strong>
                 <p className="mb-2">
-                    Pelatihan Ekonomi Kreatif bertujuan untuk meningkatkan keterampilan dan daya saing pelaku usaha di bidang ekonomi kreatif.
+                    Pelatihan Ekonomi Kreatif bertujuan untuk meningkatkan
+                    keterampilan dan daya saing pelaku usaha di bidang ekonomi
+                    kreatif.
                 </p>
                 <ul className="mb-0">
-                    <li>Durasi pelatihan disesuaikan dengan jenis pelatihan yang dipilih</li>
+                    <li>
+                        Durasi pelatihan disesuaikan dengan jenis pelatihan yang
+                        dipilih
+                    </li>
                     <li>Materi meliputi teori dan praktik</li>
-                    <li>Sertifikat akan diberikan kepada peserta yang menyelesaikan pelatihan</li>
+                    <li>
+                        Sertifikat akan diberikan kepada peserta yang
+                        menyelesaikan pelatihan
+                    </li>
                 </ul>
             </div>
 
@@ -417,7 +484,9 @@ export default function FormEkonomiKreatif({
                             }
                         }}
                         className={`${
-                            nikLength === 16 ? "border-success text-success" : "border-warning"
+                            nikLength === 16
+                                ? "border-success text-success"
+                                : "border-warning"
                         }`}
                         maxLength={16}
                     />
@@ -438,8 +507,8 @@ export default function FormEkonomiKreatif({
                         nikLength === 16
                             ? "text-success"
                             : nikLength > 0
-                            ? "text-warning"
-                            : "text-muted"
+                              ? "text-warning"
+                              : "text-muted"
                     }`}
                 >
                     {nikLength}/16 digit
@@ -447,8 +516,12 @@ export default function FormEkonomiKreatif({
             </Form.Group>
 
             {/* Error & Success Messages */}
-            {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
-            {nikStatus && <div className="alert alert-success">{nikStatus}</div>}
+            {errorMessage && (
+                <div className="alert alert-danger">{errorMessage}</div>
+            )}
+            {nikStatus && (
+                <div className="alert alert-success">{nikStatus}</div>
+            )}
 
             {/* Show rest of form only when NIK is validated */}
             {dataPenerima && (
@@ -460,13 +533,15 @@ export default function FormEkonomiKreatif({
                     </div>
 
                     <Form.Group className="mb-3">
-                        <Form.Label className="required">Kategori Pendaftar</Form.Label>
+                        <Form.Label className="required">
+                            Kategori Pendaftar
+                        </Form.Label>
                         <SelectKategoriPendaftar
                             value={data.kategori_pendaftar}
                             onChange={(value) => {
                                 setData("kategori_pendaftar", value);
                                 // Reset file fields when category changes
-                                setData(prev => ({
+                                setData((prev) => ({
                                     ...prev,
                                     file_surat_pemilik_lahan: null,
                                     file_id_card_iht: null,
@@ -478,18 +553,27 @@ export default function FormEkonomiKreatif({
                             errors={errors.kategori_pendaftar}
                         />
                         <Form.Text className="text-muted">
-                            Pilih kategori yang sesuai dengan kondisi Anda untuk menentukan persyaratan dokumen yang diperlukan.
+                            Pilih kategori yang sesuai dengan kondisi Anda untuk
+                            menentukan persyaratan dokumen yang diperlukan.
                         </Form.Text>
                     </Form.Group>
 
                     {/* Show requirements info when category selected */}
                     {data.kategori_pendaftar && (
                         <div className="alert alert-warning mb-4">
-                            <strong>📋 Dokumen yang diperlukan untuk kategori "{data.kategori_pendaftar.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}":</strong>
+                            <strong>
+                                📋 Dokumen yang diperlukan untuk kategori "
+                                {data.kategori_pendaftar
+                                    .replace(/_/g, " ")
+                                    .replace(/\b\w/g, (l) => l.toUpperCase())}
+                                ":
+                            </strong>
                             <ul className="mb-0 mt-2">
-                                {Object.entries(requiredFiles).map(([key, label]) => (
-                                    <li key={key}>{label}</li>
-                                ))}
+                                {Object.entries(requiredFiles).map(
+                                    ([key, label]) => (
+                                        <li key={key}>{label}</li>
+                                    ),
+                                )}
                             </ul>
                         </div>
                     )}
@@ -504,7 +588,10 @@ export default function FormEkonomiKreatif({
 
                             {/* Data dari DTKS: Desil, No KK, Nama */}
                             <Form.Group className="mb-3">
-                                <Form.Label className="required">Desil *(Data Terintegrasi dengan Walidata Dinas Sosial)</Form.Label>
+                                <Form.Label className="required">
+                                    Desil *(Data Terintegrasi dengan Walidata
+                                    Dinas Sosial)
+                                </Form.Label>
                                 <Form.Control
                                     type="text"
                                     value={data.desil}
@@ -518,18 +605,27 @@ export default function FormEkonomiKreatif({
                             </Form.Group>
 
                             <Form.Group className="mb-3">
-                                <Form.Label className="required">Nomor KK</Form.Label>
+                                <Form.Label className="required">
+                                    Nomor KK
+                                </Form.Label>
                                 <Form.Control
                                     type="text"
                                     value={data.no_kk}
                                     onChange={(e) => {
-                                        const value = e.target.value.replace(/\D/g, "");
+                                        const value = e.target.value.replace(
+                                            /\D/g,
+                                            "",
+                                        );
                                         if (value.length <= 16) {
                                             setData("no_kk", value);
                                             setKkLength(value.length);
                                         }
                                     }}
-                                    className={kkLength === 16 ? "border-success text-success" : "border-warning"}
+                                    className={
+                                        kkLength === 16
+                                            ? "border-success text-success"
+                                            : "border-warning"
+                                    }
                                     maxLength={16}
                                     placeholder="Nomor Kartu Keluarga"
                                     isInvalid={!!errors.no_kk}
@@ -537,20 +633,30 @@ export default function FormEkonomiKreatif({
                                 <Form.Control.Feedback type="invalid">
                                     {errors.no_kk}
                                 </Form.Control.Feedback>
-                                <small className={`d-block mt-1 ${
-                                    kkLength === 16 ? "text-success" : kkLength > 0 ? "text-warning" : "text-muted"
-                                }`}>
+                                <small
+                                    className={`d-block mt-1 ${
+                                        kkLength === 16
+                                            ? "text-success"
+                                            : kkLength > 0
+                                              ? "text-warning"
+                                              : "text-muted"
+                                    }`}
+                                >
                                     {kkLength}/16 digit
                                 </small>
                             </Form.Group>
 
                             {/* Nama Lengkap */}
                             <Form.Group className="mb-3">
-                                <Form.Label className="required">Nama Lengkap</Form.Label>
+                                <Form.Label className="required">
+                                    Nama Lengkap
+                                </Form.Label>
                                 <Form.Control
                                     type="text"
                                     value={data.nama_lengkap}
-                                    onChange={(e) => setData("nama_lengkap", e.target.value)}
+                                    onChange={(e) =>
+                                        setData("nama_lengkap", e.target.value)
+                                    }
                                     isInvalid={!!errors.nama_lengkap}
                                 />
                                 <Form.Control.Feedback type="invalid">
@@ -560,13 +666,33 @@ export default function FormEkonomiKreatif({
 
                             {/* Tanggal Lahir & Usia */}
                             <Form.Group className="mb-3">
-                                <Form.Label className="required">Tanggal Lahir</Form.Label>
+                                <Form.Label className="required">
+                                    Tanggal Lahir
+                                </Form.Label>
                                 <Form.Control
                                     type="date"
                                     value={data.tanggal_lahir}
-                                    onChange={(e) => setData("tanggal_lahir", e.target.value)}
-                                    max={new Date(new Date().setFullYear(new Date().getFullYear() - 17)).toISOString().split('T')[0]}
-                                    min={new Date(new Date().setFullYear(new Date().getFullYear() - 65)).toISOString().split('T')[0]}
+                                    onChange={(e) =>
+                                        setData("tanggal_lahir", e.target.value)
+                                    }
+                                    max={
+                                        new Date(
+                                            new Date().setFullYear(
+                                                new Date().getFullYear() - 17,
+                                            ),
+                                        )
+                                            .toISOString()
+                                            .split("T")[0]
+                                    }
+                                    min={
+                                        new Date(
+                                            new Date().setFullYear(
+                                                new Date().getFullYear() - 65,
+                                            ),
+                                        )
+                                            .toISOString()
+                                            .split("T")[0]
+                                    }
                                     isInvalid={!!errors.tanggal_lahir}
                                 />
                                 <Form.Control.Feedback type="invalid">
@@ -575,12 +701,19 @@ export default function FormEkonomiKreatif({
 
                                 {/* Display calculated age */}
                                 {data.tanggal_lahir && (
-                                    <Form.Text className={`mt-1 d-block fw-semibold ${
-                                        currentAge >= 17 && currentAge <= 65 ? 'text-success' : 'text-danger'
-                                    }`}>
+                                    <Form.Text
+                                        className={`mt-1 d-block fw-semibold ${
+                                            currentAge >= 17 && currentAge <= 65
+                                                ? "text-success"
+                                                : "text-danger"
+                                        }`}
+                                    >
                                         Usia saat ini: {currentAge} tahun
-                                        {(currentAge < 17 || currentAge > 65) && (
-                                            <span className="ms-2">⚠️ Usia harus antara 17-65 tahun</span>
+                                        {(currentAge < 17 ||
+                                            currentAge > 65) && (
+                                            <span className="ms-2">
+                                                ⚠️ Usia harus antara 17-65 tahun
+                                            </span>
                                         )}
                                     </Form.Text>
                                 )}
@@ -592,11 +725,15 @@ export default function FormEkonomiKreatif({
 
                             {/* No HP */}
                             <Form.Group className="mb-3">
-                                <Form.Label className="required">No HP/WA</Form.Label>
+                                <Form.Label className="required">
+                                    No HP/WA
+                                </Form.Label>
                                 <Form.Control
                                     type="text"
                                     value={data.no_hp}
-                                    onChange={(e) => setData("no_hp", e.target.value)}
+                                    onChange={(e) =>
+                                        setData("no_hp", e.target.value)
+                                    }
                                     placeholder="628XXXXXXXXXX"
                                     isInvalid={!!errors.no_hp}
                                 />
@@ -613,25 +750,33 @@ export default function FormEkonomiKreatif({
 
                             <Form.Group className="row mb-3">
                                 <div className="col-md-6 mb-3">
-                                    <Form.Label className="required">Kecamatan</Form.Label>
+                                    <Form.Label className="required">
+                                        Kecamatan
+                                    </Form.Label>
                                     <SelectKecamatan
-                                        onChange={(item) => setData(prev => ({
-                                            ...prev,
-                                            kode_kecamatan_ktp: item.id,
-                                            kecamatan_ktp: item.text,
-                                        }))}
+                                        onChange={(item) =>
+                                            setData((prev) => ({
+                                                ...prev,
+                                                kode_kecamatan_ktp: item.id,
+                                                kecamatan_ktp: item.text,
+                                            }))
+                                        }
                                         errors={errors.kecamatan_ktp}
                                     />
                                 </div>
                                 <div className="col-md-6 mb-3">
-                                    <Form.Label className="required">Kelurahan</Form.Label>
+                                    <Form.Label className="required">
+                                        Kelurahan
+                                    </Form.Label>
                                     <SelectKelurahan
                                         kodeKecamatan={data.kode_kecamatan_ktp}
-                                        onChange={(item) => setData(prev => ({
-                                            ...prev,
-                                            kode_kelurahan_ktp: item.id,
-                                            kelurahan_ktp: item.text,
-                                        }))}
+                                        onChange={(item) =>
+                                            setData((prev) => ({
+                                                ...prev,
+                                                kode_kelurahan_ktp: item.id,
+                                                kelurahan_ktp: item.text,
+                                            }))
+                                        }
                                         errors={errors.kelurahan_ktp}
                                     />
                                 </div>
@@ -639,37 +784,49 @@ export default function FormEkonomiKreatif({
 
                             <Form.Group className="row mb-3">
                                 <div className="col-md-6 mb-3">
-                                    <Form.Label className="required">RW</Form.Label>
+                                    <Form.Label className="required">
+                                        RW
+                                    </Form.Label>
                                     <SelectRw
                                         kodeKelurahan={data.kode_kelurahan_ktp}
-                                        onChange={(item) => setData(prev => ({
-                                            ...prev,
-                                            rw_ktp: item.rw,
-                                        }))}
+                                        onChange={(item) =>
+                                            setData((prev) => ({
+                                                ...prev,
+                                                rw_ktp: item.rw,
+                                            }))
+                                        }
                                         errors={errors.rw_ktp}
                                     />
                                 </div>
                                 <div className="col-md-6 mb-3">
-                                    <Form.Label className="required">RT</Form.Label>
+                                    <Form.Label className="required">
+                                        RT
+                                    </Form.Label>
                                     <SelectRt
                                         kodeKelurahan={data.kode_kelurahan_ktp}
                                         kodeRw={data.rw_ktp}
-                                        onChange={(item) => setData(prev => ({
-                                            ...prev,
-                                            rt_ktp: item.rt,
-                                        }))}
+                                        onChange={(item) =>
+                                            setData((prev) => ({
+                                                ...prev,
+                                                rt_ktp: item.rt,
+                                            }))
+                                        }
                                         errors={errors.rt_ktp}
                                     />
                                 </div>
                             </Form.Group>
 
                             <Form.Group className="mb-4">
-                                <Form.Label className="required">Alamat Lengkap KTP</Form.Label>
+                                <Form.Label className="required">
+                                    Alamat Lengkap KTP
+                                </Form.Label>
                                 <Form.Control
                                     as="textarea"
                                     rows={3}
                                     value={data.alamat_ktp}
-                                    onChange={(e) => setData("alamat_ktp", e.target.value)}
+                                    onChange={(e) =>
+                                        setData("alamat_ktp", e.target.value)
+                                    }
                                     placeholder="Alamat lengkap sesuai KTP"
                                     isInvalid={!!errors.alamat_ktp}
                                 />
@@ -693,19 +850,24 @@ export default function FormEkonomiKreatif({
                                     checked={data.isDomisili || false}
                                     onChange={(e) => {
                                         const isDifferent = e.target.checked;
-                                        setData(prev => ({
+                                        setData((prev) => ({
                                             ...prev,
                                             isDomisili: isDifferent,
                                             // Jika tidak diceklis, copy data dari KTP
                                             ...(!isDifferent && {
-                                                alamat_domisili: prev.alamat_ktp,
+                                                alamat_domisili:
+                                                    prev.alamat_ktp,
                                                 rt_domisili: prev.rt_ktp,
                                                 rw_domisili: prev.rw_ktp,
-                                                kelurahan_domisili: prev.kelurahan_ktp,
-                                                kecamatan_domisili: prev.kecamatan_ktp,
-                                                kode_kelurahan_domisili: prev.kode_kelurahan_ktp,
-                                                kode_kecamatan_domisili: prev.kode_kecamatan_ktp,
-                                            })
+                                                kelurahan_domisili:
+                                                    prev.kelurahan_ktp,
+                                                kecamatan_domisili:
+                                                    prev.kecamatan_ktp,
+                                                kode_kelurahan_domisili:
+                                                    prev.kode_kelurahan_ktp,
+                                                kode_kecamatan_domisili:
+                                                    prev.kode_kecamatan_ktp,
+                                            }),
                                         }));
                                     }}
                                 />
@@ -716,82 +878,142 @@ export default function FormEkonomiKreatif({
                                 <>
                                     <Form.Group className="row mb-3">
                                         <div className="col-md-6 mb-3">
-                                            <Form.Label className="required">Kecamatan</Form.Label>
+                                            <Form.Label className="required">
+                                                Kecamatan
+                                            </Form.Label>
                                             <SelectKecamatan
-                                                value={data.kode_kecamatan_domisili && data.kecamatan_domisili ?
-                                                    {id: data.kode_kecamatan_domisili, text: data.kecamatan_domisili} :
-                                                    null
+                                                value={
+                                                    data.kode_kecamatan_domisili &&
+                                                    data.kecamatan_domisili
+                                                        ? {
+                                                              id: data.kode_kecamatan_domisili,
+                                                              text: data.kecamatan_domisili,
+                                                          }
+                                                        : null
                                                 }
-                                                onChange={(item) => setData(prev => ({
-                                                    ...prev,
-                                                    kode_kecamatan_domisili: item.id,
-                                                    kecamatan_domisili: item.text,
-                                                    // Reset kelurahan ketika kecamatan berubah
-                                                    kode_kelurahan_domisili: "",
-                                                    kelurahan_domisili: "",
-                                                    rw_domisili: "",
-                                                    rt_domisili: "",
-                                                }))}
-                                                errors={errors.kecamatan_domisili}
+                                                onChange={(item) =>
+                                                    setData((prev) => ({
+                                                        ...prev,
+                                                        kode_kecamatan_domisili:
+                                                            item.id,
+                                                        kecamatan_domisili:
+                                                            item.text,
+                                                        // Reset kelurahan ketika kecamatan berubah
+                                                        kode_kelurahan_domisili:
+                                                            "",
+                                                        kelurahan_domisili: "",
+                                                        rw_domisili: "",
+                                                        rt_domisili: "",
+                                                    }))
+                                                }
+                                                errors={
+                                                    errors.kecamatan_domisili
+                                                }
                                             />
                                         </div>
                                         <div className="col-md-6 mb-3">
-                                            <Form.Label className="required">Kelurahan</Form.Label>
+                                            <Form.Label className="required">
+                                                Kelurahan
+                                            </Form.Label>
                                             <SelectKelurahan
-                                                kodeKecamatan={data.kode_kecamatan_domisili}
-                                                value={data.kode_kelurahan_domisili && data.kelurahan_domisili ?
-                                                    {id: data.kode_kelurahan_domisili, text: data.kelurahan_domisili} :
-                                                    null
+                                                kodeKecamatan={
+                                                    data.kode_kecamatan_domisili
                                                 }
-                                                onChange={(item) => setData(prev => ({
-                                                    ...prev,
-                                                    kode_kelurahan_domisili: item.id,
-                                                    kelurahan_domisili: item.text,
-                                                    // Reset RW/RT ketika kelurahan berubah
-                                                    rw_domisili: "",
-                                                    rt_domisili: "",
-                                                }))}
-                                                errors={errors.kelurahan_domisili}
+                                                value={
+                                                    data.kode_kelurahan_domisili &&
+                                                    data.kelurahan_domisili
+                                                        ? {
+                                                              id: data.kode_kelurahan_domisili,
+                                                              text: data.kelurahan_domisili,
+                                                          }
+                                                        : null
+                                                }
+                                                onChange={(item) =>
+                                                    setData((prev) => ({
+                                                        ...prev,
+                                                        kode_kelurahan_domisili:
+                                                            item.id,
+                                                        kelurahan_domisili:
+                                                            item.text,
+                                                        // Reset RW/RT ketika kelurahan berubah
+                                                        rw_domisili: "",
+                                                        rt_domisili: "",
+                                                    }))
+                                                }
+                                                errors={
+                                                    errors.kelurahan_domisili
+                                                }
                                             />
                                         </div>
                                     </Form.Group>
 
                                     <Form.Group className="row mb-3">
                                         <div className="col-md-6 mb-3">
-                                            <Form.Label className="required">RW</Form.Label>
+                                            <Form.Label className="required">
+                                                RW
+                                            </Form.Label>
                                             <SelectRw
-                                                kodeKelurahan={data.kode_kelurahan_domisili}
-                                                value={data.rw_domisili ? {text: data.rw_domisili} : null}
-                                                onChange={(item) => setData(prev => ({
-                                                    ...prev,
-                                                    rw_domisili: item.rw,
-                                                    rt_domisili: "",
-                                                }))}
+                                                kodeKelurahan={
+                                                    data.kode_kelurahan_domisili
+                                                }
+                                                value={
+                                                    data.rw_domisili
+                                                        ? {
+                                                              text: data.rw_domisili,
+                                                          }
+                                                        : null
+                                                }
+                                                onChange={(item) =>
+                                                    setData((prev) => ({
+                                                        ...prev,
+                                                        rw_domisili: item.rw,
+                                                        rt_domisili: "",
+                                                    }))
+                                                }
                                                 errors={errors.rw_domisili}
                                             />
                                         </div>
                                         <div className="col-md-6 mb-3">
-                                            <Form.Label className="required">RT</Form.Label>
+                                            <Form.Label className="required">
+                                                RT
+                                            </Form.Label>
                                             <SelectRt
-                                                kodeKelurahan={data.kode_kelurahan_domisili}
+                                                kodeKelurahan={
+                                                    data.kode_kelurahan_domisili
+                                                }
                                                 kodeRw={data.rw_domisili}
-                                                value={data.rt_domisili ? {text: data.rt_domisili} : null}
-                                                onChange={(item) => setData(prev => ({
-                                                    ...prev,
-                                                    rt_domisili: item.rt,
-                                                }))}
+                                                value={
+                                                    data.rt_domisili
+                                                        ? {
+                                                              text: data.rt_domisili,
+                                                          }
+                                                        : null
+                                                }
+                                                onChange={(item) =>
+                                                    setData((prev) => ({
+                                                        ...prev,
+                                                        rt_domisili: item.rt,
+                                                    }))
+                                                }
                                                 errors={errors.rt_domisili}
                                             />
                                         </div>
                                     </Form.Group>
 
                                     <Form.Group className="mb-4">
-                                        <Form.Label className="required">Alamat Lengkap Domisili</Form.Label>
+                                        <Form.Label className="required">
+                                            Alamat Lengkap Domisili
+                                        </Form.Label>
                                         <Form.Control
                                             as="textarea"
                                             rows={3}
                                             value={data.alamat_domisili}
-                                            onChange={(e) => setData("alamat_domisili", e.target.value)}
+                                            onChange={(e) =>
+                                                setData(
+                                                    "alamat_domisili",
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="Alamat lengkap domisili saat ini"
                                             isInvalid={!!errors.alamat_domisili}
                                         />
@@ -819,7 +1041,9 @@ export default function FormEkonomiKreatif({
                             <Form.Group className="mb-4">
                                 <SelectJenisPelatihanEkraf
                                     value={data.jenis_pelatihan}
-                                    onChange={(value) => setData("jenis_pelatihan", value)}
+                                    onChange={(value) =>
+                                        setData("jenis_pelatihan", value)
+                                    }
                                     errors={errors.jenis_pelatihan}
                                 />
                             </Form.Group>
@@ -839,7 +1063,7 @@ export default function FormEkonomiKreatif({
                                 ".png,.jpg,.jpeg",
                                 "imagePreviewKTP",
                                 "Maksimal 2MB. Format: PNG, JPG, JPEG",
-                                1
+                                1,
                             )}
 
                             {renderFileUpload(
@@ -848,7 +1072,7 @@ export default function FormEkonomiKreatif({
                                 ".png,.jpg,.jpeg",
                                 "imagePreviewKK",
                                 "Maksimal 2MB. Format: PNG, JPG, JPEG",
-                                2
+                                2,
                             )}
 
                             {renderFileUpload(
@@ -857,10 +1081,8 @@ export default function FormEkonomiKreatif({
                                 ".png,.jpg,.jpeg",
                                 "imagePreviewPasFoto",
                                 "Maksimal 2MB. Format: PNG, JPG, JPEG",
-                                3
+                                3,
                             )}
-
-                            
 
                             {renderFileUpload(
                                 "Surat Pernyataan",
@@ -869,7 +1091,7 @@ export default function FormEkonomiKreatif({
                                 null,
                                 "Maksimal 2MB. Format: PDF",
                                 4,
-                                "https://sultan.kedirikota.go.id/storage/files/jG8YSc7E11f1vCyMtwpA63pzzsqVmiIEPghYd4ZR.pdf" // Tambah parameter ini
+                                "https://sultan.kedirikota.go.id/storage/files/jG8YSc7E11f1vCyMtwpA63pzzsqVmiIEPghYd4ZR.pdf", // Tambah parameter ini
                             )}
 
                             {/* Peran Ekraf - menentukan berkas nomor 5 */}
@@ -882,7 +1104,7 @@ export default function FormEkonomiKreatif({
                                     onChange={(value) => {
                                         setData("peran_ekraf", value);
                                         // Reset berkas yang tidak relevan saat peran berubah
-                                        setData(prev => ({
+                                        setData((prev) => ({
                                             ...prev,
                                             file_nib: null,
                                             file_surat_pekerja_ekraf: null,
@@ -901,11 +1123,14 @@ export default function FormEkonomiKreatif({
                                         ".pdf,.png,.jpg,.jpeg",
                                         null,
                                         "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
-                                        6
+                                        6,
                                     )}
                                     <div className="alert alert-info mb-3 py-2">
                                         <small>
-                                            <strong>📋 Keterangan:</strong> NIB (Nomor Induk Berusaha) wajib diupload bagi pemilik usaha ekonomi kreatif.
+                                            <strong>📋 Keterangan:</strong> NIB
+                                            (Nomor Induk Berusaha) wajib
+                                            diupload bagi pemilik usaha ekonomi
+                                            kreatif.
                                         </small>
                                     </div>
                                 </>
@@ -920,61 +1145,72 @@ export default function FormEkonomiKreatif({
                                         ".pdf",
                                         null,
                                         "Maksimal 2MB. Format: PDF",
-                                        6
+                                        6,
+                                        "https://sultan.kedirikota.go.id/storage/files/lc0rEMeRJpLIdpQgPl4hyklplk3N8VE7RrYQjzLd.pdf",
                                     )}
                                     <div className="alert alert-info mb-3 py-2">
                                         <small>
-                                            <strong>📋 Keterangan:</strong> Surat keterangan wajib diupload bagi pekerja ekonomi kreatif. Apabila anda adalah pemilik usaha ekonomi kreatif, cukup upload NIB saja.
+                                            <strong>📋 Keterangan:</strong>{" "}
+                                            Surat keterangan wajib diupload bagi
+                                            pekerja ekonomi kreatif. Apabila
+                                            anda adalah pemilik usaha ekonomi
+                                            kreatif, cukup upload NIB saja.
                                         </small>
                                     </div>
                                 </>
                             )}
 
                             {/* Conditional files based on category */}
-                            {data.kategori_pendaftar === "buruh_tani_tembakau" && renderFileUpload(
-                                "Surat Keterangan dari Pemilik Lahan",
-                                "file_surat_pemilik_lahan",
-                                ".pdf,.png,.jpg,.jpeg",
-                                null,
-                                "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
-                                7
-                            )}
+                            {data.kategori_pendaftar ===
+                                "buruh_tani_tembakau" &&
+                                renderFileUpload(
+                                    "Surat Keterangan dari Pemilik Lahan",
+                                    "file_surat_pemilik_lahan",
+                                    ".pdf,.png,.jpg,.jpeg",
+                                    null,
+                                    "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
+                                    7,
+                                )}
 
-                            {data.kategori_pendaftar === "buruh_pabrik_rokok" && renderFileUpload(
-                                "ID Card / Surat Keterangan dari IHT",
-                                "file_id_card_iht",
-                                ".pdf,.png,.jpg,.jpeg",
-                                null,
-                                "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
-                                7
-                            )}
+                            {data.kategori_pendaftar === "buruh_pabrik_rokok" &&
+                                renderFileUpload(
+                                    "ID Card / Surat Keterangan dari IHT",
+                                    "file_id_card_iht",
+                                    ".pdf,.png,.jpg,.jpeg",
+                                    null,
+                                    "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
+                                    7,
+                                )}
 
-                            {data.kategori_pendaftar === "buruh_phk" && renderFileUpload(
-                                "Surat Pemberhentian Kerja",
-                                "file_surat_phk",
-                                ".pdf,.png,.jpg,.jpeg",
-                                null,
-                                "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
-                                7
-                            )}
+                            {data.kategori_pendaftar === "buruh_phk" &&
+                                renderFileUpload(
+                                    "Surat Pemberhentian Kerja",
+                                    "file_surat_phk",
+                                    ".pdf,.png,.jpg,.jpeg",
+                                    null,
+                                    "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
+                                    7,
+                                )}
 
-                            {data.kategori_pendaftar === "disabilitas" && renderFileUpload(
-                                "Surat Keterangan Disabilitas dari Kelurahan",
-                                "file_surat_disabilitas",
-                                ".pdf,.png,.jpg,.jpeg",
-                                null,
-                                "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
-                                7
-                            )}
+                            {data.kategori_pendaftar === "disabilitas" &&
+                                renderFileUpload(
+                                    "Surat Keterangan Disabilitas dari Kelurahan",
+                                    "file_surat_disabilitas",
+                                    ".pdf,.png,.jpg,.jpeg",
+                                    null,
+                                    "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
+                                    7,
+                                )}
 
-                            {data.kategori_pendaftar === "perempuan_kk" && renderFileUpload(
-                                "Surat Keterangan dari Dinas KB",
-                                "file_surat_kb",
-                                ".pdf,.png,.jpg,.jpeg",
-                                null,
-                                "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
-                                7
-                            )}
+                            {data.kategori_pendaftar === "perempuan_kk" &&
+                                renderFileUpload(
+                                    "Surat Keterangan dari Dinas KB",
+                                    "file_surat_kb",
+                                    ".pdf,.png,.jpg,.jpeg",
+                                    null,
+                                    "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
+                                    7,
+                                )}
 
                             {/* TAMBAH SECTION INI SETELAH UPLOAD FILES */}
                             {/* Skala Prioritas */}
@@ -984,16 +1220,20 @@ export default function FormEkonomiKreatif({
                             </div>
 
                             <Form.Group className="mb-4">
-                                <Form.Label className="required">Alasan Mengikuti Pelatihan</Form.Label>
+                                <Form.Label className="required">
+                                    Alasan Mengikuti Pelatihan
+                                </Form.Label>
                                 <Select
                                     options={skorAlasanOptions}
                                     value={skorAlasanOptions.find(
-                                        (opt) => opt.value === data.alasan
+                                        (opt) => opt.value === data.alasan,
                                     )}
                                     onChange={(selected) =>
                                         setData("alasan", selected?.value || "")
                                     }
-                                    className={errors.alasan ? "is-invalid" : ""}
+                                    className={
+                                        errors.alasan ? "is-invalid" : ""
+                                    }
                                     placeholder="Pilih alasan mengikuti pelatihan..."
                                     isClearable
                                 />
@@ -1016,7 +1256,9 @@ export default function FormEkonomiKreatif({
                                     id="komitmen"
                                     label="Saya menyatakan bahwa data yang saya isi adalah benar dan dapat dipertanggungjawabkan serta menyetujui penggunaannya oleh penyelenggara untuk keperluan verifikasi dan pelaksanaan program sesuai kebijakan privasi yang berlaku."
                                     checked={data.komitmen}
-                                    onChange={(e) => setData("komitmen", e.target.checked)}
+                                    onChange={(e) =>
+                                        setData("komitmen", e.target.checked)
+                                    }
                                     isInvalid={!!errors.komitmen}
                                 />
                                 <Form.Control.Feedback type="invalid">
@@ -1028,8 +1270,18 @@ export default function FormEkonomiKreatif({
                             <div className="d-flex justify-content-center mt-4">
                                 <Button
                                     type="submit"
-                                    disabled={!isKomitmenChecked || processing || isSubmitting}
-                                    className={(!isKomitmenChecked || processing || isSubmitting) ? "opacity-50" : ""}
+                                    disabled={
+                                        !isKomitmenChecked ||
+                                        processing ||
+                                        isSubmitting
+                                    }
+                                    className={
+                                        !isKomitmenChecked ||
+                                        processing ||
+                                        isSubmitting
+                                            ? "opacity-50"
+                                            : ""
+                                    }
                                     variant="primary"
                                     size="lg"
                                 >
