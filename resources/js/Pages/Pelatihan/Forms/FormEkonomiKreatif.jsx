@@ -324,11 +324,27 @@ export default function FormEkonomiKreatif({
         description = "",
         fileIndex = 1,
         downloadLink = null,
+        required = true,
     ) => {
         return (
             <Form.Group className="mb-4" key={fieldName}>
                 <div className="mb-2 fw-semibold">
                     {fileIndex}. {label}
+                    {required ? (
+                        <span
+                            className="text-danger ms-1"
+                            style={{ fontSize: "11px" }}
+                        >
+                            (Wajib)
+                        </span>
+                    ) : (
+                        <span
+                            className="text-muted ms-1"
+                            style={{ fontSize: "11px" }}
+                        >
+                            (Opsional)
+                        </span>
+                    )}
                 </div>
                 <Form.Label
                     className="text-primary"
@@ -1064,6 +1080,8 @@ export default function FormEkonomiKreatif({
                                 "imagePreviewKTP",
                                 "Maksimal 2MB. Format: PNG, JPG, JPEG",
                                 1,
+                                null,
+                                true,
                             )}
 
                             {renderFileUpload(
@@ -1073,6 +1091,8 @@ export default function FormEkonomiKreatif({
                                 "imagePreviewKK",
                                 "Maksimal 2MB. Format: PNG, JPG, JPEG",
                                 2,
+                                null,
+                                true,
                             )}
 
                             {renderFileUpload(
@@ -1082,6 +1102,8 @@ export default function FormEkonomiKreatif({
                                 "imagePreviewPasFoto",
                                 "Maksimal 2MB. Format: PNG, JPG, JPEG",
                                 3,
+                                null,
+                                true,
                             )}
 
                             {renderFileUpload(
@@ -1092,6 +1114,7 @@ export default function FormEkonomiKreatif({
                                 "Maksimal 2MB. Format: PDF",
                                 4,
                                 "https://sultan.kedirikota.go.id/storage/files/jG8YSc7E11f1vCyMtwpA63pzzsqVmiIEPghYd4ZR.pdf", // Tambah parameter ini
+                                true,
                             )}
 
                             {/* Peran Ekraf - menentukan berkas nomor 5 */}
