@@ -171,10 +171,10 @@ class RegPelatihanEkonomiKreatifController extends Controller
         }
 
         // Ambil data DTKS dari Walidata Dinas Sosial untuk menentukan desil
+        // Ambil data DTKS (tanpa verifikasi SSL / setara curl -k)
         try {
-            $response = Http::get(
-                // 'https://api-splp.layanan.go.id:443/t/kedirikota.go.id/walidata/0.1/api/dtks/check?nik=' . $nik
-                'https://walidata.kedirikota.go.id/api/dtks/check?nik=' . $nik
+            $response = Http::withoutVerifying()->get(
+                'https://10.100.200.3/api/dtks/check?nik=' . $nik
             );
 
             $dtks = $response->json();
@@ -182,7 +182,6 @@ class RegPelatihanEkonomiKreatifController extends Controller
             $dtks = [];
             Log::error('DTKS check failed for NIK ' . $nik . ': ' . $e->getMessage());
         }
-
         // Ambil desil jika ada, jika tidak null
         $desil = $dtks['desil'] ?? '>5';
 

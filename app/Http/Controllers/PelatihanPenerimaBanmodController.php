@@ -283,11 +283,17 @@ class PelatihanPenerimaBanmodController extends Controller
         // Cek apakah terdaftar sebagai penerima banmod
         $data = PenerimaBanmod::where('nik', $nik)->first();
 
-        $response = Http::get(
-            'https://api-splp.layanan.go.id:443/t/kedirikota.go.id/walidata/0.1/api/dtks/check?nik=' . $nik
-        );
+        // Ambil data DTKS (tanpa verifikasi SSL / setara curl -k)
+        try {
+            $response = Http::withoutVerifying()->get(
+                'https://10.100.200.3/api/dtks/check?nik=' . $nik
+            );
 
-        $dtks = $response->json();
+            $dtks = $response->json();
+        } catch (\Exception $e) {
+            $dtks = [];
+            Log::error('DTKS check failed for NIK ' . $nik . ': ' . $e->getMessage());
+        }
 
 
         // Ambil desil jika ada, jika tidak null
