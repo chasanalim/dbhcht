@@ -43,14 +43,16 @@ class VerifikasiDokumenController extends Controller
         $data = $modelClass::findOrFail($request->id);
 
         // Update verifikasi dokumen
-        // Tambahkan verifikasi dokumen baru
+        // Tambahkan verifikasi dokumen baru.
+        // Catatan: pelatihan_type disetel otomatis oleh morphMany (nama class),
+        // bukan dari $request->training_type (label), agar cocok dengan relation
+        // pada trait HasVerifikasiDokumen.
         $data->documentVerifications()->create([
             'document_type' => $request->document_type,
             'verified_by' => auth()->id(),
             'verified_at' => now(),
             'status' => '1',
             'notes' => $request->notes,
-            'pelatihan_type' => $request->training_type // Tambahkan ini
         ]);
 
         return redirect()->back()->with('message', 'Dokumen berhasil diverifikasi');
@@ -72,14 +74,16 @@ class VerifikasiDokumenController extends Controller
         $data = $modelClass::findOrFail($request->id);
 
         // Update verifikasi dokumen
-        // Tambahkan verifikasi dokumen baru
+        // Tambahkan verifikasi dokumen baru.
+        // Catatan: pelatihan_type disetel otomatis oleh morphMany (nama class),
+        // bukan dari $request->training_type (label), agar cocok dengan relation
+        // pada trait HasVerifikasiDokumen.
         $data->documentVerifications()->create([
             'document_type' => $request->document_type,
             'verified_by' => auth()->id(),
             'verified_at' => now(),
             'status' => '0',
             'notes' => $request->notes,
-            'pelatihan_type' => $request->training_type // Tambahkan ini
         ]);
 
         return redirect()->back()->with('message', 'Dokumen berhasil ditolak');

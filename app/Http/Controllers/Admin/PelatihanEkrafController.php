@@ -58,10 +58,13 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
             'perempuan_kk' => ['surat_kb'],
         ];
 
-        return array_merge(
+        // array_keys => list dokumen dasbor model; gabung dokumen khusus kategori.
+        // array_unique => hindari duplikat key (mis. surat_pemilik_lahan dobel) yang
+        // membuat jumlah required > jumlah verifikasi sehingga all_verified selalu false.
+        return array_values(array_unique(array_merge(
             array_keys(\App\Models\PelatihanEkonomiKreatif::getRequiredDocumentsByKategori($kategori, $peranEkraf)),
             $additionalDocuments[$kategori] ?? []
-        );
+        )));
     }
 
     /**
