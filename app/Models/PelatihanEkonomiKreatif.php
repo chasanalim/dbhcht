@@ -45,6 +45,7 @@ class PelatihanEkonomiKreatif extends Model
 
         // Pelatihan
         'jenis_pelatihan',
+        'peran_ekraf',
         'alasan',
 
         // Files Wajib
@@ -171,9 +172,20 @@ class PelatihanEkonomiKreatif extends Model
             'file_kk' => 'Foto KK',
             'file_pasfoto' => 'Pas Foto',
             'file_surat_pernyataan' => 'Surat Pernyataan ',
-            'file_nib' => 'NIB (untuk pemilik usaha Ekraf)',
-            'file_surat_pekerja_ekraf' => 'Surat Keterangan Pekerja Ekraf (untuk pekerja Perusahaan Ekraf)',
         ];
+
+        // Peran menentukan berkas usaha:
+        // - pemilik_usaha => NIB
+        // - pekerja => Surat Keterangan Pekerja
+        // - NULL/kosong (data lama) => keduanya tetap tampil
+        if ($this->peran_ekraf == 'pemilik_usaha') {
+            $baseFiles['file_nib'] = 'NIB (untuk pemilik usaha Ekraf)';
+        } elseif ($this->peran_ekraf == 'pekerja') {
+            $baseFiles['file_surat_pekerja_ekraf'] = 'Surat Keterangan Pekerja Ekraf (untuk pekerja Perusahaan Ekraf)';
+        } else {
+            $baseFiles['file_nib'] = 'NIB (untuk pemilik usaha Ekraf)';
+            $baseFiles['file_surat_pekerja_ekraf'] = 'Surat Keterangan Pekerja Ekraf (untuk pekerja Perusahaan Ekraf)';
+        }
 
         $additionalFiles = [];
 
@@ -257,16 +269,27 @@ class PelatihanEkonomiKreatif extends Model
         return ' Ekonomi Kreatif';
     }
 
-    public static function getRequiredDocumentsByKategori($kategori)
+    public static function getRequiredDocumentsByKategori($kategori, $peranEkraf = null)
     {
         $baseDocuments = [
             'pasfoto' => 'Pas Foto',
             'ktp' => 'KTP',
             'kk' => 'Kartu Keluarga',
             'surat_pernyataan' => 'Surat Pernyataan Komitmen',
-            'surat_pekerja_ekraf' => 'Surat Keterangan Pekerja Ekonomi Kreatif',
-            'nib' => 'NIB',
         ];
+
+        // Peran menentukan berkas usaha:
+        // - pemilik_usaha => NIB
+        // - pekerja => Surat Keterangan Pekerja
+        // - NULL/kosong (data lama) => keduanya tetap wajib
+        if ($peranEkraf == 'pemilik_usaha') {
+            $baseDocuments['nib'] = 'NIB';
+        } elseif ($peranEkraf == 'pekerja') {
+            $baseDocuments['surat_pekerja_ekraf'] = 'Surat Keterangan Pekerja Ekonomi Kreatif';
+        } else {
+            $baseDocuments['surat_pekerja_ekraf'] = 'Surat Keterangan Pekerja Ekonomi Kreatif';
+            $baseDocuments['nib'] = 'NIB';
+        }
 
         $additionalDocuments = [
             self::KATEGORI_BURUH_TANI => [
@@ -294,7 +317,7 @@ class PelatihanEkonomiKreatif extends Model
 
     public function areAllDocumentsVerified(): bool
     {
-        $requiredDocs = self::getRequiredDocumentsByKategori($this->kategori_pendaftar);
+        $requiredDocs = self::getRequiredDocumentsByKategori($this->kategori_pendaftar, $this->peran_ekraf);
         $verifications = $this->documentVerifications->whereIn('document_type', array_keys($requiredDocs));
 
         return count($verifications) === count($requiredDocs) &&
@@ -306,7 +329,7 @@ class PelatihanEkonomiKreatif extends Model
      */
     public function hasRejectedDocuments(): bool
     {
-        $requiredDocs = self::getRequiredDocumentsByKategori($this->kategori_pendaftar);
+        $requiredDocs = self::getRequiredDocumentsByKategori($this->kategori_pendaftar, $this->peran_ekraf);
         $verifications = $this->documentVerifications->whereIn('document_type', array_keys($requiredDocs));
 
         return $verifications->contains(fn($v) => $v->status === 0);

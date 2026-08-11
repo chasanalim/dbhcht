@@ -228,7 +228,7 @@ Route::prefix('pelatihan/ekonomi-kreatif')->group(function () {
     Route::get('/', [RegPelatihanEkonomiKreatifController::class, 'index'])->name('pelatihan-ekonomi-kreatif.create');
     Route::post('/', [RegPelatihanEkonomiKreatifController::class, 'store'])->name('pelatihan-ekonomi-kreatif.store');
     Route::get('/success/{id}', [RegPelatihanEkonomiKreatifController::class, 'success'])->name('pelatihan-ekonomi-kreatif.success');
-    Route::get('/requirements/{kategori}', [RegPelatihanEkonomiKreatifController::class, 'getRequirementsByCategory'])->name('pelatihan-ekonomi-kreatif.requirements');
+    Route::get('/requirements/{kategori}', [RegPelatihanEkonomiKreatifController::class, 'getRequirementsByCategory'])->name('pelatihan-ekonomi-kreatif.requirements')->where('kategori', '.*');
     Route::get('/cek-nik/{nik}', [RegPelatihanEkonomiKreatifController::class, 'cekNIK'])->name('pelatihan-ekonomi-kreatif.cek-nik');
 });
 

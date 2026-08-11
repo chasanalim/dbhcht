@@ -142,9 +142,12 @@ class RegPelatihanEkonomiKreatifController extends Controller
     /**
      * Get requirements by category (API endpoint untuk React)
      */
-    public function getRequirementsByCategory($kategori)
+    public function getRequirementsByCategory(Request $request, $kategori)
     {
-        $pelatihanTemp = new PelatihanEkonomiKreatif(['kategori_pendaftar' => $kategori]);
+        $pelatihanTemp = new PelatihanEkonomiKreatif([
+            'kategori_pendaftar' => $kategori,
+            'peran_ekraf' => $request->query('peran'),
+        ]);
 
         return response()->json([
             'success' => true,

@@ -45,19 +45,11 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
     }
 
     /**
-     * Get required documents berdasarkan kategori pendaftar
+     * Get required documents berdasarkan kategori pendaftar dan peran ekraf.
+     * Base dokumen hanya 4; NIB / Surat Keterangan Pekerja ditentukan peran.
      */
-    private function getRequiredDocumentsByKategori($kategori)
+    private function getRequiredDocumentsByKategori($kategori, $peranEkraf = null)
     {
-        $baseDocuments = [
-            'pasfoto',
-            'ktp',
-            'kk',
-            'surat_pernyataan',
-            'surat_pekerja_ekraf',
-            'nib'
-        ];
-
         $additionalDocuments = [
             'buruh_tani_tembakau' => ['surat_pemilik_lahan'],
             'buruh_pabrik_rokok' => ['id_card_iht'],
@@ -67,7 +59,7 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
         ];
 
         return array_merge(
-            $baseDocuments,
+            \App\Models\PelatihanEkonomiKreatif::getRequiredDocumentsByKategori($kategori, $peranEkraf),
             $additionalDocuments[$kategori] ?? []
         );
     }
@@ -91,7 +83,7 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
                 if ($request->has('verification_status')) {
                     $status = $request->verification_status;
                     $data = $data->filter(function ($item) use ($status) {
-                        $requiredDocs = $this->getRequiredDocumentsByKategori($item->kategori_pendaftar);
+                        $requiredDocs = $this->getRequiredDocumentsByKategori($item->kategori_pendaftar, $item->peran_ekraf);
                         $verifications = $item->documentVerifications->whereIn('document_type', $requiredDocs);
 
                         $allVerified = count($verifications) === count($requiredDocs);
@@ -133,7 +125,7 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
             if ($request->has('verification_status')) {
                 $status = $request->verification_status;
                 $data = $data->filter(function ($item) use ($status) {
-                    $requiredDocs = $this->getRequiredDocumentsByKategori($item->kategori_pendaftar);
+                    $requiredDocs = $this->getRequiredDocumentsByKategori($item->kategori_pendaftar, $item->peran_ekraf);
                     $verifications = $item->documentVerifications->whereIn('document_type', $requiredDocs);
 
                     $allVerified = count($verifications) === count($requiredDocs);
@@ -165,7 +157,7 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
-                    $requiredDocs = $this->getRequiredDocumentsByKategori($row->kategori_pendaftar);
+                    $requiredDocs = $this->getRequiredDocumentsByKategori($row->kategori_pendaftar, $row->peran_ekraf);
                     $verifications = $row->documentVerifications->whereIn('document_type', $requiredDocs);
 
                     $allVerified = count($verifications) === count($requiredDocs);
@@ -252,8 +244,8 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
             )
             ->values();
 
-        // Ambil dokumen yang diperlukan berdasarkan kategori
-        $requiredDocs = $this->getRequiredDocumentsByKategori($data->kategori_pendaftar);
+        // Ambil dokumen yang diperlukan berdasarkan kategori dan peran
+        $requiredDocs = $this->getRequiredDocumentsByKategori($data->kategori_pendaftar, $data->peran_ekraf);
 
         $verifiedDocuments = $data->documentVerifications
             ->whereIn('document_type', $requiredDocs)
@@ -306,6 +298,7 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
                 'no_kk' => $data->no_kk,
                 'no_hp' => $data->no_hp,
                 'desil' => $data->desil ?? null,
+                'peran_ekraf' => $data->peran_ekraf ?? null,
                 'tanggal_lahir' => $data->tanggal_lahir,
                 'umur' => \Carbon\Carbon::parse($data->tanggal_lahir)->diffInYears(now()),
                 'pelatihan_sebelumnya' => $pelatihanSebelumnya,
@@ -352,7 +345,7 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
         $data = PelatihanEkonomiKreatif::findOrFail($id);
 
         // Validate if document is verified sesuai kategori
-        $requiredDocs = $this->getRequiredDocumentsByKategori($data->kategori_pendaftar);
+        $requiredDocs = $this->getRequiredDocumentsByKategori($data->kategori_pendaftar, $data->peran_ekraf);
         $verifications = $data->documentVerifications->whereIn('document_type', $requiredDocs);
 
         $allVerified = count($verifications) === count($requiredDocs);

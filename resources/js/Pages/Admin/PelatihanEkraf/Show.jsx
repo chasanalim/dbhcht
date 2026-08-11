@@ -365,8 +365,23 @@ export default function Show({ title, data, type = "PELATIHAN_EKRAF" }) {
     const renderDocuments = () => {
         const kategori = data.kategori_pendaftar || "umum";
         const status = data.status;
-        const documentTypes =
+        const peran = data.peran_ekraf;
+        let documentTypes =
             REQUIRED_DOCUMENTS[kategori] || REQUIRED_DOCUMENTS["umum"];
+
+        // Dokumen usaha (NIB / Surat Keterangan Pekerja) mengikuti peran:
+        // - pemilik_usaha => hanya NIB
+        // - pekerja => hanya Surat Keterangan Pekerja
+        // - NULL/kosong (data lama) => keduanya tetap tampil
+        if (peran === "pemilik_usaha") {
+            documentTypes = documentTypes.filter(
+                (doc) => doc.key !== "surat_pekerja_ekraf",
+            );
+        } else if (peran === "pekerja") {
+            documentTypes = documentTypes.filter(
+                (doc) => doc.key !== "nib",
+            );
+        }
 
         return (
             <div className="row row-cols-1 row-cols-md-3 g-4">

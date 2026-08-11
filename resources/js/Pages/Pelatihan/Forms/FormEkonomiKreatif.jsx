@@ -132,7 +132,7 @@ export default function FormEkonomiKreatif({
             });
     }, []);
 
-    // Fetch required files when kategori changes
+    // Fetch required files when kategori or peran changes
     useEffect(() => {
         if (data.kategori_pendaftar) {
             axios
@@ -141,6 +141,11 @@ export default function FormEkonomiKreatif({
                         "pelatihan-ekonomi-kreatif.requirements",
                         data.kategori_pendaftar,
                     ),
+                    {
+                        params: {
+                            peran: data.peran_ekraf || "",
+                        },
+                    },
                 )
                 .then((response) => {
                     setRequiredFiles(response.data.data.required_files || {});
@@ -149,7 +154,7 @@ export default function FormEkonomiKreatif({
                     console.error("Error fetching requirements:", error);
                 });
         }
-    }, [data.kategori_pendaftar]);
+    }, [data.kategori_pendaftar, data.peran_ekraf]);
 
     const calculateAge = (birthDate) => {
         if (!birthDate) return 0;
