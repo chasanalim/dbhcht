@@ -29,6 +29,7 @@ export default function FormUMKM() {
     const { data, setData, errors, post, reset } = useForm({
         nik: "",
         no_kk: "",
+        desil: "",
         nama_lengkap: "",
         tempat_lahir: "",
         tgl_lahir: "",
@@ -140,6 +141,9 @@ export default function FormUMKM() {
             if (response.data.success === true) {
                 setNikStatus("NIK valid!");
                 setDataPenerima(true);
+                if (response.data.desil) {
+                    setData("desil", response.data.desil);
+                }
             } else {
                 setErrorMessage(response.data.message);
             }
@@ -565,6 +569,22 @@ export default function FormUMKM() {
 
             {nikStatus && <div className="text-success mb-3">{nikStatus}</div>}
 
+            {/* Desil (readonly, dari DTKS) */}
+            {data.desil && (
+                <Form.Group className="mb-3">
+                    <Form.Label className="required">Desil</Form.Label>
+                    <Form.Control
+                        type="text"
+                        value={data.desil}
+                        readOnly
+                        className="bg-light"
+                    />
+                    <Form.Text className="text-muted">
+                        Data desil diambil otomatis dari DTKS
+                    </Form.Text>
+                </Form.Group>
+            )}
+
             {/* Data Penerima */}
             {dataPenerima && (
                 <>
@@ -696,7 +716,7 @@ export default function FormUMKM() {
                                     setData((prev) => ({
                                         ...prev,
                                         kode_rw: item.id,
-                                        rw: item.text,
+                                        rw: item.rw,
                                     }))
                                 }
                                 errors={errors.rw}
@@ -711,7 +731,7 @@ export default function FormUMKM() {
                                     setData((prev) => ({
                                         ...prev,
                                         kode_rt: item.id,
-                                        rt: item.text,
+                                        rt: item.rt,
                                     }))
                                 }
                                 errors={errors.rt}
@@ -925,7 +945,7 @@ export default function FormUMKM() {
                                     setData((prev) => ({
                                         ...prev,
                                         kode_rt: item.id,
-                                        rt_usaha: item.text,
+                                        rt_usaha: item.rw,
                                     }))
                                 }
                                 errors={errors.rt_usaha}

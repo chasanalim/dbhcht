@@ -23,6 +23,7 @@ export default function FormKeterampilan() {
     const { data, setData, errors, post, reset, processing } = useForm({
         nik: "",
         no_kk: "",
+        desil: "",
         nama_lengkap: "",
         tmp_lhr: "",
         tgl_lhr: "",
@@ -93,6 +94,9 @@ export default function FormKeterampilan() {
             if (response.data.success === true) {
                 setNikStatus("NIK valid!");
                 setDataPenerima(true);
+                if (response.data.desil) {
+                    setData("desil", response.data.desil);
+                }
             } else {
                 setErrorMessage(response.data.message);
             }
@@ -457,6 +461,22 @@ export default function FormKeterampilan() {
 
             {nikStatus && <div className="alert alert-success">{nikStatus}</div>}
 
+            {/* Desil (readonly, dari DTKS) */}
+            {data.desil && (
+                <Form.Group className="mb-3">
+                    <Form.Label className="required">Desil</Form.Label>
+                    <Form.Control
+                        type="text"
+                        value={data.desil}
+                        readOnly
+                        className="bg-light"
+                    />
+                    <Form.Text className="text-muted">
+                        Data desil diambil otomatis dari DTKS
+                    </Form.Text>
+                </Form.Group>
+            )}
+
             {/* Data Penerima */}
             {dataPenerima && (
                 <>
@@ -589,7 +609,7 @@ export default function FormKeterampilan() {
                                     setData((prevState) => ({
                                         ...prevState,
                                         kode_rw: item.id,
-                                        nama_rw: item.text,
+                                        nama_rw: item.rw,
                                     }))
                                 }
                                 errors={errors.nama_rw}
@@ -604,7 +624,7 @@ export default function FormKeterampilan() {
                                     setData((prevState) => ({
                                         ...prevState,
                                         kode_rt: item.id,
-                                        nama_rt: item.text,
+                                        nama_rt: item.rt,
                                     }))
                                 }
                                 errors={errors.nama_rt}

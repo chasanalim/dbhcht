@@ -759,6 +759,10 @@ export default function Show({ title, data, type = "PELATIHAN_UMKM" }) {
                                             <td>: {data.nik}</td>
                                         </tr>
                                         <tr>
+                                            <td>Desil</td>
+                                            <td>: {data.desil}</td>
+                                        </tr>
+                                        <tr>
                                             <td>No. KK</td>
                                             <td>: {data.no_kk}</td>
                                         </tr>

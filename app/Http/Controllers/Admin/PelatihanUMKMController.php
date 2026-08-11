@@ -238,6 +238,7 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
                 'id' => $data->id,
                 'nik' => $data->nik,
                 'no_kk' => $data->no_kk,
+                'desil' => $data->desil,
                 'name' => $data->nama_lengkap,
                 'tempat_lahir' => $data->tempat_lahir,
                 'tgl_lahir' => $data->tgl_lahir,

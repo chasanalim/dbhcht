@@ -185,6 +185,10 @@ export default function Index({ title, can, flash, categories }) {
                     searchable: true,
                 },
                 {
+                    data: "desil",
+                    name: "desil",
+                },
+                {
                     data: "no_kk",
                     name: "no_kk",
                 },
@@ -721,6 +725,7 @@ export default function Index({ title, can, flash, categories }) {
                                                 <th>No</th>
                                                 <th>AKSI</th>
                                                 <th>NIK</th>
+                                                <th>DESIL</th>
                                                 <th>NO KK</th>
                                                 <th>NAMA</th>
                                                 {/* <th>TEMPAT LAHIR</th> */}

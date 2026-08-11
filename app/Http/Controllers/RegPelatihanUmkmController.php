@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Http;
 use Intervention\Image\Laravel\Facades\Image;
 use Intervention\Image\Encoders\WebpEncoder;
 
@@ -30,6 +31,7 @@ class RegPelatihanUmkmController extends Controller
         return [
             'nik' => 'required|numeric|digits:16',
             'no_kk' => 'required|numeric|digits:16',
+            'desil' => 'nullable|string|max:10',
             'nama_lengkap' => 'required|string|max:255',
             'tempat_lahir' => 'required|string|max:100',
             'tgl_lahir' => 'required|date|before:today|after:1900-01-01',
@@ -368,9 +370,22 @@ class RegPelatihanUmkmController extends Controller
             }
         }
 
+        // Cek DTKS untuk mendapatkan data desil
+        $desil = '>5';
+        try {
+            $response = Http::withoutVerifying()->get(
+                'https://10.100.200.3/api/dtks/check?nik=' . $nik
+            );
+            $dtks = $response->json();
+            $desil = $dtks['desil'] ?? '>5';
+        } catch (\Exception $e) {
+            Log::error('DTKS check failed for NIK ' . $nik . ': ' . $e->getMessage());
+        }
+
         return response()->json([
             'success' => true,
             'blacklisted' => false,
+            'desil' => $desil,
             'message' => 'NIK tidak ditemukan dalam blacklist.'
         ]);
     }

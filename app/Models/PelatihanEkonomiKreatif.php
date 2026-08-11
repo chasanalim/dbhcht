@@ -24,6 +24,7 @@ class PelatihanEkonomiKreatif extends Model
         'nama_lengkap',
         'tanggal_lahir',
         'no_hp',
+        'desil',
 
         // Alamat KTP
         'alamat_ktp',

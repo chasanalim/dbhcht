@@ -13,6 +13,7 @@ class PelatihanKerjas extends Model
     protected $fillable = [
         "nik",
         "no_kk",
+        "desil",
         "nama_lengkap",
         "tmp_lhr",
         "tgl_lhr",

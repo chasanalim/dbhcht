@@ -205,6 +205,7 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
                 'id' => $data->id,
                 'nik' => $data->nik,
                 'no_kk' => $data->no_kk,
+                'desil' => $data->desil,
                 'nama_lengkap' => $data->nama_lengkap,
                 'tmp_lhr' => $data->tmp_lhr,
                 'tgl_lhr' => $data->tgl_lhr,

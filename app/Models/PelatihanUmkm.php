@@ -16,6 +16,7 @@ class PelatihanUmkm extends Model
     protected $fillable = [
         'nik',
         'no_kk',
+        'desil',
         'nama_lengkap',
         'tempat_lahir',
         'tgl_lahir',

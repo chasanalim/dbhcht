@@ -10,8 +10,10 @@ use App\Models\PelatihanUmkm;
 use App\Models\PelatihanBanmod;
 use App\Models\PelatihanKerjas;
 use App\Models\PelatihanPetani;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
 use Intervention\Image\Laravel\Facades\Image;
 use Intervention\Image\Encoders\WebpEncoder;
 
@@ -24,6 +26,7 @@ class RegPelatihanKeterampilanKerjaController extends Controller
         $validated = $request->validate([
             "nik" => ['required', 'size:16', 'string'],
             "no_kk" => ['required', 'size:16', 'string'],
+            "desil" => ['nullable', 'string', 'max:10'],
             "nama_lengkap" => ['required', 'string'],
             "tmp_lhr" => ['required', 'string'],
             "tgl_lhr" => ['required', 'date', 'before:today'],
@@ -215,9 +218,22 @@ class RegPelatihanKeterampilanKerjaController extends Controller
             }
         }
 
+        // Cek DTKS untuk mendapatkan data desil
+        $desil = '>5';
+        try {
+            $response = Http::withoutVerifying()->get(
+                'https://10.100.200.3/api/dtks/check?nik=' . $nik
+            );
+            $dtks = $response->json();
+            $desil = $dtks['desil'] ?? '>5';
+        } catch (\Exception $e) {
+            Log::error('DTKS check failed for NIK ' . $nik . ': ' . $e->getMessage());
+        }
+
         return response()->json([
             'success' => true,
             'blacklisted' => false,
+            'desil' => $desil,
             'message' => 'NIK tidak ditemukan dalam blacklist.'
         ]);
     }
