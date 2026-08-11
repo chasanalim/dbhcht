@@ -59,7 +59,7 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
         ];
 
         return array_merge(
-            \App\Models\PelatihanEkonomiKreatif::getRequiredDocumentsByKategori($kategori, $peranEkraf),
+            array_keys(\App\Models\PelatihanEkonomiKreatif::getRequiredDocumentsByKategori($kategori, $peranEkraf)),
             $additionalDocuments[$kategori] ?? []
         );
     }
