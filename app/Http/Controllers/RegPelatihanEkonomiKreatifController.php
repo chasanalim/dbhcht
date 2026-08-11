@@ -265,6 +265,7 @@ class RegPelatihanEkonomiKreatifController extends Controller
                 'after:' . now()->subYears(65)->format('Y-m-d'),  // Maksimal 65 tahun
             ],
             'no_hp' => 'required|string|max:20|regex:/^[0-9+\-\s]+$/',
+            'desil' => 'required|string',
 
             // Alamat KTP
             'alamat_ktp' => 'required|string|max:500',
