@@ -158,12 +158,30 @@ class HomeController extends Controller
             if ($data) {
                 $notes = null;
                 if ($data->status == 2) {
+                    $notes = [];
+
+                    // Alasan dari dokumen yang ditolak admin (verifikasi_dokumen.notes)
                     $verifications = $data->documentVerifications()
                         ->where('status', 0)
                         ->whereNotNull('notes')
                         ->get();
                     if ($verifications->isNotEmpty()) {
-                        $notes = $verifications->pluck('notes')->unique()->values()->toArray();
+                        $notes = array_merge(
+                            $notes,
+                            $verifications->pluck('notes')->unique()->values()->toArray()
+                        );
+                    }
+
+                    // Alasan penggagalan dari kolom keterangan record
+                    // (diisi wajib saat admin klik Gagal via updateStatus).
+                    if (!empty($data->keterangan)) {
+                        $notes[] = $data->keterangan;
+                    }
+
+                    // Gabungkan dan dedup, null jika tidak ada alasan sama sekali
+                    $notes = array_values(array_unique($notes));
+                    if (empty($notes)) {
+                        $notes = null;
                     }
                 }
 
