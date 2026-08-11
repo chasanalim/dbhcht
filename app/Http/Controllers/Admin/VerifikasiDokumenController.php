@@ -55,7 +55,7 @@ class VerifikasiDokumenController extends Controller
             'notes' => $request->notes,
         ]);
 
-        return redirect()->back()->with('message', 'Dokumen berhasil diverifikasi');
+        return back()->with('message', 'Dokumen berhasil diverifikasi');
     }
 
     public function tolak(Request $request)
@@ -64,6 +64,9 @@ class VerifikasiDokumenController extends Controller
             'training_type' => 'required|string',
             'id' => 'required',
             'document_type' => 'required|string',
+            // Alasan wajib saat menolak agar halaman /cek-status menampilkan
+            // keterangan yang benar (bukan alasan kosong / default).
+            'notes' => 'required|string|max:500',
         ]);
 
         $modelClass = $this->modelMap[$request->training_type] ?? null;
@@ -86,7 +89,7 @@ class VerifikasiDokumenController extends Controller
             'notes' => $request->notes,
         ]);
 
-        return redirect()->back()->with('message', 'Dokumen berhasil ditolak');
+        return back()->with('message', 'Dokumen berhasil ditolak');
     }
 
     /**

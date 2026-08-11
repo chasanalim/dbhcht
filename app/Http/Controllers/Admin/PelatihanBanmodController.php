@@ -306,10 +306,15 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
 
     public function updateStatus(Request $request, $id)
     {
-        $validated = $request->validate([
-            'status' => 'required|integer|in:1,2,3,4',
-            'notes' => 'nullable|string', // Tambah validasi untuk notes
-        ]);
+        $validated = $request->validate(
+            [
+                'status' => 'required|integer|in:1,2,3,4',
+                'notes' => 'required_if:status,2|string|max:500', // Alasan wajib saat menolak/gagal
+            ],
+            [
+                'notes.required_if' => 'Alasan penggagalan wajib diisi.',
+            ]
+        );
 
         $data = PelatihanBanmod::findOrFail($id);
 
@@ -326,7 +331,9 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
         }
 
         $data->status = $validated['status'];
-        // Simpan notes jika ada (untuk blacklist atau status lainnya)
+        // Simpan notes jika ada (untuk blacklist atau status lainnya).
+        // Saat status gagal (2), alasan sudah dipastikan terisi oleh
+        // required_if:status,2 pada validasi di atas.
         if (!empty($validated['notes'])) {
             $data->keterangan = $validated['notes'];
         }

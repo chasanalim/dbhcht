@@ -501,12 +501,20 @@ export default function Index({ title, can, flash, categories }) {
                 }
             }
         } else if (status === 2) {
-            confirmMessage =
-                "Apakah anda yakin ingin menggagalkan peserta ini?";
-            if (confirm(confirmMessage)) {
+            // Alasan wajib diisi saat menggagalkan peserta, agar halaman
+            // /cek-status menampilkan keterangan yang benar untuk peserta.
+            const alasan = prompt(
+                "Masukkan alasan penggagalan peserta ini (wajib diisi):"
+            );
+            if (!alasan || !alasan.trim()) {
+                alert("Alasan penggagalan wajib diisi.");
+                return;
+            }
+            if (confirm("Apakah anda yakin ingin menggagalkan peserta ini?")) {
                 try {
                     const response = await axios.post(url, {
                         status: status,
+                        notes: alasan,
                     });
 
                     const toastEl = document.getElementById("toast");
