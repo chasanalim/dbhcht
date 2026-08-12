@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Yajra\DataTables\DataTables;
 use App\Models\Pkl;
+use App\Models\Setting;
 
 class BanmodController extends Controller
 {
@@ -18,8 +19,15 @@ class BanmodController extends Controller
 
     public function index()
     {
-        return Inertia::render('404/BelumTersedia', [
-        // return Inertia::render('Banmod/Create', [
+        if (!Setting::boolValue('banmod_registration_open', true)) {
+            return Inertia::render('404/BelumTersedia', [
+                'meta' => [
+                    'title' => 'Pendaftaran Ditutup',
+                ],
+            ]);
+        }
+
+        return Inertia::render('Banmod/Create', [
             'meta' => [
                 'title' => 'Pendaftaran Banmod',
             ],
@@ -28,6 +36,11 @@ class BanmodController extends Controller
 
     public function store(Request $request)
     {
+        // Cek status pembukaan pendaftaran
+        if (!Setting::boolValue('banmod_registration_open', true)) {
+            return back()->with('error', 'Pendaftaran Bantuan Modal sedang ditutup.');
+        }
+
         $validated = $request->validate([
             "nik" => ['required', 'size:16', 'string'],
             "kk" => ['required', 'size:16', 'string'],
@@ -174,6 +187,14 @@ class BanmodController extends Controller
 
     public function ceknik($nik, $kategori)
     {
+        // Cek status pembukaan pendaftaran
+        if (!Setting::boolValue('banmod_registration_open', true)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pendaftaran sedang ditutup.'
+            ], 403);
+        }
+
         // Validasi format NIK
         if (strlen($nik) != 16) {
             return response()->json([

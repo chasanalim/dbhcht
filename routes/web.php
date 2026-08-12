@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AutoRejectController;
+use App\Http\Controllers\Admin\BanmodRegistrationController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EksportController;
 use App\Http\Controllers\Admin\LampiranFileController;
@@ -60,6 +61,8 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'year.filter'])->group
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/auto-reject-nik', [AutoRejectController::class, 'autoRejectNik'])->name('auto-reject-nik');
+    Route::post('banmod/registration-status', [BanmodRegistrationController::class, 'toggle'])
+        ->name('banmod.registration-status');
 
 
     Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');

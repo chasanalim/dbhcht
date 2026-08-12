@@ -1148,9 +1148,9 @@ export default function FormEkonomiKreatif({
                                     {renderFileUpload(
                                         "NIB (Nomor Induk Berusaha)",
                                         "file_nib",
-                                        ".pdf,.png,.jpg,.jpeg",
+                                        ".pdf",
                                         null,
-                                        "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
+                                        "Maksimal 2MB. Format: PDF",
                                         6,
                                     )}
                                     <div className="alert alert-info mb-3 py-2">

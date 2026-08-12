@@ -12,6 +12,7 @@ use App\Models\PelatihanEkonomiKreatif;
 use App\Models\PelatihanKerjas;
 use App\Models\PelatihanPetani;
 use App\Models\PendaftaranBanmod;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Storage;
 
 class HomeController extends Controller
@@ -64,6 +65,7 @@ class HomeController extends Controller
             'ekraf' => $ekraf,
             'trainings' => $trainings,
             'trainingOptions' => $trainingOptions,
+            'banmodOpen' => Setting::boolValue('banmod_registration_open', true),
         ]);
     }
 

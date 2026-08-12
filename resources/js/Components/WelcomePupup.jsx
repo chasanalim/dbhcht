@@ -1,13 +1,26 @@
-import { useEffect, useRef } from "react";
-import { Modal } from "bootstrap";
+import { useEffect, useRef, useState } from "react";
+import { Modal, Carousel } from "react-bootstrap";
+
+const WELCOME_IMAGES = [
+    "/assets/banner.png",
+    "/assets/banner2.png",
+    "/assets/banner3.png",
+];
 
 export default function WelcomePopup() {
     const modalRef = useRef(null);
+    const [activeIndex, setActiveIndex] = useState(0);
 
     useEffect(() => {
         const modal = new Modal(modalRef.current);
         modal.show();
     }, []);
+
+    const handleSelect = (selectedIndex, e) => {
+        if (e.direction) {
+            setActiveIndex(selectedIndex);
+        }
+    };
 
     return (
         <div
@@ -25,11 +38,23 @@ export default function WelcomePopup() {
                         data-bs-dismiss="modal"
                     ></button>
 
-                    <img
-                        src="/assets/banner.png"
-                        alt="Banner"
-                        className="img-fluid rounded shadow"
-                    />
+                    <Carousel
+                        activeIndex={activeIndex}
+                        onSelect={handleSelect}
+                        interval={5000}
+                        pause="hover"
+                        wrap
+                    >
+                        {WELCOME_IMAGES.map((src, index) => (
+                            <Carousel.Item key={index}>
+                                <img
+                                    src={src}
+                                    alt={`Banner ${index + 1}`}
+                                    className="img-fluid rounded shadow w-100"
+                                />
+                            </Carousel.Item>
+                        ))}
+                    </Carousel>
                 </div>
             </div>
         </div>

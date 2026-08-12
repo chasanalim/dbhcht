@@ -18,6 +18,7 @@ export default function Index({
     ekraf,
     trainings,
     trainingOptions,
+    banmodOpen,
 }) {
     const [visibleStats, setVisibleStats] = useState({});
 
@@ -206,9 +207,10 @@ export default function Index({
                                     href={route("banmod")}
                                     className="btn"
                                     style={{
-                                        background:
-                                            "linear-gradient(90deg,#ffb700 60%,#ffe082 100%)",
-                                        color: "#22223b",
+                                        background: banmodOpen
+                                            ? "linear-gradient(90deg,#ffb700 60%,#ffe082 100%)"
+                                            : "#adb5bd",
+                                        color: banmodOpen ? "#22223b" : "#fff",
                                         borderRadius: "2rem",
                                         padding: "0.95rem 1.5rem",
                                         fontWeight: 700,
@@ -218,8 +220,8 @@ export default function Index({
                                         transition: "transform 0.15s",
                                     }}
                                 >
-                                    <i className="bi bi-cash-stack"></i> Daftar
-                                    Banmod
+                                    <i className="bi bi-cash-stack"></i>{" "}
+                                    {banmodOpen ? "Daftar Banmod" : "Lihat Info Banmod"}
                                 </Link>
                                 <Link
                                     href={route("cek-status")}

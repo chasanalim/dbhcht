@@ -55,12 +55,14 @@ export default function BanmodPage({ meta }) {
                 setNikStatus(response.data.message);
                 const d = response.data.data;
                 setDataPenerima(d);
-                setData((prev) => ({
-                    ...prev,
-                    name: d.nama,
-                    alamat: d.alamat,
-                    phone_number: d.no_hp,
-                }));
+                if (d) {
+                    setData((prev) => ({
+                        ...prev,
+                        name: d.nama,
+                        alamat: d.alamat,
+                        phone_number: d.no_hp,
+                    }));
+                }
                 // setTampilKonfirmasi(true);
             } else {
                 setErrorMessage(response.data.message);

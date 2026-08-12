@@ -14,6 +14,7 @@ use App\Models\PendaftaranBanmod;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Traits\HasVerifikasiDokumen;
+use App\Models\Setting;
 
 class DashboardController extends Controller
 {
@@ -25,6 +26,8 @@ class DashboardController extends Controller
         // return response()->json($this->getBanmodSummary());
         return Inertia::render('Admin/Dashboard/Dashboard', [
             'selected_year' => $tahun,
+            // Status pendaftaran Banmod (toggle di dashboard)
+            'banmod_registration_open' => Setting::boolValue('banmod_registration_open', true),
             // Banmod Data
             'banmod' => [
                 'summary' => $this->getBanmodSummary(),

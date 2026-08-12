@@ -580,7 +580,7 @@ export default function FormUMKM() {
                         className="bg-light"
                     />
                     <Form.Text className="text-muted">
-                        Data desil diambil otomatis dari DTKS
+                        Data desil diambil otomatis dari API Walidata Kota Kediri
                     </Form.Text>
                 </Form.Group>
             )}

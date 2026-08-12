@@ -314,10 +314,10 @@ class RegPelatihanEkonomiKreatifController extends Controller
         // File NIB / Surat Keterangan Pekerja Ekraf - wajib sesuai peran pendaftar
         // Pemilik usaha wajib upload NIB, pekerja wajib upload surat keterangan pekerja
         if ($request->peran_ekraf === 'pemilik_usaha') {
-            $fileRules['file_nib'] = 'required|file|mimes:pdf,jpg,jpeg,png|max:2048';
+            $fileRules['file_nib'] = 'required|file|mimes:pdf|max:2048';
             $fileRules['file_surat_pekerja_ekraf'] = 'nullable|file|mimes:pdf|max:2048';
         } elseif ($request->peran_ekraf === 'pekerja') {
-            $fileRules['file_nib'] = 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048';
+            $fileRules['file_nib'] = 'nullable|file|mimes:pdf|max:2048';
             $fileRules['file_surat_pekerja_ekraf'] = 'required|file|mimes:pdf|max:2048';
         } else {
             // Peran tidak valid/belum dipilih - kedua file tidak wajib

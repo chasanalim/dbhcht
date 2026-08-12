@@ -157,17 +157,17 @@ class BanmodController extends Controller
     {
         $data = PenerimaBanmod::where('nik', $nik)->first();
 
-        if ($data) {
-            return response()->json([
-                'success' => false,
-                'message' => 'NIK Anda ditemukan dan pernah terdaftar sebagai penerima bantuan modal.',
-            ]);
-        } else {
+        // if ($data) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'NIK Anda ditemukan dan pernah terdaftar sebagai penerima bantuan modal.',
+        //     ]);
+        // } else {
             return response()->json([
                 'success' => true,
                 'data' => $data,
             ]);
-        }
+        // }
     }
 
     public function peserta(Request $request)

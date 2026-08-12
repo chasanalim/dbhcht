@@ -1,8 +1,8 @@
 import AdminLayout from "@/Layouts/admin/AdminLayout";
-import { Head } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import { Card, Row, Col, Container } from "react-bootstrap";
+import { Card, Row, Col, Container, Form } from "react-bootstrap";
 
 export default function Dashboard({
     banmod,
@@ -13,7 +13,11 @@ export default function Dashboard({
     ekraf,
     can,
     selected_year,
+    banmod_registration_open,
 }) {
+    const { auth } = usePage().props;
+    const isAdmin = auth?.user?.roles?.includes("admin");
+
     const getStatusColor = (status) => {
         switch (status.toLowerCase()) {
             case "terverifikasi":
@@ -125,6 +129,21 @@ export default function Dashboard({
                 <DashboardSection
                     type="banmod"
                     title="Dashboard Bantuan Modal"
+                    registrationOpen={banmod_registration_open}
+                    onToggleRegistration={() =>
+                        router.post(
+                            route("admin.banmod.registration-status"),
+                            { open: !banmod_registration_open },
+                            {
+                                preserveScroll: true,
+                                onSuccess: () => router.reload(),
+                                onError: () =>
+                                    console.error(
+                                        "Gagal mengubah status pendaftaran"
+                                    ),
+                            }
+                        )
+                    }
                     summary={banmod.summary}
                     charts={[
                         {
@@ -432,6 +451,8 @@ const DashboardSection = ({
     charts,
     data,
     type = "banmod",
+    registrationOpen,
+    onToggleRegistration,
 }) => {
     const theme = DASHBOARD_THEMES[type];
 
@@ -447,13 +468,36 @@ const DashboardSection = ({
                 <Card.Body className="p-4">
                     <div className="d-flex justify-content-between align-items-center">
                         <h3 className="h2 mb-0">{title}</h3>
-                        <div className="dashboard-date h5">
-                            {new Date().toLocaleDateString("id-ID", {
-                                weekday: "long",
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                            })}
+                        <div className="d-flex align-items-center gap-3">
+                            {registrationOpen !== undefined && isAdmin && (
+                                <div className="d-flex align-items-center gap-2">
+                                    <span
+                                        className={`fw-semibold small ${
+                                            registrationOpen
+                                                ? "text-success"
+                                                : "text-warning"
+                                        }`}
+                                    >
+                                        {registrationOpen
+                                            ? "Pendaftaran Terbuka"
+                                            : "Pendaftaran Ditutup"}
+                                    </span>
+                                    <Form.Check
+                                        type="switch"
+                                        id={`registration-switch-${type}`}
+                                        checked={registrationOpen}
+                                        onChange={onToggleRegistration}
+                                    />
+                                </div>
+                            )}
+                            <div className="dashboard-date h5">
+                                {new Date().toLocaleDateString("id-ID", {
+                                    weekday: "long",
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                })}
+                            </div>
                         </div>
                     </div>
                 </Card.Body>
