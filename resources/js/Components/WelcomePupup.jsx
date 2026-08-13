@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Modal, Carousel } from "react-bootstrap";
 
 const WELCOME_IMAGES = [
@@ -8,13 +8,8 @@ const WELCOME_IMAGES = [
 ];
 
 export default function WelcomePopup() {
-    const modalRef = useRef(null);
+    const [show, setShow] = useState(true);
     const [activeIndex, setActiveIndex] = useState(0);
-
-    useEffect(() => {
-        const modal = new Modal(modalRef.current);
-        modal.show();
-    }, []);
 
     const handleSelect = (selectedIndex, e) => {
         if (e.direction) {
@@ -23,41 +18,43 @@ export default function WelcomePopup() {
     };
 
     return (
-        <div
-            className="modal fade"
-            tabIndex="-1"
-            ref={modalRef}
-            aria-hidden="true"
+        <Modal
+            show={show}
+            onHide={() => setShow(false)}
+            centered
+            size="lg"
+            contentClassName="border-0 bg-transparent"
+            dialogClassName="modal-dialog-centered"
         >
-            <div className="modal-dialog modal-dialog-centered modal-lg">
-                <div className="modal-content border-0 bg-transparent position-relative">
-
-                    <button
-                        type="button"
-                        className="btn-close bg-white position-absolute top-0 end-0 m-2"
-                        data-bs-dismiss="modal"
-                    ></button>
-
-                    <Carousel
-                        activeIndex={activeIndex}
-                        onSelect={handleSelect}
-                        interval={5000}
-                        pause="hover"
-                        wrap
-                    >
-                        {WELCOME_IMAGES.map((src, index) => (
-                            <Carousel.Item key={index}>
-                                <img
-                                    src={src}
-                                    alt={`Banner ${index + 1}`}
-                                    className="img-fluid rounded shadow w-100"
-                                />
-                            </Carousel.Item>
-                        ))}
-                    </Carousel>
-                </div>
-            </div>
-        </div>
+            <Modal.Header className="border-0 bg-transparent p-0 justify-content-end">
+                <button
+                    type="button"
+                    className="btn-close bg-white"
+                    aria-label="Close"
+                    onClick={() => setShow(false)}
+                ></button>
+            </Modal.Header>
+            <Modal.Body className="p-0 bg-transparent rounded shadow overflow-hidden">
+                <Carousel
+                    activeIndex={activeIndex}
+                    onSelect={handleSelect}
+                    interval={5000}
+                    pause="hover"
+                    wrap
+                >
+                    {WELCOME_IMAGES.map((src, index) => (
+                        <Carousel.Item key={index}>
+                            <img
+                                src={src}
+                                alt={`Banner ${index + 1}`}
+                                className="img-fluid w-100"
+                                style={{ display: "block" }}
+                            />
+                        </Carousel.Item>
+                    ))}
+                </Carousel>
+            </Modal.Body>
+        </Modal>
     );
 }
 

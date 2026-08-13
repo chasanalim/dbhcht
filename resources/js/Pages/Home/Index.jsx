@@ -24,7 +24,7 @@ export default function Index({
 
     return (
         <>
-            <WelcomePopup />
+            {/* <WelcomePopup /> */}
             <Layout>
                 <Head title={meta.title} />
                 <style>
