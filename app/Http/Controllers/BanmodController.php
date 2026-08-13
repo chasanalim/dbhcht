@@ -95,6 +95,8 @@ class BanmodController extends Controller
             "file_siinas" => ['nullable', 'required_if:kategori,4', 'file'],
             "file_bp" => ['nullable', 'required_if:kategori,4', 'file'],
             "file_surat_disabilitas" => ['nullable', 'required_if:kategori,7', 'file'],
+            "file_surat_buruh" => ['nullable', 'required_if:kategori,1,2,3', 'file'],
+            "file_surat_miskin" => ['nullable', 'required_if:kategori,5', 'file'],
             "file_sertifikat_pelatihan" => ['nullable', 'required_if:kategori,5,7', 'file']
         ]);
 
@@ -163,6 +165,14 @@ class BanmodController extends Controller
         if ($request->hasFile('file_sertifikat_pelatihan')) {
             $validated['file_sertifikat_pelatihan'] = '/storage/pendaftaran-banmod/pelatihan/' . $request->file('file_sertifikat_pelatihan')->hashName();
             $request->file('file_sertifikat_pelatihan')->storeAs('/pendaftaran-banmod/pelatihan', $request->file('file_sertifikat_pelatihan')->hashName(), 'public');
+        }
+        if ($request->hasFile('file_surat_buruh')) {
+            $validated['file_surat_buruh'] = '/storage/pendaftaran-banmod/surat-buruh/' . $request->file('file_surat_buruh')->hashName();
+            $request->file('file_surat_buruh')->storeAs('/pendaftaran-banmod/surat-buruh', $request->file('file_surat_buruh')->hashName(), 'public');
+        }
+        if ($request->hasFile('file_surat_miskin')) {
+            $validated['file_surat_miskin'] = '/storage/pendaftaran-banmod/surat-miskin/' . $request->file('file_surat_miskin')->hashName();
+            $request->file('file_surat_miskin')->storeAs('/pendaftaran-banmod/surat-miskin', $request->file('file_surat_miskin')->hashName(), 'public');
         }
         $storedPendaftaran = PendaftaranBanmod::create($validated);
         return to_route('banmod.success', $storedPendaftaran->id)->with('success', 'Pendaftaran Berhasil.');

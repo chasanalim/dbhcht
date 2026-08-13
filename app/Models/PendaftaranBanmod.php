@@ -63,6 +63,8 @@ class PendaftaranBanmod extends Model
         "file_sertifikat_pelatihan",
         "file_lokasi_usaha",
         "file_surat_disabilitas",
+        "file_surat_buruh",
+        "file_surat_miskin",
     ];
 
     protected $casts = [
@@ -225,9 +227,15 @@ class PendaftaranBanmod extends Model
 
         $additionalDocuments = [
             // Kategori 1,2,3,6 - Dokumen dasar
-            1 => $baseDocuments,
-            2 => $baseDocuments,
-            3 => $baseDocuments,
+            1 => array_merge($baseDocuments, [
+                'surat_buruh' => 'Surat Keterangan Buruh',
+            ]),
+            2 => array_merge($baseDocuments, [
+                'surat_buruh' => 'Surat Keterangan Buruh',
+            ]),
+            3 => array_merge($baseDocuments, [
+                'surat_buruh' => 'Surat Keterangan Buruh',
+            ]),
             6 => $baseDocuments,
 
             // Kategori 4 - IKM (tambah perizinan, siinas, bp)
@@ -239,7 +247,9 @@ class PendaftaranBanmod extends Model
 
             // Kategori 5 - Masyarakat Miskin (tambah sertifikat)
             5 => array_merge($baseDocuments, [
+                'surat_miskin' => 'Surat Keterangan Miskin',
                 'sertifikat_pelatihan' => 'Sertifikat Pelatihan'
+                
             ]),
 
             // Kategori 7 - Disabilitas (tambah surat disabilitas + sertifikat)
@@ -275,14 +285,15 @@ class PendaftaranBanmod extends Model
         $baseDocuments = ['foto', 'ktp', 'kk', 'nib', 'sku', 'produk', 'lokasi_usaha', 'pernyataan'];
 
         $additionalDocuments = [
-            // Kategori 1 - Buruh Pabrik Rokok
-            1 => $baseDocuments,
-
-            // Kategori 2 - Buruh Tani Tembakau
-            2 => $baseDocuments,
-
-            // Kategori 3 - Pekerja Pabrik Rokok
-            3 => $baseDocuments,
+            1 => array_merge($baseDocuments, [
+                'surat_buruh',
+            ]),
+            2 => array_merge($baseDocuments, [
+                'surat_buruh',
+            ]),
+            3 => array_merge($baseDocuments, [
+                'surat_buruh',
+            ]),
 
             // Kategori 6 - Pedagang Kaki Lima
             6 => $baseDocuments,
@@ -294,11 +305,13 @@ class PendaftaranBanmod extends Model
                 'perizinan',
             ]),
 
-            // Kategori 5 - Masyarakat Miskin
+            // Kategori 5 - Masyarakat Miskin (tambah sertifikat)
             5 => array_merge($baseDocuments, [
+                'surat_miskin',
                 'sertifikat_pelatihan'
+                
             ]),
-
+    
             // Kategori 7 - Disabilitas
             7 => array_merge($baseDocuments, [
                 'surat_disabilitas',

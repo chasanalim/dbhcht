@@ -33,14 +33,16 @@ trait HasVerifikasiDokumen
         $baseDocuments = ['foto', 'ktp', 'kk', 'nib', 'sku', 'produk', 'lokasi_usaha', 'pernyataan'];
 
         $additionalDocuments = [
-            // Kategori 1 - Buruh Pabrik Rokok
-            1 => $baseDocuments,
+            1 => array_merge($baseDocuments, [
+                'surat_buruh',
+            ]),
+            2 => array_merge($baseDocuments, [
+                'surat_buruh',
+            ]),
+            3 => array_merge($baseDocuments, [
+                'surat_buruh',
+            ]),
 
-            // Kategori 2 - Buruh Tani Tembakau
-            2 => $baseDocuments,
-
-            // Kategori 3 - Pekerja Pabrik Rokok
-            3 => $baseDocuments,
 
             // Kategori 6 - Pedagang Kaki Lima
             6 => $baseDocuments,
@@ -53,15 +55,19 @@ trait HasVerifikasiDokumen
             ]),
 
             // Kategori 5 - Masyarakat Miskin
+            // Kategori 5 - Masyarakat Miskin (tambah sertifikat)
             5 => array_merge($baseDocuments, [
+                'surat_miskin',
                 'sertifikat_pelatihan'
+                
             ]),
-
+    
             // Kategori 7 - Disabilitas
             7 => array_merge($baseDocuments, [
                 'surat_disabilitas',
                 'sertifikat_pelatihan',
             ]),
+
 
             // Default - Semua dokumen
             null => [

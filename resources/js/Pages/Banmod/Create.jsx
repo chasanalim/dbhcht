@@ -290,6 +290,8 @@ export default function BanmodPage({ meta }) {
         file_sertifikat_pelatihan: [],
         file_lokasi_usaha: [],
         file_surat_disabilitas: [],
+        file_surat_buruh: [],
+        file_surat_miskin: [],
         imagePreviewPasFoto: "",
         imagePreviewKTP: "",
         imagePreviewUsaha: "",
@@ -352,7 +354,12 @@ export default function BanmodPage({ meta }) {
     };
 
     // Kategori 5 (Masyarakat Miskin) & 7 (Disabilitas) perilaku form sama
-    const isMiskinLike = data.kategori == 5 || data.kategori == 7;
+    const isMiskinLike =
+        Number(data.kategori) === 5 || Number(data.kategori) === 7;
+    const isKategori1to3 = [1, 2, 3].includes(Number(data.kategori));
+    const isKategori4 = Number(data.kategori) === 4;
+    const isKategori5 = Number(data.kategori) === 5;
+    const isKategori7 = Number(data.kategori) === 7;
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -390,16 +397,15 @@ export default function BanmodPage({ meta }) {
                                     errors={errors.kategori}
                                 />
                             </div>
-                            <div className="col-md-12 col-12 mb-3">
+                            {/* <div className="col-md-12 col-12 mb-3">
                                 <div
                                     className="alert alert-info py-2 px-3 mb-0"
                                     style={{ fontSize: "13px" }}
                                 >
                                     <i className="bi bi-info-circle me-1"></i>
-                                    Syarat: Surat Keterangan Disabilitas dari
-                                    Kelurahan (khusus kategori Disabilitas)
+                                    Note: PEDAGANG KAKI LIMA HANYA UNTUK PEDAGANG KAKI LIMA YANG TERDATA OLEH DISPERDAGIN KOTA KEDIRI.
                                 </div>
-                            </div>
+                            </div> */}
                         </Form.Group>
                         <div className="mb-3">
                             <Form.Label className="required">NIK</Form.Label>
@@ -1119,15 +1125,12 @@ export default function BanmodPage({ meta }) {
                                             "Kartu Keluarga (KK)",
                                             "file_kk",
                                         )}
-                                        {renderFileUpload(
-                                            "Surat Keterangan Domisili",
-                                            "file_skd",
-                                        )}
-                                        {data.kategori == 7 &&
+                                        {data.isDomisili &&
                                             renderFileUpload(
-                                                "Surat Keterangan Disabilitas dari Kelurahan",
-                                                "file_surat_disabilitas",
+                                                "Surat Keterangan Domisili",
+                                                "file_skd",
                                             )}
+
                                         {renderFileUpload(
                                             "Foto Usaha / Produk",
                                             "file_produk",
@@ -1164,7 +1167,7 @@ export default function BanmodPage({ meta }) {
                                         {renderFileUpload("SKU", "file_sku")}
                                         {renderFileUpload("NIB", "file_nib")}
 
-                                        {data.kategori === 4 && (
+                                        {isKategori4 && (
                                             <>
                                                 {renderFileUpload(
                                                     "Perizinan Teknis dan Standardisasi Lainnya",
@@ -1183,13 +1186,90 @@ export default function BanmodPage({ meta }) {
                                             </>
                                         )}
 
-                                        {(data.kategori === 5 ||
-                                            data.kategori === 7) && (
+                                        {isKategori5 && (
+                                            <>
+                                                {renderFileUpload(
+                                                    "Surat Keterangan Miskin",
+                                                    "file_surat_miskin",
+                                                    ".pdf",
+                                                    true,
+                                                )}
+                                                <div className="mb-3">
+                                                    <a
+                                                        href="https://sultan.kedirikota.go.id/storage/files/2AwGvjYESu1vQLSAfgOkGT1KAXE23R7BuMOBjrbj.pdf"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-decoration-none text-danger fw-semibold"
+                                                        style={{
+                                                            fontSize: "12px",
+                                                        }}
+                                                    >
+                                                        📥 Unduh Template Surat
+                                                        Pernyataan Komitmen
+                                                        (PDF)
+                                                    </a>
+                                                </div>
+                                            </>
+                                        )}
+
+                                        {(isKategori5 || isKategori7) && (
                                             <>
                                                 {renderFileUpload(
                                                     "Sertifikat Pelatihan Sesuai Usaha yang Diajukan",
                                                     "file_sertifikat_pelatihan",
                                                 )}
+                                            </>
+                                        )}
+                                        {isKategori1to3 && (
+                                            <>
+                                                {renderFileUpload(
+                                                    "Surat Keterangan Buruh",
+                                                    "file_surat_buruh",
+                                                    ".pdf",
+                                                    true,
+                                                )}
+                                                {/* Download link untuk template */}
+                                                <div className="mb-3">
+                                                    <a
+                                                        href="https://sultan.kedirikota.go.id/storage/files/2AwGvjYESu1vQLSAfgOkGT1KAXE23R7BuMOBjrbj.pdf"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-decoration-none text-danger fw-semibold"
+                                                        style={{
+                                                            fontSize: "12px",
+                                                        }}
+                                                    >
+                                                        📥 Unduh Template Surat
+                                                        Pernyataan Buruh Rokok
+                                                        (PDF)
+                                                    </a>
+                                                </div>
+                                            </>
+                                        )}
+                                        {isKategori7 && (
+                                            <>
+                                                {renderFileUpload(
+                                                    "Surat Keterangan Disabilitas",
+                                                    "file_surat_disabilitas",
+                                                    ".pdf",
+                                                    true,
+                                                )}
+                                                {/* Download link untuk template */}
+                                                <div className="mb-3">
+                                                    <a
+                                                        href="https://sultan.kedirikota.go.id/storage/files/2AwGvjYESu1vQLSAfgOkGT1KAXE23R7BuMOBjrbj.pdf"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-decoration-none text-danger fw-semibold"
+                                                        style={{
+                                                            fontSize: "12px",
+                                                        }}
+                                                    >
+                                                        📥 Unduh Template Surat
+                                                        Pernyataan Disabilitas
+                                                        (PDF)
+                                                    </a>
+                                                </div>
                                             </>
                                         )}
                                     </>

@@ -44,13 +44,13 @@ class HandleInertiaRequests extends Middleware
                 'icon' => 'fa-podcast',
                 'show' => in_array('read dashboard', $permissions),
             ],
-            [
-                'label' => 'Download File',
-                'route' => 'download',
-                'icon' => 'bi bi-file-earmark-arrow-down',
-                'show' => true,
-                // 'show' => in_array('read dashboard', $permissions),
-            ],
+            // [
+            //     'label' => 'Download File',
+            //     'route' => 'download',
+            //     'icon' => 'bi bi-file-earmark-arrow-down',
+            //     'show' => true,
+            //     'show' => in_array('read dashboard', $permissions),
+            // ],
             [
                 'label' => 'Daftar Banmod',
                 'route' => 'banmod',
