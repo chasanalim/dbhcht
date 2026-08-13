@@ -239,16 +239,18 @@ class DashboardController extends Controller
             SUM(CASE
                 WHEN vd.total_docs =
                     CASE
-                        WHEN pb.kategori IN (1,2,3) THEN 8
+                        WHEN pb.kategori IN (1,2,3,6) THEN 8
                         WHEN pb.kategori = 4 THEN 11
                         WHEN pb.kategori = 5 THEN 9
+                        WHEN pb.kategori = 7 THEN 10
                         ELSE 12
                     END
                 AND vd.verified_docs =
                     CASE
-                        WHEN pb.kategori IN (1,2,3) THEN 8
+                        WHEN pb.kategori IN (1,2,3,6) THEN 8
                         WHEN pb.kategori = 4 THEN 11
                         WHEN pb.kategori = 5 THEN 9
+                        WHEN pb.kategori = 7 THEN 10
                         ELSE 12
                     END
                 THEN 1 ELSE 0
@@ -256,16 +258,18 @@ class DashboardController extends Controller
             SUM(CASE
                 WHEN vd.total_docs =
                     CASE
-                        WHEN pb.kategori IN (1,2,3) THEN 8
+                        WHEN pb.kategori IN (1,2,3,6) THEN 8
                         WHEN pb.kategori = 4 THEN 11
                         WHEN pb.kategori = 5 THEN 9
+                        WHEN pb.kategori = 7 THEN 10
                         ELSE 12
                     END
                 AND vd.verified_docs <
                     CASE
-                        WHEN pb.kategori IN (1,2,3) THEN 8
+                        WHEN pb.kategori IN (1,2,3,6) THEN 8
                         WHEN pb.kategori = 4 THEN 11
                         WHEN pb.kategori = 5 THEN 9
+                        WHEN pb.kategori = 7 THEN 10
                         ELSE 12
                     END
                 THEN 1 ELSE 0
@@ -352,31 +356,35 @@ class DashboardController extends Controller
             CASE
                 WHEN vd.total_docs =
                     CASE
-                        WHEN pb.kategori IN (1,2,3) THEN 8
+                        WHEN pb.kategori IN (1,2,3,6) THEN 8
                         WHEN pb.kategori = 4 THEN 11
                         WHEN pb.kategori = 5 THEN 9
+                        WHEN pb.kategori = 7 THEN 10
                         ELSE 12
                     END
                     AND vd.verified_docs =
                     CASE
-                        WHEN pb.kategori IN (1,2,3) THEN 8
+                        WHEN pb.kategori IN (1,2,3,6) THEN 8
                         WHEN pb.kategori = 4 THEN 11
                         WHEN pb.kategori = 5 THEN 9
+                        WHEN pb.kategori = 7 THEN 10
                         ELSE 12
                     END
                 THEN "Terverifikasi"
                 WHEN vd.total_docs =
                     CASE
-                        WHEN pb.kategori IN (1,2,3) THEN 8
+                        WHEN pb.kategori IN (1,2,3,6) THEN 8
                         WHEN pb.kategori = 4 THEN 11
                         WHEN pb.kategori = 5 THEN 9
+                        WHEN pb.kategori = 7 THEN 10
                         ELSE 12
                     END
                     AND vd.verified_docs <
                     CASE
-                        WHEN pb.kategori IN (1,2,3) THEN 8
+                        WHEN pb.kategori IN (1,2,3,6) THEN 8
                         WHEN pb.kategori = 4 THEN 11
                         WHEN pb.kategori = 5 THEN 9
+                        WHEN pb.kategori = 7 THEN 10
                         ELSE 12
                     END
                 THEN "Ditolak"

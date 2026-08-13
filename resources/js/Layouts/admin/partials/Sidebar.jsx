@@ -35,6 +35,7 @@ export default function Sidebar() {
             route().current("admin.banmod.pekerja-pabrik-rokok") ||
             route().current("admin.banmod.ikm") ||
             route().current("admin.banmod.masyarakat-miskin") ||
+            route().current("admin.banmod.disabilitas") ||
             route().current("admin.banmod.pkl")
         );
     };
@@ -261,6 +262,25 @@ export default function Sidebar() {
                                                 }`}
                                             >
                                                 <span>MASYARAKAT MISKIN</span>
+                                            </NavDropdown.Item>
+                                            <NavDropdown.Item
+                                                as={Link}
+                                                method="get"
+                                                href={route(
+                                                    "admin.banmod.disabilitas",
+                                                )}
+                                                active={route().current(
+                                                    "admin.banmod.disabilitas",
+                                                )}
+                                                className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                                    route().current(
+                                                        "admin.banmod.disabilitas",
+                                                    )
+                                                        ? "active"
+                                                        : ""
+                                                }`}
+                                            >
+                                                <span>DISABILITAS</span>
                                             </NavDropdown.Item>
                                             <NavDropdown.Item
                                                 as={Link}

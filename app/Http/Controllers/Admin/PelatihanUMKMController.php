@@ -6,6 +6,8 @@ use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
+use App\Models\PelatihanBanmod;
+use App\Models\MasterPencariKerja;
 use App\Models\PelatihanUmkm;
 use App\Traits\HasVerifikasiDokumen;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -218,7 +220,48 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
     public function show(string $id)
     {
         $data = PelatihanUmkm::with(['alasanPelatihan', 'kesesuaianPelatihan', 'pengalamanPelatihan', 'documentVerifications.verifier'])->findOrFail($id);
-        // return response()->json($data);
+
+        $pelatihanSebelumnya = collect()
+            ->merge(
+                PelatihanUmkm::where('nik', $data->nik)
+                    ->where('id', '!=', $data->id)
+                    ->where('status', 1)
+                    ->withoutSelectedYearFilter()
+                    ->get(['prioritas_1', 'prioritas_2', 'prioritas_3', 'created_at'])
+                    ->map(function ($row) {
+                        return [
+                            'jenis' => $row->prioritas_1 ?? $row->prioritas_2 ?? $row->prioritas_3 ?? '-',
+                            'nama_pelatihan' => 'UMKM',
+                            'tahun' => $row->created_at?->format('Y') ?? '-',
+                        ];
+                    })
+            )
+            ->merge(
+                PelatihanBanmod::where('nik', $data->nik)
+                    ->where('status', 1)
+                    ->withoutSelectedYearFilter()
+                    ->get(['jenis_pelatihan_industri', 'created_at'])
+                    ->map(function ($row) {
+                        return [
+                            'jenis' => $row->jenis_pelatihan_industri,
+                            'nama_pelatihan' => 'Penerima Banmod',
+                            'tahun' => $row->created_at?->format('Y') ?? '-',
+                        ];
+                    })
+            )
+            ->merge(
+                MasterPencariKerja::where('nik', $data->nik)
+                    ->get(['jenis_pelatihan', 'tahun'])
+                    ->map(function ($row) {
+                        return [
+                            'jenis' => $row->jenis_pelatihan,
+                            'nama_pelatihan' => 'Pencari Kerja',
+                            'tahun' => $row->tahun ?? '-',
+                        ];
+                    })
+            )
+            ->values();
+
         $verifiedDocuments = $data->documentVerifications
             ->groupBy('document_type')
             ->map(function ($verifications) {
@@ -286,6 +329,7 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
                 'komitmen' => $data->komitmen,
                 'status' => $data->status,
                 'keterangan' => $data->keterangan,
+                'pelatihan_sebelumnya' => $pelatihanSebelumnya,
 
                 // Files
                 'files' => [

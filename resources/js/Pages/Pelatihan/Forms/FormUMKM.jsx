@@ -25,6 +25,7 @@ export default function FormUMKM() {
     const [errorMessage, setErrorMessage] = useState("");
     const [nikLength, setNikLength] = useState(0);
     const [kkLength, setKkLength] = useState(0);
+    const [dtksData, setDtksData] = useState(null);
 
     const { data, setData, errors, post, reset } = useForm({
         nik: "",
@@ -132,6 +133,7 @@ export default function FormUMKM() {
     const cekNik = async () => {
         setErrorMessage("");
         setNikStatus("");
+        setDtksData(null);
         try {
             const response = await axios.get(
                 `/pelatihan/umkm/cek-nik/${data.nik}`
@@ -143,6 +145,19 @@ export default function FormUMKM() {
                 setDataPenerima(true);
                 if (response.data.desil) {
                     setData("desil", response.data.desil);
+                }
+                if (response.data.no_kk || response.data.nama) {
+                    setDtksData({
+                        no_kk: response.data.no_kk,
+                        nama: response.data.nama,
+                    });
+                    if (response.data.no_kk) {
+                        setData("no_kk", response.data.no_kk);
+                        setKkLength(response.data.no_kk.length);
+                    }
+                    if (response.data.nama) {
+                        setData("nama_lengkap", response.data.nama);
+                    }
                 }
             } else {
                 setErrorMessage(response.data.message);
@@ -595,7 +610,7 @@ export default function FormUMKM() {
                             <Form.Control
                                 type="text"
                                 value={data.no_kk || ""}
-                                onChange={(e) => {
+                                onChange={dtksData?.no_kk ? undefined : (e) => {
                                     const value = e.target.value.replace(/\D/g, ''); // Hanya terima angka
                                     if (value.length <= 16) { // Batasi maksimal 16 digit
                                         setData("no_kk", value);
@@ -603,10 +618,16 @@ export default function FormUMKM() {
                                     }
                                 }}
                                 isInvalid={!!errors.no_kk}
-                                className={`${kkLength === 16 ? 'border-success text-success' : 'border-warning'}`}
+                                className={`${kkLength === 16 ? 'border-success text-success' : 'border-warning'} ${dtksData?.no_kk ? 'bg-light' : ''}`}
                                 maxLength={16}
                                 placeholder="Nomor Kartu Keluarga"
+                                readOnly={!!dtksData?.no_kk}
                             />
+                            {dtksData?.no_kk && (
+                                <span className="input-group-text bg-info text-white">
+                                    <i class="bi bi-shield-check"></i> DTKS
+                                </span>
+                            )}
                             <Form.Control.Feedback type="invalid">
                                 {errors.no_kk}
                             </Form.Control.Feedback>
@@ -616,6 +637,7 @@ export default function FormUMKM() {
                             kkLength > 0 ? 'text-warning' : 'text-muted'
                         }`}>
                             {kkLength}/16 digit
+                            {dtksData?.no_kk && ' <span class="text-info">(Data dari DTKS)</span>'}
                         </small>
                     </Form.Group>
 
@@ -641,11 +663,18 @@ export default function FormUMKM() {
                         <Form.Control
                             type="text"
                             value={data.nama_lengkap || ""}
-                            onChange={(e) =>
+                            onChange={dtksData?.nama ? undefined : (e) =>
                                 setData("nama_lengkap", e.target.value)
                             }
                             isInvalid={!!errors.nama_lengkap}
+                            readOnly={!!dtksData?.nama}
+                            className={dtksData?.nama ? 'bg-light' : ''}
                         />
+                        {dtksData?.nama && (
+                            <Form.Text className="text-info">
+                                <i class="bi bi-shield-check me-1"></i>Data dari DTKS
+                            </Form.Text>
+                        )}
                         <Form.Control.Feedback type="invalid">
                             {errors.nama_lengkap}
                         </Form.Control.Feedback>
@@ -930,7 +959,7 @@ export default function FormUMKM() {
                                     setData((prev) => ({
                                         ...prev,
                                         kode_rw: item.id,
-                                        rw_usaha: item.text,
+                                        rw_usaha: item.rw,
                                     }))
                                 }
                                 errors={errors.rw_usaha}
@@ -945,7 +974,7 @@ export default function FormUMKM() {
                                     setData((prev) => ({
                                         ...prev,
                                         kode_rt: item.id,
-                                        rt_usaha: item.rw,
+                                        rt_usaha: item.rt,
                                     }))
                                 }
                                 errors={errors.rt_usaha}

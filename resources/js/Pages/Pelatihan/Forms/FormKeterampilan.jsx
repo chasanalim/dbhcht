@@ -82,9 +82,12 @@ export default function FormKeterampilan() {
         return maxDate.toISOString().split('T')[0];
     };
 
+    const [dtksData, setDtksData] = useState(null);
+
     const cekNik = async () => {
         setErrorMessage("");
         setNikStatus("");
+        setDtksData(null);
         try {
             const response = await axios.get(
                 `/pelatihan/kerja/cek-nik/${data.nik}`
@@ -96,6 +99,19 @@ export default function FormKeterampilan() {
                 setDataPenerima(true);
                 if (response.data.desil) {
                     setData("desil", response.data.desil);
+                }
+                if (response.data.no_kk || response.data.nama) {
+                    setDtksData({
+                        no_kk: response.data.no_kk,
+                        nama: response.data.nama,
+                    });
+                    if (response.data.no_kk) {
+                        setData("no_kk", response.data.no_kk);
+                        setKkLength(response.data.no_kk.length);
+                    }
+                    if (response.data.nama) {
+                        setData("nama_lengkap", response.data.nama);
+                    }
                 }
             } else {
                 setErrorMessage(response.data.message);
@@ -392,12 +408,16 @@ export default function FormKeterampilan() {
             <div className="alert alert-info mb-4">
                 <strong>DESKRIPSI PELATIHAN:</strong>
                 <p className="mb-2">
-                    Pelatihan teknis dan soft skill untuk meningkatkan daya saing pencari kerja.
+                    Pelatihan ini diperuntukkan bagi pencari kerja dan korban PHK yang ingin meningkatkan skill dan kompetensi sebagai bekal memasuki dunia kerja.
                 </p>
+                <strong>Durasi Pelatihan:</strong>
+                <p className="mb-2">
+                    Durasi pelatihan rata-rata selama 12 hari kerja, beberapa pelatihan (Barista Cafe, House Keeping, Pengelasan, dan Food & Beverage Service) ada tambahan on the job training / OJT selama 30 hari.
+                </p>
+                <strong>Syarat dan Ketentuan:</strong>
                 <ul className="mb-0">
                     <li><strong>Usia Min:</strong> 18 tahun</li>
-                    <li><strong>Usia Maks:</strong> 45 tahun</li>
-                    <li><strong>Durasi pelatihan:</strong> 10 hari</li>
+                    <li><strong>Pendidikan:</strong> Minimal SMA/Sederajat</li>
                 </ul>
             </div>
 
@@ -487,7 +507,7 @@ export default function FormKeterampilan() {
                             <Form.Control
                                 type="text"
                                 value={data.no_kk || ""}
-                                onChange={(e) => {
+                                onChange={dtksData?.no_kk ? undefined : (e) => {
                                     const value = e.target.value.replace(
                                         /\D/g,
                                         ""
@@ -503,10 +523,16 @@ export default function FormKeterampilan() {
                                     kkLength === 16
                                         ? "border-success text-success"
                                         : "border-warning"
-                                }`}
+                                } ${dtksData?.no_kk ? 'bg-light' : ''}`}
                                 maxLength={16}
                                 placeholder="Nomor Kartu Keluarga"
+                                readOnly={!!dtksData?.no_kk}
                             />
+                            {dtksData?.no_kk && (
+                                <span className="input-group-text bg-info text-white">
+                                    <i class="bi bi-shield-check"></i> DTKS
+                                </span>
+                            )}
                             <Form.Control.Feedback type="invalid">
                                 {errors.no_kk}
                             </Form.Control.Feedback>
@@ -521,6 +547,7 @@ export default function FormKeterampilan() {
                             }`}
                         >
                             {kkLength}/16 digit
+                            {dtksData?.no_kk && ' <span class="text-info">(Data dari DTKS)</span>'}
                         </small>
                     </Form.Group>
 
@@ -533,14 +560,21 @@ export default function FormKeterampilan() {
                             name="nama"
                             type="text"
                             value={data.nama_lengkap || ""}
-                            onChange={(e) =>
+                            onChange={dtksData?.nama ? undefined : (e) =>
                                 setData({
                                     ...data,
                                     nama_lengkap: e.target.value,
                                 })
                             }
                             isInvalid={!!errors.nama_lengkap}
+                            readOnly={!!dtksData?.nama}
+                            className={dtksData?.nama ? 'bg-light' : ''}
                         />
+                        {dtksData?.nama && (
+                            <Form.Text className="text-info">
+                                <i class="bi bi-shield-check me-1"></i>Data dari DTKS
+                            </Form.Text>
+                        )}
                         <Form.Control.Feedback type="invalid">
                             {errors.nama_lengkap}
                         </Form.Control.Feedback>

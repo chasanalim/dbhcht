@@ -7,7 +7,6 @@ import SelectKelurahan from "@/Components/Select/SelectKelurahan";
 import SelectKlasterUsaha from "@/Components/Select/SelectKlasterUsaha";
 import SelectLamaUsaha from "@/Components/Select/SelectLamaUsaha";
 import SelectLegalitas from "@/Components/Select/SelectLegalitas";
-import SelectListrik from "@/Components/Select/SelectListrik";
 import SelectPenyerapanNaker from "@/Components/Select/SelectPenyerapanNaker";
 import SelectRt from "@/Components/Select/SelectRt";
 import SelectRw from "@/Components/Select/SelectRw";
@@ -23,12 +22,12 @@ import CurrencyInput from "react-currency-input-field";
 
 export default function BanmodPage({ meta }) {
     const [nikStatus, setNikStatus] = useState(null); // Status pengecekan NIK
-    const [dataPenerima, setDataPenerima] = useState(null);
     const [errorMessage, setErrorMessage] = useState(""); // Pesan error
     const [isKomitmenChecked, setIsKomitmenChecked] = useState(false);
     const [nikLength, setNikLength] = useState(0);
     const [kkLength, setKkLength] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [foundInDesil, setFoundInDesil] = useState(false); // NIK ditemukan di data DTKS/desil
 
     // const { auth } = usePage().props;
 
@@ -36,6 +35,13 @@ export default function BanmodPage({ meta }) {
     //     useState(false);
 
     let fileIndex = 1;
+
+    // Field yang readonly hanya ketika NIK ditemukan di data desil/DTKS
+    const isFieldReadOnly = (field) => {
+        if (field === "desil") return true; // desil selalu readonly
+        if (field === "phone_number") return false; // No WA selalu bisa diedit manual
+        return foundInDesil; // nik, kk, name, alamat
+    };
 
     const ceknik = async () => {
         setErrorMessage("");
@@ -49,21 +55,34 @@ export default function BanmodPage({ meta }) {
 
         try {
             const response = await axios.get(
-                `/banmod/cek-nik/${data.nik}/${data.kategori}`
+                `/banmod/cek-nik/${data.nik}/${data.kategori}`,
+                { params: { kk: data.kk || undefined } },
             );
             if (response.data.success) {
                 setNikStatus(response.data.message);
-                const d = response.data.data;
-                setDataPenerima(d);
-                if (d) {
+                setFoundInDesil(!!response.data.foundInDesil);
+                setData((prev) => ({
+                    ...prev,
+                    desil: response.data.desil,
+                }));
+                if (response.data.foundInDesil) {
+                    // Auto-fill dari data DTKS
+                    const d = response.data.data;
                     setData((prev) => ({
                         ...prev,
-                        name: d.nama,
-                        alamat: d.alamat,
-                        phone_number: d.no_hp,
+                        kk: d?.kk || prev.kk,
+                        name: d?.nama || prev.name,
                     }));
+                    if (d?.kk) setKkLength(d.kk.length);
+                } else {
+                    // Mode manual: bersihkan autofill lama
+                    setData((prev) => ({
+                        ...prev,
+                        kk: "",
+                        name: "",
+                    }));
+                    setKkLength(0);
                 }
-                // setTampilKonfirmasi(true);
             } else {
                 setErrorMessage(response.data.message);
             }
@@ -85,7 +104,7 @@ export default function BanmodPage({ meta }) {
         fieldName,
         accept = ".pdf",
         multiple = false,
-        imagePreviewKey = null
+        imagePreviewKey = null,
     ) => {
         const indexLabel = `${fileIndex++}.`;
         return (
@@ -177,7 +196,7 @@ export default function BanmodPage({ meta }) {
                                     📄 {data[fieldName].name}{" "}
                                     <a
                                         href={URL.createObjectURL(
-                                            data[fieldName]
+                                            data[fieldName],
                                         )}
                                         target="_blank"
                                         rel="noopener noreferrer"
@@ -241,7 +260,7 @@ export default function BanmodPage({ meta }) {
         isUsaha: false,
         alamat_usaha: "",
         phone_number: "",
-        daya_listrik: "",
+        desil: "",
         isDisabilitas: false,
         disabilitas: "",
         kategori: "",
@@ -269,9 +288,12 @@ export default function BanmodPage({ meta }) {
         file_siinas: [],
         file_bp: [],
         file_sertifikat_pelatihan: [],
+        file_lokasi_usaha: [],
+        file_surat_disabilitas: [],
         imagePreviewPasFoto: "",
         imagePreviewKTP: "",
         imagePreviewUsaha: "",
+        imagePreviewLokasiUsaha: "",
     });
 
     const handleUploadFoto = (e, field_name, preview_name) => {
@@ -279,8 +301,12 @@ export default function BanmodPage({ meta }) {
 
         const MAX_SIZE = 2 * 1024 * 1024;
         if (file.size > MAX_SIZE) {
-            alert("Ukuran file terlalu besar! Maksimal 2MB. Ukuran file Anda: " + (file.size / (1024 * 1024)).toFixed(2) + "MB");
-            e.target.value = ""; 
+            alert(
+                "Ukuran file terlalu besar! Maksimal 2MB. Ukuran file Anda: " +
+                    (file.size / (1024 * 1024)).toFixed(2) +
+                    "MB",
+            );
+            e.target.value = "";
             return;
         }
 
@@ -302,10 +328,19 @@ export default function BanmodPage({ meta }) {
         const MAX_SIZE = 2 * 1024 * 1024; // 2MB
 
         // Validasi ukuran setiap file
-        const invalidFiles = choosenFiles.filter(file => file.size > MAX_SIZE);
+        const invalidFiles = choosenFiles.filter(
+            (file) => file.size > MAX_SIZE,
+        );
         if (invalidFiles.length > 0) {
-            alert("Beberapa file terlalu besar! Maksimal 2MB per file.\n\nFile yang berukuran terlalu besar:\n" + 
-                invalidFiles.map(f => `${f.name} (${(f.size / (1024 * 1024)).toFixed(2)}MB)`).join("\n"));
+            alert(
+                "Beberapa file terlalu besar! Maksimal 2MB per file.\n\nFile yang berukuran terlalu besar:\n" +
+                    invalidFiles
+                        .map(
+                            (f) =>
+                                `${f.name} (${(f.size / (1024 * 1024)).toFixed(2)}MB)`,
+                        )
+                        .join("\n"),
+            );
             e.target.value = ""; // Reset input
             return;
         }
@@ -315,6 +350,9 @@ export default function BanmodPage({ meta }) {
             [field_name]: multiple ? choosenFiles : choosenFiles[0],
         }));
     };
+
+    // Kategori 5 (Masyarakat Miskin) & 7 (Disabilitas) perilaku form sama
+    const isMiskinLike = data.kategori == 5 || data.kategori == 7;
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -352,6 +390,16 @@ export default function BanmodPage({ meta }) {
                                     errors={errors.kategori}
                                 />
                             </div>
+                            <div className="col-md-12 col-12 mb-3">
+                                <div
+                                    className="alert alert-info py-2 px-3 mb-0"
+                                    style={{ fontSize: "13px" }}
+                                >
+                                    <i className="bi bi-info-circle me-1"></i>
+                                    Syarat: Surat Keterangan Disabilitas dari
+                                    Kelurahan (khusus kategori Disabilitas)
+                                </div>
+                            </div>
                         </Form.Group>
                         <div className="mb-3">
                             <Form.Label className="required">NIK</Form.Label>
@@ -362,9 +410,10 @@ export default function BanmodPage({ meta }) {
                                     placeholder="Nomor KTP"
                                     value={data.nik}
                                     onChange={(e) => {
+                                        if (foundInDesil) return; // readonly dari DTKS
                                         const value = e.target.value.replace(
                                             /\D/g,
-                                            ""
+                                            "",
                                         ); // Hanya terima angka
                                         if (value.length <= 16) {
                                             // Batasi maksimal 16 digit
@@ -373,6 +422,12 @@ export default function BanmodPage({ meta }) {
                                             setNikStatus("");
                                             setErrorMessage("");
                                         }
+                                    }}
+                                    readOnly={isFieldReadOnly("nik")}
+                                    style={{
+                                        background: foundInDesil
+                                            ? "#e9ecef"
+                                            : undefined,
                                     }}
                                     className={`${
                                         nikLength === 16
@@ -398,8 +453,8 @@ export default function BanmodPage({ meta }) {
                                     nikLength === 16
                                         ? "text-success"
                                         : nikLength > 0
-                                        ? "text-warning"
-                                        : "text-muted"
+                                          ? "text-warning"
+                                          : "text-muted"
                                 }`}
                             >
                                 {nikLength}/16 digit
@@ -422,16 +477,23 @@ export default function BanmodPage({ meta }) {
                                             type="text"
                                             value={data.kk || ""}
                                             onChange={(e) => {
+                                                if (foundInDesil) return; // readonly dari DTKS
                                                 const value =
                                                     e.target.value.replace(
                                                         /\D/g,
-                                                        ""
+                                                        "",
                                                     ); // Hanya terima angka
                                                 if (value.length <= 16) {
                                                     // Batasi maksimal 16 digit
                                                     setData("kk", value);
                                                     setKkLength(value.length);
                                                 }
+                                            }}
+                                            readOnly={isFieldReadOnly("kk")}
+                                            style={{
+                                                background: foundInDesil
+                                                    ? "#e9ecef"
+                                                    : undefined,
                                             }}
                                             isInvalid={!!errors.kk}
                                             className={`${
@@ -451,11 +513,36 @@ export default function BanmodPage({ meta }) {
                                             kkLength === 16
                                                 ? "text-success"
                                                 : kkLength > 0
-                                                ? "text-warning"
-                                                : "text-muted"
+                                                  ? "text-warning"
+                                                  : "text-muted"
                                         }`}
                                     >
                                         {kkLength}/16 digit
+                                    </small>
+                                </div>
+                                <div className="mb-3">
+                                    <Form.Label className="required">
+                                        Desil (dari Data Terpadu Kesejahteraan
+                                        Sosial)
+                                    </Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        value={data.desil || ""}
+                                        onChange={() => {}}
+                                        readOnly
+                                        isInvalid={!!errors.desil}
+                                        placeholder="Terisi otomatis dari data DTKS"
+                                        style={{
+                                            background: "#e9ecef",
+                                            cursor: "not-allowed",
+                                        }}
+                                    />
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.desil}
+                                    </Form.Control.Feedback>
+                                    <small className="d-block mt-1 text-muted">
+                                        Nilai desil otomatis dari DTKS saat Cek
+                                        NIK
                                     </small>
                                 </div>
                                 <div className="mb-3">
@@ -464,12 +551,19 @@ export default function BanmodPage({ meta }) {
                                     </Form.Label>
                                     <Form.Control
                                         value={data.name || ""}
-                                        onChange={(e) =>
+                                        onChange={(e) => {
+                                            if (foundInDesil) return; // readonly dari DTKS
                                             setData((prevState) => ({
                                                 ...prevState,
                                                 name: e.target.value,
-                                            }))
-                                        }
+                                            }));
+                                        }}
+                                        readOnly={isFieldReadOnly("name")}
+                                        style={{
+                                            background: foundInDesil
+                                                ? "#e9ecef"
+                                                : undefined,
+                                        }}
                                         name="nama"
                                         isInvalid={errors.name}
                                         placeholder="Nama Lengkap"
@@ -571,7 +665,6 @@ export default function BanmodPage({ meta }) {
                                             }
                                             errors={errors.nama_kecamatan}
                                         />
-                                        
                                     </div>
                                     <div className="col-md-6 col-12 mb-3">
                                         <Form.Label className="required">
@@ -601,7 +694,7 @@ export default function BanmodPage({ meta }) {
                                                 setData((prevState) => ({
                                                     ...prevState,
                                                     kode_rw: item.id,
-                                                    nama_rw: item.text,
+                                                    nama_rw: item.rw,
                                                 }))
                                             }
                                             errors={errors.nama_rw}
@@ -618,7 +711,7 @@ export default function BanmodPage({ meta }) {
                                                 setData((prevState) => ({
                                                     ...prevState,
                                                     kode_rt: item.id,
-                                                    nama_rt: item.text,
+                                                    nama_rt: item.rt,
                                                 }))
                                             }
                                             errors={errors.nama_rt}
@@ -634,7 +727,7 @@ export default function BanmodPage({ meta }) {
                                             onChange={(e) =>
                                                 setData(
                                                     "alamat",
-                                                    e.target.value
+                                                    e.target.value,
                                                 )
                                             }
                                             as="textarea"
@@ -660,7 +753,7 @@ export default function BanmodPage({ meta }) {
                                             onChange={(e) => {
                                                 setData(
                                                     "isDomisili",
-                                                    e.target.checked
+                                                    e.target.checked,
                                                 );
                                             }}
                                         />
@@ -671,7 +764,7 @@ export default function BanmodPage({ meta }) {
                                                 onChange={(e) =>
                                                     setData(
                                                         "alamat_domisili",
-                                                        e.target.value
+                                                        e.target.value,
                                                     )
                                                 }
                                                 as="textarea"
@@ -700,7 +793,7 @@ export default function BanmodPage({ meta }) {
                                             onChange={(e) => {
                                                 setData(
                                                     "isUsaha",
-                                                    e.target.checked
+                                                    e.target.checked,
                                                 );
                                             }}
                                         />
@@ -711,7 +804,7 @@ export default function BanmodPage({ meta }) {
                                                 onChange={(e) =>
                                                     setData(
                                                         "alamat_usaha",
-                                                        e.target.value
+                                                        e.target.value,
                                                     )
                                                 }
                                                 as="textarea"
@@ -730,25 +823,6 @@ export default function BanmodPage({ meta }) {
                                 </Form.Group>
                                 <Form.Group className="row mb-1">
                                     <div className="col-md-12 col-12 mb-3">
-                                        <div className="col-md-6 col-12 mb-3">
-                                            <Form.Label className="required">
-                                                Listrik
-                                            </Form.Label>
-                                            <SelectListrik
-                                                onChange={(item) =>
-                                                    setData((prevState) => ({
-                                                        ...prevState,
-                                                        daya_listrik:
-                                                            item.value,
-                                                    }))
-                                                }
-                                                errors={errors.daya_listrik}
-                                            />
-                                        </div>
-                                    </div>
-                                </Form.Group>
-                                <Form.Group className="row mb-1">
-                                    <div className="col-md-12 col-12 mb-3">
                                         <Form.Check
                                             type="checkbox"
                                             id="switchDisabilitas"
@@ -756,7 +830,7 @@ export default function BanmodPage({ meta }) {
                                             onChange={(e) => {
                                                 setData(
                                                     "isDisabilitas",
-                                                    e.target.checked
+                                                    e.target.checked,
                                                 );
                                             }}
                                         />
@@ -786,6 +860,7 @@ export default function BanmodPage({ meta }) {
                                         </Form.Label>
                                         <SelectKlasterUsaha
                                             kodeJenis={data.jenis_kategori}
+                                            allowedIds={[1, 3, 5, 10, 13]}
                                             onChange={(item) =>
                                                 setData((prevState) => ({
                                                     ...prevState,
@@ -796,7 +871,7 @@ export default function BanmodPage({ meta }) {
                                         />
                                     </div>
                                 </Form.Group>
-                                {data.kategori == 5 && (
+                                {isMiskinLike && (
                                     <Form.Group className="row mb-1">
                                         <div className="col-md-12 col-12 mb-3">
                                             <Form.Label className="required">
@@ -836,7 +911,7 @@ export default function BanmodPage({ meta }) {
                                         />
                                     </div>
                                 </Form.Group>
-                                {data.kategori != 5 && (
+                                {!isMiskinLike && (
                                     <Form.Group className="row mb-1">
                                         <div className="col-md-12 col-12 mb-3">
                                             <Form.Label className="required">
@@ -855,7 +930,7 @@ export default function BanmodPage({ meta }) {
                                         </div>
                                     </Form.Group>
                                 )}
-                                {data.kategori != 5 && (
+                                {!isMiskinLike && (
                                     <Form.Group className="row mb-1">
                                         <div className="col-md-12 col-12 mb-3">
                                             <Form.Label className="required">
@@ -874,7 +949,7 @@ export default function BanmodPage({ meta }) {
                                         </div>
                                     </Form.Group>
                                 )}
-                                {data.kategori == 5 && (
+                                {isMiskinLike && (
                                     <Form.Group className="row mb-1">
                                         <div className="col-md-12 col-12 mb-3">
                                             <Form.Label className="required">
@@ -916,7 +991,7 @@ export default function BanmodPage({ meta }) {
                                                 onValueChange={(
                                                     value,
                                                     name,
-                                                    values
+                                                    values,
                                                 ) =>
                                                     setData((prevState) => ({
                                                         ...prevState,
@@ -950,7 +1025,7 @@ export default function BanmodPage({ meta }) {
                                                 onValueChange={(
                                                     value,
                                                     name,
-                                                    values
+                                                    values,
                                                 ) =>
                                                     setData((prevState) => ({
                                                         ...prevState,
@@ -1031,33 +1106,45 @@ export default function BanmodPage({ meta }) {
                                             "file_foto",
                                             ".png,.jpg,.jpeg",
                                             false,
-                                            "imagePreviewPasFoto"
+                                            "imagePreviewPasFoto",
                                         )}
                                         {renderFileUpload(
                                             "Foto KTP",
                                             "file_ktp",
                                             ".png,.jpg,.jpeg",
                                             false,
-                                            "imagePreviewKTP"
+                                            "imagePreviewKTP",
                                         )}
                                         {renderFileUpload(
                                             "Kartu Keluarga (KK)",
-                                            "file_kk"
+                                            "file_kk",
                                         )}
                                         {renderFileUpload(
                                             "Surat Keterangan Domisili",
-                                            "file_skd"
+                                            "file_skd",
                                         )}
+                                        {data.kategori == 7 &&
+                                            renderFileUpload(
+                                                "Surat Keterangan Disabilitas dari Kelurahan",
+                                                "file_surat_disabilitas",
+                                            )}
                                         {renderFileUpload(
                                             "Foto Usaha / Produk",
                                             "file_produk",
                                             ".png,.jpg,.jpeg",
                                             false,
-                                            "imagePreviewUsaha"
+                                            "imagePreviewUsaha",
+                                        )}
+                                        {renderFileUpload(
+                                            "Foto Lokasi Usaha Tampak Depan",
+                                            "file_lokasi_usaha",
+                                            ".png,.jpg,.jpeg",
+                                            false,
+                                            "imagePreviewLokasiUsaha",
                                         )}
                                         {renderFileUpload(
                                             "Surat Pernyataan Komitmen",
-                                            "file_pernyataan"
+                                            "file_pernyataan",
                                         )}
 
                                         {/* Download link untuk template */}
@@ -1069,22 +1156,13 @@ export default function BanmodPage({ meta }) {
                                                 className="text-decoration-none text-danger fw-semibold"
                                                 style={{ fontSize: "12px" }}
                                             >
-                                                📥 Unduh Template Surat Pernyataan Komitmen (PDF)
+                                                📥 Unduh Template Surat
+                                                Pernyataan Komitmen (PDF)
                                             </a>
                                         </div>
 
-                                        {data.kategori != 5 && (
-                                            <>
-                                                {renderFileUpload(
-                                                    "NIB",
-                                                    "file_nib"
-                                                )}
-                                                {renderFileUpload(
-                                                    "SKU",
-                                                    "file_sku"
-                                                )}
-                                            </>
-                                        )}
+                                        {renderFileUpload("SKU", "file_sku")}
+                                        {renderFileUpload("NIB", "file_nib")}
 
                                         {data.kategori === 4 && (
                                             <>
@@ -1092,28 +1170,25 @@ export default function BanmodPage({ meta }) {
                                                     "Perizinan Teknis dan Standardisasi Lainnya",
                                                     "file_perizinan",
                                                     ".pdf",
-                                                    true
+                                                    true,
                                                 )}
                                                 {renderFileUpload(
                                                     "Bukti Kepemilikan Akun SIINas",
-                                                    "file_siinas"
+                                                    "file_siinas",
                                                 )}
                                                 {renderFileUpload(
                                                     "Business Plan",
-                                                    "file_bp"
+                                                    "file_bp",
                                                 )}
                                             </>
                                         )}
 
-                                        {data.kategori === 5 && (
+                                        {(data.kategori === 5 ||
+                                            data.kategori === 7) && (
                                             <>
                                                 {renderFileUpload(
-                                                    "SKU",
-                                                    "file_sku"
-                                                )}
-                                                {renderFileUpload(
                                                     "Sertifikat Pelatihan Sesuai Usaha yang Diajukan",
-                                                    "file_sertifikat_pelatihan"
+                                                    "file_sertifikat_pelatihan",
                                                 )}
                                             </>
                                         )}
@@ -1123,8 +1198,6 @@ export default function BanmodPage({ meta }) {
                                     Pernyataan Komitmen
                                     <div className="underline"></div>
                                 </div>
-
-                                
 
                                 <Form.Check
                                     type="checkbox"
@@ -1138,7 +1211,9 @@ export default function BanmodPage({ meta }) {
                                 <div className="card-footer d-flex justify-content-center mt-4 gap-2">
                                     <Button
                                         type="submit"
-                                        disabled={!isKomitmenChecked || isSubmitting}
+                                        disabled={
+                                            !isKomitmenChecked || isSubmitting
+                                        }
                                         className={
                                             !isKomitmenChecked || isSubmitting
                                                 ? "opacity-50"

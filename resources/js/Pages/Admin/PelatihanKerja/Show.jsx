@@ -556,6 +556,39 @@ export default function Show({ title, data, type = "PELATIHAN_KERJA" }) {
                                         </tr>
                                     </tbody>
                                 </table>
+
+                                <h6 className="fw-bold mt-4 text-warning">
+                                    <i className="bi bi-exclamation-triangle-fill me-1"></i>
+                                    Pelatihan Sebelumnya
+                                </h6>
+                                <div className="table-responsive">
+                                    <table className="table table-sm table-warning table-bordered">
+                                        <tbody>
+                                            {data.pelatihan_sebelumnya?.length > 0 ? (
+                                                data.pelatihan_sebelumnya.map((item, index) => (
+                                                    <tr key={`${item.nama_pelatihan}-${item.jenis}-${item.tahun}-${index}`}>
+                                                        <td style={{ width: "200px" }} className="fw-bold">
+                                                            {item.nama_pelatihan}
+                                                        </td>
+                                                        <td>
+                                                            : <span className="badge bg-warning text-dark">{item.jenis}</span>
+                                                        </td>
+                                                        <td>
+                                                            Tahun : <strong>{item.tahun}</strong>
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            ) : (
+                                                <tr>
+                                                    <td className="text-success fw-bold">
+                                                        <i className="bi bi-check-circle-fill me-1"></i>
+                                                        Tidak menerima pelatihan sebelumnya
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
 
