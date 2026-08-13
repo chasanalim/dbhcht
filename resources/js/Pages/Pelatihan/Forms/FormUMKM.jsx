@@ -1148,79 +1148,7 @@ export default function FormUMKM() {
                         />
                     </Form.Group>
 
-                    <div className="big-text text-muted mb-4">
-                        Upload Berkas Max 2MB (Total Max 8MB)
-                        <div className="underline"></div>
-                    </div>
-
-                    {/* Error display untuk file size */}
-                    {errors.error && (
-                        <div className="alert alert-danger mb-3">
-                            <strong>Error:</strong> {errors.error}
-                        </div>
-                    )}
-
-                    {/* File Size Indicator
-                    <FileSizeIndicator /> */}
-
-                    {/* Panduan Kompresi */}
-                    <FileCompressionGuide />
-
-                    {/* File uploads */}
-                    {renderFileUpload({
-                        label: "Foto KTP",
-                        fieldName: "file_ktp",
-                        accept: ".png,.jpg,.jpeg",
-                        imagePreviewKey: "imagePreviewKTP",
-                        index: 1,
-                        description: "Maksimal 2MB. Format: PNG, JPG, JPEG",
-                    })}
-
-                    {renderFileUpload({
-                        label: "Foto Kartu Keluarga (KK)",
-                        fieldName: "file_kk",
-                        accept: ".png,.jpg,.jpeg",
-                        imagePreviewKey: "imagePreviewKK",
-                        index: 2,
-                        description: "Maksimal 2MB. Format: PNG, JPG, JPEG",
-                    })}
-
-                    {renderFileUpload({
-                        label: "Pas Foto",
-                        fieldName: "file_pasfoto",
-                        accept: ".png,.jpg,.jpeg",
-                        imagePreviewKey: "imagePreviewPasFoto",
-                        index: 3,
-                        description: "Maksimal 2MB. Format: PNG, JPG, JPEG",
-                    })}
-
-                    {renderFileUpload({
-                        label: "Surat Pernyataan Tidak Mengikuti Pelatihan Lain",
-                        fieldName: "file_surat_pernyataan_tidak_ikut",
-                        accept: ".pdf",
-                        index: 4,
-                        description: "Maksimal 2MB. Format: PDF",
-                        downloadLink: "https://sultan.kedirikota.go.id/storage/files/ACnkVFsu9Fl8yi6pNan4SfQFNIVmcN95qhXKOtqy.pdf",
-                    })}
-
-                    {renderFileUpload({
-                        label: "Surat Pernyataan Kesanggupan Mengikuti Pelatihan Secara Penuh",
-                        fieldName: "file_surat_kesanggupan",
-                        accept: ".pdf",
-                        index: 5,
-                        description: "Maksimal 2MB. Format: PDF",
-                        downloadLink: "https://sultan.kedirikota.go.id/storage/files/ACnkVFsu9Fl8yi6pNan4SfQFNIVmcN95qhXKOtqy.pdf",
-                    })}
-
-                    {renderFileUpload({
-                        label: "NIB",
-                        fieldName: "file_nib",
-                        accept: ".pdf",
-                        index: 6,
-                        description: "Maksimal 2MB. Format: PDF",
-                    })}
-
-                    <hr />
+                     <hr />
 
                     <div className="big-text text-muted mb-4">
                         Pilihan Pelatihan
@@ -1324,6 +1252,82 @@ export default function FormUMKM() {
                             </div>
                         )}
                     </Form.Group>
+
+                    <hr />
+
+                    <div className="big-text text-muted mb-4">
+                        Upload Berkas Max 2MB (Total Max 8MB)
+                        <div className="underline"></div>
+                    </div>
+
+                    {/* Error display untuk file size */}
+                    {errors.error && (
+                        <div className="alert alert-danger mb-3">
+                            <strong>Error:</strong> {errors.error}
+                        </div>
+                    )}
+
+                    {/* File Size Indicator
+                    <FileSizeIndicator /> */}
+
+                    {/* Panduan Kompresi */}
+                    <FileCompressionGuide />
+
+                    {/* File uploads */}
+                    {renderFileUpload({
+                        label: "Foto KTP",
+                        fieldName: "file_ktp",
+                        accept: ".png,.jpg,.jpeg",
+                        imagePreviewKey: "imagePreviewKTP",
+                        index: 1,
+                        description: "Maksimal 2MB. Format: PNG, JPG, JPEG",
+                    })}
+
+                    {renderFileUpload({
+                        label: "Foto Kartu Keluarga (KK)",
+                        fieldName: "file_kk",
+                        accept: ".png,.jpg,.jpeg",
+                        imagePreviewKey: "imagePreviewKK",
+                        index: 2,
+                        description: "Maksimal 2MB. Format: PNG, JPG, JPEG",
+                    })}
+
+                    {renderFileUpload({
+                        label: "Pas Foto",
+                        fieldName: "file_pasfoto",
+                        accept: ".png,.jpg,.jpeg",
+                        imagePreviewKey: "imagePreviewPasFoto",
+                        index: 3,
+                        description: "Maksimal 2MB. Format: PNG, JPG, JPEG",
+                    })}
+
+                    {renderFileUpload({
+                        label: "Surat Pernyataan Tidak Mengikuti Pelatihan Lain",
+                        fieldName: "file_surat_pernyataan_tidak_ikut",
+                        accept: ".pdf",
+                        index: 4,
+                        description: "Maksimal 2MB. Format: PDF",
+                        downloadLink: "https://sultan.kedirikota.go.id/storage/files/ACnkVFsu9Fl8yi6pNan4SfQFNIVmcN95qhXKOtqy.pdf",
+                    })}
+
+                    {renderFileUpload({
+                        label: "Surat Pernyataan Kesanggupan Mengikuti Pelatihan Secara Penuh",
+                        fieldName: "file_surat_kesanggupan",
+                        accept: ".pdf",
+                        index: 5,
+                        description: "Maksimal 2MB. Format: PDF",
+                        downloadLink: "https://sultan.kedirikota.go.id/storage/files/ACnkVFsu9Fl8yi6pNan4SfQFNIVmcN95qhXKOtqy.pdf",
+                    })}
+
+                    {renderFileUpload({
+                        label: "NIB",
+                        fieldName: "file_nib",
+                        accept: ".pdf",
+                        index: 6,
+                        description: "Maksimal 2MB. Format: PDF",
+                    })}
+
+                   <hr />
 
                     <Form.Group className="mt-4 mb-3">
                         <Form.Check

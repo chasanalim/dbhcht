@@ -2,21 +2,23 @@ import React from "react";
 import Select from "react-select";
 
 const options = [
-    // "Pelatihan Kurasi Produk",
-    // "Pelatihan Konten Kreator",
+    "Digital Marketing",
     // "Pelatihan Desain Grafis",
-    // "Pelatihan Manajemen Usaha dan Keuangan",
+    "Manajemen Usaha dan Keuangan",
+    "Conten Creator",
     // "Pelatihan Media Sosial dan E-Commerce",
     // "Pelatihan Peningkatan Kualitas SDM Pelaku Usaha",
     // "Pelatihan Strategi Foto Produk",
-    "Pelatihan Peningkatan Kualitas Produk Bakery",
-    // "Pelatihan Barista",
+    // "Peningkatan Kualitas Produk Bakery",
     // "Pelatihan Bakery",
-    // "Pelatihan Desain Kemasan dan Packaging",
+    "Desain Kemasan dan Packaging",
+    "Desain Motif Tenun dan Batik",
     // "Pelatihan Produk Desain Motif Tenun/Batik",
     // "Pelatihan Produk Frozen Food",
     // "Pelatihan Produk Handicraft",
     // "Pelatihan Jajanan Kekinian",
+    "Frozen Food",
+    "Barista",
     // "Pelatihan Korean Food",
     // "Pelatihan Reparasi Resep Masakan dan Kue Tradisional",
 ].map((label) => ({ value: label, label }));
@@ -43,7 +45,7 @@ export default function SelectPrioritasPelatihan({
     return (
         <div className="mb-3">
             <label className="form-label">
-                Pilih Pelatihan Prioritas {prioritasKe}
+                Pilih Pelatihan
             </label>
             <Select
                 options={filteredOptions}
