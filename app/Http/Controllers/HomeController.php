@@ -19,12 +19,12 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $banmod = PendaftaranBanmod::count();
-        $pelatihanbanmod = PelatihanBanmod::count();
-        $pencarikerja = PelatihanKerjas::count();
-        $umkm = PelatihanUmkm::count();
-        $pertanian = PelatihanPetani::count();
-        $ekraf = PelatihanEkonomiKreatif::count();
+        $banmod = PendaftaranBanmod::whereYear('created_at', now()->year)->count();
+        $pelatihanbanmod = PelatihanBanmod::whereYear('created_at', now()->year)->count();
+        $pencarikerja = PelatihanKerjas::whereYear('created_at', now()->year)->count();
+        $umkm = PelatihanUmkm::whereYear('created_at', now()->year)->count();
+        $pertanian = PelatihanPetani::whereYear('created_at', now()->year)->count();
+        $ekraf = PelatihanEkonomiKreatif::whereYear('created_at', now()->year)->count();
 
         // Ambil data training types dari database
         $trainings = TrainingType::orderBy('order')->get()->map(function($training) {

@@ -24,7 +24,7 @@ export default function Index({
 
     return (
         <>
-            {/* <WelcomePopup /> */}
+            <WelcomePopup />
             <Layout>
                 <Head title={meta.title} />
                 <style>
@@ -288,7 +288,7 @@ export default function Index({
                                 color: "#22223b",
                             }}
                         >
-                            Statistik Pendaftar Program
+                            Statistik Pendaftar Program Tahun {new Date().getFullYear()}
                         </h2>
 
                         <Row className="justify-content-center text-center g-4">
