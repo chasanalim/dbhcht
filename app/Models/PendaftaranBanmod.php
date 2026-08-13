@@ -86,10 +86,19 @@ class PendaftaranBanmod extends Model
     public function getSkorAttribute()
     {
         $skor = 0;
+        $lamaUsaha = $this->lamaUsaha?->skor ?? 0;
+        $jumlahTenagaKerja = $this->jumlahTenagaKerja?->skor ?? 0;
+        $brutoPerbulan = $this->brutoPerbulan?->skor ?? 0;
+        $jumlahLegalitas = $this->jumlahLegalitas?->skor ?? 0;
+        $jumlahTeknologiDigital = $this->jumlahTeknologiDigital?->skor ?? 0;
+        $penyerapanTenagaMiskin = $this->penyerapanTenagaMiskin?->skor ?? 0;
+        $statusTempatTinggal = $this->statusTempatTinggal?->skor ?? 0;
+        $tanggunganKeluarga = $this->tanggunganKeluarga?->skor ?? 0;
+
         if ($this->kategori == 1 || $this->kategori == 2 || $this->kategori == 3 || $this->kategori == 6) {
-            $skor += (($this->lamaUsaha->skor / 4) * 0.25);
-            $skor += (($this->jumlahTenagaKerja->skor / 4) * 0.35);
-            $skor += (($this->brutoPerbulan->skor / 4) * 0.2);
+            $skor += (($lamaUsaha / 4) * 0.25);
+            $skor += (($jumlahTenagaKerja / 4) * 0.35);
+            $skor += (($brutoPerbulan / 4) * 0.2);
             if ($this->aset > $this->hutang) {
                 $skor += (3 / 3 * 0.05);
             } else if ($this->aset == $this->hutang) {
@@ -114,9 +123,9 @@ class PendaftaranBanmod extends Model
                 return $skor * 100;
             }
         } else if ($this->kategori == 4) {
-            $skor += (($this->lamaUsaha->skor / 4) * 0.1);
-            $skor += (($this->jumlahTenagaKerja->skor / 4) * 0.1);
-            $skor += (($this->brutoPerbulan->skor / 4) * 0.05);
+            $skor += (($lamaUsaha / 4) * 0.1);
+            $skor += (($jumlahTenagaKerja / 4) * 0.1);
+            $skor += (($brutoPerbulan / 4) * 0.05);
             if ($this->aset > $this->hutang) {
                 $skor += (3 / 3 * 0.05);
             } else if ($this->aset == $this->hutang) {
@@ -125,9 +134,9 @@ class PendaftaranBanmod extends Model
                 $skor += (1 / 3 * 0.05);
             }
 
-            $skor += (($this->jumlahLegalitas->skor / 3) * 0.1);
-            $skor += (($this->jumlahTeknologiDigital->skor / 3) * 0.1);
-            $skor += (($this->penyerapanTenagaMiskin->skor / 3) * 0.2);
+            $skor += (($jumlahLegalitas / 3) * 0.1);
+            $skor += (($jumlahTeknologiDigital / 3) * 0.1);
+            $skor += (($penyerapanTenagaMiskin / 3) * 0.2);
             if ($this->isDomisili == 0 && $this->isUsaha == 0) {
                 $skor += (4 / 4 * 0.05);
             } else if ($this->isDomisili == 0 && $this->isUsaha == 1) {
@@ -139,8 +148,8 @@ class PendaftaranBanmod extends Model
             }
             return $skor;
         } else {
-            $skor += (($this->tanggunganKeluarga->skor / 3) * 0.2);
-            $skor += (($this->lamaUsaha->skor / 4) * 0.15);
+            $skor += (($tanggunganKeluarga / 3) * 0.2);
+            $skor += (($lamaUsaha / 4) * 0.15);
             if ($this->aset > $this->hutang) {
                 $skor += (3 / 3 * 0.1);
             } else if ($this->aset == $this->hutang) {
@@ -149,7 +158,7 @@ class PendaftaranBanmod extends Model
                 $skor += (1 / 3 * 0.1);
             }
 
-            $skor += (($this->statusTempatTinggal->skor / 3) * 0.2);
+            $skor += (($statusTempatTinggal / 3) * 0.2);
 
             if ($this->isDomisili == 0 && $this->isUsaha == 0) {
                 $skor += (4 / 4 * 0.1);
@@ -273,6 +282,8 @@ class PendaftaranBanmod extends Model
                 'siinas' => 'SIINAS',
                 'bp' => 'Bussiness Plan',
                 'surat_disabilitas' => 'Surat Keterangan Disabilitas',
+                'surat_miskin' => 'Surat Keterangan Miskin',
+                'surat_buruh' => 'Surat Keterangan Buruh',
                 'sertifikat_pelatihan' => 'Sertifikat Pelatihan'
             ]
         ];
@@ -282,7 +293,7 @@ class PendaftaranBanmod extends Model
 
     public static function getRequiredDocuments(int $kategori = null): array
     {
-        $baseDocuments = ['foto', 'ktp', 'kk', 'nib', 'sku', 'produk', 'lokasi_usaha', 'pernyataan'];
+        $baseDocuments = ['foto', 'ktp', 'kk', 'nib', 'sku', 'skd', 'produk', 'lokasi_usaha', 'pernyataan'];
 
         $additionalDocuments = [
             1 => array_merge($baseDocuments, [
@@ -332,6 +343,8 @@ class PendaftaranBanmod extends Model
                 'siinas',
                 'bp',
                 'surat_disabilitas',
+                'surat_buruh',
+                'surat_miskin',
                 'sertifikat_pelatihan',
             ]
         ];

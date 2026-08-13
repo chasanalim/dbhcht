@@ -34,6 +34,8 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
             { key: "bp", label: "Businness Plan" },
             { key: "sertifikat_pelatihan", label: "Sertifikat Pelatihan" },
             { key: "surat_disabilitas", label: "Surat Keterangan Disabilitas" },
+            { key: "surat_buruh", label: "Surat Keterangan Buruh" },
+            { key: "surat_miskin", label: "Surat Keterangan Miskin" },
             { key: "perizinan", label: "Perizinan" },
         ],
     };

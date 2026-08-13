@@ -615,6 +615,8 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
             'sertifikat_pelatihan' => $data->file_sertifikat_pelatihan,
             'lokasi_usaha' => $data->file_lokasi_usaha,
             'surat_disabilitas' => $data->file_surat_disabilitas,
+            'surat_buruh' => $data->file_surat_buruh,
+            'surat_miskin' => $data->file_surat_miskin,
         ];
 
         foreach ($singleFiles as $type => $file) {
