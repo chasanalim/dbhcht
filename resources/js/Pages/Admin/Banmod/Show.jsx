@@ -28,10 +28,12 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
             { key: "sku", label: "SKU" },
             { key: "skd", label: "Surat Keterangan Domisili" },
             { key: "produk", label: "Foto Produk" },
+            { key: "lokasi_usaha", label: "Foto Lokasi Usaha" },
             { key: "pernyataan", label: "Surat Pernyataan Komitmen" },
             { key: "siinas", label: "SIINAS" },
             { key: "bp", label: "Businness Plan" },
             { key: "sertifikat_pelatihan", label: "Sertifikat Pelatihan" },
+            { key: "surat_disabilitas", label: "Surat Keterangan Disabilitas" },
             { key: "perizinan", label: "Perizinan" },
         ],
     };
@@ -421,6 +423,10 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                         <tr>
                                             <td>No. KK</td>
                                             <td>: {data.kk}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Desil</td>
+                                            <td>: {data.desil || "-"}</td>
                                         </tr>
                                         <tr>
                                             <td>Nama</td>

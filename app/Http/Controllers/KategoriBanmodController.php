@@ -10,7 +10,10 @@ class KategoriBanmodController extends Controller
 
     public function index()
     {
-        $data = KategoriBanmod::select('id', 'nama', 'jenis')->get();
+        // Kategori 4 (Industri Kecil Menengah) ditutup untuk pendaftaran publik
+        $data = KategoriBanmod::select('id', 'nama', 'jenis')
+            ->where('id', '!=', 4)
+            ->get();
 
         return response()->json($data);
     }

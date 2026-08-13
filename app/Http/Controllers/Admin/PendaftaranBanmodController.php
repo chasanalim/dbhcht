@@ -32,10 +32,12 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
             'sku' => 'SKU',
             'skd' => 'SKD',
             'produk' => 'Produk',
+            'lokasi_usaha' => 'Foto Lokasi Usaha',
             'pernyataan' => 'Surat Pernyataan',
             'perizinan' => 'Perizinan',
             'siinas' => 'SIINAS',
             'bp' => 'BP',
+            'surat_disabilitas' => 'Surat Keterangan Disabilitas',
             'sertifikat_pelatihan' => 'Sertifikat Pelatihan',
         ];
     }
@@ -424,6 +426,67 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
 
         ]);
     }
+    public function disabilitas(Request $request)
+    {
+        if ($request->wantsJson()) {
+            $query = PendaftaranBanmod::with(['documentVerifications', 'klasterUsaha', 'kategoriUsaha'])->where('kategori', '7');
+            $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor');
+            if ($request->has('verification_status')) {
+                $status = $request->verification_status;
+                $data = $data->filter(function ($item) use ($status) {
+                    $verifications = $item->documentVerifications;
+                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($item->kategori);
+                    $allVerified = count($verifications) === count($requiredDocs);
+                    $allApproved = $verifications->every(function ($verification) {
+                        return $verification->status === 1;
+                    });
+
+                    switch ($status) {
+                        case 'verified':
+                            return $allVerified && $allApproved;
+                        case 'rejected':
+                            return $allVerified && !$allApproved;
+                        case 'pending':
+                            return !$allVerified;
+                        default:
+                            return true;
+                    }
+                });
+            }
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    return [
+                        'edit_url' => route('admin.banmod.edit', $row->id),
+                        'delete_url' => route('admin.banmod.destroy', $row->id),
+                        'detail_url' => route('admin.banmod.show', $row->id)
+                    ];
+                })
+                ->addColumn('verifikasi_dokumen', function ($row) {
+                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($row->kategori);
+                    $verifications = $row->documentVerifications;
+                    $allVerified = count($verifications) === count($requiredDocs);
+                    $allApproved = $verifications->every(function ($verification) {
+                        return $verification->status === 1;
+                    });
+
+                    return [
+                        'all_verified' => $allVerified,
+                        'all_approved' => $allApproved
+                    ];
+                })
+                ->rawColumns(['action', 'verifikasi_dokumen'])
+                ->make(true);
+        }
+        return Inertia::render('Admin/Banmod/Index', [
+            'title' => 'Daftar Peserta Bantuan Modal - Disabilitas',
+            'flash' => [
+                'message' => session('message')
+            ],
+            'dataRoute' => route('admin.banmod.disabilitas'),
+
+        ]);
+    }
     public function pkl(Request $request)
     {
         if ($request->wantsJson()) {
@@ -550,6 +613,8 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
             'siinas' => $data->file_siinas,
             'bp' => $data->file_bp,
             'sertifikat_pelatihan' => $data->file_sertifikat_pelatihan,
+            'lokasi_usaha' => $data->file_lokasi_usaha,
+            'surat_disabilitas' => $data->file_surat_disabilitas,
         ];
 
         foreach ($singleFiles as $type => $file) {
@@ -610,7 +675,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                 'isUsaha' => $data->isUsaha,
                 'alamat_usaha' => $data->alamat_usaha,
                 'phone_number' => $data->phone_number,
-                'daya_listrik' => $data->daya_listrik,
+                'desil' => $data->desil,
                 'isDisabilitas' => $data->isDisabilitas,
                 'disabilitas' => $data->disabilitas,
                 'kategori_id' => $data->kategori,

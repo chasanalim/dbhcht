@@ -33,7 +33,7 @@ class PendaftaranBanmod extends Model
         "isUsaha",
         "alamat_usaha",
         "phone_number",
-        "daya_listrik",
+        "desil",
         "isDisabilitas",
         "disabilitas",
         "kategori",
@@ -61,6 +61,8 @@ class PendaftaranBanmod extends Model
         "file_siinas",
         "file_bp",
         "file_sertifikat_pelatihan",
+        "file_lokasi_usaha",
+        "file_surat_disabilitas",
     ];
 
     protected $casts = [
@@ -217,14 +219,16 @@ class PendaftaranBanmod extends Model
             'sku' => 'SKU',
             'skd' => 'SKD',
             'produk' => 'Produk',
+            'lokasi_usaha' => 'Foto Lokasi Usaha',
             'pernyataan' => 'Surat Pernyataan'
         ];
 
         $additionalDocuments = [
-            // Kategori 1,2,3 - Dokumen dasar
+            // Kategori 1,2,3,6 - Dokumen dasar
             1 => $baseDocuments,
             2 => $baseDocuments,
             3 => $baseDocuments,
+            6 => $baseDocuments,
 
             // Kategori 4 - IKM (tambah perizinan, siinas, bp)
             4 => array_merge($baseDocuments, [
@@ -238,6 +242,12 @@ class PendaftaranBanmod extends Model
                 'sertifikat_pelatihan' => 'Sertifikat Pelatihan'
             ]),
 
+            // Kategori 7 - Disabilitas (tambah surat disabilitas + sertifikat)
+            7 => array_merge($baseDocuments, [
+                'surat_disabilitas' => 'Surat Keterangan Disabilitas',
+                'sertifikat_pelatihan' => 'Sertifikat Pelatihan'
+            ]),
+
             // Default - Semua dokumen
             null => [
                 'foto' => 'Pas Foto',
@@ -247,10 +257,12 @@ class PendaftaranBanmod extends Model
                 'sku' => 'SKU',
                 'skd' => 'SKD',
                 'produk' => 'Produk',
+                'lokasi_usaha' => 'Foto Lokasi Usaha',
                 'pernyataan' => 'Surat Pernyataan',
                 'perizinan' => 'Perizinan',
                 'siinas' => 'SIINAS',
                 'bp' => 'Bussiness Plan',
+                'surat_disabilitas' => 'Surat Keterangan Disabilitas',
                 'sertifikat_pelatihan' => 'Sertifikat Pelatihan'
             ]
         ];
@@ -260,7 +272,7 @@ class PendaftaranBanmod extends Model
 
     public static function getRequiredDocuments(int $kategori = null): array
     {
-        $baseDocuments = ['foto', 'ktp', 'kk', 'nib', 'sku', 'skd', 'produk', 'pernyataan'];
+        $baseDocuments = ['foto', 'ktp', 'kk', 'nib', 'sku', 'produk', 'lokasi_usaha', 'pernyataan'];
 
         $additionalDocuments = [
             // Kategori 1 - Buruh Pabrik Rokok
@@ -271,6 +283,9 @@ class PendaftaranBanmod extends Model
 
             // Kategori 3 - Pekerja Pabrik Rokok
             3 => $baseDocuments,
+
+            // Kategori 6 - Pedagang Kaki Lima
+            6 => $baseDocuments,
 
             // Kategori 4 - IKM
             4 => array_merge($baseDocuments, [
@@ -284,6 +299,11 @@ class PendaftaranBanmod extends Model
                 'sertifikat_pelatihan'
             ]),
 
+            // Kategori 7 - Disabilitas
+            7 => array_merge($baseDocuments, [
+                'surat_disabilitas',
+                'sertifikat_pelatihan',
+            ]),
 
             // Default - Semua dokumen
             null => [
@@ -292,13 +312,14 @@ class PendaftaranBanmod extends Model
                 'kk',
                 'nib',
                 'sku',
-                'skd',
                 'produk',
+                'lokasi_usaha',
+                'pernyataan',
                 'perizinan',
                 'siinas',
                 'bp',
+                'surat_disabilitas',
                 'sertifikat_pelatihan',
-                'pernyataan'
             ]
         ];
 
@@ -312,7 +333,9 @@ class PendaftaranBanmod extends Model
             2 => 'Buruh Tani Tembakau',
             3 => 'Pekerja Pabrik Rokok',
             4 => 'Industri Kecil Menengah (IKM)',
-            5 => 'Masyarakat Miskin'
+            5 => 'Masyarakat Miskin',
+            6 => 'Pedagang Kaki Lima',
+            7 => 'Disabilitas'
         ];
 
         return $categories[$kategori] ?? 'Semua Kategori';

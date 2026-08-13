@@ -7,6 +7,8 @@ use App\Models\PendaftaranBanmod;
 use App\Models\PenerimaBanmod;
 use App\Traits\GeneralTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Yajra\DataTables\DataTables;
@@ -62,7 +64,7 @@ class BanmodController extends Controller
             "isUsaha" => ['nullable', 'boolean'],
             "alamat_usaha" => ['nullable', 'required_if:isUsaha,true', 'string'],
             "phone_number" => ['required', 'numeric', 'digits_between:10,15'],
-            "daya_listrik" => ['required', 'string'],
+            "desil" => ['nullable', 'string'],
             "isDisabilitas" => ['nullable', 'boolean'],
             "disabilitas" => ['nullable'],
             "disabilitas.*.value" => ['nullable', 'required_if:isDisabilitas,true', 'string'],
@@ -70,11 +72,11 @@ class BanmodController extends Controller
             "kategori" => ['required', 'numeric'],
             "jenis_kategori" => ['required', 'numeric'],
             "klaster_usaha" => ['required', 'numeric'],
-            "tanggungan_keluarga" => ['nullable', 'required_if:kategori,5', 'string'],
+            "tanggungan_keluarga" => ['nullable', 'required_if:kategori,5,7', 'string'],
             "lama_usaha" => ['required', 'numeric'],
             "jumlah_tenaga" => ['nullable', 'required_if:kategori,1,2,3,4', 'numeric'],
             "bruto" => ['nullable', 'required_if:kategori,1,2,3,4', 'numeric'],
-            "status_tempat_tinggal" => ['nullable', 'required_if:kategori,5', 'numeric'],
+            "status_tempat_tinggal" => ['nullable', 'required_if:kategori,5,7', 'numeric'],
             "aset" => ['required', 'numeric'],
             "hutang" => ['required', 'numeric'],
             "jumlah_legalitas" => ['nullable', 'required_if:kategori,4', 'numeric'],
@@ -83,16 +85,25 @@ class BanmodController extends Controller
             "file_foto" => ['required', 'image'],
             "file_ktp" => ['required', 'image'],
             "file_kk" => ['required', 'file'],
-            "file_nib" => ['nullable', 'required_without_all:file_nib,file_sku', 'required_if:kategori,4', 'file'],
-            "file_sku" => ['nullable', 'required_without_all:file_nib,file_sku', 'required_if:kategori,4,5', 'file'],
+            "file_nib" => ['required', 'file'],
+            "file_sku" => ['required', 'file'],
             "file_skd" => ['nullable', 'required_if:isDomisili,true', 'file'],
             "file_produk" => ['required', 'image'],
+            "file_lokasi_usaha" => ['required', 'image'],
             "file_pernyataan" => ['required', 'file'],
             "file_perizinan" => ['nullable', 'required_if:kategori,4', 'array'],
             "file_siinas" => ['nullable', 'required_if:kategori,4', 'file'],
             "file_bp" => ['nullable', 'required_if:kategori,4', 'file'],
-            "file_sertifikat_pelatihan" => ['nullable', 'required_if:kategori,5', 'file']
+            "file_surat_disabilitas" => ['nullable', 'required_if:kategori,7', 'file'],
+            "file_sertifikat_pelatihan" => ['nullable', 'required_if:kategori,5,7', 'file']
         ]);
+
+        // Cek 1 KK = 1 penerima (safety net, cek utama ada di ceknik)
+        if (PendaftaranBanmod::where('kk', $validated['kk'])->exists()) {
+            return back()->with('error', 'No. KK sudah terdaftar. Maksimal 1 penerima dalam 1 KK.')
+                ->withErrors(['kk' => 'No. KK sudah terdaftar.']);
+        }
+
         if ($request['file_perizinan']) {
             $file_perizinan = [];
             foreach ($request['file_perizinan'] as $key => $value) {
@@ -129,6 +140,14 @@ class BanmodController extends Controller
             $validated['file_produk'] = '/storage/pendaftaran-banmod/produk/' . $request->file('file_produk')->hashName();
             $request->file('file_produk')->storeAs('/pendaftaran-banmod/produk', $request->file('file_produk')->hashName(), 'public');
         }
+        if ($request->hasFile('file_lokasi_usaha')) {
+            $validated['file_lokasi_usaha'] = '/storage/pendaftaran-banmod/lokasi-usaha/' . $request->file('file_lokasi_usaha')->hashName();
+            $request->file('file_lokasi_usaha')->storeAs('/pendaftaran-banmod/lokasi-usaha', $request->file('file_lokasi_usaha')->hashName(), 'public');
+        }
+        if ($request->hasFile('file_surat_disabilitas')) {
+            $validated['file_surat_disabilitas'] = '/storage/pendaftaran-banmod/surat-disabilitas/' . $request->file('file_surat_disabilitas')->hashName();
+            $request->file('file_surat_disabilitas')->storeAs('/pendaftaran-banmod/surat-disabilitas', $request->file('file_surat_disabilitas')->hashName(), 'public');
+        }
         if ($request->hasFile('file_pernyataan')) {
             $validated['file_pernyataan'] = '/storage/pendaftaran-banmod/pernyataan/' . $request->file('file_pernyataan')->hashName();
             $request->file('file_pernyataan')->storeAs('/pendaftaran-banmod/pernyataan', $request->file('file_pernyataan')->hashName(), 'public');
@@ -153,7 +172,7 @@ class BanmodController extends Controller
     {
         $dataPendaftar = PendaftaranBanmod::find($id);
         // dd($dataPendaftar);
-        Mail::to(env('APP_EMAIL_BANMOD'))->send(new KirimPendaftar($dataPendaftar));
+        // Mail::to(env('APP_EMAIL_BANMOD'))->send(new KirimPendaftar($dataPendaftar));
 
         // Send WhatsApp message
         $message = "Terima kasih telah mendaftar Program Bantuan Modal Kota Kediri. Data Anda telah kami terima dan akan diproses lebih lanjut. Mohon menunggu informasi selanjutnya melalui WhatsApp yang telah Anda daftarkan. Jika ada pertanyaan, silakan hubungi kami melalui: " . env('APP_WA_BANMOD');;
@@ -185,7 +204,7 @@ class BanmodController extends Controller
     //     }
     // }
 
-    public function ceknik($nik, $kategori)
+    public function ceknik(Request $request, $nik, $kategori)
     {
         // Cek status pembukaan pendaftaran
         if (!Setting::boolValue('banmod_registration_open', true)) {
@@ -203,12 +222,18 @@ class BanmodController extends Controller
             ], 400);
         }
 
-        // Kategori 5 Masyarakat Miskin = NIK selalu valid
-        if ($kategori == 5) {
+        // Cek 1 KK = 1 penerima (KK sudah pernah mendaftar di banmod)
+        $kk = $request->query('kk');
+        if (is_string($kk) && strlen($kk) === 16 && PendaftaranBanmod::where('kk', $kk)->exists()) {
             return response()->json([
-                'success' => true,
-                'message' => 'NIK valid untuk kategori Masyarakat Miskin'
-            ]);
+                'success' => false,
+                'message' => 'No. KK sudah terdaftar sebagai pendaftar. Maksimal 1 penerima dalam 1 KK.'
+            ], 400);
+        }
+
+        // Kategori 5 Masyarakat Miskin & 7 Disabilitas = NIK selalu valid
+        if ($kategori == 5 || $kategori == 7) {
+            // lanjut ke pengecekan data DTKS/desil di bawah
         }
 
         // Kategori 6 PKL = NIK harus ada di tabel pkl
@@ -222,38 +247,47 @@ class BanmodController extends Controller
                 ], 404);
             }
 
-            // Jika NIK ada di PKL, tetap cek apakah sudah pernah daftar banmod
-            // $existingBanmod = PenerimaBanmod::where('nik', $nik)->first();
-
-            // if ($existingBanmod) {
-            //     return response()->json([
-            //         'success' => false,
-            //         'message' => 'NIK Anda sudah pernah terdaftar sebagai penerima bantuan modal'
-            //     ], 403);
-            // }
-
-            return response()->json([
-                'success' => true,
-                'data' => $pklData,
-                'message' => 'NIK valid untuk kategori PKL'
-            ]);
+            // lanjut ke pengecekan data DTKS/desil di bawah
         }
 
         // Untuk kategori lainnya (1,2,3,4) - cek apakah sudah pernah daftar
-        $existingBanmod = PenerimaBanmod::where('nik', $nik)->first();
+        if (!in_array($kategori, [5, 6, 7])) {
+            $existingBanmod = PenerimaBanmod::where('nik', $nik)->first();
 
-        if ($existingBanmod) {
-            return response()->json([
-                'success' => false,
-                'message' => 'NIK Anda sudah pernah terdaftar sebagai penerima bantuan modal'
-            ], 403);
+            if ($existingBanmod) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'NIK Anda sudah pernah terdaftar sebagai penerima bantuan modal'
+                ], 403);
+            }
         }
 
-        // Jika semua validasi lolos
-        // return response()->json([
-        //     'success' => true,
-        //     'message' => 'NIK valid'
-        // ]);
+        // Ambil data DTKS/desil
+        try {
+            $response = Http::withoutVerifying()->get('https://10.100.200.3/api/dtks/check?nik=' . $nik);
+            $dtks = $response->json();
+        } catch (\Exception $e) {
+            $dtks = [];
+            Log::error('DTKS check failed for NIK ' . $nik . ': ' . $e->getMessage());
+        }
+
+        $desil = $dtks['desil'] ?? '>5';
+        $foundInDesil = !empty($dtks['nama']);
+
+        return response()->json([
+            'success' => true,
+            'foundInDesil' => $foundInDesil,
+            'desil' => $desil,
+            'data' => $foundInDesil ? [
+                'nik' => $nik,
+                'kk' => $dtks['no_kk'] ?? null,
+                'nama' => $dtks['nama'],
+                // 'alamat' => $dtks['alamat'] ?? null,
+            ] : null,
+            'message' => $foundInDesil
+                ? 'NIK valid, data ditemukan di data DTKS.'
+                : 'NIK tidak ditemukan di data desil. Silakan isi data secara manual.',
+        ]);
     }
 
     public function peserta(Request $request)

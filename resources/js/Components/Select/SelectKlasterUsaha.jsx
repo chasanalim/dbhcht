@@ -7,6 +7,7 @@ export default function SelectKlasterUsaha({
     kodeJenis,
     onChange = (item) => {},
     errors,
+    allowedIds = null,
 }) {
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState([]);
@@ -21,7 +22,9 @@ export default function SelectKlasterUsaha({
                 },
             });
 
-            setData(data);
+            setData(
+                allowedIds ? data.filter((o) => allowedIds.includes(o.id)) : data,
+            );
             setLoading(false);
         } catch (error) {
             console.error(error);

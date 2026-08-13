@@ -92,6 +92,11 @@ export default function Index({ title, can, flash, dataRoute }) {
                     data: "name",
                     name: "name",
                 },
+                {
+                    data: "desil",
+                    name: "desil",
+                    className: "text-center",
+                },
                 // {
                 //     data: "tmp_lhr",
                 //     name: "tmp_lhr",
@@ -150,6 +155,7 @@ export default function Index({ title, can, flash, dataRoute }) {
                         ).toFixed(2)}</span>`;
                     },
                 },
+                
                 {
                     data: "verifikasi_dokumen",
                     name: "verifikasi_dokumen",
@@ -307,6 +313,7 @@ export default function Index({ title, can, flash, dataRoute }) {
                                                 <th>AKSI</th>
                                                 <th>NIK</th>
                                                 <th>NAMA</th>
+                                                <th>DESIL</th>
                                                 <th>NO HP</th>
                                                 <th>ALAMAT</th>
                                                 <th>RT</th>

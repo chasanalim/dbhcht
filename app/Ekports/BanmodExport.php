@@ -28,6 +28,7 @@ class BanmodExport implements FromCollection, WithHeadings, WithStyles
                 'nik' => $item->nik,
                 'nama' => $item->name,
                 'no_hp' => $item->phone_number,
+                'desil' => $item->desil ?? '',
                 'alamat' => $item->alamat,
                 'rt' => $item->nama_rt,
                 'rw' => $item->nama_rw,
@@ -52,6 +53,7 @@ class BanmodExport implements FromCollection, WithHeadings, WithStyles
                 'NIK',
                 'NAMA',
                 'NO HP',
+                'DESIL',
                 'ALAMAT',
                 'RT',
                 'RW',
@@ -79,11 +81,11 @@ class BanmodExport implements FromCollection, WithHeadings, WithStyles
 
     public function styles(Worksheet $sheet)
     {
-        $sheet->mergeCells('A1:M1');
-        $sheet->mergeCells('A2:M2');
+        $sheet->mergeCells('A1:N1');
+        $sheet->mergeCells('A2:N2');
 
         // Header style
-        $sheet->getStyle('A1:M1')->applyFromArray([
+        $sheet->getStyle('A1:N1')->applyFromArray([
             'font' => [
                 'bold' => true,
                 'size' => 12
@@ -93,7 +95,7 @@ class BanmodExport implements FromCollection, WithHeadings, WithStyles
                 'vertical' => Alignment::VERTICAL_CENTER
             ]
         ]);
-        $sheet->getStyle('A2:M2')->applyFromArray([
+        $sheet->getStyle('A2:N2')->applyFromArray([
             'font' => [
                 'bold' => true,
                 'size' => 12
@@ -106,7 +108,7 @@ class BanmodExport implements FromCollection, WithHeadings, WithStyles
 
 
         // Table header style
-        $sheet->getStyle('A4:M4')->applyFromArray([
+        $sheet->getStyle('A4:N4')->applyFromArray([
             'font' => [
                 'bold' => true
             ],
@@ -131,15 +133,16 @@ class BanmodExport implements FromCollection, WithHeadings, WithStyles
         $sheet->getColumnDimension('B')->setWidth(20);
         $sheet->getColumnDimension('C')->setWidth(25);
         $sheet->getColumnDimension('D')->setWidth(15);
-        $sheet->getColumnDimension('E')->setWidth(35);
-        $sheet->getColumnDimension('F')->setWidth(5);
+        $sheet->getColumnDimension('E')->setWidth(10);
+        $sheet->getColumnDimension('F')->setWidth(35);
         $sheet->getColumnDimension('G')->setWidth(5);
-        $sheet->getColumnDimension('H')->setWidth(15);
+        $sheet->getColumnDimension('H')->setWidth(5);
         $sheet->getColumnDimension('I')->setWidth(15);
-        $sheet->getColumnDimension('J')->setWidth(25);
-        $sheet->getColumnDimension('K')->setWidth(20);
-        $sheet->getColumnDimension('L')->setWidth(10);
-        $sheet->getColumnDimension('M')->setWidth(30);
+        $sheet->getColumnDimension('J')->setWidth(15);
+        $sheet->getColumnDimension('K')->setWidth(25);
+        $sheet->getColumnDimension('L')->setWidth(20);
+        $sheet->getColumnDimension('M')->setWidth(10);
+        $sheet->getColumnDimension('N')->setWidth(30);
 
         return $sheet;
     }

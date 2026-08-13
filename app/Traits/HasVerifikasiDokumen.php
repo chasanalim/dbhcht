@@ -30,7 +30,7 @@ trait HasVerifikasiDokumen
 
     public static function getRequiredDocuments(int $kategori = null): array
     {
-        $baseDocuments = ['foto', 'ktp', 'kk', 'nib', 'sku', 'skd', 'produk', 'pernyataan'];
+        $baseDocuments = ['foto', 'ktp', 'kk', 'nib', 'sku', 'produk', 'lokasi_usaha', 'pernyataan'];
 
         $additionalDocuments = [
             // Kategori 1 - Buruh Pabrik Rokok
@@ -41,6 +41,9 @@ trait HasVerifikasiDokumen
 
             // Kategori 3 - Pekerja Pabrik Rokok
             3 => $baseDocuments,
+
+            // Kategori 6 - Pedagang Kaki Lima
+            6 => $baseDocuments,
 
             // Kategori 4 - IKM
             4 => array_merge($baseDocuments, [
@@ -54,6 +57,11 @@ trait HasVerifikasiDokumen
                 'sertifikat_pelatihan'
             ]),
 
+            // Kategori 7 - Disabilitas
+            7 => array_merge($baseDocuments, [
+                'surat_disabilitas',
+                'sertifikat_pelatihan',
+            ]),
 
             // Default - Semua dokumen
             null => [
@@ -62,13 +70,14 @@ trait HasVerifikasiDokumen
                 'kk',
                 'nib',
                 'sku',
-                'skd',
                 'produk',
+                'lokasi_usaha',
+                'pernyataan',
                 'perizinan',
                 'siinas',
                 'bp',
+                'surat_disabilitas',
                 'sertifikat_pelatihan',
-                'pernyataan'
             ]
         ];
 

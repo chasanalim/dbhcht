@@ -144,6 +144,7 @@ export default function Dashboard({
                             }
                         )
                     }
+                    isAdmin={isAdmin}
                     summary={banmod.summary}
                     charts={[
                         {
@@ -185,6 +186,7 @@ export default function Dashboard({
                 <DashboardSection
                     type="umkm"
                     title="Dashboard UMKM"
+                    isAdmin={isAdmin}
                     summary={umkm.summary}
                     charts={[
                         {
@@ -233,6 +235,7 @@ export default function Dashboard({
                 <DashboardSection
                     type="kerja"
                     title="Dashboard Pelatihan Kerja"
+                    isAdmin={isAdmin}
                     summary={kerja.summary}
                     charts={[
                         {
@@ -274,6 +277,7 @@ export default function Dashboard({
                 <DashboardSection
                     type="pelatihan_banmod"
                     title="Dashboard Pelatihan Penerima Banmod"
+                    isAdmin={isAdmin}
                     summary={pelatihan_banmod.summary}
                     charts={[
                         {
@@ -316,6 +320,7 @@ export default function Dashboard({
                 <DashboardSection
                     type="pertanian"
                     title="Dashboard Pelatihan Pertanian"
+                    isAdmin={isAdmin}
                     summary={pertanian.summary}
                     charts={[
                         {
@@ -350,6 +355,7 @@ export default function Dashboard({
                 <DashboardSection
                     type="ekraf"
                     title="Dashboard Pelatihan Ekonomi Kreatif"
+                    isAdmin={isAdmin}
                     summary={ekraf.summary}
                     charts={[
                         {
@@ -453,6 +459,7 @@ const DashboardSection = ({
     type = "banmod",
     registrationOpen,
     onToggleRegistration,
+    isAdmin,
 }) => {
     const theme = DASHBOARD_THEMES[type];
 
