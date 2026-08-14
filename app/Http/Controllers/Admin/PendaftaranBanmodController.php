@@ -85,7 +85,8 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                     return [
                         'edit_url' => route('admin.banmod.edit', $row->id),
                         'delete_url' => route('admin.banmod.destroy', $row->id),
-                        'detail_url' => route('admin.banmod.show', $row->id)
+                        'detail_url' => route('admin.banmod.show', $row->id),
+                        'status_url' => route('admin.banmod.status', $row->id)
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
@@ -111,6 +112,55 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                 'message' => session('message')
             ],
             'dataRoute' => route('admin.banmod.index'),
+        ]);
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $validated = $request->validate(
+            [
+                'status' => 'required|integer|in:1,2,3,4',
+                'notes' => 'required_if:status,2|string|max:500',
+            ],
+            [
+                'notes.required_if' => 'Alasan penggagalan wajib diisi.',
+            ]
+        );
+
+        $data = PendaftaranBanmod::findOrFail($id);
+
+        $requiredDocs = PendaftaranBanmod::getRequiredDocuments($data->kategori);
+        $verifications = $data->documentVerifications->whereIn('document_type', $requiredDocs);
+
+        $allVerified = count($verifications) === count($requiredDocs);
+
+        if (!$allVerified) {
+            return response()->json([
+                'message' => 'Dokumen belum terverifikasi lengkap'
+            ], 422);
+        }
+
+        $data->status = $validated['status'];
+
+        if (!empty($validated['notes'])) {
+            $data->keterangan = $validated['notes'];
+        }
+
+        $data->save();
+
+        $statusMessage = match ((int) $request->status) {
+            1 => 'Peserta berhasil diloloskan',
+            2 => 'Peserta telah digagalkan',
+            3 => 'Peserta telah dimasukkan ke blacklist',
+            4 => 'Peserta ditolak karena sudah lolos di pelatihan lain',
+            default => 'Status berhasil diperbarui'
+        };
+
+        return response()->json([
+            'success' => true,
+            'message' => $statusMessage,
+            'current_id' => $id,
+            'nik' => $data->nik
         ]);
     }
 
@@ -149,7 +199,8 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                     return [
                         'edit_url' => route('admin.banmod.edit', $row->id),
                         'delete_url' => route('admin.banmod.destroy', $row->id),
-                        'detail_url' => route('admin.banmod.show', $row->id)
+                        'detail_url' => route('admin.banmod.show', $row->id),
+                        'status_url' => route('admin.banmod.status', $row->id)
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
@@ -218,7 +269,8 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                     return [
                         'edit_url' => route('admin.banmod.edit', $row->id),
                         'delete_url' => route('admin.banmod.destroy', $row->id),
-                        'detail_url' => route('admin.banmod.show', $row->id)
+                        'detail_url' => route('admin.banmod.show', $row->id),
+                        'status_url' => route('admin.banmod.status', $row->id)
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
@@ -278,7 +330,8 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                     return [
                         'edit_url' => route('admin.banmod.edit', $row->id),
                         'delete_url' => route('admin.banmod.destroy', $row->id),
-                        'detail_url' => route('admin.banmod.show', $row->id)
+                        'detail_url' => route('admin.banmod.show', $row->id),
+                        'status_url' => route('admin.banmod.status', $row->id)
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
@@ -338,7 +391,8 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                     return [
                         'edit_url' => route('admin.banmod.edit', $row->id),
                         'delete_url' => route('admin.banmod.destroy', $row->id),
-                        'detail_url' => route('admin.banmod.show', $row->id)
+                        'detail_url' => route('admin.banmod.show', $row->id),
+                        'status_url' => route('admin.banmod.status', $row->id)
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
@@ -398,7 +452,8 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                     return [
                         'edit_url' => route('admin.banmod.edit', $row->id),
                         'delete_url' => route('admin.banmod.destroy', $row->id),
-                        'detail_url' => route('admin.banmod.show', $row->id)
+                        'detail_url' => route('admin.banmod.show', $row->id),
+                        'status_url' => route('admin.banmod.status', $row->id)
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
@@ -459,7 +514,8 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                     return [
                         'edit_url' => route('admin.banmod.edit', $row->id),
                         'delete_url' => route('admin.banmod.destroy', $row->id),
-                        'detail_url' => route('admin.banmod.show', $row->id)
+                        'detail_url' => route('admin.banmod.show', $row->id),
+                        'status_url' => route('admin.banmod.status', $row->id)
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
@@ -520,7 +576,8 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                     return [
                         'edit_url' => route('admin.banmod.edit', $row->id),
                         'delete_url' => route('admin.banmod.destroy', $row->id),
-                        'detail_url' => route('admin.banmod.show', $row->id)
+                        'detail_url' => route('admin.banmod.show', $row->id),
+                        'status_url' => route('admin.banmod.status', $row->id)
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {

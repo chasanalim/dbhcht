@@ -45,36 +45,64 @@ export default function Index({ title, can, flash, dataRoute }) {
                     searchable: false,
                     width: "3%",
                     className: "text-center",
-                    render: function (data) {
+                    render: function (data, type, row) {
                         let buttons = [];
 
-                        // // if (can.edit) {
-                        // buttons.push(`
-                        //         <a href="${data.edit_url}" class="btn btn-sm btn-warning" title="Edit">
-                        //             <i class="bi bi-pencil-square"></i>
-                        //         </a>
-                        //     `);
-                        // // }
-
-                        // // if (can.delete) {
-                        // buttons.push(`
-                        //         <a href="javascript:void(0)"
-                        //            onclick="deleteItem('${data.delete_url}')"
-                        //            class="btn btn-sm btn-danger"
-                        //            title="Hapus">
-                        //             <i class="bi bi-trash"></i>
-                        //         </a>
-                        //     `);
-                        // // }
-
                         buttons.push(`
-                            <a href="${data.detail_url}" class="btn btn-sm btn-info" title="Detail">
+                            <a href="${data.detail_url}" class="btn btn-sm btn-info me-1" title="Detail">
                                 <i class="bi bi-eye"></i>
                             </a>
                         `);
 
+                        // Add Lolos dana / Tolak dana buttons only for pending records,
+                        // using the actual row values instead of the action payload.
+                        const rowStatus = Number(row?.status ?? 0);
+                        const rowVerifikasi = row?.verifikasi_dokumen;
+
+                        if (rowStatus === 0 && rowVerifikasi) {
+                            const allVerified = Boolean(
+                                rowVerifikasi.all_verified,
+                            );
+                            const allApproved = Boolean(
+                                rowVerifikasi.all_approved,
+                            );
+
+                            const kategori =
+                                Number.parseInt(row?.kategori ?? 0, 10) || 0;
+                            const kategoriMatch =
+                                (kategori >= 1 && kategori <= 3) ||
+                                kategori === 5 ||
+                                kategori === 7;
+
+                            if (kategoriMatch && allVerified && allApproved) {
+                                buttons.push(`
+                                    <button onclick="updateStatus('${data.status_url}', 1)" class="btn btn-sm btn-success me-1" title="Lolos">
+                                        <i class="bi bi-check-lg"></i>
+                                    </button>
+                                `);
+
+                                buttons.push(`
+                                    <button onclick="updateStatus('${data.status_url}', 2)" class="btn btn-sm btn-danger" title="Tolak">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                `);
+                            } else if (kategoriMatch && allVerified && !allApproved) {
+                                buttons.push(`
+                                    <button onclick="updateStatus('${data.status_url}', 2)" class="btn btn-sm btn-danger" title="Tolak">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                `);
+                            }
+                        } else if (rowStatus === 1) {
+                            buttons.push(`
+                                <button onclick="updateStatus('${data.status_url}', 3)" class="btn btn-sm btn-dark" title="Blacklist">
+                                    <i class="bi bi-file-x"></i>
+                                </button>
+                            `);
+                        } 
+
                         return `<div class="btn-group">${buttons.join(
-                            ""
+                            "",
                         )}</div>`;
                     },
                 },
@@ -151,11 +179,11 @@ export default function Index({ title, can, flash, dataRoute }) {
                     className: "text-center",
                     render: function (data) {
                         return `<span class="badge bg-success p-2">${parseFloat(
-                            data
+                            data,
                         ).toFixed(2)}</span>`;
                     },
                 },
-                
+
                 {
                     data: "verifikasi_dokumen",
                     name: "verifikasi_dokumen",
@@ -173,11 +201,51 @@ export default function Index({ title, can, flash, dataRoute }) {
                         return `<span class="badge bg-warning">Belum diverifikasi</span>`;
                     },
                 },
+                {
+                    data: "status",
+                    name: "status",
+                    className: "text-center",
+                    searchable: true,
+                    render: function (data, type, row) {
+                        if (data === 0) {
+                            return `<span class="badge bg-warning">-</span>`;
+                        } else if (data === 1) {
+                            return `<span class="badge bg-success">Lolos</span>`;
+                        } else if (data === 2) {
+                            return `<span class="badge bg-danger">Tidak Lolos</span>`;
+                        } else if (data === 3) {
+                            const keterangan = row.keterangan
+                                ? row.keterangan
+                                : "Tidak ada keterangan";
+
+                            return `
+                                <div class="d-flex align-items-center justify-content-center gap-2">
+                                    <span class="badge bg-dark">Blacklist</span>
+                                    <span
+                                        class="badge bg-secondary cursor-pointer info-badge"
+                                        data-bs-toggle="popover"
+                                        data-bs-placement="left"
+                                        data-bs-html="true"
+                                        data-bs-content="${keterangan
+                                            .replace(/"/g, "&quot;")
+                                            .replace(/\n/g, "<br>")}"
+                                        data-bs-trigger="hover"
+                                        title="Keterangan Blacklist"
+                                    >
+                                        <i class="bi bi-info-circle"></i>
+                                    </span>
+                                </div>
+                            `;
+                        } else if (data === 4) {
+                            return `<span class="badge bg-danger">Ditolak - Lolos di Pelatihan Lain</span>`;
+                        }
+                    },
+                },
             ],
             drawCallback: function () {
                 // Initialize tooltips
                 const tooltips = document.querySelectorAll(
-                    '[data-bs-toggle="tooltip"]'
+                    '[data-bs-toggle="tooltip"]',
                 );
                 tooltips.forEach((tooltipNode) => {
                     new Tooltip(tooltipNode);
@@ -202,7 +270,7 @@ export default function Index({ title, can, flash, dataRoute }) {
             dt.destroy();
             // Dispose tooltips
             const tooltips = document.querySelectorAll(
-                '[data-bs-toggle="tooltip"]'
+                '[data-bs-toggle="tooltip"]',
             );
             tooltips.forEach((tooltipNode) => {
                 const tooltip = Tooltip.getInstance(tooltipNode);
@@ -219,14 +287,14 @@ export default function Index({ title, can, flash, dataRoute }) {
             kategori: title.includes("IKM")
                 ? 4
                 : title.includes("Buruh Pabrik Rokok")
-                ? 1
-                : title.includes("Buruh Tani Tembakau")
-                ? 2
-                : title.includes("Pekerja Pabrik Rokok")
-                ? 3
-                : title.includes("Masyarakat Miskin")
-                ? 5
-                : null,
+                  ? 1
+                  : title.includes("Buruh Tani Tembakau")
+                    ? 2
+                    : title.includes("Pekerja Pabrik Rokok")
+                      ? 3
+                      : title.includes("Masyarakat Miskin")
+                        ? 5
+                        : null,
             ext: type,
         });
         window.open(url, "_blank");
@@ -243,6 +311,155 @@ export default function Index({ title, can, flash, dataRoute }) {
     };
 
     window.deleteItem = deleteItem;
+
+    const updateStatus = async (url, status) => {
+        let confirmMessage = "";
+
+        if (status === 1) {
+            confirmMessage =
+                "Apakah anda yakin ingin meloloskan peserta ini?\n\nPerhatian: Jika peserta ini lolos, maka semua pendaftaran pelatihan lain (UMKM, Pertanian, Banmod) dengan NIK yang sama akan otomatis ditolak.";
+            if (confirm(confirmMessage)) {
+                try {
+                    const response = await axios.post(url, {
+                        status: status,
+                    });
+
+                    if (status === 1) {
+                        try {
+                            await axios.post(route("admin.auto-reject-nik"), {
+                                current_table: "pendaftaran_banmods",
+                                current_id: response.data.current_id || null,
+                                nik: response.data.nik || null,
+                            });
+                        } catch (autoRejectError) {
+                            console.error(
+                                "Error auto-rejecting other NIK records:",
+                                autoRejectError
+                            );
+                        }
+                    }
+
+                    const toastEl = document.getElementById("toast");
+                    const toastBody = toastEl.querySelector(".toast-body");
+                    toastBody.textContent = response.data.message;
+
+                    const toastElement = toastEl;
+                    toastElement.className = toastElement.className.replace(
+                        /bg-\w+/,
+                        ""
+                    );
+                    toastElement.classList.add("bg-success");
+
+                    const toast = new Toast(toastEl);
+                    toast.show();
+
+                    $(tableRef.current).DataTable().ajax.reload();
+                } catch (error) {
+                    console.error("Error updating status:", error);
+                    if (error.response?.data?.message) {
+                        const toastEl = document.getElementById("toast");
+                        const toastBody = toastEl.querySelector(".toast-body");
+                        toastBody.textContent = error.response.data.message;
+                        const toastElement = toastEl;
+                        toastElement.className = toastElement.className.replace(
+                            /bg-\w+/,
+                            "bg-danger"
+                        );
+                        const toast = new Toast(toastEl);
+                        toast.show();
+                    }
+                }
+            }
+        } else if (status === 2) {
+            const alasan = prompt(
+                "Masukkan alasan penggagalan peserta ini (wajib diisi):"
+            );
+            if (!alasan || !alasan.trim()) {
+                alert("Alasan penggagalan wajib diisi.");
+                return;
+            }
+            if (confirm("Apakah anda yakin ingin menggagalkan peserta ini?")) {
+                try {
+                    const response = await axios.post(url, {
+                        status: status,
+                        notes: alasan,
+                    });
+
+                    const toastEl = document.getElementById("toast");
+                    const toastBody = toastEl.querySelector(".toast-body");
+                    toastBody.textContent = response.data.message;
+
+                    const toastElement = toastEl;
+                    toastElement.className = toastElement.className.replace(
+                        /bg-\w+/,
+                        "bg-warning"
+                    );
+
+                    const toast = new Toast(toastEl);
+                    toast.show();
+
+                    $(tableRef.current).DataTable().ajax.reload();
+                } catch (error) {
+                    console.error("Error updating status:", error);
+                    if (error.response?.data?.message) {
+                        const toastEl = document.getElementById("toast");
+                        const toastBody = toastEl.querySelector(".toast-body");
+                        toastBody.textContent = error.response.data.message;
+                        const toastElement = toastEl;
+                        toastElement.className = toastElement.className.replace(
+                            /bg-\w+/,
+                            "bg-danger"
+                        );
+                        const toast = new Toast(toastEl);
+                        toast.show();
+                    }
+                }
+            }
+        } else if (status === 3) {
+            setPendingBlacklistUrl(url);
+            setPendingBlacklistStatus(status);
+            setShowBlacklistModal(true);
+        } else if (status === 4) {
+            if (confirm("Apakah anda yakin ingin menandai peserta ini lolos di pelatihan lain?")) {
+                try {
+                    const response = await axios.post(url, {
+                        status: status,
+                    });
+
+                    const toastEl = document.getElementById("toast");
+                    const toastBody = toastEl.querySelector(".toast-body");
+                    toastBody.textContent = response.data.message;
+
+                    const toastElement = toastEl;
+                    toastElement.className = toastElement.className.replace(
+                        /bg-\w+/,
+                        "bg-success"
+                    );
+
+                    const toast = new Toast(toastEl);
+                    toast.show();
+
+                    $(tableRef.current).DataTable().ajax.reload();
+                } catch (error) {
+                    console.error("Error updating status:", error);
+                    if (error.response?.data?.message) {
+                        const toastEl = document.getElementById("toast");
+                        const toastBody = toastEl.querySelector(".toast-body");
+                        toastBody.textContent = error.response.data.message;
+                        const toastElement = toastEl;
+                        toastElement.className = toastElement.className.replace(
+                            /bg-\w+/,
+                            "bg-danger"
+                        );
+                        const toast = new Toast(toastEl);
+                        toast.show();
+                    }
+                }
+            }
+        }
+    };
+
+    window.updateStatus = updateStatus;
 
     return (
         <AdminLayout>
@@ -324,6 +541,7 @@ export default function Index({ title, can, flash, dataRoute }) {
                                                 <th>KLASTER USAHA</th>
                                                 <th>SKOR</th>
                                                 <th>VERIFIKASI DOKUMEN</th>
+                                                <th>STATUS</th>
                                             </tr>
                                         </thead>
                                     </table>

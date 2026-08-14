@@ -335,6 +335,7 @@ class PendaftaranBanmod extends Model
                 'ktp',
                 'kk',
                 'nib',
+                'skd',
                 'sku',
                 'produk',
                 'lokasi_usaha',

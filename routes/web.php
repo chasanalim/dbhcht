@@ -76,6 +76,9 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'year.filter'])->group
     Route::get('banmod/disabilitas', [PendaftaranBanmodController::class, 'disabilitas'])->name('banmod.disabilitas');
     Route::get('banmod/pkl', [PendaftaranBanmodController::class, 'pkl'])->name('banmod.pkl');
     Route::resource('banmod', PendaftaranBanmodController::class);
+    Route::post('banmod/{id}/status', [PendaftaranBanmodController::class, 'updateStatus'])
+        ->name('banmod.status');
+
 
     Route::resource('umkm', PelatihanUMKMController::class);
     Route::post('umkm/{id}/status', [PelatihanUMKMController::class, 'updateStatus'])

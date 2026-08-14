@@ -189,16 +189,13 @@ class DashboardController extends Controller
     {
         $year = $this->yearScope($tableName . ' as m');
         $result = DB::table($tableName . ' as m')
-            ->select(DB::raw('
-            CASE
+            ->selectRaw('CASE
                 WHEN vd.total_docs = vd.required_docs
                     AND vd.verified_docs = vd.required_docs THEN "Terverifikasi"
                 WHEN vd.total_docs = vd.required_docs
                     AND vd.verified_docs < vd.required_docs THEN "Ditolak"
                 WHEN vd.total_docs IS NULL THEN "Belum Diverifikasi"
-            END as status,
-            COUNT(*) as total
-        '))
+            END as status')
             ->leftJoin(DB::raw('(
             SELECT
                 pelatihan_id,
@@ -211,8 +208,8 @@ class DashboardController extends Controller
         ) as vd'), 'm.id', '=', 'vd.pelatihan_id')
             ->whereRaw($year)
             ->setBindings([$type, $type])
-            ->groupBy('status')
-            ->get();
+            ->get()
+            ->groupBy('status');
 
         if ($result->isEmpty()) {
             return [
@@ -222,10 +219,10 @@ class DashboardController extends Controller
             ];
         }
 
-        return $result->map(fn($item) => [
-            'name' => $item->status,
-            'y' => $item->total
-        ]);
+        return $result->map(fn($items, $status) => [
+            'name' => $status,
+            'y' => $items->count()
+        ])->values();
     }
 
     // ============================================================
@@ -352,8 +349,7 @@ class DashboardController extends Controller
     private function getBanmodByVerifikasi()
     {
         $result = DB::table('pendaftaran_banmods as pb')
-            ->select(DB::raw('
-            CASE
+            ->selectRaw('CASE
                 WHEN vd.total_docs =
                     CASE
                         WHEN pb.kategori IN (1,2,3,6) THEN 8
@@ -390,9 +386,7 @@ class DashboardController extends Controller
                 THEN "Ditolak"
                 WHEN vd.total_docs IS NULL THEN "Belum Diverifikasi"
                 ELSE "Belum Lengkap"
-            END as status,
-            COUNT(*) as total
-        '))
+            END as status')
             ->leftJoin(DB::raw('(
             SELECT
                 pelatihan_id,
@@ -403,8 +397,8 @@ class DashboardController extends Controller
             GROUP BY pelatihan_id
         ) as vd'), 'pb.id', '=', 'vd.pelatihan_id')
             ->setBindings([PendaftaranBanmod::class])
-            ->groupBy('status')
-            ->get();
+            ->get()
+            ->groupBy('status');
 
         // Jika tidak ada data, berikan default values
         if ($result->isEmpty()) {
@@ -416,10 +410,10 @@ class DashboardController extends Controller
             ];
         }
 
-        return $result->map(fn($item) => [
-            'name' => $item->status,
-            'y' => $item->total
-        ]);
+        return $result->map(fn($items, $status) => [
+            'name' => $status,
+            'y' => $items->count()
+        ])->values();
     }
 
     private function getBanmodByKelurahan()
@@ -674,14 +668,11 @@ class DashboardController extends Controller
         $tableName = $model->getTable();
 
         $result = DB::table($tableName . ' as m')
-            ->select(DB::raw('
-            CASE
+            ->selectRaw('CASE
                 WHEN verification_status.status = "complete" THEN "Terverifikasi"
                 WHEN verification_status.status = "incomplete" THEN "Ditolak"
                 WHEN verification_status.status IS NULL THEN "Belum Diverifikasi"
-            END as status,
-            COUNT(*) as total
-        '))
+            END as status')
             ->leftJoin(DB::raw('(
             SELECT
                 pelatihan_id,
@@ -694,8 +685,8 @@ class DashboardController extends Controller
             GROUP BY pelatihan_id
         ) as verification_status'), 'm.id', '=', 'verification_status.pelatihan_id')
             ->setBindings([$modelClass])
-            ->groupBy('status')
-            ->get();
+            ->get()
+            ->groupBy('status');
 
         // Jika tidak ada data, berikan default values
         if ($result->isEmpty()) {
@@ -706,10 +697,10 @@ class DashboardController extends Controller
             ];
         }
 
-        return $result->map(fn($item) => [
-            'name' => $item->status,
-            'y' => $item->total
-        ]);
+        return $result->map(fn($items, $status) => [
+            'name' => $status,
+            'y' => $items->count()
+        ])->values();
     }
 
     public function blacklist(Request $request)
