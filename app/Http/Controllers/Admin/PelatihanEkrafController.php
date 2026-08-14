@@ -149,6 +149,8 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
                 });
             }
 
+            [$lolosIds, $masterNiks] = $this->getNikDenganPelatihanSebelumnya($data);
+
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
@@ -176,6 +178,13 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
                 ->addColumn('keterangan', function ($row) {
                     // Kirim keterangan untuk tooltip
                     return $row->keterangan ?? null;
+                })
+                ->addColumn('pelatihan_sebelumnya', function ($row) use ($lolosIds, $masterNiks) {
+                    if ($masterNiks->has($row->nik)) {
+                        return true;
+                    }
+                    $ids = $lolosIds->get($row->nik, collect());
+                    return $ids->contains(fn ($id) => (int) $id !== (int) $row->id);
                 })
                 ->rawColumns(['action', 'verifikasi_dokumen'])
                 ->make(true);

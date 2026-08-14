@@ -189,6 +189,26 @@ export default function Index({ title, can, flash, pelatihan }) {
                     searchable: true,
                 },
                 {
+                    data: "pelatihan_sebelumnya",
+                    name: "pelatihan_sebelumnya",
+                    orderable: false,
+                    searchable: false,
+                    className: "text-center",
+                    render: function (data) {
+                        if (data) {
+                            return `<span
+                                class="badge bg-success"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                title="Peserta pernah mengikuti pelatihan sebelumnya (lihat detail)"
+                            >
+                                <i class="bi bi-check-circle-fill me-1"></i>Ada
+                            </span>`;
+                        }
+                        return `<span class="badge bg-light text-muted">-</span>`;
+                    },
+                },
+                {
                     data: "nama_lengkap",
                     name: "nama_lengkap",
                 },
@@ -707,6 +727,7 @@ export default function Index({ title, can, flash, pelatihan }) {
                                                 <th>TAHUN PENERIMAAN</th>
                                                 <th>DESIL</th>
                                                 <th>NIK</th>
+                                                <th>PELATIHAN SEBELUMNYA</th>
                                                 <th>NAMA</th>
                                                 <th>ALAMAT</th>
                                                 <th>RT</th>
