@@ -434,6 +434,12 @@ class RegPelatihanEkonomiKreatifController extends Controller
         return [
             'fotografi' => 'Fotografi',
             'videografi' => 'Videografi',
+            'dkv' => 'Desain Komunikasi Visual',
+            'mua' => 'Makeup Artist (MUA)',
+            'diversifikasi_kriya' => 'Diversifikasi Kriya',
+            'tour_guide' => 'Tour Guide',
+            'kuliner_tradisional' => 'Kuliner Tradisional Food',
+            'pelatihan_export' => 'Pelatihan Export',
         ];
     }
 }

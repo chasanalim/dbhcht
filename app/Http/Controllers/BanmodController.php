@@ -90,7 +90,6 @@ class BanmodController extends Controller
             "file_skd" => ['nullable', 'required_if:isDomisili,true', 'file'],
             "file_produk" => ['required', 'image'],
             "file_lokasi_usaha" => ['required', 'image'],
-            "file_pernyataan" => ['required', 'file'],
             "file_perizinan" => ['nullable', 'required_if:kategori,4', 'array'],
             "file_siinas" => ['nullable', 'required_if:kategori,4', 'file'],
             "file_bp" => ['nullable', 'required_if:kategori,4', 'file'],
@@ -149,10 +148,6 @@ class BanmodController extends Controller
         if ($request->hasFile('file_surat_disabilitas')) {
             $validated['file_surat_disabilitas'] = '/storage/pendaftaran-banmod/surat-disabilitas/' . $request->file('file_surat_disabilitas')->hashName();
             $request->file('file_surat_disabilitas')->storeAs('/pendaftaran-banmod/surat-disabilitas', $request->file('file_surat_disabilitas')->hashName(), 'public');
-        }
-        if ($request->hasFile('file_pernyataan')) {
-            $validated['file_pernyataan'] = '/storage/pendaftaran-banmod/pernyataan/' . $request->file('file_pernyataan')->hashName();
-            $request->file('file_pernyataan')->storeAs('/pendaftaran-banmod/pernyataan', $request->file('file_pernyataan')->hashName(), 'public');
         }
         if ($request->hasFile('file_siinas')) {
             $validated['file_siinas'] = '/storage/pendaftaran-banmod/siinas/' . $request->file('file_siinas')->hashName();

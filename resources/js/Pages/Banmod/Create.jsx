@@ -283,7 +283,6 @@ export default function BanmodPage({ meta }) {
         file_sku: [],
         file_skd: [],
         file_produk: [],
-        file_pernyataan: [],
         file_perizinan: [],
         file_siinas: [],
         file_bp: [],
@@ -1145,24 +1144,6 @@ export default function BanmodPage({ meta }) {
                                             false,
                                             "imagePreviewLokasiUsaha",
                                         )}
-                                        {renderFileUpload(
-                                            "Surat Pernyataan Komitmen",
-                                            "file_pernyataan",
-                                        )}
-
-                                        {/* Download link untuk template */}
-                                        <div className="mb-3">
-                                            <a
-                                                href="https://sultan.kedirikota.go.id/storage/files/2AwGvjYESu1vQLSAfgOkGT1KAXE23R7BuMOBjrbj.pdf"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-decoration-none text-danger fw-semibold"
-                                                style={{ fontSize: "12px" }}
-                                            >
-                                                📥 Unduh Template Surat
-                                                Pernyataan Komitmen (PDF)
-                                            </a>
-                                        </div>
 
                                         {renderFileUpload("SKU", "file_sku")}
                                         {renderFileUpload("NIB", "file_nib")}
@@ -1189,14 +1170,14 @@ export default function BanmodPage({ meta }) {
                                         {isKategori5 && (
                                             <>
                                                 {renderFileUpload(
-                                                    "Surat Keterangan Miskin",
+                                                    "Surat Pernyataan Komitmen bagi Masyarakat Miskin",
                                                     "file_surat_miskin",
                                                     ".pdf",
                                                     true,
                                                 )}
                                                 <div className="mb-3">
                                                     <a
-                                                        href="https://sultan.kedirikota.go.id/storage/files/2AwGvjYESu1vQLSAfgOkGT1KAXE23R7BuMOBjrbj.pdf"
+                                                        href="https://sultan.kedirikota.go.id/storage/files/VhESxgAzRmSEqsmQvqDOIhLRwDVHgKz4GlxwK6zA.pdf"
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="text-decoration-none text-danger fw-semibold"
@@ -1205,7 +1186,7 @@ export default function BanmodPage({ meta }) {
                                                         }}
                                                     >
                                                         📥 Unduh Template Surat
-                                                        Pernyataan Komitmen
+                                                        Pernyataan Komitmen Masyarakat Miskin
                                                         (PDF)
                                                     </a>
                                                 </div>
@@ -1223,7 +1204,7 @@ export default function BanmodPage({ meta }) {
                                         {isKategori1to3 && (
                                             <>
                                                 {renderFileUpload(
-                                                    "Surat Keterangan Buruh",
+                                                    "Surat Pernyataan Komitmen bagi Buruh dan Pekerja Pabrik Rokok",
                                                     "file_surat_buruh",
                                                     ".pdf",
                                                     true,
@@ -1231,7 +1212,7 @@ export default function BanmodPage({ meta }) {
                                                 {/* Download link untuk template */}
                                                 <div className="mb-3">
                                                     <a
-                                                        href="https://sultan.kedirikota.go.id/storage/files/2AwGvjYESu1vQLSAfgOkGT1KAXE23R7BuMOBjrbj.pdf"
+                                                        href="https://sultan.kedirikota.go.id/storage/files/XouzmgQvdBZuBx0ER8alHqrpbap7ImhKaubxp0xD.pdf"
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="text-decoration-none text-danger fw-semibold"
@@ -1240,7 +1221,7 @@ export default function BanmodPage({ meta }) {
                                                         }}
                                                     >
                                                         📥 Unduh Template Surat
-                                                        Pernyataan Buruh Rokok
+                                                        Pernyataan Komitmen Buruh dan Pekerja Pabrik Rokok
                                                         (PDF)
                                                     </a>
                                                 </div>
@@ -1266,7 +1247,7 @@ export default function BanmodPage({ meta }) {
                                                         }}
                                                     >
                                                         📥 Unduh Template Surat
-                                                        Pernyataan Disabilitas
+                                                        Pernyataan Komitmen Disabilitas
                                                         (PDF)
                                                     </a>
                                                 </div>

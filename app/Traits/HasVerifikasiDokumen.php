@@ -30,7 +30,7 @@ trait HasVerifikasiDokumen
 
     public static function getRequiredDocuments(int $kategori = null): array
     {
-        $baseDocuments = ['foto', 'ktp', 'kk', 'nib', 'sku', 'produk', 'lokasi_usaha', 'pernyataan'];
+        $baseDocuments = ['foto', 'ktp', 'kk', 'nib', 'sku', 'produk', 'lokasi_usaha'];
 
         $additionalDocuments = [
             1 => array_merge($baseDocuments, [
@@ -78,7 +78,6 @@ trait HasVerifikasiDokumen
                 'sku',
                 'produk',
                 'lokasi_usaha',
-                'pernyataan',
                 'perizinan',
                 'siinas',
                 'bp',

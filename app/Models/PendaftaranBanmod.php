@@ -230,20 +230,19 @@ class PendaftaranBanmod extends Model
             'sku' => 'SKU',
             'skd' => 'SKD',
             'produk' => 'Produk',
-            'lokasi_usaha' => 'Foto Lokasi Usaha',
-            'pernyataan' => 'Surat Pernyataan'
+            'lokasi_usaha' => 'Foto Lokasi Usaha'
         ];
 
         $additionalDocuments = [
             // Kategori 1,2,3,6 - Dokumen dasar
             1 => array_merge($baseDocuments, [
-                'surat_buruh' => 'Surat Keterangan Buruh',
+                'surat_buruh' => 'Surat Pernyataan Komitmen bagi Buruh',
             ]),
             2 => array_merge($baseDocuments, [
-                'surat_buruh' => 'Surat Keterangan Buruh',
+                'surat_buruh' => 'Surat Pernyataan Komitmen bagi Buruh',
             ]),
             3 => array_merge($baseDocuments, [
-                'surat_buruh' => 'Surat Keterangan Buruh',
+                'surat_buruh' => 'Surat Pernyataan Komitmen bagi Buruh',
             ]),
             6 => $baseDocuments,
 
@@ -256,14 +255,14 @@ class PendaftaranBanmod extends Model
 
             // Kategori 5 - Masyarakat Miskin (tambah sertifikat)
             5 => array_merge($baseDocuments, [
-                'surat_miskin' => 'Surat Keterangan Miskin',
+                'surat_miskin' => 'Surat Pernyataan Komitmen bagi Miskin',
                 'sertifikat_pelatihan' => 'Sertifikat Pelatihan'
                 
             ]),
 
             // Kategori 7 - Disabilitas (tambah surat disabilitas + sertifikat)
             7 => array_merge($baseDocuments, [
-                'surat_disabilitas' => 'Surat Keterangan Disabilitas',
+                'surat_disabilitas' => 'Surat Pernyataan Komitmen bagi Disabilitas',
                 'sertifikat_pelatihan' => 'Sertifikat Pelatihan'
             ]),
 
@@ -277,13 +276,12 @@ class PendaftaranBanmod extends Model
                 'skd' => 'SKD',
                 'produk' => 'Produk',
                 'lokasi_usaha' => 'Foto Lokasi Usaha',
-                'pernyataan' => 'Surat Pernyataan',
                 'perizinan' => 'Perizinan',
                 'siinas' => 'SIINAS',
                 'bp' => 'Bussiness Plan',
-                'surat_disabilitas' => 'Surat Keterangan Disabilitas',
-                'surat_miskin' => 'Surat Keterangan Miskin',
-                'surat_buruh' => 'Surat Keterangan Buruh',
+                'surat_disabilitas' => 'Surat Pernyataan Komitmen bagi Disabilitas',
+                'surat_miskin' => 'Surat Pernyataan Komitmen bagi Miskin',
+                'surat_buruh' => 'Surat Pernyataan Komitmen bagi Buruh',
                 'sertifikat_pelatihan' => 'Sertifikat Pelatihan'
             ]
         ];
@@ -293,7 +291,7 @@ class PendaftaranBanmod extends Model
 
     public static function getRequiredDocuments(int $kategori = null): array
     {
-        $baseDocuments = ['foto', 'ktp', 'kk', 'nib', 'sku', 'skd', 'produk', 'lokasi_usaha', 'pernyataan'];
+        $baseDocuments = ['foto', 'ktp', 'kk', 'nib', 'sku', 'skd', 'produk', 'lokasi_usaha'];
 
         $additionalDocuments = [
             1 => array_merge($baseDocuments, [
@@ -339,7 +337,6 @@ class PendaftaranBanmod extends Model
                 'sku',
                 'produk',
                 'lokasi_usaha',
-                'pernyataan',
                 'perizinan',
                 'siinas',
                 'bp',
