@@ -292,11 +292,27 @@ export default function FormPenerimaBanmod({ jenisPelatihanOptions = [] }) {
         downloadLink = null,
         description = "",
         fileIndex = 1,
+        required = true,
     ) => {
         return (
             <Form.Group className="mb-4" key={fieldName}>
                 <div className="mb-2 fw-semibold">
                     {fileIndex}. {label} {/* ✅ GANTI index dengan fileIndex */}
+                    {required ? (
+                        <span
+                            className="text-danger ms-1"
+                            style={{ fontSize: "11px" }}
+                        >
+                            (Wajib)
+                        </span>
+                    ) : (
+                        <span
+                            className="text-muted ms-1"
+                            style={{ fontSize: "11px" }}
+                        >
+                            (Opsional)
+                        </span>
+                    )}
                 </div>
                 <Form.Label
                     className="text-primary"

@@ -392,6 +392,7 @@ export default function FormUMKM({ umkmTrainingOptions = [] }) {
         index = 1,
         description = "",
         downloadLink = null,
+        required = true,
     }) => {
         const indexLabel = `${index}.`;
 
@@ -399,6 +400,21 @@ export default function FormUMKM({ umkmTrainingOptions = [] }) {
             <Form.Group className="mb-4" key={fieldName}>
                 <div className="mb-2 fw-semibold">
                     {indexLabel} {label}
+                    {required ? (
+                        <span
+                            className="text-danger ms-1"
+                            style={{ fontSize: "11px" }}
+                        >
+                            (Wajib)
+                        </span>
+                    ) : (
+                        <span
+                            className="text-muted ms-1"
+                            style={{ fontSize: "11px" }}
+                        >
+                            (Opsional)
+                        </span>
+                    )}
                 </div>
                 <Form.Label className="text-primary" style={{ fontSize: "11px" }}>
                     Format: {accept === ".pdf" ? "*.pdf" : "*.png, *.jpg, *.jpeg"}
@@ -1309,6 +1325,7 @@ export default function FormUMKM({ umkmTrainingOptions = [] }) {
                         index: 4,
                         description: "Maksimal 2MB. Format: PDF",
                         downloadLink: "https://sultan.kedirikota.go.id/storage/files/ACnkVFsu9Fl8yi6pNan4SfQFNIVmcN95qhXKOtqy.pdf",
+                        required: false,
                     })}
 
                     {renderFileUpload({

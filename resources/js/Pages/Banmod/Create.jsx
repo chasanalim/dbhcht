@@ -105,12 +105,28 @@ export default function BanmodPage({ meta }) {
         accept = ".pdf",
         multiple = false,
         imagePreviewKey = null,
+        required = true,
     ) => {
         const indexLabel = `${fileIndex++}.`;
         return (
             <Form.Group className="mb-4" key={fieldName}>
                 <div className="mb-2 fw-semibold">
                     {indexLabel} {label}
+                    {required ? (
+                        <span
+                            className="text-danger ms-1"
+                            style={{ fontSize: "11px" }}
+                        >
+                            (Wajib)
+                        </span>
+                    ) : (
+                        <span
+                            className="text-muted ms-1"
+                            style={{ fontSize: "11px" }}
+                        >
+                            (Opsional)
+                        </span>
+                    )}
                 </div>
 
                 <Form.Label

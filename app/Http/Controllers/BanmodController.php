@@ -99,6 +99,16 @@ class BanmodController extends Controller
             "file_sertifikat_pelatihan" => ['nullable', 'required_if:kategori,5,7', 'file']
         ]);
 
+        // Cek NIK sudah pernah daftar di tahun yang sama
+        $tahunPendaftaran = date('Y');
+        $existing = PendaftaranBanmod::where('nik', $validated['nik'])
+            ->whereYear('created_at', $tahunPendaftaran)
+            ->first();
+        if ($existing) {
+            return back()->with('error', "NIK sudah pernah mendaftar Bantuan Modal tahun {$tahunPendaftaran}.")
+                ->withErrors(['nik' => "NIK sudah pernah mendaftar Bantuan Modal tahun {$tahunPendaftaran}."]);
+        }
+
         // Cek 1 KK = 1 penerima (safety net, cek utama ada di ceknik)
         if (PendaftaranBanmod::where('kk', $validated['kk'])->exists()) {
             return back()->with('error', 'No. KK sudah terdaftar. Maksimal 1 penerima dalam 1 KK.')
@@ -233,6 +243,17 @@ class BanmodController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'No. KK sudah terdaftar sebagai pendaftar. Maksimal 1 penerima dalam 1 KK.'
+            ], 400);
+        }
+
+        // Cek NIK sudah pernah daftar di tahun yang sama
+        $tahunPendaftaran = date('Y');
+        if (PendaftaranBanmod::where('nik', $nik)
+            ->whereYear('created_at', $tahunPendaftaran)
+            ->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => "NIK sudah pernah mendaftar Bantuan Modal tahun {$tahunPendaftaran}."
             ], 400);
         }
 
