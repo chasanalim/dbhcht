@@ -19,7 +19,7 @@ import SelectRt from "@/Components/Select/SelectRt";
 import SelectRw from "@/Components/Select/SelectRw";
 import SelectPrioritasPelatihan from "@/Components/Select/SelectPrioritasPelatihan";
 
-export default function FormUMKM() {
+export default function FormUMKM({ umkmTrainingOptions = [] }) {
     const [nikStatus, setNikStatus] = useState(null);
     const [dataPenerima, setDataPenerima] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
@@ -1161,6 +1161,7 @@ export default function FormUMKM() {
                             prioritasKe={1}
                             value={data.prioritas_1}
                             onChange={(val) => setData("prioritas_1", val)}
+                            options={umkmTrainingOptions}
                             // selectedValues={[
                             //     data.prioritas_2,
                             //     data.prioritas_3,

@@ -13,15 +13,6 @@ export default function Index({ title, can, flash, pelatihan }) {
 
     const [selectedPelatihan1, setSelectedPelatihan1] =
         useState("Semua Pelatihan");
-    const [selectedPelatihan2, setSelectedPelatihan2] =
-        useState("Semua Pelatihan");
-    const [selectedPelatihan3, setSelectedPelatihan3] =
-        useState("Semua Pelatihan");
-    const [disabledFilters, setDisabledFilters] = useState({
-        prioritas_1: false,
-        prioritas_2: false,
-        prioritas_3: false,
-    });
     const [showBlacklistModal, setShowBlacklistModal] = useState(false);
     const [blacklistNotes, setBlacklistNotes] = useState("");
     const [pendingBlacklistUrl, setPendingBlacklistUrl] = useState(null);
@@ -40,67 +31,6 @@ export default function Index({ title, can, flash, pelatihan }) {
     const handlePelatihan1Change = (e) => {
         const value = e.target.value;
         setSelectedPelatihan1(value);
-
-        if (value !== "Semua Pelatihan") {
-            setDisabledFilters({
-                prioritas_1: false,
-                prioritas_2: true,
-                prioritas_3: true,
-            });
-            // Reset other filters when this one is selected
-            setSelectedPelatihan2("Semua Pelatihan");
-            setSelectedPelatihan3("Semua Pelatihan");
-        } else {
-            setDisabledFilters({
-                prioritas_1: false,
-                prioritas_2: false,
-                prioritas_3: false,
-            });
-        }
-    };
-
-    const handlePelatihan2Change = (e) => {
-        const value = e.target.value;
-        setSelectedPelatihan2(value);
-
-        if (value !== "Semua Pelatihan") {
-            setDisabledFilters({
-                prioritas_1: true,
-                prioritas_2: false,
-                prioritas_3: true,
-            });
-            // Reset other filters when this one is selected
-            setSelectedPelatihan1("Semua Pelatihan");
-            setSelectedPelatihan3("Semua Pelatihan");
-        } else {
-            setDisabledFilters({
-                prioritas_1: false,
-                prioritas_2: false,
-                prioritas_3: false,
-            });
-        }
-    };
-
-    const handlePelatihan3Change = (e) => {
-        const value = e.target.value;
-        setSelectedPelatihan3(value);
-
-        if (value !== "Semua Pelatihan") {
-            setDisabledFilters({
-                prioritas_1: true,
-                prioritas_2: true,
-                prioritas_3: false,
-            });
-            // Reset other filters when this one is selected
-            setSelectedPelatihan1("Semua Pelatihan");
-            setSelectedPelatihan2("Semua Pelatihan");
-        } else {
-            setDisabledFilters({
-                prioritas_1: false,
-                prioritas_2: false,
-                prioritas_3: false,
-            });
-        }
     };
 
     const handleVerificationFilterChange = (e) => {
@@ -119,8 +49,6 @@ export default function Index({ title, can, flash, pelatihan }) {
             const response = await axios.get(route("admin.umkm.index"), {
                 params: {
                     prioritas_1: selectedPelatihan1,
-                    prioritas_2: selectedPelatihan2,
-                    prioritas_3: selectedPelatihan3,
                     verification_status: verificationFilter,
                     stats: true,
                 },
@@ -136,12 +64,7 @@ export default function Index({ title, can, flash, pelatihan }) {
 
     useEffect(() => {
         fetchStats();
-    }, [
-        selectedPelatihan1,
-        selectedPelatihan2,
-        selectedPelatihan3,
-        verificationFilter,
-    ]);
+    }, [selectedPelatihan1, verificationFilter]);
 
     useEffect(() => {
         const dt = $(tableRef.current).DataTable({
@@ -153,8 +76,6 @@ export default function Index({ title, can, flash, pelatihan }) {
                 type: "GET",
                 data: function (d) {
                     d.prioritas_1 = selectedPelatihan1;
-                    d.prioritas_2 = selectedPelatihan2;
-                    d.prioritas_3 = selectedPelatihan3;
                     d.verification_status = verificationFilter;
                     d.status = selectedStatus;
                 },
@@ -457,8 +378,6 @@ export default function Index({ title, can, flash, pelatihan }) {
     }, [
         flash,
         selectedPelatihan1,
-        selectedPelatihan2,
-        selectedPelatihan3,
         verificationFilter,
         selectedStatus,
     ]);
@@ -467,8 +386,6 @@ export default function Index({ title, can, flash, pelatihan }) {
         const url = route("admin.export.umkm", {
             verification_status: verificationFilter,
             prioritas_1: selectedPelatihan1,
-            prioritas_2: selectedPelatihan2,
-            prioritas_3: selectedPelatihan3,
             status: selectedStatus,
             ext: type,
         });
@@ -682,74 +599,9 @@ export default function Index({ title, can, flash, pelatihan }) {
                                             Prioritas 1:
                                         </label>
                                         <select
-                                            className={`form-select form-select-sm ${
-                                                disabledFilters.prioritas_1
-                                                    ? "bg-light"
-                                                    : ""
-                                            }`}
+                                            className="form-select form-select-sm"
                                             value={selectedPelatihan1}
                                             onChange={handlePelatihan1Change}
-                                            disabled={
-                                                disabledFilters.prioritas_1
-                                            }
-                                        >
-                                            {pelatihan.map((item) => (
-                                                <option
-                                                    key={item.name}
-                                                    value={item.name}
-                                                >
-                                                    {item.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div className="col-12 col-md-6 col-xl-3">
-                                    <div className="d-flex flex-column">
-                                        <label className="form-label fw-bold">
-                                            Prioritas 2:
-                                        </label>
-                                        <select
-                                            className={`form-select form-select-sm ${
-                                                disabledFilters.prioritas_2
-                                                    ? "bg-light"
-                                                    : ""
-                                            }`}
-                                            value={selectedPelatihan2}
-                                            onChange={handlePelatihan2Change}
-                                            disabled={
-                                                disabledFilters.prioritas_2
-                                            }
-                                        >
-                                            {pelatihan.map((item) => (
-                                                <option
-                                                    key={item.name}
-                                                    value={item.name}
-                                                >
-                                                    {item.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div className="col-12 col-md-6 col-xl-3">
-                                    <div className="d-flex flex-column">
-                                        <label className="form-label fw-bold">
-                                            Prioritas 3:
-                                        </label>
-                                        <select
-                                            className={`form-select form-select-sm ${
-                                                disabledFilters.prioritas_3
-                                                    ? "bg-light"
-                                                    : ""
-                                            }`}
-                                            value={selectedPelatihan3}
-                                            onChange={handlePelatihan3Change}
-                                            disabled={
-                                                disabledFilters.prioritas_3
-                                            }
                                         >
                                             {pelatihan.map((item) => (
                                                 <option

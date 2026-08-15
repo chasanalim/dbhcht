@@ -178,25 +178,18 @@ class PelatihanUMKMController extends Controller implements HasMiddleware
                 ->rawColumns(['action', 'verifikasi_dokumen'])
                 ->make(true);
         }
-        $pelatihan = [
-            ['name' => 'Semua Pelatihan'],
-            ['name' => 'Pelatihan Kurasi Produk'],
-            ['name' => 'Pelatihan Konten Kreator'],
-            ['name' => 'Pelatihan Desain Grafis'],
-            ['name' => 'Pelatihan Manajemen Usaha dan Keuangan'],
-            ['name' => 'Pelatihan Media Sosial dan E-Commerce'],
-            ['name' => 'Pelatihan Peningkatan Kualitas SDM Pelaku Usaha'],
-            ['name' => 'Pelatihan Strategi Foto Produk'],
-            ['name' => 'Pelatihan Peningkatan Kualitas Produk Bakery'],
-            ['name' => 'Pelatihan Barista'],
-            ['name' => 'Pelatihan Bakery'],
-            ['name' => 'Pelatihan Desain Kemasan dan Packaging'],
-            ['name' => 'Pelatihan Produk Desain Motif Tenun/Batik'],
-            ['name' => 'Pelatihan Produk Handicraft'],
-            ['name' => 'Pelatihan Jajanan Kekinian'],
-            ['name' => 'Pelatihan Korean Food'],
-            ['name' => 'Pelatihan Reparasi Resep Masakan dan Kue Tradisional'],
-        ];
+        // Filter admin membaca nilai prioritas_1 distinct dari data pada tahun
+        // yang sedang dipilih, supaya opsi filter selalu relevan dengan tahun.
+        $pelatihan = PelatihanUmkm::query()
+            ->distinct()
+            ->orderBy('prioritas_1')
+            ->pluck('prioritas_1')
+            ->filter()
+            ->values()
+            ->prepend('Semua Pelatihan')
+            ->map(fn ($name) => ['name' => $name])
+            ->values()
+            ->all();
 
         return Inertia::render('Admin/PelatihanUMKM/Index', [
             'title' => 'Pelatihan UMKM',
