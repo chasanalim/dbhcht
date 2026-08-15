@@ -15,7 +15,7 @@ import SelectPeranEkraf from "@/Components/Select/SelectPeranEkraf";
 export default function FormEkonomiKreatif({
     title = "Pendaftaran Pelatihan Ekonomi Kreatif",
     kategori_options = {},
-    jenis_pelatihan_options = {},
+    jenis_pelatihan_options = [],
 }) {
     // State untuk NIK checking (sama seperti UMKM)
     const [nikStatus, setNikStatus] = useState(null);

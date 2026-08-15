@@ -8,13 +8,15 @@ export default function SelectJenisPelatihanEkraf({
     errors,
     options = [],
 }) {
+    const normalizedOptions = Array.isArray(options) ? options : [];
+
     return (
         <Fragment>
             <Form.Label className="required mb-2">Jenis Pelatihan</Form.Label>
 
             <Select
-                options={options}
-                value={options.find((option) => option.value === value)}
+                options={normalizedOptions}
+                value={normalizedOptions.find((option) => option.value === value)}
                 onChange={(selectedOption) =>
                     onChange(selectedOption?.value || "")
                 }

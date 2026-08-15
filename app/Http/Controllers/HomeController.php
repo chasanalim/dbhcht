@@ -122,6 +122,13 @@ class HomeController extends Controller
                 'label' => $option->label,
             ]);
 
+        // Opsi pilihan pelatihan Ekonomi Kreatif dari database (hanya yang aktif)
+        $ekrafTrainingOptions = \App\Models\EkrafTrainingOption::activeOptions()
+            ->map(fn ($option) => [
+                'value' => $option->value,
+                'label' => $option->label,
+            ]);
+
         // return Inertia::render('404/BelumTersedia', [
         return Inertia::render('Pelatihan/FormPelatihan', [
             'meta' => [
@@ -130,6 +137,7 @@ class HomeController extends Controller
             'jenis' => $request->query('jenis'),
             'trainingOptions' => $trainingOptions,
             'umkmTrainingOptions' => $umkmTrainingOptions,
+            'ekrafTrainingOptions' => $ekrafTrainingOptions,
         ]);
     }
 

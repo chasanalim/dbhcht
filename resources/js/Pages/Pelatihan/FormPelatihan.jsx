@@ -15,8 +15,13 @@ import FormEkonomiKreatif from "./Forms/FormEkonomiKreatif";
 import { useState } from "react";
 
 export default function FormPelatihan() {
-    const { meta, jenis, trainingOptions, umkmTrainingOptions } =
-        usePage().props;
+    const {
+        meta,
+        jenis,
+        trainingOptions,
+        umkmTrainingOptions,
+        ekrafTrainingOptions,
+    } = usePage().props;
     const [jenisPelatihan, setJenisPelatihan] = useState(jenis || "");
 
     // const [jenisPelatihan, setJenisPelatihan] = useState("");
@@ -60,7 +65,13 @@ export default function FormPelatihan() {
                         )}
                         {jenisPelatihan === "penyuluh" && <FormPenyuluh />}
                         {jenisPelatihan === "petani" && <FormPetani />}
-                        {jenisPelatihan === "ekraf" && <FormEkonomiKreatif />}
+                        {jenisPelatihan === "ekraf" && (
+                            <FormEkonomiKreatif
+                                jenis_pelatihan_options={
+                                    ekrafTrainingOptions || []
+                                }
+                            />
+                        )}
                         {jenisPelatihan === "penerimabanmod" && (
                             <FormPenerimaBanmod />
                         )}
