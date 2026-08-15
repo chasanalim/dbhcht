@@ -161,7 +161,18 @@ class PelatihanKerjaController extends Controller implements HasMiddleware
                 ->rawColumns(['action', 'verifikasi_dokumen'])
                 ->make(true);
         }
-        $categories = JenisPelatihanKetKerja::all()->prepend(['id' => 'all', 'nama' => 'Semua pelatihan']);
+        // Filter membaca jenis pelatihan distinct dari data pendaftaran pada
+        // tahun yang sedang dipilih, supaya opsi filter selalu relevan dengan tahun.
+        $categories = PelatihanKerjas::query()
+            ->distinct()
+            ->with('jenisPelatihan')
+            ->get(['jenis_pelatihan'])
+            ->pluck('jenisPelatihan')
+            ->filter()
+            ->map(fn ($jenis) => ['id' => $jenis->id, 'nama' => $jenis->nama])
+            ->unique('id')
+            ->values()
+            ->prepend(['id' => 'all', 'nama' => 'Semua pelatihan']);
 
 
         // return response()->json($categories);
