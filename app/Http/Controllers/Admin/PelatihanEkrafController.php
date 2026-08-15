@@ -190,13 +190,18 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
                 ->make(true);
         }
 
-        $pelatihan = [
-            ['name' => 'Semua Pelatihan'],
-            ['name' => 'fotografi'],
-            ['name' => 'videografi'],
-            ['name' => 'desain_grafis'],
-            ['name' => 'editing_video'],
-        ];
+        // Filter admin membaca nilai jenis_pelatihan distinct dari data pada
+        // tahun yang sedang dipilih, supaya opsi filter selalu relevan dengan tahun.
+        $pelatihan = PelatihanEkonomiKreatif::query()
+            ->distinct()
+            ->orderBy('jenis_pelatihan')
+            ->pluck('jenis_pelatihan')
+            ->filter()
+            ->values()
+            ->prepend('Semua Pelatihan')
+            ->map(fn ($name) => ['name' => $name])
+            ->values()
+            ->all();
 
         return inertia('Admin/PelatihanEkraf/Index', [
             'title' => 'Pelatihan Ekonomi Kreatif',

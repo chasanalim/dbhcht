@@ -32,6 +32,11 @@ class EksportController extends Controller
             $query->where('kategori', $request->kategori);
         }
 
+        // Apply klaster usaha filter if provided
+        if ($request->has('klaster_usaha') && $request->klaster_usaha !== 'all') {
+            $query->where('klaster_usaha', $request->klaster_usaha);
+        }
+
         // Apply verification status filter
         if ($request->has('verification_status') && $request->verification_status !== 'all') {
             $status = $request->verification_status;

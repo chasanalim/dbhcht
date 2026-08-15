@@ -427,19 +427,16 @@ class RegPelatihanEkonomiKreatifController extends Controller
     }
 
     /**
-     * Jenis pelatihan options
+     * Jenis pelatihan options dari database (hanya yang aktif)
      */
     private function getJenisPelatihanOptions()
     {
-        return [
-            'fotografi' => 'Fotografi',
-            'videografi' => 'Videografi',
-            'dkv' => 'Desain Komunikasi Visual',
-            'mua' => 'Makeup Artist (MUA)',
-            'diversifikasi_kriya' => 'Diversifikasi Kriya',
-            'tour_guide' => 'Tour Guide',
-            'kuliner_tradisional' => 'Kuliner Tradisional Food',
-            'pelatihan_export' => 'Pelatihan Export',
-        ];
+        return \App\Models\EkrafTrainingOption::activeOptions()
+            ->map(fn ($option) => [
+                'value' => $option->value,
+                'label' => $option->label,
+            ])
+            ->values()
+            ->all();
     }
 }

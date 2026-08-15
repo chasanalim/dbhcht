@@ -115,13 +115,21 @@ class HomeController extends Controller
             ];
         });
 
+        // Opsi pilihan pelatihan UMKM dari database (hanya yang aktif)
+        $umkmTrainingOptions = \App\Models\UmkmTrainingOption::activeOptions()
+            ->map(fn ($option) => [
+                'value' => $option->label,
+                'label' => $option->label,
+            ]);
+
         // return Inertia::render('404/BelumTersedia', [
         return Inertia::render('Pelatihan/FormPelatihan', [
             'meta' => [
                 'title' => 'Form Pendaftaran Pelatihan',
             ],
             'jenis' => $request->query('jenis'),
-            'trainingOptions' => $trainingOptions
+            'trainingOptions' => $trainingOptions,
+            'umkmTrainingOptions' => $umkmTrainingOptions,
         ]);
     }
 

@@ -1065,6 +1065,7 @@ export default function FormEkonomiKreatif({
                                     onChange={(value) =>
                                         setData("jenis_pelatihan", value)
                                     }
+                                    options={jenis_pelatihan_options || []}
                                     errors={errors.jenis_pelatihan}
                                 />
                             </Form.Group>

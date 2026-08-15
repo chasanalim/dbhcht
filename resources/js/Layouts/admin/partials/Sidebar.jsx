@@ -526,6 +526,113 @@ export default function Sidebar() {
                                         </span>
                                     </NavLink>
                                 </li>
+
+                                <li>
+                                    <NavLink
+                                        href={route("admin.umkm-options.index")}
+                                        active={route().current(
+                                            "admin.umkm-options.index",
+                                        )}
+                                        className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                            route().current(
+                                                "admin.umkm-options.index",
+                                            )
+                                                ? "active"
+                                                : ""
+                                        }`}
+                                    >
+                                        <i className="bi bi-card-list fs-5"></i>
+                                        <span className="text-white mt-1 ms-2">
+                                            Opsi Pelatihan UMKM
+                                        </span>
+                                    </NavLink>
+                                </li>
+
+                                <li>
+                                    <NavLink
+                                        href={route("admin.ekraf-options.index")}
+                                        active={route().current(
+                                            "admin.ekraf-options.index",
+                                        )}
+                                        className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                            route().current(
+                                                "admin.ekraf-options.index",
+                                            )
+                                                ? "active"
+                                                : ""
+                                        }`}
+                                    >
+                                        <i className="bi bi-card-list fs-5"></i>
+                                        <span className="text-white mt-1 ms-2">
+                                            Opsi Pelatihan Ekraf
+                                        </span>
+                                    </NavLink>
+                                </li>
+
+                                <li>
+                                    <NavLink
+                                        href={route("admin.banmod-options.index")}
+                                        active={route().current(
+                                            "admin.banmod-options.index",
+                                        )}
+                                        className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                            route().current(
+                                                "admin.banmod-options.index",
+                                            )
+                                                ? "active"
+                                                : ""
+                                        }`}
+                                    >
+                                        <i className="bi bi-card-list fs-5"></i>
+                                        <span className="text-white mt-1 ms-2">
+                                            Opsi Pelatihan Banmod
+                                        </span>
+                                    </NavLink>
+                                </li>
+
+                                <li>
+                                    <NavLink
+                                        href={route(
+                                            "admin.jenis-keterampilan.index",
+                                        )}
+                                        active={route().current(
+                                            "admin.jenis-keterampilan.index",
+                                        )}
+                                        className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                            route().current(
+                                                "admin.jenis-keterampilan.index",
+                                            )
+                                                ? "active"
+                                                : ""
+                                        }`}
+                                    >
+                                        <i className="bi bi-list-check fs-5"></i>
+                                        <span className="text-white mt-1 ms-2">
+                                            Jenis Pelatihan Keterampilan
+                                        </span>
+                                    </NavLink>
+                                </li>
+
+                                <li>
+                                    <NavLink
+                                        href={route("admin.jenis-petani.index")}
+                                        active={route().current(
+                                            "admin.jenis-petani.index",
+                                        )}
+                                        className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                            route().current(
+                                                "admin.jenis-petani.index",
+                                            )
+                                                ? "active"
+                                                : ""
+                                        }`}
+                                    >
+                                        <i className="bi bi-list-check fs-5"></i>
+                                        <span className="text-white mt-1 ms-2">
+                                            Jenis Pelatihan Petani
+                                        </span>
+                                    </NavLink>
+                                </li>
                             </>
                         )}
                         {can.viewMasterBanmod && (

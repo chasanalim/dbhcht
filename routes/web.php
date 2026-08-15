@@ -17,7 +17,12 @@ use App\Http\Controllers\Admin\PendaftaranBanmodController;
 use App\Http\Controllers\Admin\PenerimaBanmodLamaController;
 use App\Http\Controllers\Admin\PenerimaPelatihanBanmodController;
 use App\Http\Controllers\Admin\PrivilegesController;
+use App\Http\Controllers\Admin\BanmodTrainingOptionController;
+use App\Http\Controllers\Admin\EkrafTrainingOptionController;
+use App\Http\Controllers\Admin\JenisPelatihanKetKerjaController as AdminJenisPelatihanKetKerjaController;
+use App\Http\Controllers\Admin\JenisPelatihanPetaniController as AdminJenisPelatihanPetaniController;
 use App\Http\Controllers\Admin\TipePelatihanController;
+use App\Http\Controllers\Admin\UmkmTrainingOptionController;
 use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\Admin\VerifikasiDokumenController;
 use App\Http\Controllers\AlasanPelatihanKetKerjaController;
@@ -106,6 +111,34 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'year.filter'])->group
     Route::resource('pkl', MasterPKLController::class);
     Route::resource('master-pencari-kerja', MasterPencariKerjaController::class);
     Route::resource('pelatihan', TipePelatihanController::class);
+    Route::get('umkm-options', [UmkmTrainingOptionController::class, 'index'])->name('umkm-options.index');
+    Route::post('umkm-options', [UmkmTrainingOptionController::class, 'store'])->name('umkm-options.store');
+    Route::post('umkm-options/{id}/toggle', [UmkmTrainingOptionController::class, 'toggle'])
+        ->name('umkm-options.toggle');
+    Route::delete('umkm-options/{id}', [UmkmTrainingOptionController::class, 'destroy'])
+        ->name('umkm-options.destroy');
+    Route::get('ekraf-options', [EkrafTrainingOptionController::class, 'index'])->name('ekraf-options.index');
+    Route::post('ekraf-options', [EkrafTrainingOptionController::class, 'store'])->name('ekraf-options.store');
+    Route::post('ekraf-options/{id}/toggle', [EkrafTrainingOptionController::class, 'toggle'])
+        ->name('ekraf-options.toggle');
+    Route::delete('ekraf-options/{id}', [EkrafTrainingOptionController::class, 'destroy'])
+        ->name('ekraf-options.destroy');
+    Route::get('banmod-options', [BanmodTrainingOptionController::class, 'index'])->name('banmod-options.index');
+    Route::post('banmod-options', [BanmodTrainingOptionController::class, 'store'])->name('banmod-options.store');
+    Route::post('banmod-options/{id}/toggle', [BanmodTrainingOptionController::class, 'toggle'])
+        ->name('banmod-options.toggle');
+    Route::delete('banmod-options/{id}', [BanmodTrainingOptionController::class, 'destroy'])
+        ->name('banmod-options.destroy');
+    Route::get('jenis-keterampilan', [AdminJenisPelatihanKetKerjaController::class, 'index'])->name('jenis-keterampilan.index');
+    Route::post('jenis-keterampilan', [AdminJenisPelatihanKetKerjaController::class, 'store'])->name('jenis-keterampilan.store');
+    Route::put('jenis-keterampilan/{id}', [AdminJenisPelatihanKetKerjaController::class, 'update'])->name('jenis-keterampilan.update');
+    Route::delete('jenis-keterampilan/{id}', [AdminJenisPelatihanKetKerjaController::class, 'destroy'])
+        ->name('jenis-keterampilan.destroy');
+    Route::get('jenis-petani', [AdminJenisPelatihanPetaniController::class, 'index'])->name('jenis-petani.index');
+    Route::post('jenis-petani', [AdminJenisPelatihanPetaniController::class, 'store'])->name('jenis-petani.store');
+    Route::put('jenis-petani/{id}', [AdminJenisPelatihanPetaniController::class, 'update'])->name('jenis-petani.update');
+    Route::delete('jenis-petani/{id}', [AdminJenisPelatihanPetaniController::class, 'destroy'])
+        ->name('jenis-petani.destroy');
 
     Route::resource('privileges', PrivilegesController::class);
     Route::post('admin/verify-document', [VerifikasiDokumenController::class, 'verify'])
