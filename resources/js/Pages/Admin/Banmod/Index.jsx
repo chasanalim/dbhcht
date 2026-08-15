@@ -8,11 +8,15 @@ import { Toast, Tooltip } from "bootstrap";
 // Import bootstrap JS
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
-export default function Index({ title, can, flash, dataRoute }) {
+export default function Index({ title, can, flash, dataRoute, klasters }) {
     const tableRef = useRef();
     const [verificationFilter, setVerificationFilter] = useState("all");
+    const [klasterFilter, setKlasterFilter] = useState("all");
     const handleVerificationFilterChange = (e) => {
         setVerificationFilter(e.target.value);
+    };
+    const handleKlasterFilterChange = (e) => {
+        setKlasterFilter(e.target.value);
     };
     useEffect(() => {
         const dt = $(tableRef.current).DataTable({
@@ -24,6 +28,7 @@ export default function Index({ title, can, flash, dataRoute }) {
                 type: "GET",
                 data: function (d) {
                     d.verification_status = verificationFilter;
+                    d.klaster_usaha = klasterFilter;
                 },
                 headers: {
                     "X-Requested-With": "XMLHttpRequest",
@@ -279,11 +284,12 @@ export default function Index({ title, can, flash, dataRoute }) {
                 }
             });
         };
-    }, [flash, verificationFilter]);
+    }, [flash, verificationFilter, klasterFilter]);
 
     const handleExport = (type) => {
         const url = route("admin.export.banmod", {
             verification_status: verificationFilter,
+            klaster_usaha: klasterFilter,
             kategori: title.includes("IKM")
                 ? 4
                 : title.includes("Buruh Pabrik Rokok")
@@ -473,6 +479,27 @@ export default function Index({ title, can, flash, dataRoute }) {
                                 <h5 className="my-2 fw-bold">{title}</h5>
                             </div>
                             <div className="d-flex justify-content-center mt-3">
+                                <div className="col-12 col-xl-3">
+                                    <div className="d-flex align-items-center">
+                                        <label className="form-label fw-bold ms-2 w-100">
+                                            Klaster Usaha:
+                                        </label>
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={klasterFilter}
+                                            onChange={handleKlasterFilterChange}
+                                        >
+                                            {klasters?.map((klaster) => (
+                                                <option
+                                                    key={klaster.id}
+                                                    value={klaster.id}
+                                                >
+                                                    {klaster.nama}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
                                 <div className="col-12 col-xl-3">
                                     <div className="d-flex align-items-center">
                                         <label className="form-label fw-bold ms-2 w-100">

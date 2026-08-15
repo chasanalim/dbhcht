@@ -23,10 +23,18 @@ class PelatihanPenerimaBanmodController extends Controller
     // Menampilkan form pelatihan banmod
     public function create()
     {
+        // Opsi jenis pelatihan dari database (hanya yang aktif)
+        $jenisPelatihanOptions = \App\Models\BanmodTrainingOption::activeOptions()
+            ->map(fn ($option) => [
+                'value' => $option->value,
+                'label' => $option->label,
+            ]);
+
         return inertia('Pelatihan/Forms/FormPenerimaBanmod', [
             'meta' => [
                 'title' => 'Pelatihan Keterampilan Penerima Banmod',
             ],
+            'jenisPelatihanOptions' => $jenisPelatihanOptions,
         ]);
     }
 

@@ -12,7 +12,7 @@ import SelectTahun from "@/Components/Select/SelectTahun";
 import SelectJenisPelatihan from "@/Components/Select/SelectPelatihanBanmod";
 import SelectSkorPelatihan from "@/Components/Select/SelectSkorPelatihanBanmod";
 
-export default function FormPenerimaBanmod() {
+export default function FormPenerimaBanmod({ jenisPelatihanOptions = [] }) {
     const [nikStatus, setNikStatus] = useState(null);
     const [dataPenerima, setDataPenerima] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
@@ -955,6 +955,7 @@ export default function FormPenerimaBanmod() {
                                     item?.value || "",
                                 )
                             }
+                            options={jenisPelatihanOptions}
                             errors={errors.jenis_pelatihan_industri}
                         />
                     </Form.Group>

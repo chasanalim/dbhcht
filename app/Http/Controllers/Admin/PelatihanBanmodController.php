@@ -162,15 +162,18 @@ class PelatihanBanmodController extends Controller implements HasMiddleware
                 ->make(true);
         }
 
-        $pelatihan = [
-            ['name' => 'Semua Pelatihan'],
-            ['name' => 'Penjahit Pemula'],
-            ['name' => 'Penjahit Naik Kelas'],
-            ['name' => 'Makanan Tradisional'],
-            ['name' => 'Digma Kerajinan'],
-            ['name' => 'Kewirausahaan Kuliner'],
-            ['name' => 'Kewirausahaan MUA'],
-        ];
+        // Filter admin membaca nilai jenis_pelatihan_industri distinct dari data
+        // pada tahun yang sedang dipilih, supaya opsi filter selalu relevan dengan tahun.
+        $pelatihan = PelatihanBanmod::query()
+            ->distinct()
+            ->orderBy('jenis_pelatihan_industri')
+            ->pluck('jenis_pelatihan_industri')
+            ->filter()
+            ->values()
+            ->prepend('Semua Pelatihan')
+            ->map(fn ($name) => ['name' => $name])
+            ->values()
+            ->all();
 
         return inertia('Admin/PelatihanBanmod/Index', [
             'title' => 'Pelatihan Penerima Banmod',

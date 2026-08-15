@@ -54,6 +54,12 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
     {
         if ($request->wantsJson()) {
             $query = PendaftaranBanmod::with(['documentVerifications', 'klasterUsaha', 'kategoriUsaha']);
+
+            // Filter klaster usaha (opsional)
+            if ($request->has('klaster_usaha') && $request->klaster_usaha !== 'all') {
+                $query->where('klaster_usaha', $request->klaster_usaha);
+            }
+
             $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor');
             if ($request->has('verification_status')) {
                 $status = $request->verification_status;
@@ -105,12 +111,26 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                 ->rawColumns(['action', 'verifikasi_dokumen'])
                 ->make(true);
         }
+        // Filter klaster usaha distinct dari data pada tahun yang sedang dipilih,
+        // supaya opsi filter selalu relevan dengan tahun.
+        $klasters = PendaftaranBanmod::query()
+            ->distinct()
+            ->with('klasterUsaha')
+            ->get(['klaster_usaha'])
+            ->pluck('klasterUsaha')
+            ->filter()
+            ->map(fn ($klaster) => ['id' => $klaster->id, 'nama' => $klaster->nama])
+            ->unique('id')
+            ->values()
+            ->prepend(['id' => 'all', 'nama' => 'Semua Klaster']);
+
         return Inertia::render('Admin/Banmod/Index', [
             'title' => 'Daftar Peserta Bantuan Modal - Semua Kategori',
             'flash' => [
                 'message' => session('message')
             ],
             'dataRoute' => route('admin.banmod.index'),
+            'klasters' => $klasters,
         ]);
     }
 
