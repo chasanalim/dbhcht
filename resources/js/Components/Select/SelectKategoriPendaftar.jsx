@@ -13,7 +13,7 @@ export default function SelectKategoriPendaftar({
         { value: "buruh_pabrik_rokok", label: "Buruh Pabrik Rokok" },
         { value: "buruh_phk", label: "Buruh yang Terkena PHK" },
         { value: "disabilitas", label: "Disabilitas" },
-        { value: "perempuan_kk", label: "Perempuan Kepala Keluarga" },
+        // { value: "perempuan_kk", label: "Perempuan Kepala Keluarga" },
     ];
 
     return (
