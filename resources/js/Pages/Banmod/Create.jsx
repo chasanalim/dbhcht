@@ -134,7 +134,8 @@ export default function BanmodPage({ meta }) {
                     style={{ fontSize: "11px" }}
                 >
                     Format:{" "}
-                    {accept === ".pdf" ? "*.pdf" : "*.png, *.jpg, *.jpeg"}
+                    {accept === ".pdf" ? "*.pdf" : "*.png, *.jpg, *.jpeg"} |
+                    Maksimal 2 MB
                 </Form.Label>
 
                 <Form.Control
@@ -1189,7 +1190,7 @@ export default function BanmodPage({ meta }) {
                                                     "Surat Pernyataan Komitmen bagi Masyarakat Miskin",
                                                     "file_surat_miskin",
                                                     ".pdf",
-                                                    true,
+                                                    false,
                                                 )}
                                                 <div className="mb-3">
                                                     <a
@@ -1223,7 +1224,7 @@ export default function BanmodPage({ meta }) {
                                                     "Surat Pernyataan Komitmen bagi Buruh dan Pekerja Pabrik Rokok",
                                                     "file_surat_buruh",
                                                     ".pdf",
-                                                    true,
+                                                    false,
                                                 )}
                                                 {/* Download link untuk template */}
                                                 <div className="mb-3">
@@ -1249,7 +1250,7 @@ export default function BanmodPage({ meta }) {
                                                     "Surat Keterangan Disabilitas",
                                                     "file_surat_disabilitas",
                                                     ".pdf",
-                                                    true,
+                                                    false,
                                                 )}
                                                 {/* Download link untuk template */}
                                                 <div className="mb-3">
