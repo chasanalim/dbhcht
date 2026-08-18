@@ -226,10 +226,11 @@ class DashboardController extends Controller
     }
 
     // ============================================================
-    // Banmod (PendaftaranBanmod) Methods — tetap tanpa filter tahun (belum punya created_at)
+    // Banmod (PendaftaranBanmod) Methods
     // ============================================================
     private function getBanmodSummary()
     {
+        $year = $this->yearScope('pendaftaran_banmods as pb');
         $result = DB::table('pendaftaran_banmods as pb')
             ->select(DB::raw('
             count(*) as total_pendaftar,
@@ -284,6 +285,7 @@ class DashboardController extends Controller
             WHERE pelatihan_type = ?
             GROUP BY pelatihan_id
         ) as vd'), 'pb.id', '=', 'vd.pelatihan_id')
+            ->whereRaw($year)
             ->setBindings([PendaftaranBanmod::class])
             ->first();
 
@@ -348,6 +350,7 @@ class DashboardController extends Controller
 
     private function getBanmodByVerifikasi()
     {
+        $year = $this->yearScope('pendaftaran_banmods as pb');
         $result = DB::table('pendaftaran_banmods as pb')
             ->selectRaw('CASE
                 WHEN vd.total_docs =
@@ -396,6 +399,7 @@ class DashboardController extends Controller
             WHERE pelatihan_type = ?
             GROUP BY pelatihan_id
         ) as vd'), 'pb.id', '=', 'vd.pelatihan_id')
+            ->whereRaw($year)
             ->setBindings([PendaftaranBanmod::class])
             ->get()
             ->groupBy('status');
@@ -666,6 +670,7 @@ class DashboardController extends Controller
         $model = new $modelClass;
         $requiredDocs = count($modelClass::getDocumentTypes());
         $tableName = $model->getTable();
+        $year = $this->yearScope($tableName . ' as m');
 
         $result = DB::table($tableName . ' as m')
             ->selectRaw('CASE
@@ -684,6 +689,7 @@ class DashboardController extends Controller
             WHERE pelatihan_type = ?
             GROUP BY pelatihan_id
         ) as verification_status'), 'm.id', '=', 'verification_status.pelatihan_id')
+            ->whereRaw($year)
             ->setBindings([$modelClass])
             ->get()
             ->groupBy('status');
@@ -771,8 +777,10 @@ class DashboardController extends Controller
                 ->make(true);
         }
 
+        $tahun = (int) session('selected_year', now()->year);
         return Inertia::render('Admin/Blacklist/Index', [
             'title' => 'Peserta Blacklist',
+            'selected_year' => $tahun,
             'flash' => [
                 'message' => session('message')
             ],

@@ -15,7 +15,9 @@ class DashboardController extends Controller
 {
     public function index(): JsonResponse
     {
+        $tahun = (int) session('selected_year', now()->year);
         return response()->json([
+            'selected_year' => $tahun,
             // 'banmod' => [
             //     'summary' => $this->getBanmodSummary(),
                 // 'byKategori' => $this->getBanmodByKategori(),
@@ -304,8 +306,10 @@ class DashboardController extends Controller
 
     private function getUmkmByKecamatan()
     {
+        $year = $this->yearScope('pelatihan_umkm');
         return PelatihanUmkm::select('kecamatan', DB::raw('count(*) as total'))
             ->whereNotNull('kecamatan')
+            ->whereRaw($year)
             ->groupBy('kecamatan')
             ->orderBy('total', 'desc')
             ->get()
@@ -317,7 +321,9 @@ class DashboardController extends Controller
 
     private function getUmkmByPrioritas1()
     {
+        $year = $this->yearScope('pelatihan_umkm');
         return PelatihanUmkm::select('prioritas_1 as pelatihan', DB::raw('count(*) as total'))
+            ->whereRaw($year)
             ->groupBy('prioritas_1')
             ->get()
             ->map(fn($item) => [
@@ -328,7 +334,9 @@ class DashboardController extends Controller
 
     private function getUmkmByPrioritas2()
     {
+        $year = $this->yearScope('pelatihan_umkm');
         return PelatihanUmkm::select('prioritas_2 as pelatihan', DB::raw('count(*) as total'))
+            ->whereRaw($year)
             ->groupBy('prioritas_2')
             ->get()
             ->map(fn($item) => [
@@ -339,7 +347,9 @@ class DashboardController extends Controller
 
     private function getUmkmByPrioritas3()
     {
+        $year = $this->yearScope('pelatihan_umkm');
         return PelatihanUmkm::select('prioritas_3 as pelatihan', DB::raw('count(*) as total'))
+            ->whereRaw($year)
             ->groupBy('prioritas_3')
             ->get()
             ->map(fn($item) => [
@@ -355,6 +365,7 @@ class DashboardController extends Controller
 
     private function getUmkmByKelurahan()
     {
+        $year = $this->yearScope('pelatihan_umkm');
         return PelatihanUmkm::select(
             'kecamatan',
             'kelurahan',
@@ -362,6 +373,7 @@ class DashboardController extends Controller
         )
             ->whereNotNull('kecamatan')
             ->whereNotNull('kelurahan')
+            ->whereRaw($year)
             ->groupBy('kecamatan', 'kelurahan')
             ->orderBy('kecamatan')
             ->orderBy('total', 'desc')
@@ -423,7 +435,10 @@ class DashboardController extends Controller
 
     private function getKerjaByKecamatan()
     {
+        $year = $this->yearScope('pelatihan_kerjas');
         return PelatihanKerjas::select('nama_kecamatan', DB::raw('count(*) as total'))
+            ->whereRaw($year)
+            ->whereNotNull('nama_kecamatan')
             ->groupBy('nama_kecamatan')
             ->get()
             ->map(fn($item) => [
@@ -434,8 +449,10 @@ class DashboardController extends Controller
 
     private function getKerjaByPendidikan()
     {
+        $year = $this->yearScope('pelatihan_kerjas');
         return PelatihanKerjas::with('refPendidikan')
             ->select('pendidikan', DB::raw('count(*) as total'))
+            ->whereRaw($year)
             ->groupBy('pendidikan')
             ->get()
             ->map(fn($item) => [
@@ -446,8 +463,10 @@ class DashboardController extends Controller
 
     private function getKerjaByJenisPelatihan()
     {
+        $year = $this->yearScope('pelatihan_kerjas');
         return PelatihanKerjas::with('jenisPelatihan')
             ->select('jenis_pelatihan', DB::raw('count(*) as total'))
+            ->whereRaw($year)
             ->groupBy('jenis_pelatihan')
             ->get()
             ->map(fn($item) => [
@@ -462,6 +481,7 @@ class DashboardController extends Controller
     }
     private function getKerjaByKelurahan()
     {
+        $year = $this->yearScope('pelatihan_kerjas');
         return PelatihanKerjas::select(
             'nama_kecamatan',
             'nama_kelurahan',
@@ -469,6 +489,7 @@ class DashboardController extends Controller
         )
             ->whereNotNull('nama_kecamatan')
             ->whereNotNull('nama_kelurahan')
+            ->whereRaw($year)
             ->groupBy('nama_kecamatan', 'nama_kelurahan')
             ->orderBy('nama_kecamatan')
             ->orderBy('total', 'desc')
@@ -529,7 +550,9 @@ class DashboardController extends Controller
 
     private function getPelatihanBanmodByKecamatan()
     {
+        $year = $this->yearScope('pelatihan_banmod');
         return PelatihanBanmod::select('kecamatan_ktp', DB::raw('count(*) as total'))
+            ->whereRaw($year)
             ->groupBy('kecamatan_ktp')
             ->get()
             ->map(fn($item) => [
@@ -540,7 +563,9 @@ class DashboardController extends Controller
 
     private function getPelatihanBanmodByJenisPelatihan()
     {
+        $year = $this->yearScope('pelatihan_banmod');
         return PelatihanBanmod::select('jenis_pelatihan_industri', DB::raw('count(*) as total'))
+            ->whereRaw($year)
             ->groupBy('jenis_pelatihan_industri')
             ->get()
             ->map(fn($item) => [
@@ -555,6 +580,7 @@ class DashboardController extends Controller
     }
     private function getPelatihanBanmodByKelurahan()
     {
+        $year = $this->yearScope('pelatihan_banmod');
         return PelatihanBanmod::select(
             'kecamatan_ktp as nama_kecamatan',
             'kelurahan_ktp as nama_kelurahan',
@@ -562,6 +588,7 @@ class DashboardController extends Controller
         )
             ->whereNotNull('kecamatan_ktp')
             ->whereNotNull('kelurahan_ktp')
+            ->whereRaw($year)
             ->groupBy('kecamatan_ktp', 'kelurahan_ktp')
             ->orderBy('kecamatan_ktp')
             ->orderBy('total', 'desc')
@@ -633,7 +660,9 @@ class DashboardController extends Controller
 
     private function getPertanianByKecamatan()
     {
+        $year = $this->yearScope('pelatihan_petanis');
         return PelatihanPetani::select('nama_kecamatan', DB::raw('count(*) as total'))
+            ->whereRaw($year)
             ->groupBy('nama_kecamatan')
             ->get()
             ->map(fn($item) => [
@@ -644,8 +673,10 @@ class DashboardController extends Controller
 
     private function getPertanianByJenisPelatihan()
     {
+        $year = $this->yearScope('pelatihan_petanis');
         return PelatihanPetani::with('jenisPelatihanPetani')
             ->select('jenis_pelatihan_petani', DB::raw('count(*) as total'))
+            ->whereRaw($year)
             ->groupBy('jenis_pelatihan_petani')
             ->get()
             ->map(fn($item) => [
@@ -665,6 +696,7 @@ class DashboardController extends Controller
         $model = new $modelClass;
         $requiredDocs = count($modelClass::getDocumentTypes());
         $tableName = $model->getTable();
+        $year = $this->yearScope($tableName . ' as m');
 
         $result = DB::table($tableName . ' as m')
             ->selectRaw('CASE
@@ -681,6 +713,7 @@ class DashboardController extends Controller
             WHERE pelatihan_type = ?
             GROUP BY pelatihan_id
         ) as vd'), 'm.id', '=', 'vd.pelatihan_id')
+            ->whereRaw($year)
             ->setBindings([$modelClass])
             ->get()
             ->groupBy('status');
@@ -699,8 +732,17 @@ class DashboardController extends Controller
             'y' => $items->count()
         ])->values();
     }
+
+    private function yearScope($table)
+    {
+        $tahun = (int) session('selected_year', now()->year);
+        $tabel = str_contains($table, ' as ') ? explode(' as ', $table)[1] : $table;
+        return "{$tabel}.created_at >= '{$tahun}-01-01 00:00:00' AND {$tabel}.created_at <= '{$tahun}-12-31 23:59:59'";
+    }
+
     private function getPertanianByKelurahan()
     {
+        $year = $this->yearScope('pelatihan_petanis');
         return PelatihanPetani::select(
             'nama_kecamatan',
             'nama_kelurahan',
@@ -708,6 +750,7 @@ class DashboardController extends Controller
         )
             ->whereNotNull('nama_kecamatan')
             ->whereNotNull('nama_kelurahan')
+            ->whereRaw($year)
             ->groupBy('nama_kecamatan', 'nama_kelurahan')
             ->orderBy('nama_kecamatan')
             ->orderBy('total', 'desc')
