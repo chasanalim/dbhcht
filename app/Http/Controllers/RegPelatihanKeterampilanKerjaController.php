@@ -40,8 +40,8 @@ class RegPelatihanKeterampilanKerjaController extends Controller
             "nama_rw" => ['required', 'string'],
             "kode_rt" => ['required', 'string'],
             "nama_rt" => ['required', 'string'],
-            "file_ktp" => ['required', 'file'],
-            "file_kk" => ['required', 'file'],
+            "file_ktp" => ['required', 'file','mimes:pdf', 'max:2048'],
+            "file_kk" => ['required', 'file','mimes:pdf', 'max:2048'],
             "phone_number" => ['required', 'numeric', 'digits_between:10,15'],
             "alasan" => ['required', 'string'],
             "pendidikan" => ['required', 'string'],
@@ -50,10 +50,10 @@ class RegPelatihanKeterampilanKerjaController extends Controller
             "status_bekerja" => ['required', 'integer', 'in:1,2,3'],
             "pernah_pelatihan" => ['required', 'integer', 'in:1,3'],
             "status_domisili" => ['required', 'integer', 'in:1,2,3'],
-            "file_pasfoto" => ['required', 'file'],
-            "file_surat_pernyataan_tidak_ikut" => ['required', 'file'],
-            "file_surat_kesanggupan" => ['required', 'file'],
-            "file_fotokopi_ijazah" => ['required', 'file'],
+            "file_pasfoto" => ['required', 'file','mimes:pdf', 'max:2048'],
+            "file_surat_pernyataan_tidak_ikut" => ['required', 'file','mimes:pdf', 'max:2048'],
+            "file_surat_kesanggupan" => ['required', 'file','mimes:pdf', 'max:2048'],
+            "file_fotokopi_ijazah" => ['required', 'file','mimes:pdf', 'max:2048'],
         ]);
 
         $fileFields = [

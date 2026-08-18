@@ -84,19 +84,19 @@ class BanmodController extends Controller
             "jumlah_penyerapan_naker" => ['nullable', 'required_if:kategori,4', 'numeric'],
             "file_foto" => ['required', 'image'],
             "file_ktp" => ['required', 'image'],
-            "file_kk" => ['required', 'file'],
-            "file_nib" => ['required', 'file'],
-            "file_sku" => ['required', 'file'],
-            "file_skd" => ['nullable', 'required_if:isDomisili,true', 'file'],
+            "file_kk" => ['required', 'file','mimes:pdf', 'max:2048'],
+            "file_nib" => ['required', 'file','mimes:pdf', 'max:2048'],
+            "file_sku" => ['required', 'file','mimes:pdf', 'max:2048'],
+            "file_skd" => ['nullable', 'required_if:isDomisili,true', 'file','mimes:pdf', 'max:2048'],
             "file_produk" => ['required', 'image'],
             "file_lokasi_usaha" => ['required', 'image'],
             "file_perizinan" => ['nullable', 'required_if:kategori,4', 'array'],
-            "file_siinas" => ['nullable', 'required_if:kategori,4', 'file'],
-            "file_bp" => ['nullable', 'required_if:kategori,4', 'file'],
-            "file_surat_disabilitas" => ['nullable', 'required_if:kategori,7', 'file'],
-            "file_surat_buruh" => ['nullable', 'required_if:kategori,1,2,3', 'file'],
-            "file_surat_miskin" => ['nullable', 'required_if:kategori,5', 'file'],
-            "file_sertifikat_pelatihan" => ['nullable', 'required_if:kategori,5,7', 'file']
+            "file_siinas" => ['nullable', 'required_if:kategori,4', 'file','mimes:pdf', 'max:2048'],
+            "file_bp" => ['nullable', 'required_if:kategori,4', 'file','mimes:pdf', 'max:2048'],
+            "file_surat_disabilitas" => ['nullable', 'required_if:kategori,7', 'file','mimes:pdf', 'max:2048'],
+            "file_surat_buruh" => ['nullable', 'required_if:kategori,1,2,3', 'file','mimes:pdf', 'max:2048'],
+            "file_surat_miskin" => ['nullable', 'required_if:kategori,5', 'file','mimes:pdf', 'max:2048'],
+            "file_sertifikat_pelatihan" => ['nullable', 'required_if:kategori,5,7', 'file','mimes:pdf', 'max:2048']
         ]);
 
         // Cek NIK sudah pernah daftar di tahun yang sama
