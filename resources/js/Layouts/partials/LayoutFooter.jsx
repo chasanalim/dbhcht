@@ -173,8 +173,7 @@ export default function LayoutFooter() {
                     className="text-center pb-3"
                     style={{ color: "#e0e7ff", fontWeight: 500 }}
                 >
-                    Copyright &copy; {new Date().getFullYear()} - Pemerintah
-                    Kota Kediri.
+                    Copyright &copy; 2026 - Diskominfo Kota Kediri
                 </p>
             </Container>
         </footer>

@@ -171,9 +171,9 @@ class HomeController extends Controller
         ];
 
         foreach ($models as $type => $model) {
-            $data = $model::where('nik', $nik)->first();
+            $dataCollection = $model::where('nik', $nik)->get();
 
-            if ($data) {
+            foreach ($dataCollection as $data) {
                 $notes = null;
                 if ($data->status == 2) {
                     $notes = [];
