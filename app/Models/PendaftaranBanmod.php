@@ -350,6 +350,22 @@ class PendaftaranBanmod extends Model
         return $additionalDocuments[$kategori] ?? $additionalDocuments[null];
     }
 
+    /**
+     * Daftar dokumen wajib untuk record ini.
+     * SKD (Surat Keterangan Domisili) hanya diwajibkan ketika alamat domisili
+     * berbeda dengan KTP (isDomisili = true), sesuai aturan upload pendaftaran.
+     */
+    public function requiredDocuments(): array
+    {
+        $docs = static::getRequiredDocuments((int) $this->kategori);
+
+        if (!$this->isDomisili && in_array('skd', $docs, true)) {
+            $docs = array_values(array_diff($docs, ['skd']));
+        }
+
+        return $docs;
+    }
+
     public static function getKategoriName($kategori)
     {
         $categories = [

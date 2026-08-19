@@ -70,7 +70,7 @@ class BanmodExport implements FromCollection, WithHeadings, WithStyles
     private function getVerificationStatus($item)
     {
         $verifications = $item->documentVerifications;
-        $requiredDocs = PendaftaranBanmod::getRequiredDocuments($item->kategori);
+        $requiredDocs = $item->requiredDocuments();
         $allVerified = count($verifications) === count($requiredDocs);
         $allApproved = $verifications->every(fn($v) => $v->status === 1);
 

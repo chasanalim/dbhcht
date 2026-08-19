@@ -109,7 +109,7 @@
                     <td class="center">
                         @php
                             $verifications = $item->documentVerifications;
-                            $requiredDocs = App\Models\PendaftaranBanmod::getRequiredDocuments($item->kategori);
+                            $requiredDocs = $item->requiredDocuments();
                             $allVerified = count($verifications) === count($requiredDocs);
                             $allApproved = $verifications->every(fn($v) => $v->status === 1);
                         @endphp

@@ -65,7 +65,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                 $status = $request->verification_status;
                 $data = $data->filter(function ($item) use ($status) {
                     $verifications = $item->documentVerifications;
-                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($item->kategori);
+                    $requiredDocs = $item->requiredDocuments();
 
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
@@ -95,7 +95,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
-                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($row->kategori);
+                    $requiredDocs = $row->requiredDocuments();
                     $verifications = $row->documentVerifications;
 
                     $allVerified = count($verifications) === count($requiredDocs);
@@ -148,7 +148,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
 
         $data = PendaftaranBanmod::findOrFail($id);
 
-        $requiredDocs = PendaftaranBanmod::getRequiredDocuments($data->kategori);
+        $requiredDocs = $data->requiredDocuments();
         $verifications = $data->documentVerifications->whereIn('document_type', $requiredDocs);
 
         $allVerified = count($verifications) === count($requiredDocs);
@@ -194,7 +194,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                 $status = $request->verification_status;
                 $data = $data->filter(function ($item) use ($status) {
                     $verifications = $item->documentVerifications;
-                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments(1);
+                    $requiredDocs = $item->requiredDocuments();
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
                         return $verification->status === 1;
@@ -223,7 +223,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
-                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($row->kategori);
+                    $requiredDocs = $row->requiredDocuments();
                     $verifications = $row->documentVerifications;
 
                     $allVerified = count($verifications) === count($requiredDocs);
@@ -264,7 +264,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                 $status = $request->verification_status;
                 $data = $data->filter(function ($item) use ($status) {
                     $verifications = $item->documentVerifications;
-                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($item->kategori);
+                    $requiredDocs = $item->requiredDocuments();
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
                         return $verification->status === 1;
@@ -293,7 +293,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
-                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($row->kategori);
+                    $requiredDocs = $row->requiredDocuments();
                     $verifications = $row->documentVerifications;
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
@@ -325,7 +325,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                 $status = $request->verification_status;
                 $data = $data->filter(function ($item) use ($status) {
                     $verifications = $item->documentVerifications;
-                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($item->kategori);
+                    $requiredDocs = $item->requiredDocuments();
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
                         return $verification->status === 1;
@@ -354,7 +354,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
-                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($row->kategori);
+                    $requiredDocs = $row->requiredDocuments();
                     $verifications = $row->documentVerifications;
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
@@ -386,7 +386,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                 $status = $request->verification_status;
                 $data = $data->filter(function ($item) use ($status) {
                     $verifications = $item->documentVerifications;
-                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($item->kategori);
+                    $requiredDocs = $item->requiredDocuments();
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
                         return $verification->status === 1;
@@ -415,7 +415,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
-                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($row->kategori);
+                    $requiredDocs = $row->requiredDocuments();
                     $verifications = $row->documentVerifications;
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
@@ -447,7 +447,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                 $status = $request->verification_status;
                 $data = $data->filter(function ($item) use ($status) {
                     $verifications = $item->documentVerifications;
-                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($item->kategori);
+                    $requiredDocs = $item->requiredDocuments();
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
                         return $verification->status === 1;
@@ -476,7 +476,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
-                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($row->kategori);
+                    $requiredDocs = $row->requiredDocuments();
                     $verifications = $row->documentVerifications;
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
@@ -509,7 +509,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                 $status = $request->verification_status;
                 $data = $data->filter(function ($item) use ($status) {
                     $verifications = $item->documentVerifications;
-                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($item->kategori);
+                    $requiredDocs = $item->requiredDocuments();
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
                         return $verification->status === 1;
@@ -538,7 +538,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
-                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($row->kategori);
+                    $requiredDocs = $row->requiredDocuments();
                     $verifications = $row->documentVerifications;
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
@@ -571,7 +571,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                 $status = $request->verification_status;
                 $data = $data->filter(function ($item) use ($status) {
                     $verifications = $item->documentVerifications;
-                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($item->kategori);
+                    $requiredDocs = $item->requiredDocuments();
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
                         return $verification->status === 1;
@@ -600,7 +600,7 @@ class PendaftaranBanmodController extends Controller implements HasMiddleware
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
-                    $requiredDocs = PendaftaranBanmod::getRequiredDocuments($row->kategori);
+                    $requiredDocs = $row->requiredDocuments();
                     $verifications = $row->documentVerifications;
                     $allVerified = count($verifications) === count($requiredDocs);
                     $allApproved = $verifications->every(function ($verification) {
