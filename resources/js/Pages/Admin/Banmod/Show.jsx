@@ -823,7 +823,7 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                             Bobot : 0.35
                                                         </td>
                                                         <td className="text-danger text-bold">
-                                                            NA :{" "}
+                                                            NA : skor x bobot = {" "}
                                                             {parseFloat(
                                                                 data.skor_jumlah_tenaga * 0.35
                                                             ).toFixed(2)}
@@ -842,7 +842,7 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                             Bobot : 0.10
                                                         </td>
                                                         <td className="text-danger text-bold">
-                                                            NA :{" "}
+                                                            NA : skor x bobot = {" "}
                                                             {parseFloat(
                                                                 data.skor_jumlah_tenaga * 0.1
                                                             ).toFixed(2)}
@@ -889,7 +889,7 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                             {parseFloat(
                                                                 data.skor_bruto * 0.05
                                                             ).toFixed(2)}
-                                                        </td>
+                                                        </td>   
                                                     </>
                                                 )}
                                             </tr>
