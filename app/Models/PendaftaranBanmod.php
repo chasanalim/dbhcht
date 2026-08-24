@@ -107,82 +107,82 @@ class PendaftaranBanmod extends Model
             : 0;
 
         if ($this->kategori == 1 || $this->kategori == 2 || $this->kategori == 3 || $this->kategori == 7) {
-            $skor += (($lamaUsaha / 4) * 0.25);
-            $skor += (($jumlahTenagaKerja / 4) * 0.35);
-            $skor += (($brutoPerbulan / 4) * 0.2);
+            $skor += (($lamaUsaha) * 0.25);
+            $skor += (($jumlahTenagaKerja) * 0.35);
+            $skor += (($brutoPerbulan) * 0.2);
             if ($this->aset > $this->hutang) {
-                $skor += (3 / 3 * 0.05);
+                $skor += (3  * 0.05);
             } else if ($this->aset == $this->hutang) {
-                $skor += (2 / 3 * 0.05);
+                $skor += (2  * 0.05);
             } else {
-                $skor += (1 / 3 * 0.05);
+                $skor += (1  * 0.05);
             }
 
             if ($this->isDomisili == 0 && $this->isUsaha == 0) {
-                $skor += (4 / 4 * 0.15);
+                $skor += (4  * 0.15);
             } else if ($this->isDomisili == 0 && $this->isUsaha == 1) {
-                $skor += (3 / 4 * 0.15);
+                $skor += (3 * 0.15);
             } else if ($this->isDomisili == 1 && $this->isUsaha == 0) {
-                $skor += (2 / 4 * 0.15);
+                $skor += (2 * 0.15);
             } else {
-                $skor += (1 / 4 * 0.15);
+                $skor += (1 * 0.15);
             }
 
             if ($this->isDisabilitas == 1 || $this->kategori == 1 || $this->kategori == 2 || $this->kategori == 3 || $this->kategori == 7) {
-                return ($skor * 100) + 1.35;
+                return ($skor) + 1.35;
             } else {
-                return $skor * 100;
+                return $skor;
             }
         } else if ($this->kategori == 4) {
-            $skor += (($lamaUsaha / 4) * 0.1);
-            $skor += (($jumlahTenagaKerja / 4) * 0.1);
-            $skor += (($brutoPerbulan / 4) * 0.05);
+            $skor += (($lamaUsaha) * 0.1);
+            $skor += (($jumlahTenagaKerja) * 0.1);
+            $skor += (($brutoPerbulan) * 0.05);
             if ($this->aset > $this->hutang) {
-                $skor += (3 / 3 * 0.05);
+                $skor += (3  * 0.05);
             } else if ($this->aset == $this->hutang) {
-                $skor += (2 / 3 * 0.05);
+                $skor += (2  * 0.05);
             } else {
-                $skor += (1 / 3 * 0.05);
+                $skor += (1  * 0.05);
             }
 
-            $skor += (($jumlahLegalitas / 3) * 0.1);
-            $skor += (($jumlahTeknologiDigital / 3) * 0.1);
-            $skor += (($penyerapanTenagaMiskin / 3) * 0.2);
+            $skor += (($jumlahLegalitas) * 0.1);
+            $skor += (($jumlahTeknologiDigital) * 0.1);
+            $skor += (($penyerapanTenagaMiskin) * 0.2);
             if ($this->isDomisili == 0 && $this->isUsaha == 0) {
-                $skor += (4 / 4 * 0.05);
+                $skor += (4  * 0.05);
             } else if ($this->isDomisili == 0 && $this->isUsaha == 1) {
-                $skor += (3 / 4 * 0.05);
+                $skor += (3 * 0.05);
             } else if ($this->isDomisili == 1 && $this->isUsaha == 0) {
-                $skor += (2 / 4 * 0.05);
+                $skor += (2 * 0.05);
             } else {
-                $skor += (1 / 4 * 0.05);
+                $skor += (1 * 0.05);
             }
-            return $skor * 100;
+            return $skor;
         } else {
 
-            $skor += (($desil / 4) * 0.25);
-            $skor += (($tanggunganKeluarga / 3) * 0.2);
-            $skor += (($lamaUsaha / 4) * 0.15);
+            $skor += (($desil) * 0.25);
+            $skor += (($tanggunganKeluarga) * 0.2);
+            $skor += (($lamaUsaha) * 0.15);
             if ($this->aset > $this->hutang) {
-                $skor += (3 / 3 * 0.1);
+                $skor += (3  * 0.1);
             } else if ($this->aset == $this->hutang) {
-                $skor += (2 / 3 * 0.1);
+                $skor += (2  * 0.1);
             } else {
-                $skor += (1 / 3 * 0.1);
+                $skor += (1  * 0.1);
             }
 
-            $skor += (($statusTempatTinggal / 3) * 0.2);
+            $skor += (($statusTempatTinggal) * 0.2);
 
             if ($this->isDomisili == 0 && $this->isUsaha == 0) {
-                $skor += (4 / 4 * 0.1);
+                $skor += (4  * 0.1);
             } else if ($this->isDomisili == 0 && $this->isUsaha == 1) {
-                $skor += (3 / 4 * 0.1);
+                $skor += (3 * 0.1);
             } else if ($this->isDomisili == 1 && $this->isUsaha == 0) {
-                $skor += (2 / 4 * 0.1);
+                $skor += (2 * 0.1);
             } else {
-                $skor += (1 / 4 * 0.1);
+                $skor += (1 * 0.1);
             }
-            return $skor * 100;
+            return $skor ;
         }
     }
 

@@ -5,7 +5,8 @@ import { useEffect, useState, useRef } from "react";
 export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
     const { auth } = usePage().props;
     const userRoles = auth?.user?.roles || [];
-    const canReplace = userRoles.includes("pertanian") || userRoles.includes("admin");
+    const canReplace =
+        userRoles.includes("pertanian") || userRoles.includes("admin");
 
     const [showModal, setShowModal] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
@@ -32,9 +33,18 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
             { key: "siinas", label: "SIINAS" },
             { key: "bp", label: "Businness Plan" },
             { key: "sertifikat_pelatihan", label: "Sertifikat Pelatihan" },
-            { key: "surat_disabilitas", label: "Surat Pernyataan Komitmen bagi Disabilitas" },
-            { key: "surat_buruh", label: "Surat Pernyataan Komitmen bagi Buruh" },
-            { key: "surat_miskin", label: "Surat Pernyataan Komitmen bagi Miskin" },
+            {
+                key: "surat_disabilitas",
+                label: "Surat Pernyataan Komitmen bagi Disabilitas",
+            },
+            {
+                key: "surat_buruh",
+                label: "Surat Pernyataan Komitmen bagi Buruh",
+            },
+            {
+                key: "surat_miskin",
+                label: "Surat Pernyataan Komitmen bagi Miskin",
+            },
             { key: "perizinan", label: "Perizinan" },
         ],
     };
@@ -42,10 +52,10 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
     const desilRaw = String(data.desil ?? "").trim();
     const desilMatch = !desilRaw.includes(">") ? desilRaw.match(/\d+/) : null;
     const nilaiDesil = desilMatch
-        ? ({ 1: 4, 2: 3, 3: 2, 4: 1, 5: 1 })[parseInt(desilMatch[0])] ?? 0
+        ? ({ 1: 4, 2: 3, 3: 2, 4: 1, 5: 1 }[parseInt(desilMatch[0])] ?? 0)
         : 0;
     const adaNilaiTambahan = ["1", "2", "3", "7"].includes(
-        String(data.kategori_id)
+        String(data.kategori_id),
     );
 
     const handleVerification = async (fileType) => {
@@ -65,7 +75,7 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                     // Refresh the page to get updated verification status
                     router.reload();
                 },
-            }
+            },
         );
     };
 
@@ -88,9 +98,14 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
 
     useEffect(() => {
         const html = document.documentElement;
-        if (showReplaceModal) { html.style.overflow = "hidden"; }
-        else { html.style.overflow = ""; }
-        return () => { html.style.overflow = ""; };
+        if (showReplaceModal) {
+            html.style.overflow = "hidden";
+        } else {
+            html.style.overflow = "";
+        }
+        return () => {
+            html.style.overflow = "";
+        };
     }, [showReplaceModal]);
 
     const handleTolak = async (fileType) => {
@@ -111,12 +126,17 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                     setRejectNote("");
                     router.reload();
                 },
-            }
+            },
         );
     };
 
     const openReplaceModal = (fileData, label, fileType) => {
-        setReplaceTarget({ url: fileData.url, label, fileType, isImage: fileData.isImage });
+        setReplaceTarget({
+            url: fileData.url,
+            label,
+            fileType,
+            isImage: fileData.isImage,
+        });
         setReplaceFile(null);
         setReplacePreview(null);
         setShowReplaceModal(true);
@@ -150,7 +170,9 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                 setReplaceUploading(false);
                 router.reload();
             },
-            onError: () => { setReplaceUploading(false); },
+            onError: () => {
+                setReplaceUploading(false);
+            },
         });
     };
 
@@ -191,7 +213,7 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                 </div>
                                 <div className="card-body d-flex flex-column">
                                     {file.url.match(
-                                        /\.(jpg|jpeg|png|gif)$/i
+                                        /\.(jpg|jpeg|png|gif)$/i,
                                     ) ? (
                                         <div
                                             className="text-center mb-3"
@@ -436,21 +458,19 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                         </tr>
                                         <tr>
                                             <td>Desil</td>
-                                            <td>
-                                                :{" "}
-                                                {data.desil
-                                                    }
-                                            </td>
+                                            <td>: {data.desil}</td>
                                             {data.kategori_id === "5" && (
                                                 <>
                                                     <td className="text-danger text-bold">
                                                         Skor : {nilaiDesil}
                                                     </td>
                                                     <td className="text-danger text-bold">
-                                                        NA :{" "}
+                                                        Bobot : 0.25
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA : skor x bobot ={" "}
                                                         {parseFloat(
-                                                            (nilaiDesil / 4) *
-                                                                25
+                                                            nilaiDesil * 0.25,
                                                         ).toFixed(2)}
                                                     </td>
                                                 </>
@@ -552,34 +572,37 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                             data.isUsaha === "0"
                                                                 ? 4
                                                                 : data.isDomisili ===
-                                                                      "0" &&
-                                                                  data.isUsaha ===
-                                                                      "1"
-                                                                ? 3
-                                                                : data.isDomisili ===
-                                                                      "1" &&
-                                                                  data.isUsaha ===
-                                                                      "0"
-                                                                ? 2
-                                                                : 1}
+                                                                        "0" &&
+                                                                    data.isUsaha ===
+                                                                        "1"
+                                                                  ? 3
+                                                                  : data.isDomisili ===
+                                                                          "1" &&
+                                                                      data.isUsaha ===
+                                                                          "0"
+                                                                    ? 2
+                                                                    : 1}
                                                         </td>
                                                         <td className="text-danger text-bold">
-                                                            NA :{" "}
+                                                            Bobot : 0.15
+                                                        </td>
+                                                        <td className="text-danger text-bold">
+                                                            NA : skor x bobot ={" "}
                                                             {data.isDomisili ===
                                                                 "0" &&
                                                             data.isUsaha === "0"
-                                                                ? (4 / 4) * 15
+                                                                ? 4 * 0.15
                                                                 : data.isDomisili ===
-                                                                      "0" &&
-                                                                  data.isUsaha ===
-                                                                      "1"
-                                                                ? (3 / 4) * 15
-                                                                : data.isDomisili ===
-                                                                      "1" &&
-                                                                  data.isUsaha ===
-                                                                      "0"
-                                                                ? (2 / 4) * 15
-                                                                : (1 / 4) * 15}
+                                                                        "0" &&
+                                                                    data.isUsaha ===
+                                                                        "1"
+                                                                  ? 3 * 0.15
+                                                                  : data.isDomisili ===
+                                                                          "1" &&
+                                                                      data.isUsaha ===
+                                                                          "0"
+                                                                    ? 2 * 0.15
+                                                                    : 1 * 0.15}
                                                         </td>
                                                     </>
                                                 )}
@@ -592,77 +615,83 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                             data.isUsaha === "0"
                                                                 ? 4
                                                                 : data.isDomisili ===
-                                                                      "0" &&
-                                                                  data.isUsaha ===
-                                                                      "1"
-                                                                ? 3
-                                                                : data.isDomisili ===
-                                                                      "1" &&
-                                                                  data.isUsaha ===
-                                                                      "0"
-                                                                ? 2
-                                                                : 1}
+                                                                        "0" &&
+                                                                    data.isUsaha ===
+                                                                        "1"
+                                                                  ? 3
+                                                                  : data.isDomisili ===
+                                                                          "1" &&
+                                                                      data.isUsaha ===
+                                                                          "0"
+                                                                    ? 2
+                                                                    : 1}
+                                                        </td>
+                                                        <td className="text-danger text-bold">
+                                                            Bobot : 0.05
                                                         </td>
                                                         <td className="text-danger text-bold">
                                                             NA :{" "}
                                                             {data.isDomisili ===
                                                                 "0" &&
                                                             data.isUsaha === "0"
-                                                                ? (4 / 4) * 5
+                                                                ? 4 * 0.05
                                                                 : data.isDomisili ===
-                                                                      "0" &&
-                                                                  data.isUsaha ===
-                                                                      "1"
-                                                                ? (3 / 4) * 5
-                                                                : data.isDomisili ===
-                                                                      "1" &&
-                                                                  data.isUsaha ===
-                                                                      "0"
-                                                                ? (2 / 4) * 5
-                                                                : (1 / 4) * 5}
+                                                                        "0" &&
+                                                                    data.isUsaha ===
+                                                                        "1"
+                                                                  ? 3 * 0.05
+                                                                  : data.isDomisili ===
+                                                                          "1" &&
+                                                                      data.isUsaha ===
+                                                                          "0"
+                                                                    ? 2 * 0.05
+                                                                    : 1 * 0.05}
                                                         </td>
                                                     </>
                                                 )}
-                                            {data.kategori_id === "5" && (
-                                                <>
-                                                    <td className="text-danger text-bold">
-                                                        Skor :{" "}
-                                                        {data.isDomisili ===
-                                                            "0" &&
-                                                        data.isUsaha === "0"
-                                                            ? 4
-                                                            : data.isDomisili ===
-                                                                      "0" &&
-                                                                  data.isUsaha ===
-                                                                      "1"
-                                                                ? 3
+                                                {data.kategori_id === "5" && (
+                                                    <>
+                                                        <td className="text-danger text-bold">
+                                                            Skor :{" "}
+                                                            {data.isDomisili ===
+                                                                "0" &&
+                                                            data.isUsaha === "0"
+                                                                ? 4
                                                                 : data.isDomisili ===
-                                                                      "1" &&
-                                                                  data.isUsaha ===
-                                                                      "0"
-                                                                ? 2
-                                                                : 1}
-                                                    </td>
-                                                    <td className="text-danger text-bold">
-                                                        NA :{" "}
-                                                        {data.isDomisili ===
-                                                            "0" &&
-                                                        data.isUsaha === "0"
-                                                            ? (4 / 4) * 10
-                                                            : data.isDomisili ===
-                                                                      "0" &&
-                                                                  data.isUsaha ===
-                                                                      "1"
-                                                                ? (3 / 4) * 10
+                                                                        "0" &&
+                                                                    data.isUsaha ===
+                                                                        "1"
+                                                                  ? 3
+                                                                  : data.isDomisili ===
+                                                                          "1" &&
+                                                                      data.isUsaha ===
+                                                                          "0"
+                                                                    ? 2
+                                                                    : 1}
+                                                        </td>
+                                                        <td className="text-danger text-bold">
+                                                            Bobot : 0.10
+                                                        </td>
+                                                        <td className="text-danger text-bold">
+                                                            NA : skor x bobot ={" "}
+                                                            {data.isDomisili ===
+                                                                "0" &&
+                                                            data.isUsaha === "0"
+                                                                ? 4 * 0.1
                                                                 : data.isDomisili ===
-                                                                      "1" &&
-                                                                  data.isUsaha ===
-                                                                      "0"
-                                                                ? (2 / 4) * 10
-                                                                : (1 / 4) * 10}
-                                                    </td>
-                                                </>
-                                            )}
+                                                                        "0" &&
+                                                                    data.isUsaha ===
+                                                                        "1"
+                                                                  ? 3 * 0.1
+                                                                  : data.isDomisili ===
+                                                                          "1" &&
+                                                                      data.isUsaha ===
+                                                                          "0"
+                                                                    ? 2 * 0.1
+                                                                    : 1 * 0.1}
+                                                        </td>
+                                                    </>
+                                                )}
                                             </tr>
                                         )}
                                         {data.kategori_id === "5" && (
@@ -682,11 +711,13 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                         }
                                                     </td>
                                                     <td className="text-danger text-bold">
-                                                        NA :{" "}
+                                                        Bobot : 0.20
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA : skor x bobot ={" "}
                                                         {parseFloat(
-                                                            (data.skor_tanggungan_keluarga /
-                                                                3) *
-                                                                20
+                                                            data.skor_tanggungan_keluarga *
+                                                                0.2,
                                                         ).toFixed(2)}
                                                     </td>
                                                 </tr>
@@ -707,11 +738,13 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                         }
                                                     </td>
                                                     <td className="text-danger text-bold">
-                                                        NA :{" "}
+                                                        Bobot : 0.20
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA : skor x bobot ={" "}
                                                         {parseFloat(
-                                                            (data.skor_status_tempat_tinggal /
-                                                                3) *
-                                                                20
+                                                            data.skor_status_tempat_tinggal *
+                                                                0.2,
                                                         ).toFixed(2)}
                                                     </td>
                                                 </tr>
@@ -729,10 +762,12 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                         {data.skor_lama_usaha}
                                                     </td>
                                                     <td className="text-danger text-bold">
-                                                        NA :{" "}
-                                                        {(data.skor_lama_usaha /
-                                                            4) *
-                                                            25}
+                                                        Bobot : 0.25
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA : skor x bobot ={" "}
+                                                        {data.skor_lama_usaha *
+                                                            0.25}
                                                     </td>
                                                 </>
                                             )}
@@ -743,10 +778,12 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                         {data.skor_lama_usaha}
                                                     </td>
                                                     <td className="text-danger text-bold">
-                                                        NA :{" "}
-                                                        {(data.skor_lama_usaha /
-                                                            4) *
-                                                            15}
+                                                        Bobot : 0.15
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA : skor x bobot ={" "}
+                                                        {data.skor_lama_usaha *
+                                                            0.15}
                                                     </td>
                                                 </>
                                             )}
@@ -757,10 +794,12 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                         {data.skor_lama_usaha}
                                                     </td>
                                                     <td className="text-danger text-bold">
-                                                        NA :{" "}
-                                                        {(data.skor_lama_usaha /
-                                                            4) *
-                                                            15}
+                                                        Bobot : 0.15
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA : skor x bobot ={" "}
+                                                        {data.skor_lama_usaha *
+                                                            0.15}
                                                     </td>
                                                 </>
                                             )}
@@ -782,9 +821,8 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                         </td>
                                                         <td className="text-danger text-bold">
                                                             NA :{" "}
-                                                            {(data.skor_jumlah_tenaga /
-                                                                4) *
-                                                                35}
+                                                            {data.skor_jumlah_tenaga *
+                                                                0.35}
                                                         </td>
                                                     </>
                                                 )}
@@ -798,9 +836,8 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                         </td>
                                                         <td className="text-danger text-bold">
                                                             NA :{" "}
-                                                            {(data.skor_jumlah_tenaga /
-                                                                4) *
-                                                                10}
+                                                            {data.skor_jumlah_tenaga *
+                                                                0.1}
                                                         </td>
                                                     </>
                                                 )}
@@ -820,10 +857,12 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                             {data.skor_bruto}
                                                         </td>
                                                         <td className="text-danger text-bold">
-                                                            NA :{" "}
-                                                            {(data.skor_bruto /
-                                                                4) *
-                                                                20}
+                                                            Bobot : 0.20
+                                                        </td>
+                                                        <td className="text-danger text-bold">
+                                                            NA : skor x bobot ={" "}
+                                                            {data.skor_bruto *
+                                                                0.2}
                                                         </td>
                                                     </>
                                                 )}
@@ -834,10 +873,12 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                             {data.skor_bruto}
                                                         </td>
                                                         <td className="text-danger text-bold">
-                                                            NA :{" "}
-                                                            {(data.skor_bruto /
-                                                                4) *
-                                                                5}
+                                                            Bobot : 0.05
+                                                        </td>
+                                                        <td className="text-danger text-bold">
+                                                            NA : skor x bobot ={" "}
+                                                            {data.skor_bruto *
+                                                                0.05}
                                                         </td>
                                                     </>
                                                 )}
@@ -849,7 +890,7 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                             <td>
                                                 : Rp{" "}
                                                 {Number(
-                                                    data.aset
+                                                    data.aset,
                                                 ).toLocaleString()}
                                             </td>
                                             {(data.kategori_id === "1" ||
@@ -862,31 +903,34 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                         Number(data.hutang)
                                                             ? 3
                                                             : Number(
-                                                                  data.aset
-                                                              ) ===
-                                                              Number(
-                                                                  data.hutang
-                                                              )
-                                                            ? 2
-                                                            : 1}
+                                                                    data.aset,
+                                                                ) ===
+                                                                Number(
+                                                                    data.hutang,
+                                                                )
+                                                              ? 2
+                                                              : 1}
                                                     </td>
                                                     <td className="text-danger text-bold">
-                                                        NA :{" "}
+                                                        Bobot : 0.05
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA : skor x bobot ={" "}
                                                         {Number(data.aset) >
                                                         Number(data.hutang)
-                                                            ? (3 / 3) * 5
+                                                            ? 3 * 0.05
                                                             : Number(
-                                                                  data.aset
-                                                              ) ===
-                                                              Number(
-                                                                  data.hutang
-                                                              )
-                                                            ? parseFloat(
-                                                                  (2 / 3) * 5
-                                                              ).toFixed(2)
-                                                            : parseFloat(
-                                                                  (1 / 3) * 5
-                                                              ).toFixed(2)}
+                                                                    data.aset,
+                                                                ) ===
+                                                                Number(
+                                                                    data.hutang,
+                                                                )
+                                                              ? parseFloat(
+                                                                    2 * 0.05,
+                                                                ).toFixed(2)
+                                                              : parseFloat(
+                                                                    1 * 0.05,
+                                                                ).toFixed(2)}
                                                     </td>
                                                 </>
                                             )}
@@ -898,31 +942,34 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                         Number(data.hutang)
                                                             ? 3
                                                             : Number(
-                                                                  data.aset
-                                                              ) ===
-                                                              Number(
-                                                                  data.hutang
-                                                              )
-                                                            ? 2
-                                                            : 1}
+                                                                    data.aset,
+                                                                ) ===
+                                                                Number(
+                                                                    data.hutang,
+                                                                )
+                                                              ? 2
+                                                              : 1}
                                                     </td>
                                                     <td className="text-danger text-bold">
-                                                        NA :{" "}
+                                                        Bobot : 0.05
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA : skor x bobot ={" "}
                                                         {Number(data.aset) >
                                                         Number(data.hutang)
-                                                            ? (3 / 3) * 5
+                                                            ? 3 * 0.05
                                                             : Number(
-                                                                  data.aset
-                                                              ) ===
-                                                              Number(
-                                                                  data.hutang
-                                                              )
-                                                            ? parseFloat(
-                                                                  (2 / 3) * 5
-                                                              ).toFixed(2)
-                                                            : parseFloat(
-                                                                  (1 / 3) * 5
-                                                              ).toFixed(2)}
+                                                                    data.aset,
+                                                                ) ===
+                                                                Number(
+                                                                    data.hutang,
+                                                                )
+                                                              ? parseFloat(
+                                                                    2 * 0.05,
+                                                                ).toFixed(2)
+                                                              : parseFloat(
+                                                                    1 * 0.05,
+                                                                ).toFixed(2)}
                                                     </td>
                                                 </>
                                             )}
@@ -934,37 +981,31 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                         Number(data.hutang)
                                                             ? 3
                                                             : Number(
-                                                                  data.aset
-                                                              ) ===
-                                                              Number(
-                                                                  data.hutang
-                                                              )
-                                                            ? 2
-                                                            : 1}
+                                                                    data.aset,
+                                                                ) ===
+                                                                Number(
+                                                                    data.hutang,
+                                                                )
+                                                              ? 2
+                                                              : 1}
                                                     </td>
                                                     <td className="text-danger text-bold">
-                                                        NA :{" "}
-                                                        {Math.round(
-                                                            Number(data.aset) >
+                                                        Bobot : 0.10
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA : skor x bobot ={" "}
+                                                        {(Number(data.aset) >
+                                                        Number(data.hutang)
+                                                            ? 3 * 0.1
+                                                            : Number(
+                                                                    data.aset,
+                                                                ) ===
                                                                 Number(
-                                                                    data.hutang
+                                                                    data.hutang,
                                                                 )
-                                                                ? (3 / 3) * 10
-                                                                : Number(
-                                                                      data.aset
-                                                                  ) ===
-                                                                  Number(
-                                                                      data.hutang
-                                                                  )
-                                                                ? parseFloat(
-                                                                      (2 / 3) *
-                                                                          10
-                                                                  ).toFixed(2)
-                                                                : parseFloat(
-                                                                      (1 / 3) *
-                                                                          10
-                                                                  ).toFixed(2)
-                                                        )}
+                                                              ? 2 * 0.1
+                                                              : 1 * 0.1
+                                                        ).toFixed(2)}
                                                     </td>
                                                 </>
                                             )}
@@ -974,7 +1015,7 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                             <td>
                                                 : Rp{" "}
                                                 {Number(
-                                                    data.hutang
+                                                    data.hutang,
                                                 ).toLocaleString()}
                                             </td>
                                         </tr>
@@ -992,11 +1033,13 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                         {data.skor_legalitas}
                                                     </td>
                                                     <td className="text-danger text-bold">
-                                                        NA :{" "}
+                                                        Bobot : 0.10
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA : skor x bobot ={" "}
                                                         {parseFloat(
-                                                            (data.skor_legalitas /
-                                                                3) *
-                                                                10
+                                                            data.skor_legalitas *
+                                                                0.1,
                                                         ).toFixed(2)}
                                                     </td>
                                                 </tr>
@@ -1011,11 +1054,13 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                         {data.skor_teknologi}
                                                     </td>
                                                     <td className="text-danger text-bold">
-                                                        NA :{" "}
+                                                        Bobot : 0.10
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA : skor x bobot ={" "}
                                                         {parseFloat(
-                                                            (data.skor_teknologi /
-                                                                3) *
-                                                                10
+                                                            data.skor_teknologi *
+                                                                0.1,
                                                         ).toFixed(2)}
                                                     </td>
                                                 </tr>
@@ -1036,11 +1081,13 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                         }
                                                     </td>
                                                     <td className="text-danger text-bold">
-                                                        NA :{" "}
+                                                        Bobot : 0.10
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA : skor x bobot ={" "}
                                                         {parseFloat(
-                                                            (data.skor_penyerapan_naker /
-                                                                3) *
-                                                                10
+                                                            data.skor_penyerapan_naker *
+                                                                0.1,
                                                         ).toFixed(2)}
                                                     </td>
                                                 </tr>
@@ -1060,7 +1107,7 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                         )}
                                         <tr>
                                             <td>Total Skor</td>
-                                            <td>: {data.skor}</td>
+                                            <td>: {data.skor.toFixed(2)}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -1094,23 +1141,23 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                             "KTP"
                                                                 ? `${activeFile.label} | NIK : ${data.nik}`
                                                                 : activeFile.label ===
-                                                                  "Kartu Keluarga"
-                                                                ? `${activeFile.label} | NO KK : ${data.kk}`
-                                                                : activeFile.label}
+                                                                    "Kartu Keluarga"
+                                                                  ? `${activeFile.label} | NO KK : ${data.kk}`
+                                                                  : activeFile.label}
                                                         </h5>
                                                         <button
                                                             type="button"
                                                             className="btn-close"
                                                             onClick={() =>
                                                                 setShowModal(
-                                                                    false
+                                                                    false,
                                                                 )
                                                             }
                                                         ></button>
                                                     </div>
                                                     <div className="modal-body">
                                                         {activeFile.url.match(
-                                                            /\.(jpg|jpeg|png|gif)$/i
+                                                            /\.(jpg|jpeg|png|gif)$/i,
                                                         ) ? (
                                                             <img
                                                                 src={
@@ -1146,12 +1193,12 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                                             rejectNote
                                                                         }
                                                                         onChange={(
-                                                                            e
+                                                                            e,
                                                                         ) =>
                                                                             setRejectNote(
                                                                                 e
                                                                                     .target
-                                                                                    .value
+                                                                                    .value,
                                                                             )
                                                                         }
                                                                         rows="3"
@@ -1164,10 +1211,10 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                                         className="btn btn-secondary"
                                                                         onClick={() => {
                                                                             setShowRejectForm(
-                                                                                false
+                                                                                false,
                                                                             );
                                                                             setRejectNote(
-                                                                                ""
+                                                                                "",
                                                                             );
                                                                         }}
                                                                     >
@@ -1178,7 +1225,7 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                                         className="btn btn-danger"
                                                                         onClick={() =>
                                                                             handleTolak(
-                                                                                activeFile.fileType
+                                                                                activeFile.fileType,
                                                                             )
                                                                         }
                                                                         disabled={
@@ -1197,7 +1244,7 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                                 className="btn btn-secondary"
                                                                 onClick={() =>
                                                                     setShowModal(
-                                                                        false
+                                                                        false,
                                                                     )
                                                                 }
                                                             >
@@ -1210,7 +1257,7 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                                         className="btn btn-danger"
                                                                         onClick={() =>
                                                                             setShowRejectForm(
-                                                                                true
+                                                                                true,
                                                                             )
                                                                         }
                                                                     >
@@ -1222,7 +1269,7 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                                         className="btn btn-primary"
                                                                         onClick={() =>
                                                                             handleVerification(
-                                                                                activeFile.fileType
+                                                                                activeFile.fileType,
                                                                             )
                                                                         }
                                                                     >
@@ -1243,54 +1290,159 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
 
                         {showReplaceModal && replaceTarget && (
                             <div>
-                                <div className="modal-overlay" onClick={() => setShowReplaceModal(false)}></div>
+                                <div
+                                    className="modal-overlay"
+                                    onClick={() => setShowReplaceModal(false)}
+                                ></div>
                                 <div className="modal-container">
-                                    <div className="modal fade show d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+                                    <div
+                                        className="modal fade show d-block"
+                                        style={{
+                                            backgroundColor: "rgba(0,0,0,0.5)",
+                                        }}
+                                    >
                                         <div className="modal-dialog modal-dialog-centered">
                                             <div className="modal-content">
                                                 <div className="modal-header">
-                                                    <h5 className="modal-title">Ganti Dokumen - {replaceTarget.label}</h5>
-                                                    <button type="button" className="btn-close" onClick={() => setShowReplaceModal(false)}></button>
+                                                    <h5 className="modal-title">
+                                                        Ganti Dokumen -{" "}
+                                                        {replaceTarget.label}
+                                                    </h5>
+                                                    <button
+                                                        type="button"
+                                                        className="btn-close"
+                                                        onClick={() =>
+                                                            setShowReplaceModal(
+                                                                false,
+                                                            )
+                                                        }
+                                                    ></button>
                                                 </div>
                                                 <div className="modal-body">
                                                     <p className="text-muted mb-3">
-                                                        Unggah file baru untuk mengganti dokumen <strong>{replaceTarget.label}</strong>.
-                                                        Verifikasi dokumen akan direset dan perlu diverifikasi ulang.
+                                                        Unggah file baru untuk
+                                                        mengganti dokumen{" "}
+                                                        <strong>
+                                                            {
+                                                                replaceTarget.label
+                                                            }
+                                                        </strong>
+                                                        . Verifikasi dokumen
+                                                        akan direset dan perlu
+                                                        diverifikasi ulang.
                                                     </p>
-                                                    <div className={`file-drop-zone ${replaceFile ? "has-file" : ""}`}
-                                                        onClick={() => fileInputRef.current?.click()}>
+                                                    <div
+                                                        className={`file-drop-zone ${replaceFile ? "has-file" : ""}`}
+                                                        onClick={() =>
+                                                            fileInputRef.current?.click()
+                                                        }
+                                                    >
                                                         {replacePreview ? (
                                                             <div>
                                                                 {replaceTarget.isImage ? (
-                                                                    <img src={replacePreview} alt="Preview" className="replace-preview mb-2" />
+                                                                    <img
+                                                                        src={
+                                                                            replacePreview
+                                                                        }
+                                                                        alt="Preview"
+                                                                        className="replace-preview mb-2"
+                                                                    />
                                                                 ) : (
                                                                     <div className="mb-2">
-                                                                        <i className="bi bi-file-earmark-pdf" style={{ fontSize: "48px", color: "#dc3545" }}></i>
-                                                                        <p className="mt-2 fw-bold">{replaceFile.name}</p>
+                                                                        <i
+                                                                            className="bi bi-file-earmark-pdf"
+                                                                            style={{
+                                                                                fontSize:
+                                                                                    "48px",
+                                                                                color: "#dc3545",
+                                                                            }}
+                                                                        ></i>
+                                                                        <p className="mt-2 fw-bold">
+                                                                            {
+                                                                                replaceFile.name
+                                                                            }
+                                                                        </p>
                                                                     </div>
                                                                 )}
-                                                                <p className="text-success mb-0"><i className="bi bi-check-circle me-1"></i>File siap diunggah</p>
+                                                                <p className="text-success mb-0">
+                                                                    <i className="bi bi-check-circle me-1"></i>
+                                                                    File siap
+                                                                    diunggah
+                                                                </p>
                                                             </div>
                                                         ) : (
                                                             <div>
-                                                                <i className="bi bi-cloud-upload" style={{ fontSize: "48px", color: "#6c757d" }}></i>
-                                                                <p className="mt-2 fw-bold">Klik untuk memilih file</p>
-                                                                <p className="text-muted small">Format: JPG, PNG, atau PDF (max 5MB)</p>
+                                                                <i
+                                                                    className="bi bi-cloud-upload"
+                                                                    style={{
+                                                                        fontSize:
+                                                                            "48px",
+                                                                        color: "#6c757d",
+                                                                    }}
+                                                                ></i>
+                                                                <p className="mt-2 fw-bold">
+                                                                    Klik untuk
+                                                                    memilih file
+                                                                </p>
+                                                                <p className="text-muted small">
+                                                                    Format: JPG,
+                                                                    PNG, atau
+                                                                    PDF (max
+                                                                    5MB)
+                                                                </p>
                                                             </div>
                                                         )}
                                                     </div>
-                                                    <input ref={fileInputRef} type="file" className="d-none"
-                                                        accept={replaceTarget?.isImage ? ".jpg,.jpeg,.png" : ".pdf"}
-                                                        onChange={handleReplaceFileSelect} />
+                                                    <input
+                                                        ref={fileInputRef}
+                                                        type="file"
+                                                        className="d-none"
+                                                        accept={
+                                                            replaceTarget?.isImage
+                                                                ? ".jpg,.jpeg,.png"
+                                                                : ".pdf"
+                                                        }
+                                                        onChange={
+                                                            handleReplaceFileSelect
+                                                        }
+                                                    />
                                                 </div>
                                                 <div className="modal-footer">
-                                                    <button type="button" className="btn btn-secondary" onClick={() => setShowReplaceModal(false)}>Batal</button>
-                                                    <button type="button" className="btn btn-primary" onClick={handleReplaceSubmit}
-                                                        disabled={!replaceFile || replaceUploading}>
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-secondary"
+                                                        onClick={() =>
+                                                            setShowReplaceModal(
+                                                                false,
+                                                            )
+                                                        }
+                                                    >
+                                                        Batal
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-primary"
+                                                        onClick={
+                                                            handleReplaceSubmit
+                                                        }
+                                                        disabled={
+                                                            !replaceFile ||
+                                                            replaceUploading
+                                                        }
+                                                    >
                                                         {replaceUploading ? (
-                                                            <><span className="spinner-border spinner-border-sm me-2" role="status"></span>Mengunggah...</>
+                                                            <>
+                                                                <span
+                                                                    className="spinner-border spinner-border-sm me-2"
+                                                                    role="status"
+                                                                ></span>
+                                                                Mengunggah...
+                                                            </>
                                                         ) : (
-                                                            <><i className="bi bi-upload me-1"></i>Unggah & Ganti</>
+                                                            <>
+                                                                <i className="bi bi-upload me-1"></i>
+                                                                Unggah & Ganti
+                                                            </>
                                                         )}
                                                     </button>
                                                 </div>
