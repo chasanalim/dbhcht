@@ -94,8 +94,19 @@ class PendaftaranBanmod extends Model
         $penyerapanTenagaMiskin = $this->penyerapanTenagaMiskin?->skor ?? 0;
         $statusTempatTinggal = $this->statusTempatTinggal?->skor ?? 0;
         $tanggunganKeluarga = $this->tanggunganKeluarga?->skor ?? 0;
+        $desilRaw = trim((string) $this->desil);
 
-        if ($this->kategori == 1 || $this->kategori == 2 || $this->kategori == 3 || $this->kategori == 6) {
+        $desil = ($desilRaw !== '' && !str_contains($desilRaw, '>') && preg_match('/\d+/', $desilRaw, $desilMatches))
+            ? match ((int) $desilMatches[0]) {
+                1 => 4,
+                2 => 3,
+                3 => 2,
+                4, 5 => 1,
+                default => 0,
+            }
+            : 0;
+
+        if ($this->kategori == 1 || $this->kategori == 2 || $this->kategori == 3 || $this->kategori == 7) {
             $skor += (($lamaUsaha / 4) * 0.25);
             $skor += (($jumlahTenagaKerja / 4) * 0.35);
             $skor += (($brutoPerbulan / 4) * 0.2);
@@ -117,8 +128,8 @@ class PendaftaranBanmod extends Model
                 $skor += (1 / 4 * 0.15);
             }
 
-            if ($this->isDisabilitas == 1 || $this->kategori == 1) {
-                return ($skor * 100) + 5;
+            if ($this->isDisabilitas == 1 || $this->kategori == 1 || $this->kategori == 2 || $this->kategori == 3 || $this->kategori == 7) {
+                return ($skor * 100) + 1.35;
             } else {
                 return $skor * 100;
             }
@@ -146,8 +157,10 @@ class PendaftaranBanmod extends Model
             } else {
                 $skor += (1 / 4 * 0.05);
             }
-            return $skor;
+            return $skor * 100;
         } else {
+
+            $skor += (($desil / 4) * 0.25);
             $skor += (($tanggunganKeluarga / 3) * 0.2);
             $skor += (($lamaUsaha / 4) * 0.15);
             if ($this->aset > $this->hutang) {
@@ -169,7 +182,7 @@ class PendaftaranBanmod extends Model
             } else {
                 $skor += (1 / 4 * 0.1);
             }
-            return $skor;
+            return $skor * 100;
         }
     }
 
