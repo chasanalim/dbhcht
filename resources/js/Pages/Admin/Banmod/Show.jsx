@@ -39,6 +39,15 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
         ],
     };
 
+    const desilRaw = String(data.desil ?? "").trim();
+    const desilMatch = !desilRaw.includes(">") ? desilRaw.match(/\d+/) : null;
+    const nilaiDesil = desilMatch
+        ? ({ 1: 4, 2: 3, 3: 2, 4: 1, 5: 1 })[parseInt(desilMatch[0])] ?? 0
+        : 0;
+    const adaNilaiTambahan = ["1", "2", "3", "7"].includes(
+        String(data.kategori_id)
+    );
+
     const handleVerification = async (fileType) => {
         router.post(
             route("admin.verify-document"),
@@ -427,7 +436,25 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                         </tr>
                                         <tr>
                                             <td>Desil</td>
-                                            <td>: {data.desil || "-"}</td>
+                                            <td>
+                                                :{" "}
+                                                {data.desil
+                                                    }
+                                            </td>
+                                            {data.kategori_id === "5" && (
+                                                <>
+                                                    <td className="text-danger text-bold">
+                                                        Skor : {nilaiDesil}
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA :{" "}
+                                                        {parseFloat(
+                                                            (nilaiDesil / 4) *
+                                                                25
+                                                        ).toFixed(2)}
+                                                    </td>
+                                                </>
+                                            )}
                                         </tr>
                                         <tr>
                                             <td>Nama</td>
@@ -596,15 +623,15 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                         </td>
                                                     </>
                                                 )}
-                                                {data.kategori_id === "5" && (
-                                                    <>
-                                                        <td className="text-danger text-bold">
-                                                            Skor :{" "}
-                                                            {data.isDomisili ===
-                                                                "0" &&
-                                                            data.isUsaha === "0"
-                                                                ? 4
-                                                                : data.isDomisili ===
+                                            {data.kategori_id === "5" && (
+                                                <>
+                                                    <td className="text-danger text-bold">
+                                                        Skor :{" "}
+                                                        {data.isDomisili ===
+                                                            "0" &&
+                                                        data.isUsaha === "0"
+                                                            ? 4
+                                                            : data.isDomisili ===
                                                                       "0" &&
                                                                   data.isUsaha ===
                                                                       "1"
@@ -615,14 +642,14 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                                       "0"
                                                                 ? 2
                                                                 : 1}
-                                                        </td>
-                                                        <td className="text-danger text-bold">
-                                                            NA :{" "}
-                                                            {data.isDomisili ===
-                                                                "0" &&
-                                                            data.isUsaha === "0"
-                                                                ? (4 / 4) * 10
-                                                                : data.isDomisili ===
+                                                    </td>
+                                                    <td className="text-danger text-bold">
+                                                        NA :{" "}
+                                                        {data.isDomisili ===
+                                                            "0" &&
+                                                        data.isUsaha === "0"
+                                                            ? (4 / 4) * 10
+                                                            : data.isDomisili ===
                                                                       "0" &&
                                                                   data.isUsaha ===
                                                                       "1"
@@ -633,9 +660,9 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                                       "0"
                                                                 ? (2 / 4) * 10
                                                                 : (1 / 4) * 10}
-                                                        </td>
-                                                    </>
-                                                )}
+                                                    </td>
+                                                </>
+                                            )}
                                             </tr>
                                         )}
                                         {data.kategori_id === "5" && (
@@ -1025,8 +1052,14 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                 <h6 className="fw-bold">SKORING</h6>
                                 <table className="table table-sm">
                                     <tbody>
+                                        {adaNilaiTambahan && (
+                                            <tr>
+                                                <td>Nilai Tambahan</td>
+                                                <td>: 1.35</td>
+                                            </tr>
+                                        )}
                                         <tr>
-                                            <td>Skor Sementara</td>
+                                            <td>Total Skor</td>
                                             <td>: {data.skor}</td>
                                         </tr>
                                     </tbody>
