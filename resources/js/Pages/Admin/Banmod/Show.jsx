@@ -918,7 +918,9 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                         NA : skor x bobot ={" "}
                                                         {Number(data.aset) >
                                                         Number(data.hutang)
-                                                            ? 3 * 0.05
+                                                            ? parseFloat(
+                                                                  3 * 0.05,
+                                                              ).toFixed(2)
                                                             : Number(
                                                                     data.aset,
                                                                 ) ===
