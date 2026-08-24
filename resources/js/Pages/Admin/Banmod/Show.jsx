@@ -820,9 +820,13 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                             }
                                                         </td>
                                                         <td className="text-danger text-bold">
+                                                            Bobot : 0.35
+                                                        </td>
+                                                        <td className="text-danger text-bold">
                                                             NA :{" "}
-                                                            {data.skor_jumlah_tenaga *
-                                                                0.35}
+                                                            {parseFloat(
+                                                                data.skor_jumlah_tenaga * 0.35
+                                                            ).toFixed(2)}
                                                         </td>
                                                     </>
                                                 )}
@@ -835,9 +839,13 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                             }
                                                         </td>
                                                         <td className="text-danger text-bold">
+                                                            Bobot : 0.10
+                                                        </td>
+                                                        <td className="text-danger text-bold">
                                                             NA :{" "}
-                                                            {data.skor_jumlah_tenaga *
-                                                                0.1}
+                                                            {parseFloat(
+                                                                data.skor_jumlah_tenaga * 0.1
+                                                            ).toFixed(2)}
                                                         </td>
                                                     </>
                                                 )}
@@ -861,8 +869,9 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                         </td>
                                                         <td className="text-danger text-bold">
                                                             NA : skor x bobot ={" "}
-                                                            {data.skor_bruto *
-                                                                0.2}
+                                                            {parseFloat(
+                                                                data.skor_bruto * 0.2
+                                                            ).toFixed(2)}
                                                         </td>
                                                     </>
                                                 )}
@@ -877,8 +886,9 @@ export default function Show({ title, data, type = "PENDAFTARAN_BANMOD" }) {
                                                         </td>
                                                         <td className="text-danger text-bold">
                                                             NA : skor x bobot ={" "}
-                                                            {data.skor_bruto *
-                                                                0.05}
+                                                            {parseFloat(
+                                                                data.skor_bruto * 0.05
+                                                            ).toFixed(2)}
                                                         </td>
                                                     </>
                                                 )}
