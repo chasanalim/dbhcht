@@ -9,8 +9,12 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Cell\Cell;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder;
+use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
 
-class PertanianExport implements FromCollection, WithHeadings, WithStyles
+class PertanianExport extends DefaultValueBinder implements FromCollection, WithHeadings, WithStyles, WithCustomValueBinder
 {
     protected $data;
 
@@ -45,6 +49,23 @@ class PertanianExport implements FromCollection, WithHeadings, WithStyles
                 ][$item->status] ?? 'Belum Diverifikasi',
             ];
         });
+    }
+
+    public function bindValue(Cell $cell, $value)
+    {
+        // Keep long numeric strings (NIK, NO HP) as text so Excel does not
+        // truncate them into scientific notation / trailing zeros.
+        if (
+            is_string($value)
+            && is_numeric($value)
+            && !str_contains($value, '.')
+            && strlen($value) >= 12
+        ) {
+            $cell->setValueExplicit($value, DataType::TYPE_STRING);
+            return true;
+        }
+
+        return parent::bindValue($cell, $value);
     }
 
     public function headings(): array
@@ -161,6 +182,10 @@ class PertanianExport implements FromCollection, WithHeadings, WithStyles
         $sheet->getStyle('E5:E' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // JENIS KELAMIN
         $sheet->getStyle('G5:H' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // RT/RW
         $sheet->getStyle('M5:N' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // SKOR & STATUS
+
+        // Format NIK and NO HP as text so 16-digit numbers are not truncated by Excel
+        $sheet->getStyle('B5:B' . $lastRow)->getNumberFormat()->setFormatCode('@'); // NIK
+        $sheet->getStyle('K5:K' . $lastRow)->getNumberFormat()->setFormatCode('@'); // NO HP
 
         return $sheet;
     }

@@ -200,7 +200,18 @@ export default function Show({ title, data, type = "PELATIHAN_PERTANIAN" }) {
                                 </small>
                             </>
                         )}
-                        {/* Ganti button hidden sesuai permintaan */}
+                        {canReplace && (
+                            <button
+                                type="button"
+                                className="btn btn-sm btn-outline-warning"
+                                onClick={() =>
+                                    openReplaceModal(fileData, label, fileType)
+                                }
+                            >
+                                <i className="bi bi-arrow-repeat me-1"></i>
+                                Ganti
+                            </button>
+                        )}
                     </div>
                 </div>
                 <div className="card-body d-flex flex-column">

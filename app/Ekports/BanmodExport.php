@@ -10,8 +10,12 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Cell\Cell;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder;
+use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
 
-class BanmodExport implements FromCollection, WithHeadings, WithStyles
+class BanmodExport extends DefaultValueBinder implements FromCollection, WithHeadings, WithStyles, WithCustomValueBinder
 {
     protected $data;
 
@@ -40,6 +44,21 @@ class BanmodExport implements FromCollection, WithHeadings, WithStyles
                 'verifikasi' => $this->getVerificationStatus($item)
             ];
         });
+    }
+
+    public function bindValue(Cell $cell, $value)
+    {
+        if (
+            is_string($value)
+            && is_numeric($value)
+            && !str_contains($value, '.')
+            && strlen($value) >= 12
+        ) {
+            $cell->setValueExplicit($value, DataType::TYPE_STRING);
+            return true;
+        }
+
+        return parent::bindValue($cell, $value);
     }
 
     public function headings(): array
@@ -143,6 +162,11 @@ class BanmodExport implements FromCollection, WithHeadings, WithStyles
         $sheet->getColumnDimension('L')->setWidth(20);
         $sheet->getColumnDimension('M')->setWidth(10);
         $sheet->getColumnDimension('N')->setWidth(30);
+
+        // Format NIK and NO HP as text so long numbers are not truncated by Excel
+        $lastRow = $sheet->getHighestRow();
+        $sheet->getStyle('B5:B' . $lastRow)->getNumberFormat()->setFormatCode('@'); // NIK
+        $sheet->getStyle('D5:D' . $lastRow)->getNumberFormat()->setFormatCode('@'); // NO HP
 
         return $sheet;
     }

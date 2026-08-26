@@ -9,8 +9,12 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Cell\Cell;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder;
+use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
 
-class BlacklistExport implements FromCollection, WithHeadings, WithStyles
+class BlacklistExport extends DefaultValueBinder implements FromCollection, WithHeadings, WithStyles, WithCustomValueBinder
 {
     protected $data;
 
@@ -34,6 +38,21 @@ class BlacklistExport implements FromCollection, WithHeadings, WithStyles
                 'status' => $item->status == 3 ? 'Blacklist' : 'Blacklist',
             ];
         });
+    }
+
+    public function bindValue(Cell $cell, $value)
+    {
+        if (
+            is_string($value)
+            && is_numeric($value)
+            && !str_contains($value, '.')
+            && strlen($value) >= 12
+        ) {
+            $cell->setValueExplicit($value, DataType::TYPE_STRING);
+            return true;
+        }
+
+        return parent::bindValue($cell, $value);
     }
 
     public function headings(): array
@@ -125,6 +144,10 @@ class BlacklistExport implements FromCollection, WithHeadings, WithStyles
         // Center specific columns
         $sheet->getStyle('A5:A' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // NO
         $sheet->getStyle('I5:I' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // SKOR & STATUS
+
+        // Format NIK and NO KK as text so long numbers are not truncated by Excel
+        $sheet->getStyle('B5:B' . $lastRow)->getNumberFormat()->setFormatCode('@'); // NIK
+        $sheet->getStyle('C5:C' . $lastRow)->getNumberFormat()->setFormatCode('@'); // NO KK
 
         return $sheet;
     }
