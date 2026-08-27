@@ -864,7 +864,7 @@ export default function FormKeterampilan() {
                         />
                         {/* Pesan error yang lebih umum */}
                         {data.pendidikan && data.usia && (
-                            (data.usia < 18 || data.usia > 45) && (
+                            (data.usia < 18 ) && (
                                 <div className="alert alert-warning mt-2">
                                     <small>
                                         <i className="fas fa-exclamation-triangle me-1"></i>
