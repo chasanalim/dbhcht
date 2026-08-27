@@ -51,9 +51,9 @@ class RegPelatihanKeterampilanKerjaController extends Controller
             "pernah_pelatihan" => ['required', 'integer', 'in:1,3'],
             "status_domisili" => ['required', 'integer', 'in:1,2,3'],
             "file_pasfoto" => ['required', 'file','mimes:pdf,jpg,jpeg,png', 'max:2048'],
-            "file_surat_pernyataan_tidak_ikut" => ['required', 'file','mimes:pdf', 'max:2048'],
-            "file_surat_kesanggupan" => ['required', 'file','mimes:pdf', 'max:2048'],
-            "file_fotokopi_ijazah" => ['required', 'file','mimes:pdf', 'max:2048'],
+            "file_surat_pernyataan_tidak_ikut" => ['required', 'file','mimes:pdf,jpg,jpeg,png', 'max:2048'],
+            "file_surat_kesanggupan" => ['required', 'file','mimes:pdf,jpg,jpeg,png', 'max:2048'],
+            "file_fotokopi_ijazah" => ['required', 'file','mimes:pdf,jpg,jpeg,png', 'max:2048'],
         ]);
 
         $fileFields = [

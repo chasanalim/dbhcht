@@ -279,7 +279,10 @@ export default function FormKeterampilan() {
                     style={{ fontSize: "11px" }}
                 >
                     Format:{" "}
-                    {accept === ".pdf" ? "*.pdf" : "*.png, *.jpg, *.jpeg"}
+                    {accept
+                        .split(",")
+                        .map((ext) => `*${ext.trim().replace(/^\./, "")}`)
+                        .join(", ")}
                 </Form.Label>
 
                 <Form.Control
@@ -923,31 +926,31 @@ export default function FormKeterampilan() {
                     {renderFileUpload(
                         "Surat Pernyataan Tidak Mengikuti Pelatihan Lain",
                         "file_surat_pernyataan_tidak_ikut",
-                        ".pdf",
+                        ".pdf,.png,.jpg,.jpeg",
                         false,
                         null,
                         "https://sultan.kedirikota.go.id/storage/files/P1n9LnkfWqiJHWTRaI82DqDIZcS9vEwMcQit5762.pdf",
-                        "Maksimal 2MB. Format: PDF"
+                        "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG"
                     )}
                     
                     {renderFileUpload(
                         "Surat Pernyataan Kesanggupan Mengikuti Pelatihan Secara Penuh",
                         "file_surat_kesanggupan",
-                        ".pdf",
+                        ".pdf,.png,.jpg,.jpeg",
                         false,
                         null,
                         "https://sultan.kedirikota.go.id/storage/files/35KIXRx55JFg4M3H1laVMMhLE6yZ0EMvbhIf85d7.pdf",
-                        "Maksimal 2MB. Format: PDF"
+                        "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG"
                     )}
                     
                     {renderFileUpload(
                         "Fotokopi Ijazah",
                         "file_fotokopi_ijazah",
-                        ".pdf",
+                        ".pdf,.png,.jpg,.jpeg",
                         false,
                         null,
                         null,
-                        "Maksimal 2MB. Format: PDF"
+                        "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG"
                     )}
 
                     <div className="big-text text-muted mb-4">
