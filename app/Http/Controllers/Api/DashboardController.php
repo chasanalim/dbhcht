@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use App\Models\PelatihanUmkm;
 use App\Models\PelatihanBanmod;
 use App\Models\PelatihanKerjas;
@@ -14,11 +15,45 @@ use App\Http\Controllers\Controller;
 
 class DashboardController extends Controller
 {
-    public function index(): JsonResponse
+    /**
+     * Tahun yang dipakai untuk memfilter seluruh data dashboard.
+     */
+    private ?int $tahun = null;
+
+    public function index(Request $request): JsonResponse
     {
-        $tahun = (int) session('selected_year', now()->year);
+        $tahunParam = $request->query('tahun', $request->query('year'));
+
+        if ($tahunParam !== null && $tahunParam !== '') {
+            if (!ctype_digit((string) $tahunParam)) {
+                return response()->json([
+                    'message' => 'Parameter tahun harus berupa angka 4 digit.',
+                    'errors' => ['tahun' => ['Parameter tahun harus berupa angka 4 digit.']],
+                ], 422);
+            }
+
+            $tahunParam = (int) $tahunParam;
+            $tahunMin = 2024;
+            $tahunMax = now()->year + 1;
+
+            if ($tahunParam < $tahunMin || $tahunParam > $tahunMax) {
+                return response()->json([
+                    'message' => "Parameter tahun harus di antara {$tahunMin} dan {$tahunMax}.",
+                    'errors' => ['tahun' => ["Parameter tahun harus di antara {$tahunMin} dan {$tahunMax}."]],
+                ], 422);
+            }
+
+            $this->tahun = $tahunParam;
+        } else {
+            // Default: tahun berjalan (fallback ke tahun pada session bila ada)
+            $this->tahun = (int) session('selected_year', now()->year);
+        }
+
+        $tahun = $this->tahun;
+
         return response()->json([
             'selected_year' => $tahun,
+            'available_years' => range(now()->year, 2024),
             // Banmod Data
             'banmod' => [
                 'summary' => $this->getBanmodSummary(),
@@ -80,9 +115,27 @@ class DashboardController extends Controller
     // ============================================================
     private function yearScope($table)
     {
-        $tahun = (int) session('selected_year', now()->year);
+        $tahun = $this->tahun();
         $tabel = str_contains($table, ' as ') ? explode(' as ', $table)[1] : $table;
         return "{$tabel}.created_at >= '{$tahun}-01-01 00:00:00' AND {$tabel}.created_at <= '{$tahun}-12-31 23:59:59'";
+    }
+
+    /**
+     * Tahun aktif untuk filter (default tahun berjalan).
+     */
+    private function tahun(): int
+    {
+        return $this->tahun ??= (int) session('selected_year', now()->year);
+    }
+
+    /**
+     * Rentang tanggal awal & akhir tahun aktif, untuk whereBetween created_at.
+     */
+    private function yearRange(): array
+    {
+        $tahun = $this->tahun();
+
+        return ["{$tahun}-01-01 00:00:00", "{$tahun}-12-31 23:59:59"];
     }
 
     // status: 0=Menunggu, 1=Lolos, 2=Tidak Lolos, 3=Blacklist, 4=Lolos di pelatihan lain
@@ -293,6 +346,7 @@ class DashboardController extends Controller
     private function getBanmodByKategori()
     {
         return PendaftaranBanmod::select('kategori', DB::raw('count(*) as total'))
+            ->whereBetween('created_at', $this->yearRange())
             ->groupBy('kategori')
             ->get()
             ->map(function ($item) {
@@ -310,6 +364,7 @@ class DashboardController extends Controller
             DB::raw('count(*) as total')
         )
             ->whereNotNull('nama_kecamatan')
+            ->whereBetween('created_at', $this->yearRange())
             ->groupBy('nama_kecamatan')
             ->orderBy('total', 'desc')
             ->get()
@@ -327,6 +382,7 @@ class DashboardController extends Controller
     {
         return PendaftaranBanmod::with('klasterUsaha')
             ->select('klaster_usaha', DB::raw('count(*) as total'))
+            ->whereBetween('created_at', $this->yearRange())
             ->groupBy('klaster_usaha')
             ->orderBy('total', 'desc')
             ->limit(12)
@@ -419,6 +475,7 @@ class DashboardController extends Controller
         )
             ->whereNotNull('nama_kecamatan')
             ->whereNotNull('nama_kelurahan')
+            ->whereBetween('created_at', $this->yearRange())
             ->groupBy('nama_kecamatan', 'nama_kelurahan')
             ->orderBy('nama_kecamatan')
             ->orderBy('total', 'desc')
@@ -454,6 +511,7 @@ class DashboardController extends Controller
     private function getUmkmByPrioritas1()
     {
         return PelatihanUmkm::select('prioritas_1 as pelatihan', DB::raw('count(*) as total'))
+            ->whereBetween('created_at', $this->yearRange())
             ->groupBy('prioritas_1')
             ->get()
             ->map(fn($item) => [
@@ -465,6 +523,7 @@ class DashboardController extends Controller
     private function getUmkmByPrioritas2()
     {
         return PelatihanUmkm::select('prioritas_2 as pelatihan', DB::raw('count(*) as total'))
+            ->whereBetween('created_at', $this->yearRange())
             ->groupBy('prioritas_2')
             ->get()
             ->map(fn($item) => [
@@ -476,6 +535,7 @@ class DashboardController extends Controller
     private function getUmkmByPrioritas3()
     {
         return PelatihanUmkm::select('prioritas_3 as pelatihan', DB::raw('count(*) as total'))
+            ->whereBetween('created_at', $this->yearRange())
             ->groupBy('prioritas_3')
             ->get()
             ->map(fn($item) => [
@@ -511,6 +571,7 @@ class DashboardController extends Controller
     {
         return PelatihanKerjas::with('refPendidikan')
             ->select('pendidikan', DB::raw('count(*) as total'))
+            ->whereBetween('created_at', $this->yearRange())
             ->groupBy('pendidikan')
             ->get()
             ->map(fn($item) => [
@@ -523,6 +584,7 @@ class DashboardController extends Controller
     {
         return PelatihanKerjas::with('jenisPelatihan')
             ->select('jenis_pelatihan', DB::raw('count(*) as total'))
+            ->whereBetween('created_at', $this->yearRange())
             ->groupBy('jenis_pelatihan')
             ->get()
             ->map(fn($item) => [
@@ -557,6 +619,7 @@ class DashboardController extends Controller
     private function getPelatihanBanmodByJenisPelatihan()
     {
         return PelatihanBanmod::select('jenis_pelatihan_industri', DB::raw('count(*) as total'))
+            ->whereBetween('created_at', $this->yearRange())
             ->groupBy('jenis_pelatihan_industri')
             ->get()
             ->map(fn($item) => [
@@ -578,6 +641,7 @@ class DashboardController extends Controller
     private function getPelatihanBanmodByTahunPenerimaan()
     {
         return PelatihanBanmod::select('tahun_penerimaan', DB::raw('count(*) as total'))
+            ->whereBetween('created_at', $this->yearRange())
             ->groupBy('tahun_penerimaan')
             ->get()
             ->map(fn($item) => [
@@ -600,6 +664,7 @@ class DashboardController extends Controller
     {
         return PelatihanPetani::with('jenisPelatihanPetani')
             ->select('jenis_pelatihan_petani', DB::raw('count(*) as total'))
+            ->whereBetween('created_at', $this->yearRange())
             ->groupBy('jenis_pelatihan_petani')
             ->get()
             ->map(fn($item) => [
@@ -634,6 +699,7 @@ class DashboardController extends Controller
     private function getEkrafByJenisPelatihan()
     {
         return PelatihanEkonomiKreatif::select('jenis_pelatihan', DB::raw('count(*) as total'))
+            ->whereBetween('created_at', $this->yearRange())
             ->groupBy('jenis_pelatihan')
             ->get()
             ->map(fn($item) => [
