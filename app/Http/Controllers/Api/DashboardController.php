@@ -16,6 +16,11 @@ use App\Http\Controllers\Controller;
 class DashboardController extends Controller
 {
     /**
+     * Jenis pelatihan yang tersedia untuk param filter `jenis`.
+     */
+    private const JENIS = ['banmod', 'umkm', 'kerja', 'pertanian', 'pelatihan_banmod', 'ekraf'];
+
+    /**
      * Tahun yang dipakai untuk memfilter seluruh data dashboard.
      */
     private ?int $tahun = null;
@@ -51,19 +56,60 @@ class DashboardController extends Controller
 
         $tahun = $this->tahun;
 
-        return response()->json([
+        // Filter jenis: boleh satu atau beberapa (dipisah koma). Default semua jenis.
+        $jenisParam = $request->query('jenis', $request->query('type'));
+        $jenisDipilih = self::JENIS;
+
+        if ($jenisParam !== null && $jenisParam !== '') {
+            $jenisParam = is_array($jenisParam) ? $jenisParam : explode(',', (string) $jenisParam);
+            $jenisParam = array_values(array_filter(array_map(
+                fn($item) => strtolower(trim((string) $item)),
+                $jenisParam
+            ), fn($item) => $item !== ''));
+
+            $tidakDikenal = array_values(array_diff($jenisParam, self::JENIS));
+
+            if ($tidakDikenal !== []) {
+                $daftar = implode(', ', self::JENIS);
+
+                return response()->json([
+                    'message' => "Jenis '" . implode(', ', $tidakDikenal) . "' tidak dikenal. Gunakan: {$daftar}.",
+                    'errors' => ['jenis' => ["Jenis harus salah satu dari: {$daftar}."]],
+                ], 422);
+            }
+
+            // Pertahankan urutan tetap seperti self::JENIS agar respons konsisten
+            $jenisDipilih = array_values(array_intersect(self::JENIS, $jenisParam));
+        }
+
+        $data = [
             'selected_year' => $tahun,
             'available_years' => range(now()->year, 2024),
-            // Banmod Data
+            'selected_jenis' => $jenisDipilih,
+            'available_jenis' => self::JENIS,
+        ];
+
+        foreach ($jenisDipilih as $jenis) {
+            $data[$jenis] = $this->getDataByJenis($jenis);
+        }
+
+        return response()->json($data);
+    }
+
+    /**
+     * Kumpulan data dashboard per jenis pelatihan.
+     */
+    private function getDataByJenis(string $jenis): array
+    {
+        return match ($jenis) {
             'banmod' => [
                 'summary' => $this->getBanmodSummary(),
                 'byKategori' => $this->getBanmodByKategori(),
                 'byKecamatan' => $this->getBanmodByKecamatan(),
                 'byJenisUsaha' => $this->getBanmodByJenisUsaha(),
                 'byVerifikasiDokumen' => $this->getBanmodByVerifikasi(),
-                'byKelurahan' => $this->getBanmodByKelurahan()
+                'byKelurahan' => $this->getBanmodByKelurahan(),
             ],
-            // UMKM Data
             'umkm' => [
                 'summary' => $this->getUmkmSummary(),
                 'byKecamatan' => $this->getUmkmByKecamatan(),
@@ -71,43 +117,39 @@ class DashboardController extends Controller
                 'byPrioritas2' => $this->getUmkmByPrioritas2(),
                 'byPrioritas3' => $this->getUmkmByPrioritas3(),
                 'byVerifikasiDokumen' => $this->getUmkmByVerifikasi(),
-                'byKelurahan' => $this->getUmkmByKelurahan()
+                'byKelurahan' => $this->getUmkmByKelurahan(),
             ],
-            // Kerja Data
             'kerja' => [
                 'summary' => $this->getKerjaSummary(),
                 'byKecamatan' => $this->getKerjaByKecamatan(),
                 'byPendidikan' => $this->getKerjaByPendidikan(),
                 'byJenisPelatihan' => $this->getKerjaByJenisPelatihan(),
                 'byVerifikasiDokumen' => $this->getKerjaByVerifikasi(),
-                'byKelurahan' => $this->getKerjaByKelurahan()
+                'byKelurahan' => $this->getKerjaByKelurahan(),
             ],
-            // Pelatihan Penerima Banmod Data
             'pelatihan_banmod' => [
                 'summary' => $this->getPelatihanBanmodSummary(),
                 'byKecamatan' => $this->getPelatihanBanmodByKecamatan(),
                 'byJenisPelatihan' => $this->getPelatihanBanmodByJenisPelatihan(),
                 'byVerifikasiDokumen' => $this->getPelatihanBanmodByVerifikasi(),
                 'byKelurahan' => $this->getPelatihanBanmodByKelurahan(),
-                'byTahunPenerimaan' => $this->getPelatihanBanmodByTahunPenerimaan()
+                'byTahunPenerimaan' => $this->getPelatihanBanmodByTahunPenerimaan(),
             ],
-            // Pertanian Data
             'pertanian' => [
                 'summary' => $this->getPertanianSummary(),
                 'byKecamatan' => $this->getPertanianByKecamatan(),
                 'byJenisPelatihan' => $this->getPertanianByJenisPelatihan(),
                 'byVerifikasiDokumen' => $this->getPertanianByVerifikasi(),
-                'byKelurahan' => $this->getPertanianByKelurahan()
+                'byKelurahan' => $this->getPertanianByKelurahan(),
             ],
-            // Ekonomi Kreatif Data
             'ekraf' => [
                 'summary' => $this->getEkrafSummary(),
                 'byKecamatan' => $this->getEkrafByKecamatan(),
                 'byJenisPelatihan' => $this->getEkrafByJenisPelatihan(),
                 'byVerifikasiDokumen' => $this->getEkrafByVerifikasi(),
-                'byKelurahan' => $this->getEkrafByKelurahan()
+                'byKelurahan' => $this->getEkrafByKelurahan(),
             ],
-        ]);
+        };
     }
 
     // ============================================================
