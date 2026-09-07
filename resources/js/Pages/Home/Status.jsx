@@ -173,12 +173,87 @@ export default function Index({ meta }) {
                                                                             : "warning"
                                                                     }`}
                                                                 >
-                                                                    {
-                                                                        item.status
-                                                                    }
-                                                                </span>
-                                                            </p>
-                                                            {item.catatan && Array.isArray(item.catatan) && (
+                                                                        {
+                                                                            item.status
+                                                                        }
+                                                                    </span>
+                                                                </p>
+                                                                <p className="mt-2">
+                                                                    <strong className="text-dark">
+                                                                        Status Dokumen:
+                                                                    </strong>
+                                                                    <br />
+                                                                    <span
+                                                                        className={`badge rounded-pill bg-${
+                                                                            item.verifikasi_status ===
+                                                                            "Terverifikasi"
+                                                                                ? "success"
+                                                                                : item.verifikasi_status ===
+                                                                                  "Dokumen Ditolak"
+                                                                                ? "danger"
+                                                                                : item.verifikasi_status ===
+                                                                                  "Proses Verifikasi"
+                                                                                ? "info"
+                                                                                : "warning"
+                                                                        }`}
+                                                                    >
+                                                                        {
+                                                                            item.verifikasi_status
+                                                                        }
+                                                                    </span>
+                                                                </p>
+                                                                {item.dokumen &&
+                                                                    item.dokumen
+                                                                        .length >
+                                                                        0 && (
+                                                                        <div className="mt-2">
+                                                                            <strong className="text-dark d-block mb-1">
+                                                                                Detail
+                                                                                Dokumen:
+                                                                            </strong>
+                                                                            <ul className="list-unstyled mb-0">
+                                                                                {item.dokumen.map(
+                                                                                    (
+                                                                                        doc,
+                                                                                        i
+                                                                                    ) => (
+                                                                                        <li
+                                                                                            key={
+                                                                                                i
+                                                                                            }
+                                                                                            className="d-flex align-items-center gap-2 mb-1"
+                                                                                        >
+                                                                                            <i
+                                                                                                className={`bi ${
+                                                                                                    doc.status ===
+                                                                                                    1
+                                                                                                        ? "bi-check-circle-fill text-success"
+                                                                                                        : "bi-x-circle-fill text-danger"
+                                                                                                }`}
+                                                                                            ></i>
+                                                                                            <span>
+                                                                                                {
+                                                                                                    doc.document_label
+                                                                                                }
+                                                                                            </span>
+                                                                                            {doc.status ===
+                                                                                                0 &&
+                                                                                                doc.notes && (
+                                                                                                    <small className="text-danger fst-italic">
+                                                                                                        (
+                                                                                                        {
+                                                                                                            doc.notes
+                                                                                                        }
+                                                                                                        )
+                                                                                                    </small>
+                                                                                                )}
+                                                                                        </li>
+                                                                                    )
+                                                                                )}
+                                                                            </ul>
+                                                                        </div>
+                                                                    )}
+                                                                {item.catatan && Array.isArray(item.catatan) && (
                                                                 <p className="mb-1">
                                                                     <strong className="text-dark">
                                                                         Alasan:

@@ -160,6 +160,38 @@ class HomeController extends Controller
 
         $results = [];
 
+        // Mapping tipe dokumen -> label yang mudah dibaca di halaman cek-status
+        $docLabels = [
+            'foto' => 'Pas Foto',
+            'pasfoto' => 'Pas Foto',
+            'ktp' => 'KTP',
+            'kk' => 'Kartu Keluarga',
+            'nib' => 'NIB',
+            'sku' => 'SKU',
+            'skd' => 'SKD',
+            'produk' => 'Produk',
+            'lokasi_usaha' => 'Foto Lokasi Usaha',
+            'perizinan' => 'Perizinan',
+            'siinas' => 'SIINAS',
+            'bp' => 'Business Plan',
+            'surat_buruh' => 'Surat Komitmen Buruh',
+            'surat_miskin' => 'Surat Keterangan Miskin',
+            'surat_disabilitas' => 'Surat Komitmen Disabilitas',
+            'sertifikat_pelatihan' => 'Sertifikat Pelatihan',
+            'surat_pernyataan' => 'Surat Pernyataan',
+            'surat_pernyataan_tidak_ikut' => 'Surat Pernyataan Tidak Ikut',
+            'surat_pekerja_ekraf' => 'Surat Pekerja Ekonomi Kreatif',
+            'surat_phk' => 'Surat PHK',
+            'surat_pemilik_lahan' => 'Surat Pemilik Lahan',
+            'fotokopi_ijazah' => 'Fotokopi Ijazah',
+            'surat_kesanggupan' => 'Surat Kesanggupan',
+            'kesanggupan' => 'Kesanggupan',
+            'legalitas_kelompok' => 'Legalitas Kelompok',
+            'pengukuhan_penyuluh_swadaya' => 'Pengukuhan Penyuluh Swadaya',
+            'pernyataan' => 'Pernyataan',
+            'rekomendasi_kelompok' => 'Rekomendasi Kelompok',
+        ];
+
         // Check in all models
         $models = [
             'Pelatihan UMKM' => PelatihanUmkm::class,
@@ -203,6 +235,31 @@ class HomeController extends Controller
                     }
                 }
 
+                // Status verifikasi dokumen (verifikasi_dokumen)
+                $docVerifs = $data->documentVerifications()->get();
+                $docTotal = $docVerifs->count();
+                $docVerified = $docVerifs->where('status', 1)->count();
+                $docRejected = $docVerifs->where('status', 0)->count();
+
+                if ($docTotal === 0) {
+                    $verifikasiStatus = 'Belum Diverifikasi';
+                } elseif ($docRejected > 0) {
+                    $verifikasiStatus = 'Dokumen Ditolak';
+                } elseif ($docVerified === $docTotal) {
+                    $verifikasiStatus = 'Terverifikasi';
+                } else {
+                    $verifikasiStatus = 'Proses Verifikasi';
+                }
+
+                $dokumen = $docVerifs->map(function ($v) use ($docLabels) {
+                    return [
+                        'document_type' => $v->document_type,
+                        'document_label' => $docLabels[$v->document_type] ?? ucwords(str_replace('_', ' ', $v->document_type)),
+                        'status' => (int) $v->status,
+                        'notes' => $v->notes,
+                    ];
+                })->values()->toArray();
+
                 $results[] = [
                     'jenis_pelatihan' => $type,
                     'nama' => $data->nama_lengkap ?? $data->name,
@@ -211,6 +268,8 @@ class HomeController extends Controller
                     'created_at' => $data->created_at->format('d-m-Y') ?? 'NULL',
                     'catatan' => $notes,
                     'status_code' => $data->status,
+                    'verifikasi_status' => $verifikasiStatus,
+                    'dokumen' => $dokumen,
                 ];
             }
         }
@@ -232,12 +291,12 @@ class HomeController extends Controller
     private function getStatus($status)
     {
         return match($status) {
-            0 => 'Menunggu Verifikasi',
+            0 => '-',
             1 => 'Lolos',
             2 => 'Tidak Lolos',
             3 => 'Blacklist',
             4 => 'Ditolak - Lolos di Pelatihan Lain',
-            default => 'Menunggu Verifikasi',
+            default => 'Proses Verifikasi',
         };
     }
 }
