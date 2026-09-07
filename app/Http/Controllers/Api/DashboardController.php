@@ -181,24 +181,60 @@ class DashboardController extends Controller
     }
 
     // status: 0=Menunggu, 1=Lolos, 2=Tidak Lolos, 3=Blacklist, 4=Lolos di pelatihan lain
-    private function statusSummary($table, $totalAlias = 'total_pendaftar')
+    private function statusSummary($table, $totalAlias = 'total_pendaftar', $requiredDocs = 0)
     {
+        $verifSelect = '';
+        if ($requiredDocs > 0) {
+            $verifSelect = ",
+            SUM(CASE WHEN vd.total_docs = {$requiredDocs} AND vd.verified_docs = {$requiredDocs} THEN 1 ELSE 0 END) as total_lulus_verifikasi,
+            SUM(CASE WHEN vd.total_docs = {$requiredDocs} AND vd.verified_docs < {$requiredDocs} THEN 1 ELSE 0 END) as total_gagal_verifikasi";
+        }
+
         return "count(*) as {$totalAlias},
             SUM(CASE WHEN {$table}.status = 1 THEN 1 ELSE 0 END) as total_lolos,
             SUM(CASE WHEN {$table}.status = 2 THEN 1 ELSE 0 END) as total_tidak_lolos,
             SUM(CASE WHEN {$table}.status = 4 THEN 1 ELSE 0 END) as total_diterima_lain,
             SUM(CASE WHEN {$table}.status = 3 THEN 1 ELSE 0 END) as total_blacklist,
-            SUM(CASE WHEN {$table}.status = 0 THEN 1 ELSE 0 END) as total_belum_diputuskan";
+            SUM(CASE WHEN {$table}.status = 0 THEN 1 ELSE 0 END) as total_belum_diputuskan
+            {$verifSelect}";
+    }
+
+    private function modelClassForType($type)
+    {
+        return match ($type) {
+            'umkm' => \App\Models\PelatihanUmkm::class,
+            'kerja' => \App\Models\PelatihanKerjas::class,
+            'pelatihan_banmod' => \App\Models\PelatihanBanmod::class,
+            'pertanian' => \App\Models\PelatihanPetani::class,
+            'ekraf' => \App\Models\PelatihanEkonomiKreatif::class,
+            default => null,
+        };
     }
 
     private function buildSummary($table, $type, $totalAlias = 'total_pendaftar')
     {
         $year = $this->yearScope($table);
         $tabel = str_contains($table, ' as ') ? explode(' as ', $table)[1] : $table;
-        $result = DB::table($table)
-            ->select(DB::raw($this->statusSummary($tabel, $totalAlias)))
-            ->whereRaw($year)
-            ->first();
+        $modelClass = $this->modelClassForType($type);
+        $requiredDocs = $modelClass ? count($modelClass::getDocumentTypes()) : 0;
+
+        $query = DB::table($table . ' as m')
+            ->select(DB::raw($this->statusSummary('m', $totalAlias, $requiredDocs)))
+            ->whereRaw($this->yearScope($table . ' as m'));
+
+        if ($modelClass) {
+            $query->leftJoin(DB::raw("(
+                SELECT pelatihan_id,
+                    COUNT(*) as total_docs,
+                    SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) as verified_docs
+                FROM verifikasi_dokumen
+                WHERE pelatihan_type = ?
+                GROUP BY pelatihan_id
+            ) as vd"), 'm.id', '=', 'vd.pelatihan_id')
+                ->addBinding($modelClass, 'join');
+        }
+
+        $result = $query->first();
 
         return [
             'total_pendaftar' => (int) ($result->total_pendaftar ?? 0),
@@ -207,6 +243,8 @@ class DashboardController extends Controller
             'total_pendaftar_belum_verifikasi' => (int) ($result->total_belum_diputuskan ?? 0),
             'total_diterima_lain' => (int) ($result->total_diterima_lain ?? 0),
             'total_blacklist' => (int) ($result->total_blacklist ?? 0),
+            'total_pendaftar_lulus_verifikasi' => (int) ($result->total_lulus_verifikasi ?? 0),
+            'total_pendaftar_gagal_verifikasi' => (int) ($result->total_gagal_verifikasi ?? 0),
         ];
     }
 

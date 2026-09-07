@@ -34,6 +34,7 @@ class KerjaExport extends DefaultValueBinder implements FromCollection, WithHead
                 'tempat_lahir' => $item->tmp_lhr,
                 'jenis_kelamin' => $item->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan',
                 'alamat' => $item->alamat,
+                'kelurahan' => $item->nama_kelurahan,
                 'kecamatan' => $item->nama_kecamatan,
                 'no_hp' => $item->phone_number,
                 'pendidikan' => $item->refPendidikan?->nama,
@@ -78,6 +79,7 @@ class KerjaExport extends DefaultValueBinder implements FromCollection, WithHead
                 'TEMPAT LAHIR',
                 'JENIS KELAMIN',
                 'ALAMAT',
+                'KELURAHAN',
                 'KECAMATAN',
                 'NO HP',
                 'PENDIDIKAN',
@@ -102,7 +104,7 @@ class KerjaExport extends DefaultValueBinder implements FromCollection, WithHead
 
     public function styles(Worksheet $sheet)
     {
-        $lastColumn = 'L'; // Column for STATUS VERIFIKASI
+        $lastColumn = 'M'; // Column for STATUS VERIFIKASI
         $lastRow = $sheet->getHighestRow();
 
         // Merge title cells
@@ -163,11 +165,12 @@ class KerjaExport extends DefaultValueBinder implements FromCollection, WithHead
         $sheet->getColumnDimension('E')->setWidth(20);  // TEMPAT LAHIR
         $sheet->getColumnDimension('F')->setWidth(15);  // JENIS KELAMIN
         $sheet->getColumnDimension('G')->setWidth(35);  // ALAMAT
-        $sheet->getColumnDimension('H')->setWidth(20);  // KECAMATAN
-        $sheet->getColumnDimension('I')->setWidth(15);  // NO HP
-        $sheet->getColumnDimension('J')->setWidth(20);  // PENDIDIKAN
-        $sheet->getColumnDimension('K')->setWidth(25);  // PELATIHAN
-        $sheet->getColumnDimension('L')->setWidth(20);  // STATUS VERIFIKASI
+        $sheet->getColumnDimension('H')->setWidth(20);  // KELURAHAN
+        $sheet->getColumnDimension('I')->setWidth(20);  // KECAMATAN
+        $sheet->getColumnDimension('J')->setWidth(15);  // NO HP
+        $sheet->getColumnDimension('K')->setWidth(20);  // PENDIDIKAN
+        $sheet->getColumnDimension('L')->setWidth(25);  // PELATIHAN
+        $sheet->getColumnDimension('M')->setWidth(20);  // STATUS VERIFIKASI
 
         // Center specific columns
         $sheet->getStyle('A5:A' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // NO

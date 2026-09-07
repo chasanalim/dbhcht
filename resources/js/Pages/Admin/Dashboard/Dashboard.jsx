@@ -552,7 +552,7 @@ const DashboardSection = ({
                                 </div>
                                 <CircularProgress
                                     value={Math.round(
-                                        (summary.total_pendaftar_lulus /
+                                        (summary.total_pendaftar_lulus_verifikasi /
                                             summary.total_pendaftar) *
                                             100
                                     )}
@@ -560,7 +560,7 @@ const DashboardSection = ({
                                 />
                             </div>
                             <h1 className="fw-bold text-success mb-0">
-                                {summary.total_pendaftar_lulus}
+                                {summary.total_pendaftar_lulus_verifikasi ?? 0}
                             </h1>
                             {/* <div className="d-flex align-items-center justify-content-between text-muted small">
                             <span>Dari Total</span>
@@ -586,7 +586,7 @@ const DashboardSection = ({
                                 </div>
                                 <CircularProgress
                                     value={Math.round(
-                                        (summary.total_pendaftar_tidak_lulus /
+                                        (summary.total_pendaftar_gagal_verifikasi /
                                             summary.total_pendaftar) *
                                             100
                                     )}
@@ -594,7 +594,7 @@ const DashboardSection = ({
                                 />
                             </div>
                             <h1 className="fw-bold text-danger mb-0">
-                                {summary.total_pendaftar_tidak_lulus}
+                                {summary.total_pendaftar_gagal_verifikasi ?? 0}
                             </h1>
                             {/* <div className="d-flex align-items-center justify-content-between text-muted small">
                             <span>Dari Total</span>
@@ -620,15 +620,20 @@ const DashboardSection = ({
                                 </div>
                                 <CircularProgress
                                     value={Math.round(
-                                        (summary.total_pendaftar_belum_verifikasi /
-                                            summary.total_pendaftar) *
-                                            100
+                                        (summary.total_pendaftar
+                                            ? (summary.total_pendaftar -
+                                                  (summary.total_pendaftar_lulus_verifikasi ?? 0) -
+                                                  (summary.total_pendaftar_gagal_verifikasi ?? 0)) /
+                                                  summary.total_pendaftar
+                                            : 0) * 100
                                     )}
                                     color="warning"
                                 />
                             </div>
                             <h1 className="fw-bold text-warning mb-0">
-                                {summary.total_pendaftar_belum_verifikasi}
+                                {(summary.total_pendaftar ?? 0) -
+                                    (summary.total_pendaftar_lulus_verifikasi ?? 0) -
+                                    (summary.total_pendaftar_gagal_verifikasi ?? 0)}
                             </h1>
                             {/* <div className="d-flex align-items-center justify-content-between text-muted small">
                             <span>Dari Total</span>
