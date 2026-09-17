@@ -73,8 +73,8 @@ class RegPelatihanUmkmController extends Controller
             'file_ktp' => 'required|file|mimes:jpg,jpeg,png|max:2048',
             'file_kk' => 'required|file|mimes:jpg,jpeg,png|max:2048',
             'file_pasfoto' => 'required|file|mimes:jpg,jpeg,png|max:2048',
-            'file_surat_pernyataan_tidak_ikut' => 'nullable|file|mimes:pdf|max:2048',
-            'file_surat_kesanggupan' => 'required|file|mimes:pdf|max:2048',
+            'file_surat_pernyataan_tidak_ikut' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'file_surat_kesanggupan' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'file_nib' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ];
     }

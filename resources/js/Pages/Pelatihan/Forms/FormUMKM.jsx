@@ -417,7 +417,7 @@ export default function FormUMKM({ umkmTrainingOptions = [] }) {
                     )}
                 </div>
                 <Form.Label className="text-primary" style={{ fontSize: "11px" }}>
-                    Format: {accept === ".pdf" ? "*.pdf" : "*.png, *.jpg, *.jpeg"}
+                    Format: {accept.split(",").map((extension) => `*${extension}`).join(", ")}
                 </Form.Label>
 
                 <Form.Control
@@ -1321,9 +1321,9 @@ export default function FormUMKM({ umkmTrainingOptions = [] }) {
                     {renderFileUpload({
                         label: "Surat Pernyataan Tidak Mengikuti Pelatihan Lain",
                         fieldName: "file_surat_pernyataan_tidak_ikut",
-                        accept: ".pdf",
+                        accept: ".pdf,.png,.jpg,.jpeg",
                         index: 4,
-                        description: "Maksimal 2MB. Format: PDF",
+                        description: "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
                         downloadLink: "https://sultan.kedirikota.go.id/storage/files/ACnkVFsu9Fl8yi6pNan4SfQFNIVmcN95qhXKOtqy.pdf",
                         required: false,
                     })}
@@ -1331,9 +1331,9 @@ export default function FormUMKM({ umkmTrainingOptions = [] }) {
                     {renderFileUpload({
                         label: "Surat Pernyataan Kesanggupan Mengikuti Pelatihan Secara Penuh",
                         fieldName: "file_surat_kesanggupan",
-                        accept: ".pdf",
+                        accept: ".pdf,.png,.jpg,.jpeg",
                         index: 5,
-                        description: "Maksimal 2MB. Format: PDF",
+                        description: "Maksimal 2MB. Format: PDF, PNG, JPG, JPEG",
                         downloadLink: "https://sultan.kedirikota.go.id/storage/files/35KIXRx55JFg4M3H1laVMMhLE6yZ0EMvbhIf85d7.pdf",
                     })}
 
