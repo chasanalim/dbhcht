@@ -39,13 +39,7 @@ class KerjaExport extends DefaultValueBinder implements FromCollection, WithHead
                 'no_hp' => $item->phone_number,
                 'pendidikan' => $item->refPendidikan?->nama,
                 'pelatihan' => $item->jenisPelatihan?->nama,
-                // 'verifikasi' => $this->getVerificationStatus($item)
-                'status' => [
-                    '1' => 'Lolos',
-                    '2' => 'Tidak Lolos',
-                    '3' => 'Blacklist',
-                    '4' => 'Lolos Pelatihan Lain',
-                ][$item->status] ?? 'Belum Diverifikasi',
+                'verifikasi' => $item->getDocumentVerificationStatusLabel(),
             ];
         });
     }
@@ -84,22 +78,9 @@ class KerjaExport extends DefaultValueBinder implements FromCollection, WithHead
                 'NO HP',
                 'PENDIDIKAN',
                 'PELATIHAN',
-                // 'STATUS VERIFIKASI',
-                'STATUS'
+                'STATUS VERIFIKASI'
             ]
         ];
-    }
-
-    private function getVerificationStatus($item)
-    {
-        $verifications = $item->documentVerifications;
-        $requiredDocs = ['ktp', 'kk'];
-        $allVerified = count($verifications) === count($requiredDocs);
-        $allApproved = $verifications->every(fn($v) => $v->status === 1);
-
-        if ($allVerified && $allApproved) return 'Terverifikasi';
-        if ($allVerified && !$allApproved) return 'Tidak Memenuhi Syarat';
-        return 'Belum diverifikasi';
     }
 
     public function styles(Worksheet $sheet)

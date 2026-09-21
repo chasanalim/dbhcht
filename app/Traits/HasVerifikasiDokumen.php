@@ -79,6 +79,15 @@ trait HasVerifikasiDokumen
             : 'rejected';
     }
 
+    public function getDocumentVerificationStatusLabel(): string
+    {
+        return match ($this->getDocumentVerificationStatus()) {
+            'verified' => 'Terverifikasi',
+            'rejected' => 'Tidak Memenuhi Syarat',
+            default => 'Belum diverifikasi',
+        };
+    }
+
     public function isDocumentVerified($documentType)
     {
         return $this->documentVerifications()

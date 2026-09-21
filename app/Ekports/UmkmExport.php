@@ -40,13 +40,7 @@ class UmkmExport extends DefaultValueBinder implements FromCollection, WithHeadi
                 'prioritas_2' => $item->prioritas_2,
                 'prioritas_3' => $item->prioritas_3,
                 'skor' => number_format($item->skor, 2),
-                // 'verifikasi' => $this->getVerificationStatus($item),
-                'status' => [
-                    '1' => 'Lolos',
-                    '2' => 'Tidak Lolos',
-                    '3' => 'Blacklist',
-                    '4' => 'Lolos Pelatihan Lain',
-                ][$item->status] ?? 'Belum Diverifikasi',
+                'verifikasi' => $item->getDocumentVerificationStatusLabel(),
             ];
         });
     }
@@ -86,22 +80,9 @@ class UmkmExport extends DefaultValueBinder implements FromCollection, WithHeadi
                 'PRIORITAS 2',
                 'PRIORITAS 3',
                 'SKOR',
-                // 'STATUS VERIFIKASI',
-                'STATUS'
+                'STATUS VERIFIKASI'
             ]
         ];
-    }
-
-    private function getVerificationStatus($item)
-    {
-        $verifications = $item->documentVerifications;
-        $requiredDocs = ['foto', 'ktp', 'kk', 'pernyataan'];
-        $allVerified = count($verifications) === count($requiredDocs);
-        $allApproved = $verifications->every(fn($v) => $v->status === 1);
-
-        if ($allVerified && $allApproved) return 'Terverifikasi';
-        if ($allVerified && !$allApproved) return 'Tidak Memenuhi Syarat';
-        return 'Belum diverifikasi';
     }
 
     public function styles(Worksheet $sheet)

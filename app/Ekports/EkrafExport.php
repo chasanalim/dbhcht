@@ -40,13 +40,7 @@ class EkrafExport extends DefaultValueBinder implements FromCollection, WithHead
                 'no_hp' => $item->no_hp,
                 'jenis_pelatihan' => $item->jenis_pelatihan,
                 'skor' => number_format($item->skor, 2),
-                // 'verifikasi' => $this->getVerificationStatus($item),
-                'status' => [
-                    '1' => 'Lolos',
-                    '2' => 'Tidak Lolos',
-                    '3' => 'Blacklist',
-                    '4' => 'Lolos Pelatihan Lain',
-                ][$item->status] ?? 'Belum Diverifikasi',
+                'verifikasi' => $item->getDocumentVerificationStatusLabel(),
             ];
         });
     }
@@ -86,22 +80,9 @@ class EkrafExport extends DefaultValueBinder implements FromCollection, WithHead
                 'NO HP',
                 'PELATIHAN',
                 'SKOR',
-                // 'STATUS VERIFIKASI',
-                'STATUS'
+                'STATUS VERIFIKASI'
             ]
         ];
-    }
-
-    private function getVerificationStatus($item)
-    {
-        $verifications = $item->documentVerifications;
-        $requiredDocs = ['ktp', 'kk', 'siup', 'nib'];
-        $allVerified = count($verifications) === count($requiredDocs);
-        $allApproved = $verifications->every(fn($v) => $v->status === 1);
-
-        if ($allVerified && $allApproved) return 'Terverifikasi';
-        if ($allVerified && !$allApproved) return 'Tidak Memenuhi Syarat';
-        return 'Belum diverifikasi';
     }
 
     public function styles(Worksheet $sheet)

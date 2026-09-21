@@ -41,7 +41,7 @@ class BanmodExport extends DefaultValueBinder implements FromCollection, WithHea
                 'kategori' => $item->kategoriUsaha?->nama,
                 'klaster_usaha' => $item->klasterUsaha?->nama,
                 'skor' => number_format($item->skor, 2),
-                'verifikasi' => $this->getVerificationStatus($item)
+                'verifikasi' => $item->getDocumentVerificationStatusLabel()
             ];
         });
     }
@@ -84,18 +84,6 @@ class BanmodExport extends DefaultValueBinder implements FromCollection, WithHea
                 'STATUS VERIFIKASI'
             ]
         ];
-    }
-
-    private function getVerificationStatus($item)
-    {
-        $verifications = $item->documentVerifications;
-        $requiredDocs = $item->requiredDocuments();
-        $allVerified = count($verifications) === count($requiredDocs);
-        $allApproved = $verifications->every(fn($v) => $v->status === 1);
-
-        if ($allVerified && $allApproved) return 'Terverifikasi';
-        if ($allVerified && !$allApproved) return 'Tidak Memenuhi Syarat';
-        return 'Belum diverifikasi';
     }
 
     public function styles(Worksheet $sheet)
