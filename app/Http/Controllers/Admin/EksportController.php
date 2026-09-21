@@ -23,6 +23,22 @@ use App\Models\PelatihanEkonomiKreatif;
 
 class EksportController extends Controller
 {
+    private function filterByVerificationStatus($data, Request $request)
+    {
+        if (!$request->has('verification_status') || $request->verification_status === 'all') {
+            return $data;
+        }
+
+        $verificationStatus = $request->verification_status;
+        if (!in_array($verificationStatus, ['verified', 'rejected', 'pending'], true)) {
+            return $data;
+        }
+
+        return $data->filter(fn ($item) =>
+            $item->getDocumentVerificationStatus() === $verificationStatus
+        );
+    }
+
     public function exportBanmod(Request $request)
     {
         $query = PendaftaranBanmod::with(['documentVerifications', 'klasterUsaha', 'kategoriUsaha']);
@@ -37,13 +53,10 @@ class EksportController extends Controller
             $query->where('klaster_usaha', $request->klaster_usaha);
         }
 
-        // Apply verification status filter
-        if ($request->has('verification_status') && $request->verification_status !== 'all') {
-            $status = $request->verification_status;
-            $query = $this->applyVerificationFilterBanmod($query, $status);
-        }
-
-        $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor')->values() // Reset keys after sorting
+        $data = $this->filterByVerificationStatus(
+            $query->orderBy('created_at', 'asc')->get(),
+            $request
+        )->sortByDesc('skor')->values() // Reset keys after sorting
             ->map(function ($item, $index) {
                 $item->row_num = $index + 1; // Add row number
                 return $item;
@@ -64,88 +77,6 @@ class EksportController extends Controller
         ]);
 
         return $pdf->stream('rekap-banmod.pdf');
-    }
-
-    private function applyVerificationFilterBanmod($query, $status)
-    {
-
-        switch ($status) {
-            case 'verified':
-                return $query->whereExists(function ($query) {
-                    $query->selectRaw('1')
-                        ->from('verifikasi_dokumen as v')
-                        ->whereColumn('v.pelatihan_id', 'pendaftaran_banmods.id')
-                        ->where('v.pelatihan_type', PendaftaranBanmod::class)
-                        ->where('v.status', 1)
-                        ->groupBy('v.pelatihan_id')
-                        ->havingRaw('COUNT(*) = (
-                        CASE
-                            WHEN pendaftaran_banmods.kategori = 1 THEN 8
-                            WHEN pendaftaran_banmods.kategori = 2 THEN 8
-                            WHEN pendaftaran_banmods.kategori = 4 THEN 8
-                            WHEN pendaftaran_banmods.kategori = 4 THEN 11
-                            WHEN pendaftaran_banmods.kategori = 5 THEN 8
-                            ELSE 8
-                        END
-                    )');
-                });
-
-            case 'rejected':
-                return $query->whereExists(function ($query) {
-                    $query->selectRaw('1')
-                        ->from('verifikasi_dokumen as v')
-                        ->whereColumn('v.pelatihan_id', 'pendaftaran_banmods.id')
-                        ->where('v.pelatihan_type', PendaftaranBanmod::class)
-                        ->groupBy('v.pelatihan_id')
-                        ->havingRaw('
-                COUNT(*) = (
-                    CASE
-                        WHEN pendaftaran_banmods.kategori = 1 THEN 8
-                        WHEN pendaftaran_banmods.kategori = 2 THEN 8
-                        WHEN pendaftaran_banmods.kategori = 3 THEN 8
-                        WHEN pendaftaran_banmods.kategori = 4 THEN 11
-                        WHEN pendaftaran_banmods.kategori = 5 THEN 8
-                        ELSE 8
-                    END
-                )
-                AND
-                SUM(CASE WHEN v.status = 1 THEN 1 ELSE 0 END) < (
-                    CASE
-                        WHEN pendaftaran_banmods.kategori = 1 THEN 8
-                        WHEN pendaftaran_banmods.kategori = 2 THEN 8
-                        WHEN pendaftaran_banmods.kategori = 3 THEN 8
-                        WHEN pendaftaran_banmods.kategori = 4 THEN 11
-                        WHEN pendaftaran_banmods.kategori = 5 THEN 8
-                        ELSE 8
-                    END
-                )
-            ');
-                });
-
-
-            case 'pending':
-                return $query->where(function ($q) {
-                    $q->whereRaw('(
-                    SELECT COUNT(*)
-                    FROM verifikasi_dokumen
-                    WHERE pelatihan_id = pendaftaran_banmods.id
-                    AND pelatihan_type = ?
-                ) < (
-                    CASE
-                        WHEN kategori = 1 THEN 8
-                        WHEN kategori = 2 THEN 8
-                        WHEN kategori = 3 THEN 8
-                        WHEN kategori = 4 THEN 11
-                        WHEN kategori = 5 THEN 8
-                        ELSE 4
-                    END
-                )', [PendaftaranBanmod::class])
-                        ->orWhereDoesntHave('documentVerifications');
-                });
-
-            default:
-                return $query;
-        }
     }
 
     public function exportUmkm(Request $request)
@@ -172,13 +103,10 @@ class EksportController extends Controller
         if ($request->has('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
         }
-        // Apply verification status filter
-        if ($request->has('verification_status') && $request->verification_status !== 'all') {
-            $status = $request->verification_status;
-            $query = $this->applyVerificationFilterUmkm($query, $status);
-        }
-
-        $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor')->values() // Reset keys after sorting
+        $data = $this->filterByVerificationStatus(
+            $query->orderBy('created_at', 'asc')->get(),
+            $request
+        )->sortByDesc('skor')->values() // Reset keys after sorting
             ->map(function ($item, $index) {
                 $item->row_num = $index + 1; // Add row number
                 return $item;
@@ -199,52 +127,6 @@ class EksportController extends Controller
         return $pdf->stream('rekap-pelatihan-umkm.pdf');
     }
 
-    private function applyVerificationFilterUmkm($query, $status)
-    {
-
-        switch ($status) {
-            case 'verified':
-                return $query->whereExists(function ($query) {
-                    $query->selectRaw('1')
-                        ->from('verifikasi_dokumen as v')
-                        ->whereColumn('v.pelatihan_id', 'pelatihan_umkm.id')
-                        ->where('v.pelatihan_type', PelatihanUmkm::class)
-                        ->where('v.status', 1)
-                        ->groupBy('v.pelatihan_id')
-                        ->havingRaw('COUNT(*) = 4');
-                });
-
-            case 'rejected':
-                return $query->whereExists(function ($query) {
-                    $query->selectRaw('1')
-                        ->from('verifikasi_dokumen as v')
-                        ->whereColumn('v.pelatihan_id', 'pelatihan_umkm.id')
-                        ->where('v.pelatihan_type', PelatihanUmkm::class)
-                        ->groupBy('v.pelatihan_id')
-                        ->havingRaw('
-                COUNT(*) = 4
-                AND
-                SUM(CASE WHEN v.status = 1 THEN 1 ELSE 0 END) < 4
-            ');
-                });
-
-
-            case 'pending':
-                return $query->where(function ($q) {
-                    $q->whereRaw('(
-                    SELECT COUNT(*)
-                    FROM verifikasi_dokumen
-                    WHERE pelatihan_id = pelatihan_umkm.id
-                    AND pelatihan_type = ?
-                ) < 4', [PelatihanUmkm::class])
-                        ->orWhereDoesntHave('documentVerifications');
-                });
-
-            default:
-                return $query;
-        }
-    }
-
     public function exportKerja(Request $request)
     {
         $query = PelatihanKerjas::with(['refPendidikan', 'jenisPelatihan', 'alasanPelatihan', 'documentVerifications']);
@@ -255,13 +137,10 @@ class EksportController extends Controller
         if ($request->has('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
         }
-        // Apply verification status filter
-        if ($request->has('verification_status') && $request->verification_status !== 'all') {
-            $status = $request->verification_status;
-            $query = $this->applyVerificationFilterKerja($query, $status);
-        }
-
-        $data = $query->orderBy('created_at', 'asc')->get()->values() // Reset keys after sorting
+        $data = $this->filterByVerificationStatus(
+            $query->orderBy('created_at', 'asc')->get(),
+            $request
+        )->values() // Reset keys after sorting
             ->map(function ($item, $index) {
                 $item->row_num = $index + 1; // Add row number
                 return $item;
@@ -283,51 +162,6 @@ class EksportController extends Controller
         return $pdf->stream('rekap-pelatihan-kerja.pdf');
     }
 
-    private function applyVerificationFilterKerja($query, $status)
-    {
-        switch ($status) {
-            case 'verified':
-                return $query->whereExists(function ($query) {
-                    $query->selectRaw('1')
-                        ->from('verifikasi_dokumen as v')
-                        ->whereColumn('v.pelatihan_id', 'pelatihan_kerjas.id')
-                        ->where('v.pelatihan_type', PelatihanKerjas::class)
-                        ->where('v.status', 1)
-                        ->groupBy('v.pelatihan_id')
-                        ->havingRaw('COUNT(*) = 2');
-                });
-
-            case 'rejected':
-                return $query->whereExists(function ($query) {
-                    $query->selectRaw('1')
-                        ->from('verifikasi_dokumen as v')
-                        ->whereColumn('v.pelatihan_id', 'pelatihan_kerjas.id')
-                        ->where('v.pelatihan_type', PelatihanKerjas::class)
-                        ->groupBy('v.pelatihan_id')
-                        ->havingRaw('
-                COUNT(*) = 2
-                AND
-                SUM(CASE WHEN v.status = 1 THEN 1 ELSE 0 END) < 2
-            ');
-                });
-
-
-            case 'pending':
-                return $query->where(function ($q) {
-                    $q->whereRaw('(
-                    SELECT COUNT(*)
-                    FROM verifikasi_dokumen
-                    WHERE pelatihan_id = pelatihan_kerjas.id
-                    AND pelatihan_type = ?
-                ) < 2', [PelatihanKerjas::class])
-                        ->orWhereDoesntHave('documentVerifications');
-                });
-
-            default:
-                return $query;
-        }
-    }
-
     public function exportPelatihanBanmod(Request $request)
     {
         $query = PelatihanBanmod::with(['documentVerifications']);
@@ -338,13 +172,10 @@ class EksportController extends Controller
         if ($request->has('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
         }
-        // Apply verification status filter
-        if ($request->has('verification_status') && $request->verification_status !== 'all') {
-            $status = $request->verification_status;
-            $query = $this->applyVerificationFilterPelatihanBanmod($query, $status);
-        }
-
-        $data = $query->orderBy('created_at', 'asc')->get()->values() // Reset keys after sorting
+        $data = $this->filterByVerificationStatus(
+            $query->orderBy('created_at', 'asc')->get(),
+            $request
+        )->values() // Reset keys after sorting
             ->map(function ($item, $index) {
                 $item->row_num = $index + 1; // Add row number
                 return $item;
@@ -366,51 +197,6 @@ class EksportController extends Controller
         return $pdf->stream('rekap-pelatihan-banmod.pdf');
     }
 
-    private function applyVerificationFilterPelatihanBanmod($query, $status)
-    {
-        switch ($status) {
-            case 'verified':
-                return $query->whereExists(function ($query) {
-                    $query->selectRaw('1')
-                        ->from('verifikasi_dokumen as v')
-                        ->whereColumn('v.pelatihan_id', 'pelatihan_banmod.id')
-                        ->where('v.pelatihan_type', PelatihanBanmod::class)
-                        ->where('v.status', 1)
-                        ->groupBy('v.pelatihan_id')
-                        ->havingRaw('COUNT(*) = 3');
-                });
-
-            case 'rejected':
-                return $query->whereExists(function ($query) {
-                    $query->selectRaw('1')
-                        ->from('verifikasi_dokumen as v')
-                        ->whereColumn('v.pelatihan_id', 'pelatihan_banmod.id')
-                        ->where('v.pelatihan_type', PelatihanBanmod::class)
-                        ->groupBy('v.pelatihan_id')
-                        ->havingRaw('
-                COUNT(*) = 3
-                AND
-                SUM(CASE WHEN v.status = 1 THEN 1 ELSE 0 END) < 3
-            ');
-                });
-
-
-            case 'pending':
-                return $query->where(function ($q) {
-                    $q->whereRaw('(
-                    SELECT COUNT(*)
-                    FROM verifikasi_dokumen
-                    WHERE pelatihan_id = pelatihan_banmod.id
-                    AND pelatihan_type = ?
-                ) < 3', [PelatihanBanmod::class])
-                        ->orWhereDoesntHave('documentVerifications');
-                });
-
-            default:
-                return $query;
-        }
-    }
-
     public function exportPertanian(Request $request)
     {
         $query = PelatihanPetani::with('kelompokTani', 'jenisPelatihanPetani', 'kategoriKelompok', 'alasanPelatihan', 'masaAktifKelompok', 'documentVerifications');
@@ -420,13 +206,10 @@ class EksportController extends Controller
         if ($request->has('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
         }
-        // Apply verification status filter
-        if ($request->has('verification_status') && $request->verification_status !== 'all') {
-            $status = $request->verification_status;
-            $query = $this->applyVerificationFilterPertanian($query, $status);
-        }
-
-        $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor')->values() // Reset keys after sorting
+        $data = $this->filterByVerificationStatus(
+            $query->orderBy('created_at', 'asc')->get(),
+            $request
+        )->sortByDesc('skor')->values() // Reset keys after sorting
             ->map(function ($item, $index) {
                 $item->row_num = $index + 1; // Add row number
                 return $item;
@@ -446,51 +229,6 @@ class EksportController extends Controller
         ]);
 
         return $pdf->stream('rekap-pertanian.pdf');
-    }
-
-    private function applyVerificationFilterPertanian($query, $status)
-    {
-        switch ($status) {
-            case 'verified':
-                return $query->whereExists(function ($query) {
-                    $query->selectRaw('1')
-                        ->from('verifikasi_dokumen as v')
-                        ->whereColumn('v.pelatihan_id', 'pelatihan_petanis.id')
-                        ->where('v.pelatihan_type', PelatihanPetani::class)
-                        ->where('v.status', 1)
-                        ->groupBy('v.pelatihan_id')
-                        ->havingRaw('COUNT(*) = 4');
-                });
-
-            case 'rejected':
-                return $query->whereExists(function ($query) {
-                    $query->selectRaw('1')
-                        ->from('verifikasi_dokumen as v')
-                        ->whereColumn('v.pelatihan_id', 'pelatihan_petanis.id')
-                        ->where('v.pelatihan_type', PelatihanPetani::class)
-                        ->groupBy('v.pelatihan_id')
-                        ->havingRaw('
-                COUNT(*) = 4
-                AND
-                SUM(CASE WHEN v.status = 1 THEN 1 ELSE 0 END) < 4
-            ');
-                });
-
-
-            case 'pending':
-                return $query->where(function ($q) {
-                    $q->whereRaw('(
-                    SELECT COUNT(*)
-                    FROM verifikasi_dokumen
-                    WHERE pelatihan_id = pelatihan_petanis.id
-                    AND pelatihan_type = ?
-                ) < 4', [PelatihanPetani::class])
-                        ->orWhereDoesntHave('documentVerifications');
-                });
-
-            default:
-                return $query;
-        }
     }
 
     public function exportBlacklist(Request $request)
@@ -575,14 +313,10 @@ class EksportController extends Controller
         if ($request->has('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
         }
-        // Apply verification status filter
-        if ($request->has('verification_status') && $request->verification_status !== 'all') {
-            $status = $request->verification_status;
-            $query = $this->applyVerificationFilterEkraf($query, $status);
-        }
-
-
-        $data = $query->orderBy('created_at', 'asc')->get()->sortByDesc('skor')->values() // Reset keys after sorting
+        $data = $this->filterByVerificationStatus(
+            $query->orderBy('created_at', 'asc')->get(),
+            $request
+        )->sortByDesc('skor')->values() // Reset keys after sorting
             ->map(function ($item, $index) {
                 $item->row_num = $index + 1; // Add row number
                 return $item;
@@ -602,50 +336,5 @@ class EksportController extends Controller
         ]);
 
         return $pdf->stream('rekap-ekraf.pdf');
-    }
-
-    private function applyVerificationFilterEkraf($query, $status)
-    {
-        switch ($status) {
-            case 'verified':
-                return $query->whereExists(function ($query) {
-                    $query->selectRaw('1')
-                        ->from('verifikasi_dokumen as v')
-                        ->whereColumn('v.pelatihan_id', 'pelatihan_ekonomi_kreatif.id')
-                        ->where('v.pelatihan_type', PelatihanEkonomiKreatif::class)
-                        ->where('v.status', 1)
-                        ->groupBy('v.pelatihan_id')
-                        ->havingRaw('COUNT(*) = 4');
-                });
-
-            case 'rejected':
-                return $query->whereExists(function ($query) {
-                    $query->selectRaw('1')
-                        ->from('verifikasi_dokumen as v')
-                        ->whereColumn('v.pelatihan_id', 'pelatihan_ekonomi_kreatif.id')
-                        ->where('v.pelatihan_type', PelatihanEkonomiKreatif::class)
-                        ->groupBy('v.pelatihan_id')
-                        ->havingRaw('
-                COUNT(*) = 4
-                AND
-                SUM(CASE WHEN v.status = 1 THEN 1 ELSE 0 END) < 4
-            ');
-                });
-
-
-            case 'pending':
-                return $query->where(function ($q) {
-                    $q->whereRaw('(
-                    SELECT COUNT(*)
-                    FROM verifikasi_dokumen
-                    WHERE pelatihan_id = pelatihan_ekonomi_kreatif.id
-                    AND pelatihan_type = ?
-                ) < 4', [PelatihanEkonomiKreatif::class])
-                        ->orWhereDoesntHave('documentVerifications');
-                });
-
-            default:
-                return $query;
-        }
     }
 }

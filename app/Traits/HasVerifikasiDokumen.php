@@ -48,6 +48,37 @@ trait HasVerifikasiDokumen
         return $this->morphMany(VerifikasiDokumen::class, 'verifiable', 'pelatihan_type', 'pelatihan_id');
     }
 
+    /**
+     * Daftar tipe dokumen yang wajib diverifikasi untuk record ini.
+     * Model dengan aturan dinamis dapat mengganti method ini.
+     */
+    public function requiredVerificationDocuments(): array
+    {
+        if (method_exists($this, 'requiredDocuments')) {
+            return $this->requiredDocuments();
+        }
+
+        return array_keys(static::getDocumentTypes());
+    }
+
+    /**
+     * Status verifikasi yang digunakan bersama oleh tabel admin dan ekspor.
+     */
+    public function getDocumentVerificationStatus(): string
+    {
+        $requiredDocumentTypes = $this->requiredVerificationDocuments();
+        $verifications = $this->documentVerifications
+            ->whereIn('document_type', $requiredDocumentTypes);
+
+        if ($verifications->count() !== count($requiredDocumentTypes)) {
+            return 'pending';
+        }
+
+        return $verifications->every(fn ($verification) => (int) $verification->status === 1)
+            ? 'verified'
+            : 'rejected';
+    }
+
     public function isDocumentVerified($documentType)
     {
         return $this->documentVerifications()

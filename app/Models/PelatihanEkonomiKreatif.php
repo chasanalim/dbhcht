@@ -325,6 +325,13 @@ class PelatihanEkonomiKreatif extends Model
             $verifications->every(fn($v) => $v->status === 1);
     }
 
+    public function requiredVerificationDocuments(): array
+    {
+        return array_keys(
+            self::getRequiredDocumentsByKategori($this->kategori_pendaftar, $this->peran_ekraf)
+        );
+    }
+
     /**
      * Check if any documents are rejected
      */

@@ -108,6 +108,11 @@ class PelatihanBanmod extends Model
         ];
     }
 
+    public function requiredVerificationDocuments(): array
+    {
+        return ['ktp', 'kk', 'pasfoto', 'surat_pernyataan_tidak_ikut', 'nib'];
+    }
+
     public function getJenisPelatihan()
     {
         return ' Penerima Bantuan Modal';

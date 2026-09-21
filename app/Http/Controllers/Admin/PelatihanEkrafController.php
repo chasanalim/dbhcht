@@ -85,26 +85,8 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
 
                 if ($request->has('verification_status')) {
                     $status = $request->verification_status;
-                    $data = $data->filter(function ($item) use ($status) {
-                        $requiredDocs = $this->getRequiredDocumentsByKategori($item->kategori_pendaftar, $item->peran_ekraf);
-                        $verifications = $item->documentVerifications->whereIn('document_type', $requiredDocs);
-
-                        $allVerified = count($verifications) === count($requiredDocs);
-                        $allApproved = $verifications->every(function ($verification) {
-                            return $verification->status === 1;
-                        });
-
-                        switch ($status) {
-                            case 'verified':
-                                return $allVerified && $allApproved;
-                            case 'rejected':
-                                return $allVerified && !$allApproved;
-                            case 'pending':
-                                return !$allVerified;
-                            default:
-                                return true;
-                        }
-                    });
+                    $data = $data->filter(fn ($item) => $status === 'all'
+                        || $item->getDocumentVerificationStatus() === $status);
                 }
 
                 return response()->json([
@@ -127,26 +109,8 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
 
             if ($request->has('verification_status')) {
                 $status = $request->verification_status;
-                $data = $data->filter(function ($item) use ($status) {
-                    $requiredDocs = $this->getRequiredDocumentsByKategori($item->kategori_pendaftar, $item->peran_ekraf);
-                    $verifications = $item->documentVerifications->whereIn('document_type', $requiredDocs);
-
-                    $allVerified = count($verifications) === count($requiredDocs);
-                    $allApproved = $verifications->every(function ($verification) {
-                        return $verification->status === 1;
-                    });
-
-                    switch ($status) {
-                        case 'verified':
-                            return $allVerified && $allApproved;
-                        case 'rejected':
-                            return $allVerified && !$allApproved;
-                        case 'pending':
-                            return !$allVerified;
-                        default:
-                            return true;
-                    }
-                });
+                $data = $data->filter(fn ($item) => $status === 'all'
+                    || $item->getDocumentVerificationStatus() === $status);
             }
 
             [$lolosIds, $masterNiks] = $this->getNikDenganPelatihanSebelumnya($data);
@@ -162,17 +126,11 @@ class PelatihanEkrafController extends Controller implements HasMiddleware
                     ];
                 })
                 ->addColumn('verifikasi_dokumen', function ($row) {
-                    $requiredDocs = $this->getRequiredDocumentsByKategori($row->kategori_pendaftar, $row->peran_ekraf);
-                    $verifications = $row->documentVerifications->whereIn('document_type', $requiredDocs);
-
-                    $allVerified = count($verifications) === count($requiredDocs);
-                    $allApproved = $verifications->every(function ($verification) {
-                        return $verification->status === 1;
-                    });
+                    $verificationStatus = $row->getDocumentVerificationStatus();
 
                     return [
-                        'all_verified' => $allVerified,
-                        'all_approved' => $allApproved
+                        'all_verified' => $verificationStatus !== 'pending',
+                        'all_approved' => $verificationStatus === 'verified'
                     ];
                 })
                 ->addColumn('keterangan', function ($row) {
