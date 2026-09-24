@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -32,10 +31,11 @@ class UserRoleSeeder extends Seeder
         // $role_skpd->syncPermissions($permissions_skpd);
         // $role_walikota->syncPermissions($permissions_walikota);
 
-
-        //Permission (idempoten - tidak error jika dijalankan ulang)
+        // Permission (idempoten - tidak error jika dijalankan ulang)
         $permissions = [
             'view-dashboard',
+
+            'manage-tipe-pelatihan',
 
             'view-banmod',
             'add-banmod',
@@ -93,14 +93,24 @@ class UserRoleSeeder extends Seeder
             Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
         }
 
-        //Role (idempoten)
-        foreach (['admin', 'dinkop', 'disperindag', 'pertanian', 'walikota'] as $role) {
+        // Role (idempoten)
+        foreach ([
+            'admin',
+            'dinkop',
+            'disperindag',
+            'pertanian',
+            'walikota',
+            'admin dinkop',
+            'admin disperindag',
+            'admin pertanian',
+        ] as $role) {
             Role::firstOrCreate(['name' => $role, 'guard_name' => 'web']);
         }
 
         $roleAdmin = Role::findByName('admin');
         $roleAdmin->givePermissionTo([
             'view-dashboard',
+            'manage-tipe-pelatihan',
             'view-banmod',
             'add-banmod',
             'edit-banmod',
@@ -185,6 +195,20 @@ class UserRoleSeeder extends Seeder
             'edit-master-pertanian',
         ]);
 
+        // Role admin SKPD mewarisi seluruh akses role induknya dan hanya
+        // mendapatkan satu akses tambahan untuk mengelola tipe pelatihan.
+        $adminRoles = [
+            'admin dinkop' => $roleDinkop,
+            'admin disperindag' => $roleDisperindag,
+            'admin pertanian' => $rolePertanian,
+        ];
+
+        foreach ($adminRoles as $adminRoleName => $parentRole) {
+            Role::findByName($adminRoleName)->syncPermissions([
+                ...$parentRole->permissions->pluck('name')->all(),
+                'manage-tipe-pelatihan',
+            ]);
+        }
 
         $roleWalikota = Role::findByName('walikota');
         $roleWalikota->givePermissionTo([

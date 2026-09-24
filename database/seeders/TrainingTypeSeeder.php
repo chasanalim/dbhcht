@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\TrainingType;
+use Illuminate\Database\Seeder;
 
 class TrainingTypeSeeder extends Seeder
 {
@@ -16,6 +15,7 @@ class TrainingTypeSeeder extends Seeder
         $trainings = [
             [
                 'value' => 'keterampilan',
+                'managed_by' => 'dinkop',
                 'label' => 'Pelatihan Keterampilan untuk Pencari Kerja',
                 'title' => 'Pelatihan Keterampilan untuk Pencari Kerja',
                 'description' => 'Pelatihan teknis dan soft skill untuk meningkatkan daya saing pencari kerja.',
@@ -33,6 +33,7 @@ class TrainingTypeSeeder extends Seeder
             ],
             [
                 'value' => 'penerimabanmod',
+                'managed_by' => 'disperindag',
                 'label' => 'Pelatihan Keterampilan Penerima Banmod',
                 'title' => 'Pelatihan Keterampilan untuk Penerima Banmod',
                 'description' => 'Pelatihan lanjutan bagi penerima bantuan modal untuk mengembangkan usahanya.',
@@ -49,6 +50,7 @@ class TrainingTypeSeeder extends Seeder
             ],
             [
                 'value' => 'ekraf',
+                'managed_by' => 'disperindag',
                 'label' => 'Pelatihan Ekonomi Kreatif',
                 'title' => 'Pelatihan Ekonomi Kreatif',
                 'description' => 'Peningkatan kapasitas pelaku Ekonomi Kreatif.',
@@ -65,6 +67,7 @@ class TrainingTypeSeeder extends Seeder
             ],
             [
                 'value' => 'umkm',
+                'managed_by' => 'dinkop',
                 'label' => 'Pelatihan UMKM',
                 'title' => 'Pelatihan UMKM',
                 'description' => 'Peningkatan kapasitas pelaku UMKM dalam peningkatan kualitas produk.',
@@ -81,6 +84,7 @@ class TrainingTypeSeeder extends Seeder
             ],
             [
                 'value' => 'petani',
+                'managed_by' => 'pertanian',
                 'label' => 'Pelatihan Pertanian',
                 'title' => 'Pelatihan Pertanian',
                 'description' => 'Teknik pertanian modern dan pemanfaatan alat pertanian terbaru.',

@@ -472,6 +472,7 @@ export default function Sidebar() {
                             </li>
                         </>
                         {(can.viewMasterLampiranFile ||
+                            can.manageTipePelatihan ||
                             can.viewMasterPertanian ||
                             can.viewMasterBanmod ||
                             can.viewMasterPencariKerja) && (
@@ -484,49 +485,51 @@ export default function Sidebar() {
                             </>
                         )}
                         {can.viewMasterLampiranFile && (
-                            <>
-                                <li>
-                                    <NavLink
-                                        href={route("admin.downloads.index")}
-                                        active={route().current(
+                            <li>
+                                <NavLink
+                                    href={route("admin.downloads.index")}
+                                    active={route().current(
+                                        "admin.downloads.index",
+                                    )}
+                                    className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                        route().current(
                                             "admin.downloads.index",
-                                        )}
-                                        className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
-                                            route().current(
-                                                "admin.downloads.index",
-                                            )
-                                                ? "active"
-                                                : ""
-                                        }`}
-                                    >
-                                        <i className="bi bi-cloud-arrow-down fs-5"></i>
-                                        <span className="text-white mt-1 ms-2">
-                                            Panduan Lampiran File
-                                        </span>
-                                    </NavLink>
-                                </li>
-                            
-                                <li>
-                                    <NavLink
-                                        href={route("admin.pelatihan.index")}
-                                        active={route().current(
+                                        )
+                                            ? "active"
+                                            : ""
+                                    }`}
+                                >
+                                    <i className="bi bi-cloud-arrow-down fs-5"></i>
+                                    <span className="text-white mt-1 ms-2">
+                                        Panduan Lampiran File
+                                    </span>
+                                </NavLink>
+                            </li>
+                        )}
+                        {can.manageTipePelatihan && (
+                            <li>
+                                <NavLink
+                                    href={route("admin.pelatihan.index")}
+                                    active={route().current(
+                                        "admin.pelatihan.index",
+                                    )}
+                                    className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                        route().current(
                                             "admin.pelatihan.index",
-                                        )}
-                                        className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
-                                            route().current(
-                                                "admin.pelatihan.index",
-                                            )
-                                                ? "active"
-                                                : ""
-                                        }`}
-                                    >
-                                        <i className="bi bi-list-ol fs-5"></i>
-                                        <span className="text-white mt-1 ms-2">
-                                            Tipe Pelatihan
-                                        </span>
-                                    </NavLink>
-                                </li>
-
+                                        )
+                                            ? "active"
+                                            : ""
+                                    }`}
+                                >
+                                    <i className="bi bi-list-ol fs-5"></i>
+                                    <span className="text-white mt-1 ms-2">
+                                        Tipe Pelatihan
+                                    </span>
+                                </NavLink>
+                            </li>
+                        )}
+                        {can.viewMasterLampiranFile && (
+                            <>
                                 <li>
                                     <NavLink
                                         href={route("admin.umkm-options.index")}

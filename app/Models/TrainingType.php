@@ -8,6 +8,7 @@ class TrainingType extends Model
 {
     protected $fillable = [
         'value',
+        'managed_by',
         'label',
         'title',
         'description',

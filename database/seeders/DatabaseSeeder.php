@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
             UserRoleSeeder::class,
             UserSeeder::class,
             TrainingTypeSeeder::class,
-            KategoriBanmodSeeder::class,
+            // KategoriBanmodSeeder::class,
             KlasterUsahaSeeder::class,
             LamaUsahaSeeder::class,
             JumlahTenagaKerjaSeeder::class,

@@ -2,7 +2,13 @@ import AdminLayout from "@/Layouts/admin/AdminLayout";
 import { Head, useForm } from "@inertiajs/react";
 import { Form } from "react-bootstrap";
 
-export default function Create({ title, trainingType, action, method = "POST" }) {
+export default function Create({
+    title,
+    trainingType,
+    action,
+    method = "POST",
+    managerOptions = {},
+}) {
     const normalizeRequirements = (requirements) => {
         if (Array.isArray(requirements)) {
             return requirements.join("\n");
@@ -28,6 +34,8 @@ export default function Create({ title, trainingType, action, method = "POST" })
     const { data, setData, post, processing, errors, progress, transform } =
         useForm({
             value: trainingType?.value || "",
+            managed_by:
+                trainingType?.managed_by || Object.keys(managerOptions)[0] || "",
             label: trainingType?.label || "",
             title: trainingType?.title || "",
             description: trainingType?.description || "",
@@ -91,6 +99,44 @@ export default function Create({ title, trainingType, action, method = "POST" })
                                     encType="multipart/form-data"
                                 >
                                     <div className="row">
+                                        <div className="col-md-6">
+                                            <Form.Group className="mb-3">
+                                                <Form.Label className="required">
+                                                    Penanggung Jawab
+                                                </Form.Label>
+                                                <Form.Select
+                                                    value={data.managed_by}
+                                                    onChange={(e) =>
+                                                        setData(
+                                                            "managed_by",
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    disabled={
+                                                        Object.keys(
+                                                            managerOptions,
+                                                        ).length === 1
+                                                    }
+                                                    isInvalid={
+                                                        !!errors.managed_by
+                                                    }
+                                                >
+                                                    {Object.entries(
+                                                        managerOptions,
+                                                    ).map(([value, label]) => (
+                                                        <option
+                                                            key={value}
+                                                            value={value}
+                                                        >
+                                                            {label}
+                                                        </option>
+                                                    ))}
+                                                </Form.Select>
+                                                <Form.Control.Feedback type="invalid">
+                                                    {errors.managed_by}
+                                                </Form.Control.Feedback>
+                                            </Form.Group>
+                                        </div>
                                         <div className="col-md-6">
                                             <Form.Group className="mb-3">
                                                 <Form.Label className="required">

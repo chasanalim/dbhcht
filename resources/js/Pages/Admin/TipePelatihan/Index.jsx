@@ -79,6 +79,20 @@ export default function Index({ title, can, flash }) {
                     name: "label",
                     width: "30%",
                 },
+                {
+                    data: "managed_by",
+                    name: "managed_by",
+                    width: "15%",
+                    render: function (data) {
+                        const labels = {
+                            dinkop: "Dinkop",
+                            disperindag: "Disperindag",
+                            pertanian: "Pertanian",
+                        };
+
+                        return labels[data] || "Belum ditentukan";
+                    },
+                },
 
                 {
                     data: "image",
@@ -198,6 +212,7 @@ export default function Index({ title, can, flash }) {
                                                 <th>Aksi</th>
                                                 <th>Value</th>
                                                 <th>Label</th>
+                                                <th>Penanggung Jawab</th>
                                                 <th>Image</th>
                                                 <th>Disable</th>
                                                 <th>Coming Soon</th>
