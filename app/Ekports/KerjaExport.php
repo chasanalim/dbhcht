@@ -30,6 +30,7 @@ class KerjaExport extends DefaultValueBinder implements FromCollection, WithHead
                 'no' => $item->row_num,
                 'nik' => $item->nik,
                 'no_kk' => $item->no_kk,
+                'desil' => $item->desil ?? '',
                 'nama' => $item->nama_lengkap,
                 'tempat_lahir' => $item->tmp_lhr,
                 'jenis_kelamin' => $item->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan',
@@ -69,6 +70,7 @@ class KerjaExport extends DefaultValueBinder implements FromCollection, WithHead
                 'NO',
                 'NIK',
                 'NO KK',
+                'DESIL',
                 'NAMA',
                 'TEMPAT LAHIR',
                 'JENIS KELAMIN',
@@ -85,7 +87,7 @@ class KerjaExport extends DefaultValueBinder implements FromCollection, WithHead
 
     public function styles(Worksheet $sheet)
     {
-        $lastColumn = 'M'; // Column for STATUS VERIFIKASI
+        $lastColumn = 'N'; // Column for STATUS VERIFIKASI
         $lastRow = $sheet->getHighestRow();
 
         // Merge title cells
@@ -142,26 +144,28 @@ class KerjaExport extends DefaultValueBinder implements FromCollection, WithHead
         $sheet->getColumnDimension('A')->setWidth(5);   // NO
         $sheet->getColumnDimension('B')->setWidth(20);  // NIK
         $sheet->getColumnDimension('C')->setWidth(20);  // NO KK
-        $sheet->getColumnDimension('D')->setWidth(30);  // NAMA
-        $sheet->getColumnDimension('E')->setWidth(20);  // TEMPAT LAHIR
-        $sheet->getColumnDimension('F')->setWidth(15);  // JENIS KELAMIN
-        $sheet->getColumnDimension('G')->setWidth(35);  // ALAMAT
-        $sheet->getColumnDimension('H')->setWidth(20);  // KELURAHAN
-        $sheet->getColumnDimension('I')->setWidth(20);  // KECAMATAN
-        $sheet->getColumnDimension('J')->setWidth(15);  // NO HP
-        $sheet->getColumnDimension('K')->setWidth(20);  // PENDIDIKAN
-        $sheet->getColumnDimension('L')->setWidth(25);  // PELATIHAN
-        $sheet->getColumnDimension('M')->setWidth(20);  // STATUS VERIFIKASI
+        $sheet->getColumnDimension('D')->setWidth(10);  // DESIL
+        $sheet->getColumnDimension('E')->setWidth(30);  // NAMA
+        $sheet->getColumnDimension('F')->setWidth(20);  // TEMPAT LAHIR
+        $sheet->getColumnDimension('G')->setWidth(15);  // JENIS KELAMIN
+        $sheet->getColumnDimension('H')->setWidth(35);  // ALAMAT
+        $sheet->getColumnDimension('I')->setWidth(20);  // KELURAHAN
+        $sheet->getColumnDimension('J')->setWidth(20);  // KECAMATAN
+        $sheet->getColumnDimension('K')->setWidth(15);  // NO HP
+        $sheet->getColumnDimension('L')->setWidth(20);  // PENDIDIKAN
+        $sheet->getColumnDimension('M')->setWidth(25);  // PELATIHAN
+        $sheet->getColumnDimension('N')->setWidth(20);  // STATUS VERIFIKASI
 
         // Center specific columns
         $sheet->getStyle('A5:A' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // NO
-        $sheet->getStyle('F5:F' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // JENIS KELAMIN
-        $sheet->getStyle('L5:L' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // SKOR & STATUS
+        $sheet->getStyle('D5:D' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // DESIL
+        $sheet->getStyle('G5:G' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // JENIS KELAMIN
+        $sheet->getStyle('M5:N' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // PELATIHAN & STATUS
 
         // Format NIK, NO KK and NO HP as text so long numbers are not truncated by Excel
         $sheet->getStyle('B5:B' . $lastRow)->getNumberFormat()->setFormatCode('@'); // NIK
         $sheet->getStyle('C5:C' . $lastRow)->getNumberFormat()->setFormatCode('@'); // NO KK
-        $sheet->getStyle('I5:I' . $lastRow)->getNumberFormat()->setFormatCode('@'); // NO HP
+        $sheet->getStyle('K5:K' . $lastRow)->getNumberFormat()->setFormatCode('@'); // NO HP
 
         return $sheet;
     }

@@ -146,3 +146,76 @@ test('kolom status verifikasi pada seluruh excel sesuai status dokumen', functio
             ->and($headingRow)->toHaveCount(count($exportedRow));
     }
 });
+
+test('seluruh excel pelatihan dan banmod memiliki kolom desil', function () {
+    $banmod = new class extends PendaftaranBanmod
+    {
+        public function getSkorAttribute()
+        {
+            return 0;
+        }
+    };
+    $banmod->setRelation('kategoriUsaha', null);
+    $banmod->setRelation('klasterUsaha', null);
+
+    $kerja = new class extends PelatihanKerjas
+    {
+        public function getSkorAttribute()
+        {
+            return 0;
+        }
+    };
+    $kerja->setRelation('refPendidikan', null);
+    $kerja->setRelation('jenisPelatihan', null);
+
+    $pertanian = new class extends PelatihanPetani
+    {
+        public function getSkorAttribute()
+        {
+            return 0;
+        }
+    };
+    $pertanian->setRelation('kelompokTani', null);
+    $pertanian->setRelation('jenisPelatihanPetani', null);
+
+    $cases = [
+        [BanmodExport::class, $banmod],
+        [UmkmExport::class, new class extends PelatihanUmkm
+        {
+            public function getSkorAttribute()
+            {
+                return 0;
+            }
+        }],
+        [KerjaExport::class, $kerja],
+        [PelBanmodExport::class, new class extends PelatihanBanmod
+        {
+            public function getSkorAttribute()
+            {
+                return 0;
+            }
+        }],
+        [PertanianExport::class, $pertanian],
+        [EkrafExport::class, new class extends PelatihanEkonomiKreatif
+        {
+            public function getSkorAttribute()
+            {
+                return 0;
+            }
+        }],
+    ];
+
+    foreach ($cases as [$exportClass, $model]) {
+        $model->setAttribute('desil', '3');
+        $model->setRelation('documentVerifications', new Collection());
+
+        $export = new $exportClass(collect([$model]));
+        $exportedRow = $export->collection()->first();
+        $headingRow = $export->headings()[3];
+        $desilIndex = array_search('DESIL', $headingRow, true);
+
+        expect($desilIndex)->not->toBeFalse()
+            ->and(array_values($exportedRow)[$desilIndex])->toBe('3')
+            ->and($headingRow)->toHaveCount(count($exportedRow));
+    }
+});
