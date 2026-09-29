@@ -38,6 +38,7 @@ class UmkmExport extends DefaultValueBinder implements FromCollection, WithHeadi
                 'tempat_lahir' => $item->tempat_lahir,
                 'tgl_lahir' => $item->tgl_lahir,
                 'alamat' => $item->jalan,
+                'kelurahan' => $item->kelurahan,
                 'kecamatan' => $item->kecamatan,
                 'no_hp' => $item->no_hp,
                 'prioritas_1' => $item->prioritas_1,
@@ -80,6 +81,7 @@ class UmkmExport extends DefaultValueBinder implements FromCollection, WithHeadi
                 'TEMPAT LAHIR',
                 'TGL LAHIR',
                 'ALAMAT',
+                'KELURAHAN',
                 'KECAMATAN',
                 'NO HP',
                 'PRIORITAS 1',
@@ -94,7 +96,7 @@ class UmkmExport extends DefaultValueBinder implements FromCollection, WithHeadi
 
     public function styles(Worksheet $sheet)
     {
-        $lastColumn = 'P'; // Column for STATUS VERIFIKASI
+        $lastColumn = 'Q'; // Column for STATUS
         $lastRow = $sheet->getHighestRow();
 
         // Merge title cells
@@ -156,24 +158,25 @@ class UmkmExport extends DefaultValueBinder implements FromCollection, WithHeadi
         $sheet->getColumnDimension('F')->setWidth(20); // TEMPAT LAHIR
         $sheet->getColumnDimension('G')->setWidth(15); // TGL LAHIR
         $sheet->getColumnDimension('H')->setWidth(35); // ALAMAT
-        $sheet->getColumnDimension('I')->setWidth(20); // KECAMATAN
-        $sheet->getColumnDimension('J')->setWidth(15); // NO HP
-        $sheet->getColumnDimension('K')->setWidth(30); // PRIORITAS 1
-        $sheet->getColumnDimension('L')->setWidth(30); // PRIORITAS 2
-        $sheet->getColumnDimension('M')->setWidth(30); // PRIORITAS 3
-        $sheet->getColumnDimension('N')->setWidth(10); // SKOR
-        $sheet->getColumnDimension('O')->setWidth(20); // STATUS VERIFIKASI
-        $sheet->getColumnDimension('P')->setWidth(20); // STATUS
+        $sheet->getColumnDimension('I')->setWidth(20); // KELURAHAN
+        $sheet->getColumnDimension('J')->setWidth(20); // KECAMATAN
+        $sheet->getColumnDimension('K')->setWidth(15); // NO HP
+        $sheet->getColumnDimension('L')->setWidth(30); // PRIORITAS 1
+        $sheet->getColumnDimension('M')->setWidth(30); // PRIORITAS 2
+        $sheet->getColumnDimension('N')->setWidth(30); // PRIORITAS 3
+        $sheet->getColumnDimension('O')->setWidth(10); // SKOR
+        $sheet->getColumnDimension('P')->setWidth(20); // STATUS VERIFIKASI
+        $sheet->getColumnDimension('Q')->setWidth(20); // STATUS
 
         // Center specific columns
         $sheet->getStyle('A5:A'.$lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // NO
         $sheet->getStyle('D5:D'.$lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // DESIL
-        $sheet->getStyle('N5:P'.$lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // SKOR & STATUS
+        $sheet->getStyle('O5:Q'.$lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // SKOR & STATUS
 
         // Format NIK, NO KK and NO HP as text so long numbers are not truncated by Excel
         $sheet->getStyle('B5:B'.$lastRow)->getNumberFormat()->setFormatCode('@'); // NIK
         $sheet->getStyle('C5:C'.$lastRow)->getNumberFormat()->setFormatCode('@'); // NO KK
-        $sheet->getStyle('J5:J'.$lastRow)->getNumberFormat()->setFormatCode('@'); // NO HP
+        $sheet->getStyle('K5:K'.$lastRow)->getNumberFormat()->setFormatCode('@'); // NO HP
 
         return $sheet;
     }

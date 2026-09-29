@@ -289,3 +289,25 @@ test('seluruh excel pelatihan dan banmod memiliki status sesuai halaman index', 
             ->and($headingRow)->toHaveCount(count($exportedRow));
     }
 });
+
+test('excel pelatihan umkm memiliki kolom kelurahan', function () {
+    $model = new class extends PelatihanUmkm
+    {
+        public function getSkorAttribute()
+        {
+            return 0;
+        }
+    };
+    $model->row_num = 1;
+    $model->kelurahan = 'Kelurahan Contoh';
+    $model->setRelation('documentVerifications', new Collection());
+
+    $export = new UmkmExport(collect([$model]));
+    $exportedRow = $export->collection()->first();
+    $headingRow = $export->headings()[3];
+    $kelurahanIndex = array_search('KELURAHAN', $headingRow, true);
+
+    expect($kelurahanIndex)->not->toBeFalse()
+        ->and(array_values($exportedRow)[$kelurahanIndex])->toBe('Kelurahan Contoh')
+        ->and($headingRow)->toHaveCount(count($exportedRow));
+});
