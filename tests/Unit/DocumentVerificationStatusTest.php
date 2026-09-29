@@ -140,9 +140,10 @@ test('kolom status verifikasi pada seluruh excel sesuai status dokumen', functio
         $export = new $exportClass(collect([$model]));
         $exportedRow = $export->collection()->first();
         $headingRow = $export->headings()[3];
+        $verificationIndex = array_search('STATUS VERIFIKASI', $headingRow, true);
 
-        expect(array_values($exportedRow)[count($exportedRow) - 1])->toBe('Terverifikasi')
-            ->and($headingRow[count($headingRow) - 1])->toBe('STATUS VERIFIKASI')
+        expect($verificationIndex)->not->toBeFalse()
+            ->and(array_values($exportedRow)[$verificationIndex])->toBe('Terverifikasi')
             ->and($headingRow)->toHaveCount(count($exportedRow));
     }
 });
@@ -216,6 +217,75 @@ test('seluruh excel pelatihan dan banmod memiliki kolom desil', function () {
 
         expect($desilIndex)->not->toBeFalse()
             ->and(array_values($exportedRow)[$desilIndex])->toBe('3')
+            ->and($headingRow)->toHaveCount(count($exportedRow));
+    }
+});
+
+test('seluruh excel pelatihan dan banmod memiliki status sesuai halaman index', function () {
+    $banmod = new class extends PendaftaranBanmod
+    {
+        public function getSkorAttribute()
+        {
+            return 0;
+        }
+    };
+    $banmod->setRelation('kategoriUsaha', null);
+    $banmod->setRelation('klasterUsaha', null);
+
+    $kerja = new PelatihanKerjas();
+    $kerja->setRelation('refPendidikan', null);
+    $kerja->setRelation('jenisPelatihan', null);
+
+    $pertanian = new class extends PelatihanPetani
+    {
+        public function getSkorAttribute()
+        {
+            return 0;
+        }
+    };
+    $pertanian->setRelation('kelompokTani', null);
+    $pertanian->setRelation('jenisPelatihanPetani', null);
+
+    $cases = [
+        [BanmodExport::class, $banmod],
+        [UmkmExport::class, new class extends PelatihanUmkm
+        {
+            public function getSkorAttribute()
+            {
+                return 0;
+            }
+        }],
+        [KerjaExport::class, $kerja],
+        [PelBanmodExport::class, new class extends PelatihanBanmod
+        {
+            public function getSkorAttribute()
+            {
+                return 0;
+            }
+        }],
+        [PertanianExport::class, $pertanian],
+        [EkrafExport::class, new class extends PelatihanEkonomiKreatif
+        {
+            public function getSkorAttribute()
+            {
+                return 0;
+            }
+        }],
+    ];
+
+    foreach ($cases as [$exportClass, $model]) {
+        $model->row_num = 1;
+        $model->status = 4;
+        $model->setRelation('documentVerifications', new Collection());
+
+        $export = new $exportClass(collect([$model]));
+        $exportedRow = $export->collection()->first();
+        $headingRow = $export->headings()[3];
+        $statusIndex = array_search('STATUS', $headingRow, true);
+
+        expect($statusIndex)->not->toBeFalse()
+            ->and(array_values($exportedRow)[$statusIndex])->toBe('Ditolak - Lolos di Pelatihan Lain')
+            ->and($headingRow[count($headingRow) - 1])->toBe('STATUS')
             ->and($headingRow)->toHaveCount(count($exportedRow));
     }
 });

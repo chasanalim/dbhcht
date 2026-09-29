@@ -2,6 +2,7 @@
 
 namespace App\Ekports;
 
+use App\Ekports\Concerns\FormatsParticipantStatus;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -16,6 +17,8 @@ use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
 
 class KerjaExport extends DefaultValueBinder implements FromCollection, WithHeadings, WithStyles, WithCustomValueBinder
 {
+    use FormatsParticipantStatus;
+
     protected $data;
 
     public function __construct($data)
@@ -41,6 +44,7 @@ class KerjaExport extends DefaultValueBinder implements FromCollection, WithHead
                 'pendidikan' => $item->refPendidikan?->nama,
                 'pelatihan' => $item->jenisPelatihan?->nama,
                 'verifikasi' => $item->getDocumentVerificationStatusLabel(),
+                'status' => $this->participantStatusLabel($item->status),
             ];
         });
     }
@@ -80,14 +84,15 @@ class KerjaExport extends DefaultValueBinder implements FromCollection, WithHead
                 'NO HP',
                 'PENDIDIKAN',
                 'PELATIHAN',
-                'STATUS VERIFIKASI'
+                'STATUS VERIFIKASI',
+                'STATUS'
             ]
         ];
     }
 
     public function styles(Worksheet $sheet)
     {
-        $lastColumn = 'N'; // Column for STATUS VERIFIKASI
+        $lastColumn = 'O'; // Column for STATUS VERIFIKASI
         $lastRow = $sheet->getHighestRow();
 
         // Merge title cells
@@ -155,12 +160,13 @@ class KerjaExport extends DefaultValueBinder implements FromCollection, WithHead
         $sheet->getColumnDimension('L')->setWidth(20);  // PENDIDIKAN
         $sheet->getColumnDimension('M')->setWidth(25);  // PELATIHAN
         $sheet->getColumnDimension('N')->setWidth(20);  // STATUS VERIFIKASI
+        $sheet->getColumnDimension('O')->setWidth(20);  // STATUS
 
         // Center specific columns
         $sheet->getStyle('A5:A' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // NO
         $sheet->getStyle('D5:D' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // DESIL
         $sheet->getStyle('G5:G' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // JENIS KELAMIN
-        $sheet->getStyle('M5:N' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // PELATIHAN & STATUS
+        $sheet->getStyle('M5:O' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // PELATIHAN & STATUS
 
         // Format NIK, NO KK and NO HP as text so long numbers are not truncated by Excel
         $sheet->getStyle('B5:B' . $lastRow)->getNumberFormat()->setFormatCode('@'); // NIK

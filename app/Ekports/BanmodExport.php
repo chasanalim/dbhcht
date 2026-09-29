@@ -2,6 +2,7 @@
 
 namespace App\Ekports;
 
+use App\Ekports\Concerns\FormatsParticipantStatus;
 use App\Models\PendaftaranBanmod;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -17,6 +18,8 @@ use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
 
 class BanmodExport extends DefaultValueBinder implements FromCollection, WithHeadings, WithStyles, WithCustomValueBinder
 {
+    use FormatsParticipantStatus;
+
     protected $data;
 
     public function __construct($data)
@@ -41,7 +44,8 @@ class BanmodExport extends DefaultValueBinder implements FromCollection, WithHea
                 'kategori' => $item->kategoriUsaha?->nama,
                 'klaster_usaha' => $item->klasterUsaha?->nama,
                 'skor' => number_format($item->skor, 2),
-                'verifikasi' => $item->getDocumentVerificationStatusLabel()
+                'verifikasi' => $item->getDocumentVerificationStatusLabel(),
+                'status' => $this->participantStatusLabel($item->status),
             ];
         });
     }
@@ -81,18 +85,19 @@ class BanmodExport extends DefaultValueBinder implements FromCollection, WithHea
                 'KATEGORI',
                 'KLASTER USAHA',
                 'SKOR',
-                'STATUS VERIFIKASI'
+                'STATUS VERIFIKASI',
+                'STATUS'
             ]
         ];
     }
 
     public function styles(Worksheet $sheet)
     {
-        $sheet->mergeCells('A1:N1');
-        $sheet->mergeCells('A2:N2');
+        $sheet->mergeCells('A1:O1');
+        $sheet->mergeCells('A2:O2');
 
         // Header style
-        $sheet->getStyle('A1:N1')->applyFromArray([
+        $sheet->getStyle('A1:O1')->applyFromArray([
             'font' => [
                 'bold' => true,
                 'size' => 12
@@ -102,7 +107,7 @@ class BanmodExport extends DefaultValueBinder implements FromCollection, WithHea
                 'vertical' => Alignment::VERTICAL_CENTER
             ]
         ]);
-        $sheet->getStyle('A2:N2')->applyFromArray([
+        $sheet->getStyle('A2:O2')->applyFromArray([
             'font' => [
                 'bold' => true,
                 'size' => 12
@@ -115,7 +120,7 @@ class BanmodExport extends DefaultValueBinder implements FromCollection, WithHea
 
 
         // Table header style
-        $sheet->getStyle('A4:N4')->applyFromArray([
+        $sheet->getStyle('A4:O4')->applyFromArray([
             'font' => [
                 'bold' => true
             ],
@@ -150,6 +155,7 @@ class BanmodExport extends DefaultValueBinder implements FromCollection, WithHea
         $sheet->getColumnDimension('L')->setWidth(20);
         $sheet->getColumnDimension('M')->setWidth(10);
         $sheet->getColumnDimension('N')->setWidth(30);
+        $sheet->getColumnDimension('O')->setWidth(20);
 
         // Format NIK and NO HP as text so long numbers are not truncated by Excel
         $lastRow = $sheet->getHighestRow();

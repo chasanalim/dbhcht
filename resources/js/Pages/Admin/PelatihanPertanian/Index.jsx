@@ -343,7 +343,7 @@ export default function Index({ title, can, flash, categories }) {
     const handleExport = (type) => {
         const url = route("admin.export.pertanian", {
             verification_status: verificationFilter,
-            jenis_pelatihan_industri: selectedCategory,
+            jenis_pelatihan_petani: selectedCategory,
             status: selectedStatus,
             ext: type,
         });

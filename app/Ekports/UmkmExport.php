@@ -2,6 +2,7 @@
 
 namespace App\Ekports;
 
+use App\Ekports\Concerns\FormatsParticipantStatus;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -16,6 +17,8 @@ use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
 
 class UmkmExport extends DefaultValueBinder implements FromCollection, WithHeadings, WithStyles, WithCustomValueBinder
 {
+    use FormatsParticipantStatus;
+
     protected $data;
 
     public function __construct($data)
@@ -42,6 +45,7 @@ class UmkmExport extends DefaultValueBinder implements FromCollection, WithHeadi
                 'prioritas_3' => $item->prioritas_3,
                 'skor' => number_format($item->skor, 2),
                 'verifikasi' => $item->getDocumentVerificationStatusLabel(),
+                'status' => $this->participantStatusLabel($item->status),
             ];
         });
     }
@@ -82,14 +86,15 @@ class UmkmExport extends DefaultValueBinder implements FromCollection, WithHeadi
                 'PRIORITAS 2',
                 'PRIORITAS 3',
                 'SKOR',
-                'STATUS VERIFIKASI'
+                'STATUS VERIFIKASI',
+                'STATUS'
             ]
         ];
     }
 
     public function styles(Worksheet $sheet)
     {
-        $lastColumn = 'O'; // Column for STATUS VERIFIKASI
+        $lastColumn = 'P'; // Column for STATUS VERIFIKASI
         $lastRow = $sheet->getHighestRow();
 
         // Merge title cells
@@ -158,11 +163,12 @@ class UmkmExport extends DefaultValueBinder implements FromCollection, WithHeadi
         $sheet->getColumnDimension('M')->setWidth(30); // PRIORITAS 3
         $sheet->getColumnDimension('N')->setWidth(10); // SKOR
         $sheet->getColumnDimension('O')->setWidth(20); // STATUS VERIFIKASI
+        $sheet->getColumnDimension('P')->setWidth(20); // STATUS
 
         // Center specific columns
         $sheet->getStyle('A5:A'.$lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // NO
         $sheet->getStyle('D5:D'.$lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // DESIL
-        $sheet->getStyle('N5:O'.$lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // SKOR & STATUS
+        $sheet->getStyle('N5:P'.$lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // SKOR & STATUS
 
         // Format NIK, NO KK and NO HP as text so long numbers are not truncated by Excel
         $sheet->getStyle('B5:B'.$lastRow)->getNumberFormat()->setFormatCode('@'); // NIK
